@@ -1,0 +1,60 @@
+language: python
+sudo: required
+dist: trusty
+matrix:
+  include:
+     - python: 3.6
+
+services:
+  - docker
+
+before_install:
+  - git clone https://github.com/NSLS-II/nsls2-ci --branch master --single-branch ~/ci_scripts
+  - export DOCKER0_IP=$(/sbin/ifconfig docker0 |grep 'inet addr' | sed -e 's/.*addr:\([^ ]*\).*/\1/')
+  - export EPICS_CA_ADDR_LIST=$( echo $DOCKER0_IP | sed -e 's/^\([0-9]\+\)\.\([0-9]\+\)\..*$/\1.\2.255.255/' )
+  - export EPICS_CA_AUTO_ADDR_LIST="no"
+  - export EPICS_CA_MAX_ARRAY_BYTES=10000000
+  - export DOCKERIMAGE="klauer/epics-docker"
+  - export EPICS_BASE=/usr/lib/epics
+  - mkdir /tmp/data
+  - perl --version
+  - docker pull ${DOCKERIMAGE}
+  - docker images
+  - docker run -d -p $DOCKER0_IP:7000-9000:5064/tcp -v /tmp/data:/data ${DOCKERIMAGE}
+  - docker ps -a
+  - ip addr
+install:
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda install conda-build anaconda-client
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+  #Grab all dependencies
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION swig coverage pip ophyd pyqt=5 pytest -c lightsource2-tag -c conda-forge
+  #Launch Conda environment
+  - source activate test-environment
+  - pip install codecov
+  - pip install -r requirements.txt
+  #Install
+  - python setup.py install
+  #Setup some path environment variables for epics
+  - export PATH=$PATH:$EPICS_BASE/bin/$EPICS_HOST_ARCH
+  - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$EPICS_BASE/lib/$EPICS_HOST_ARCH"
+  - echo "PATH=$PATH"
+
+before_script:
+    #Taken from docs.travis-ci.com/user/gui-and-headless-browsers
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+
+script:
+  - coverage run run_tests.py
+  - coverage report -m
