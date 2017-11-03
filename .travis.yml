@@ -58,3 +58,6 @@ before_script:
 script:
   - coverage run run_tests.py
   - coverage report -m
+
+after_success:
+  - codecov
