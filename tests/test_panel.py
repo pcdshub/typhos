@@ -23,7 +23,6 @@ def test_panel(qapp):
                     'Read and Write' : EpicsSignal('Tst:Read',
                                                    write_pv='Tst:Write'),
                     #Signal is read-only
-                    'Read Only' : EpicsSignalRO('Tst:Pv:RO')},
-                  max_cols=2)
+                    'Read Only' : EpicsSignalRO('Tst:Pv:RO')})
     assert len(panel.signals) == 3
     return panel
