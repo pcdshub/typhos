@@ -42,6 +42,7 @@ install:
   - source activate test-environment
   - pip install codecov
   - pip install -r requirements.txt
+  - pip install -r dev-requirements.txt
   #Install
   - python setup.py install
   #Setup some path environment variables for epics
@@ -58,6 +59,7 @@ before_script:
 script:
   - coverage run run_tests.py
   - coverage report -m
+  - flake8
 
 after_success:
   - codecov
