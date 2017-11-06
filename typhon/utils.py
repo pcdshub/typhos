@@ -16,11 +16,13 @@ import os.path
 
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
 
+
 def channel_name(pv):
     """
     Create a valid PyDM channel from a PV name
     """
     return 'ca://' + pv.pvname
+
 
 def clean_attr(attr):
     """

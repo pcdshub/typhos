@@ -5,12 +5,13 @@
 ############
 # External #
 ############
-from pydm.PyQt.QtCore   import QSize, Qt
+from pydm.PyQt.QtCore import QSize, Qt
 from pydm.widgets.label import PyDMLabel
 
 ###########
 # Package #
 ###########
+
 
 class TyphonLabel(PyDMLabel):
     """
@@ -23,7 +24,5 @@ class TyphonLabel(PyDMLabel):
         self.setAlignment(Qt.AlignCenter)
 
     def sizeHint(self):
-        #This is to match the PyDMLineEdit sizeHint
+        # This is to match the PyDMLineEdit sizeHint
         return QSize(100, 30)
-
-
