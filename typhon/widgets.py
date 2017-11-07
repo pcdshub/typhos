@@ -6,17 +6,24 @@
 # External #
 ############
 from pydm.PyQt.QtCore import QSize, Qt
-from pydm.widgets.label import PyDMLabel
+from pydm.widgets import PyDMLabel, PyDMEnumComboBox
 
 ###########
 # Package #
 ###########
 
 
+class TyphonComboBox(PyDMEnumComboBox):
+    """
+    Reimplementation of PyDMEnumComboBox to set some custom defaults
+    """
+    def sizeHint(self):
+        # This is to match teh PyDMLineEdit sizeHint
+        return QSize(100, 30)
+
+
 class TyphonLabel(PyDMLabel):
     """
-    TyphonLabel
-
     Reimplemtation of PyDMLabel to set some custom defaults
     """
     def __init__(self, *args, **kwargs):
