@@ -34,6 +34,17 @@ class DeviceDisplay(QWidget):
     their own DeviceDisplays and placed in a QStackedWidget that can optionally
     be shown and hidden based on the operators request.
 
+    In order to accomodate an offline creation mode, each device is
+    additionally checked for an ``enum_attrs`` property which contains which
+    device signals should be passed to :class:`.Panel` in ``enum_sigs`. If
+    the device you are creating a display for is avaiable through Channel
+    Access, you do not have to worry about this step, as ``typhon`` will
+    introspect the PV information to find which PVs are enums. However,
+    offline, this information is not available and a user may want their screen
+    to have certain EPICS variables displayed as QComboBoxes. In this case,
+    devices and the sub-component devices should have the relevant attributes
+    flagged under `enum_attrs`
+
     Parameters
     ----------
     device : ophyd.Device
@@ -131,8 +142,12 @@ class DeviceDisplay(QWidget):
         # Create dictionary mapping of alias -> EpicsSignal
         sig_dict = dict((clean_attr(sig), getattr(self.device, sig))
                         for sig in signal_names)
+        # Search for fixed enum attrs
+        enum_attrs = [clean_attr(sig)
+                      for sig in getattr(self.device, 'enum_attrs', list())]
+
         # Create panel
-        panel = Panel(signals=sig_dict, parent=self)
+        panel = Panel(signals=sig_dict, enum_sigs=enum_attrs, parent=self)
         # Allow button to hide and show panel
         if button:
             button.toggled.connect(partial(self.toggle_panel, panel=panel))
