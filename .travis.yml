@@ -37,11 +37,12 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   #Grab all dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION swig coverage pip ophyd pyqt=5 pytest -c lightsource2-tag -c conda-forge
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION swig coverage pydm pip ophyd pyqt=5 pytest -c lightsource2-tag -c pydm-dev -c conda-forge -c gsecars
   #Launch Conda environment
   - source activate test-environment
   - pip install codecov
   - pip install -r requirements.txt
+  - pip install -r dev-requirements.txt
   #Install
   - python setup.py install
   #Setup some path environment variables for epics
@@ -58,6 +59,7 @@ before_script:
 script:
   - coverage run run_tests.py
   - coverage report -m
+  - flake8
 
 after_success:
   - codecov
