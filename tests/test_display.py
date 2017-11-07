@@ -11,6 +11,7 @@ from ophyd import Device, EpicsMotor, Component as C, FormattedComponent as FC
 ###########
 # Package #
 ###########
+from typhon.utils import clean_attr
 from typhon.display import DeviceDisplay
 from .conftest import show_widget
 
@@ -57,3 +58,10 @@ def test_display(qapp):
     assert all([getattr(d, dev) in display.all_devices
                 for dev in d._sub_devices])
     return display
+
+
+def test_enum_attrs(qapp):
+    d = MockDevice("Tst:Dev", name='MockDevice')
+    d.enum_attrs = ['read1']
+    d = DeviceDisplay(d)
+    assert clean_attr('read1') in d.read_panel.enum_sigs
