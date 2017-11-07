@@ -46,7 +46,7 @@ class MockDevice(Device):
 
 
 @show_widget
-def test_display(qapp):
+def test_display():
     d = MockDevice("Tst:Dev", name='MockDevice')
     display = DeviceDisplay(d)
     # We have all our signals
@@ -60,7 +60,7 @@ def test_display(qapp):
     return display
 
 
-def test_enum_attrs(qapp):
+def test_enum_attrs():
     d = MockDevice("Tst:Dev", name='MockDevice')
     d.enum_attrs = ['read1']
     d = DeviceDisplay(d)

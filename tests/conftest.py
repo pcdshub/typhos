@@ -54,7 +54,7 @@ def _show_widgets(pytestconfig):
         logger.info("Running tests while showing created widgets ...")
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session', autouse=True)
 def qapp():
     global application
     if application:

@@ -16,7 +16,7 @@ from .conftest import show_widget
 
 
 @show_widget
-def test_panel(qapp):
+def test_panel():
     panel = Panel(signals={
                     # Signal is its own write
                     'Standard': EpicsSignal('Tst:Pv'),
@@ -30,7 +30,7 @@ def test_panel(qapp):
 
 
 @show_widget
-def test_panel_add_enum(qapp):
+def test_panel_add_enum():
     panel = Panel()
     loc = panel.add_signal(EpicsSignal("Tst:Enum"), "Enum PV", enum=True)
     # Check our signal was added in the `enum_attrs` list
