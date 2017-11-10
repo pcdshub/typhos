@@ -5,6 +5,7 @@
 ############
 # External #
 ############
+import pytest
 from ophyd.signal import EpicsSignal, EpicsSignalRO
 from ophyd import Device, EpicsMotor, Component as C, FormattedComponent as FC
 
@@ -44,24 +45,50 @@ class MockDevice(Device):
     _default_configuration_attrs = ['config1', 'config2', 'config3',
                                     'config4', 'config5']
 
+    def insert(self, width: float=2.0, height: float=2.0,
+               fast_mode: bool=False):
+        """Fake insert function to display"""
+        pass
+
+    def remove(self, height: float,  fast_mode: bool=False):
+        """Fake remove function to display"""
+        pass
+
+
+@pytest.fixture(scope='module')
+def device():
+    return MockDevice("Tst:Dev", name="MockDevice")
+
 
 @show_widget
-def test_display():
-    d = MockDevice("Tst:Dev", name='MockDevice')
-    display = DeviceDisplay(d)
+def test_display(device):
+    display = DeviceDisplay(device)
     # We have all our signals
-    assert all([getattr(d, sig) in list(display.read_panel.signals.values())
-                for sig in d.read_attrs])
-    assert all([getattr(d, sig) in list(display.config_panel.signals.values())
-                for sig in d.configuration_attrs])
+    shown_read_sigs = list(display.read_panel.signals.values())
+    assert all([getattr(device, sig) in shown_read_sigs
+                for sig in device.read_attrs])
+    shown_cfg_sigs = list(display.config_panel.signals.values())
+    assert all([getattr(device, sig) in shown_cfg_sigs
+                for sig in device.configuration_attrs])
     # We have all our subdevices
-    assert all([getattr(d, dev) in display.all_devices
-                for dev in d._sub_devices])
+    assert all([getattr(device, dev) in display.all_devices
+                for dev in device._sub_devices])
     return display
 
 
-def test_enum_attrs():
-    d = MockDevice("Tst:Dev", name='MockDevice')
-    d.enum_attrs = ['read1']
-    d = DeviceDisplay(d)
-    assert clean_attr('read1') in d.read_panel.enum_sigs
+def test_enum_attrs(device):
+    device.enum_attrs = ['read1']
+    display = DeviceDisplay(device)
+    assert clean_attr('read1') in display.read_panel.enum_sigs
+
+
+@show_widget
+def test_display_with_funcs(device):
+    display = DeviceDisplay(device, methods=[device.insert,
+                                             device.remove])
+    # The method panel is visible
+    assert not display.method_panel.isHidden()
+    # Assert we have all our specified functions
+    assert 'insert' in display.methods
+    assert 'remove' in display.methods
+    return display
