@@ -11,13 +11,13 @@ from pydm.widgets import PyDMEnumComboBox
 ###########
 # Package #
 ###########
-from typhon.panel import Panel
+from typhon.panel import SignalPanel
 from .conftest import show_widget
 
 
 @show_widget
-def test_panel():
-    panel = Panel(signals={
+def test_panel_creation():
+    panel = SignalPanel("Test Signals", signals={
                     # Signal is its own write
                     'Standard': EpicsSignal('Tst:Pv'),
                     # Signal has separate write/read
@@ -29,15 +29,24 @@ def test_panel():
     return panel
 
 
+def test_panel_hide():
+    # Create basic panel
+    panel = SignalPanel("Test Signals",
+                        signals={'Standard': EpicsSignal("Tst:Pv")})
+    # Toggle the button
+    panel.show_contents(False)
+    assert panel.contents.isHidden()
+
+
 @show_widget
 def test_panel_add_enum():
-    panel = Panel()
+    panel = SignalPanel("Test Signals")
     loc = panel.add_signal(EpicsSignal("Tst:Enum"), "Enum PV", enum=True)
     # Check our signal was added in the `enum_attrs` list
     assert "Enum PV" in panel.enum_sigs
     # Check our signal was added a QCombobox
     # Assume it is the last item in the button layout
-    but_layout = panel.layout().itemAtPosition(loc, 1)
+    but_layout = panel.contents.layout().itemAtPosition(loc, 1)
     assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
                       PyDMEnumComboBox)
     return panel

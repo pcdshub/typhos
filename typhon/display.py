@@ -10,14 +10,14 @@ from functools import partial
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot
-from pydm.PyQt.QtGui import QPushButton
-from pydm.PyQt.QtGui import QWidget, QHBoxLayout
+from pydm.PyQt.QtGui import QGroupBox, QWidget, QHBoxLayout, QPushButton
 
 ###########
 # Package #
 ###########
-from .panel import Panel
+from .func import FunctionPanel
 from .utils import ui_dir, clean_attr
+from .panel import SignalPanel
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +51,9 @@ class DeviceDisplay(QWidget):
 
     parent : QWidget, optional
 
+    methods : list, optional
+        List of callable functions to display in the interface
+
     dark : bool, optional
         Choice to use the `qdarkstyle` stylesheet
 
@@ -62,7 +65,7 @@ class DeviceDisplay(QWidget):
         Attributes to be used as configuration_attrs. This will also change the
         ``device.configuration_attrs``
     """
-    def __init__(self, device, dark=True, read_attrs=None,
+    def __init__(self, device, dark=True, methods=None, read_attrs=None,
                  configuration_attrs=None, parent=None):
         # Instantiate Widget
         super().__init__(parent=parent)
@@ -82,34 +85,41 @@ class DeviceDisplay(QWidget):
         # Set Label Names
         self.ui.name_label.setText(self.device.name)
         self.ui.prefix_label.setText(self.device.prefix)
+
+        # Handle Component Devices
+        # Create buttons for subcomponents
+        self.sub_device_group = None
+        for dev_name in self.device._sub_devices:
+            self.add_subdevice(getattr(self.device, dev_name))
         # Hide Subcomponents
         self.ui.component_widget.hide()
-        # Create Read and Configuration Panels
-        self.read_panel = self.create_panel(self.device.read_attrs)
-        self.config_panel = self.create_panel(self.device.configuration_attrs,
-                                              button=self.ui.config_button)
-        # Add read panel above config button
-        rd_idx = self.ui.main_layout.indexOf(self.ui.config_button)
-        self.ui.main_layout.insertWidget(rd_idx, self.read_panel)
-        # Add config panel below config button
-        cfg_idx = self.ui.main_layout.indexOf(self.ui.config_button)+1
-        self.ui.main_layout.insertWidget(cfg_idx, self.config_panel)
+
+        # Create Panel Configurations
+        # Create read and configuration panels
+        self.read_panel = self.create_panel("Read", self.device.read_attrs)
+        # Hide control of read_panel
+        self.read_panel.hide_button.hide()
+        self.config_panel = self.create_panel("Configuration",
+                                              self.device.configuration_attrs)
         # Catch the rest of the signals add to misc panel below misc_button
         misc_sigs = [sig for sig in self.device.component_names
                      if sig not in (self.device.read_attrs
                                     + self.device.configuration_attrs
                                     + self.device._sub_devices)]
-        self.misc_panel = self.create_panel(misc_sigs,
-                                            button=self.ui.misc_button)
-        misc_idx = self.ui.main_layout.indexOf(self.ui.misc_button)+1
-        self.ui.main_layout.insertWidget(misc_idx, self.misc_panel)
+        self.misc_panel = self.create_panel("Miscellaneous", misc_sigs)
+        # Create method panel
+        self.method_panel = FunctionPanel(methods, parent=self)
+        # Add all the panels
+        self.ui.main_layout.addWidget(self.read_panel)
+        self.ui.main_layout.addWidget(self.method_panel)
+        self.ui.main_layout.addWidget(self.config_panel)
+        self.ui.main_layout.addWidget(self.misc_panel)
         # Hide config/misc panels
-        self.config_panel.hide()
-        self.misc_panel.hide()
-        # Create buttons for subcomponents
-        self.sub_button_layout = None
-        for dev_name in self.device._sub_devices:
-            self.add_subdevice(getattr(self.device, dev_name))
+        self.config_panel.show_contents(False)
+        self.misc_panel.show_contents(False)
+        # Hide if no methods are given
+        if not self.methods:
+            self.method_panel.hide()
 
     @property
     def all_devices(self):
@@ -121,19 +131,29 @@ class DeviceDisplay(QWidget):
                                 if hasattr(self.ui.component_stack.widget(i),
                                            'device')]
 
-    def create_panel(self, signal_names, button=None):
+    @property
+    def methods(self):
+        """
+        Methods contained within :attr:`.method_panel`
+        """
+        return self.method_panel.methods
+
+    def create_panel(self, title, signal_names, **kwargs):
         """
         Create a panel from a set of device signals
 
         Parameters
         ----------
+        title :str
+            Name of Panel
+
         signal_names : list
             Name of signals to add to panel. Must be a component of ``device``
 
-        button: QAbstractButton, optional
-            Existing button to hide or show the panel. This is connected to the
-            created :class:`.typhon.Panel` using the function
-            :func:`.toggle_panel`
+        kwargs:
+            All keywords are passed to the :class:`typhon.SignalPanel`. The
+            signal dictionary is generated from the `signal_names` parameter.
+            The device is also queried for :attr:`.enum_attrs`
 
         Returns
         -------
@@ -145,12 +165,10 @@ class DeviceDisplay(QWidget):
         # Search for fixed enum attrs
         enum_attrs = [clean_attr(sig)
                       for sig in getattr(self.device, 'enum_attrs', list())]
-
+        enum_attrs.extend(kwargs.pop('enum_attrs', list()))
         # Create panel
-        panel = Panel(signals=sig_dict, enum_sigs=enum_attrs, parent=self)
-        # Allow button to hide and show panel
-        if button:
-            button.toggled.connect(partial(self.toggle_panel, panel=panel))
+        panel = SignalPanel(title, signals=sig_dict,
+                            enum_sigs=enum_attrs, **kwargs)
         return panel
 
     def add_subdevice(self, device):
@@ -164,39 +182,23 @@ class DeviceDisplay(QWidget):
         ----------
         device : ophyd.Device
         """
-        logger.info("Adding device %s ...", device.name)
+        logger.debug("Adding device %s ...", device.name)
         # Add our button layout if not created
-        if not self.sub_button_layout:
+        if not self.sub_device_group:
             logger.debug("Creating button layout for subdevices ...")
-            self.sub_button_layout = QHBoxLayout()
-            self.ui.main_layout.insertLayout(1, self.sub_button_layout)
+            self.sub_device_group = QGroupBox("Component Devices")
+            self.sub_device_group.setLayout(QHBoxLayout())
+            self.ui.main_layout.insertWidget(1, self.sub_device_group)
         # Create device display
         sub_display = DeviceDisplay(device)
         idx = self.ui.component_stack.addWidget(sub_display)
         # Create button
         but = QPushButton()
         but.setText(clean_attr(device.name))
-        self.sub_button_layout.addWidget(but)
+        but.setCheckable(True)
+        self.sub_device_group.layout().addWidget(but)
         # Connect button
         but.clicked.connect(partial(self.show_subdevice, idx=idx))
-
-    @pyqtSlot(bool)
-    def toggle_panel(self, checked, panel):
-        """
-        Toggle the visibility of a panel
-
-        Parameters
-        ----------
-        checked : bool
-            Whether to hide or show
-
-        panel : QWidget
-            Widget to hide or show
-        """
-        if checked:
-            panel.show()
-        else:
-            panel.hide()
 
     @pyqtSlot()
     def show_subdevice(self, idx):
@@ -208,7 +210,6 @@ class DeviceDisplay(QWidget):
         idx : int
             Index of subdevice widget
         """
-        # Show the component widget if hidden
         if self.ui.component_widget.isHidden():
             self.ui.component_widget.show()
         # Show the correct subdevice widget
