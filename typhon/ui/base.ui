@@ -31,7 +31,7 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="main_layout" stretch="0">
+     <layout class="QVBoxLayout" name="main_layout" stretch="0,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>
       </property>
@@ -105,6 +105,50 @@
         </layout>
        </widget>
       </item>
+      <item>
+       <widget class="PyDMTimePlot" name="hint_plot">
+        <property name="minimumSize">
+         <size>
+          <width>350</width>
+          <height>350</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
+        <property name="showXGrid">
+         <bool>true</bool>
+        </property>
+        <property name="showYGrid">
+         <bool>true</bool>
+        </property>
+        <property name="axisColor">
+         <color>
+          <red>212</red>
+          <green>212</green>
+          <blue>212</blue>
+         </color>
+        </property>
+        <property name="showLegend">
+         <bool>true</bool>
+        </property>
+        <property name="mouseEnabledX" stdset="0">
+         <bool>false</bool>
+        </property>
+        <property name="bufferSize">
+         <number>2500</number>
+        </property>
+        <property name="timeSpan">
+         <double>30.000000000000000</double>
+        </property>
+        <property name="updateInterval">
+         <double>0.500000000000000</double>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -174,6 +218,13 @@
   <zorder>component_widget</zorder>
   <zorder>main_widget</zorder>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PyDMTimePlot</class>
+   <extends>QGraphicsView</extends>
+   <header>pydm.widgets.timeplot</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
