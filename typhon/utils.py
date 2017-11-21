@@ -23,11 +23,13 @@ def channel_name(pv):
     """
     return 'ca://' + pv
 
+
 def clean_attr(attr):
     """
     Create a nicer, human readable alias from a Python attribute name
     """
     return ' '.join([word[0].upper() + word[1:] for word in attr.split('_')])
+
 
 def clean_source(source):
     """

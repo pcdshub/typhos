@@ -78,6 +78,7 @@ class DeviceDisplay(QWidget):
     """
     default_curve_opts = {'lineStyle': Qt.SolidLine, 'symbol': 'o',
                           'lineWidth': 2, 'symbolSize': 4}
+
     def __init__(self, device, dark=True, methods=None, read_attrs=None,
                  configuration_attrs=None, parent=None):
         # Instantiate Widget
@@ -141,7 +142,7 @@ class DeviceDisplay(QWidget):
                 # to the hint_panel if it is a number and not a string
                 sig_desc = self.device_description[field]
                 if sig_desc['dtype'] == 'number':
-                    self.add_plotted_signal(sig_desc['source'])
+                    self.add_plotted_signal(clean_source(sig_desc['source']))
                 else:
                     logger.debug("Not adding %s because it is not a number",
                                  field)

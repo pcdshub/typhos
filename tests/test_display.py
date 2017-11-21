@@ -98,6 +98,7 @@ def test_display_with_funcs(device):
     assert 'remove' in display.methods
     return display
 
+
 @using_fake_epics_pv
 @show_widget
 def test_display_with_hints(device):
