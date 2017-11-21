@@ -295,7 +295,7 @@ class FunctionDisplay(QGroupBox):
         # just pass it on. Otherwise, collect information
         # from the appropriate widgets
         if not self.signature.parameters:
-            func = self.func()
+            func = self.func
         else:
             kwargs = dict()
             # Gather information from parameter widgets
