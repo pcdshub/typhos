@@ -1,6 +1,7 @@
 ############
 # Standard #
 ############
+import copy
 import os.path
 import logging
 from functools import partial
@@ -9,15 +10,15 @@ from functools import partial
 # External #
 ############
 from pydm.PyQt import uic
-from pydm.PyQt.QtCore import pyqtSlot
+from pydm.PyQt.QtCore import pyqtSlot, Qt
 from pydm.PyQt.QtGui import QGroupBox, QWidget, QHBoxLayout, QPushButton
 
 ###########
 # Package #
 ###########
 from .func import FunctionPanel
-from .utils import ui_dir, clean_attr
 from .panel import SignalPanel
+from .utils import ui_dir, clean_attr, clean_source, channel_name
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,20 @@ class DeviceDisplay(QWidget):
     configuration_attrs : list, optional
         Attributes to be used as configuration_attrs. This will also change the
         ``device.configuration_attrs``
+
+    Attributes
+    ----------
+    hint_plot:
+
+    read_panel:
+
+    config_panel:
+
+    misc_panel:
     """
+    default_curve_opts = {'lineStyle': Qt.SolidLine, 'symbol': 'o',
+                          'lineWidth': 2, 'symbolSize': 4}
+
     def __init__(self, device, dark=True, methods=None, read_attrs=None,
                  configuration_attrs=None, parent=None):
         # Instantiate Widget
@@ -82,6 +96,7 @@ class DeviceDisplay(QWidget):
         self.ui = uic.loadUi(os.path.join(ui_dir, 'base.ui'), self)
         # Store device
         self.device = device
+        self.device_description = self.device.describe()
         # Set Label Names
         self.ui.name_label.setText(self.device.name)
         self.ui.prefix_label.setText(self.device.prefix)
@@ -120,6 +135,22 @@ class DeviceDisplay(QWidget):
         # Hide if no methods are given
         if not self.methods:
             self.method_panel.hide()
+        # Add our hints
+        for field in getattr(self.device, 'hints', {}).get('fields', list()):
+            try:
+                # Get a description of the signal. Add the the PV name
+                # to the hint_panel if it is a number and not a string
+                sig_desc = self.device_description[field]
+                if sig_desc['dtype'] == 'number':
+                    self.add_plotted_signal(clean_source(sig_desc['source']))
+                else:
+                    logger.debug("Not adding %s because it is not a number",
+                                 field)
+            except KeyError as exc:
+                logger.error("Unable to find PV name of %s", field)
+        # If we did not get any hints
+        if not self.ui.hint_plot.curves:
+            self.ui.hint_plot.hide()
 
     @property
     def all_devices(self):
@@ -195,10 +226,29 @@ class DeviceDisplay(QWidget):
         # Create button
         but = QPushButton()
         but.setText(clean_attr(device.name))
-        but.setCheckable(True)
         self.sub_device_group.layout().addWidget(but)
         # Connect button
         but.clicked.connect(partial(self.show_subdevice, idx=idx))
+
+    def add_plotted_signal(self, pv, **kwargs):
+        """
+        Add a signal to the PyDMTimePlot
+
+        Parameters
+        ----------
+        pvname : str
+            Name of PV
+
+        kwargs:
+            All keywords are passed directly to ``PyDMTimePlot.addYChannel``
+        """
+        # Show our plot if it was previously hidden
+        if self.ui.hint_plot.isHidden():
+            self.ui.hint_plot.show()
+        # Combine user supplied options with defaults
+        plot_opts = copy.copy(self.default_curve_opts)
+        plot_opts.update(kwargs)
+        self.ui.hint_plot.addYChannel(y_channel=channel_name(pv), **plot_opts)
 
     @pyqtSlot()
     def show_subdevice(self, idx):
