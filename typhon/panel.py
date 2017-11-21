@@ -155,12 +155,12 @@ class SignalPanel(Panel):
         # Create signal display
         val_display = QHBoxLayout()
         # Add readback
-        ro = TyphonLabel(init_channel=channel_name(signal._read_pv),
+        ro = TyphonLabel(init_channel=channel_name(signal._read_pv.pvname),
                          parent=self)
         val_display.addWidget(ro)
         # Add write
         if hasattr(signal, '_write_pv'):
-            ch = channel_name(signal._write_pv)
+            ch = channel_name(signal._write_pv.pvname)
             # Check whether our device is an enum or not
             if (name in self.enum_sigs or (signal.connected
                                            and signal._write_pv.enum_strs)):
