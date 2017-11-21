@@ -8,6 +8,7 @@
 import pytest
 from ophyd.signal import EpicsSignal, EpicsSignalRO
 from ophyd import Device, EpicsMotor, Component as C, FormattedComponent as FC
+from ophyd.tests.conftest import using_fake_epics_pv
 
 ###########
 # Package #
@@ -55,11 +56,13 @@ class MockDevice(Device):
         pass
 
 
+@using_fake_epics_pv
 @pytest.fixture(scope='module')
 def device():
     return MockDevice("Tst:Dev", name="MockDevice")
 
 
+@using_fake_epics_pv
 @show_widget
 def test_display(device):
     display = DeviceDisplay(device)
@@ -76,12 +79,14 @@ def test_display(device):
     return display
 
 
+@using_fake_epics_pv
 def test_enum_attrs(device):
     device.enum_attrs = ['read1']
     display = DeviceDisplay(device)
     assert clean_attr('read1') in display.read_panel.enum_sigs
 
 
+@using_fake_epics_pv
 @show_widget
 def test_display_with_funcs(device):
     display = DeviceDisplay(device, methods=[device.insert,
@@ -91,4 +96,12 @@ def test_display_with_funcs(device):
     # Assert we have all our specified functions
     assert 'insert' in display.methods
     assert 'remove' in display.methods
+    return display
+
+@using_fake_epics_pv
+@show_widget
+def test_display_with_hints(device):
+    device.hints = {'fields': [device.name + '_read1']}
+    display = DeviceDisplay(device)
+    assert len(display.ui.hint_plot.curves) == 1
     return display
