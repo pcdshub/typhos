@@ -90,20 +90,13 @@ class SignalPanel(Panel):
     signals : OrderedDict, optional
         Signals to include in the panel
 
-    enum_sigs : list, optional
-        Force certain PV controls to be QComboxBoxes instead of LineEdits.
-        Useful for PVs that are expecting a certain subset of strings for their
-        input. Should match the keys provided in the :param:`.signals`
-        dictionary
-
     parent : QWidget, optional
         Parent of panel
     """
-    def __init__(self, title, signals=None, enum_sigs=None, parent=None):
+    def __init__(self, title, signals=None, parent=None):
         super().__init__(title, parent=parent)
         # Store signal information
-        self.signals = dict()
-        self.enum_sigs = enum_sigs or list()
+        self.pvs = dict()
         # Create empty panel contents
         self.contents = QWidget()
         self.contents.setLayout(QGridLayout())
@@ -113,17 +106,12 @@ class SignalPanel(Panel):
             for name, sig in signals.items():
                 self.add_signal(sig, name)
 
-    def add_signal(self, signal, name, enum=False):
+    def add_signal(self, signal, name):
         """
         Add a signal to the panel
 
         The type of widget control that is drawn is dependent on
-        :attr:`_read_pv`, and :attr:`_write_pv`. attributes given
-        ``EpicsSignal``, as well as the :attr:`enum_attrs` property. Because it
-        is not possible to tell from a disconnected signal whether the PV has
-        corresponding ``enum_strs``, you can force the widget that controls the
-        PV to be a ``PyDMEnumComboBox`` by setting ``enum=True``. If this is
-        False, the default widget will be a ``PyDMLineEdit``.
+        :attr:`_read_pv`, and :attr:`_write_pv`. attributes.
 
         Parameters
         ----------
@@ -133,10 +121,6 @@ class SignalPanel(Panel):
         name : str
             Name of signal to display
 
-        enum : bool, optional
-            Consider the PV to be an `Enum` and provide a QComboBox to control
-            it rather than a LineEdit
-
         Returns
         -------
         loc : int
@@ -144,9 +128,29 @@ class SignalPanel(Panel):
             `SignalPanel.contents.layout()``
         """
         logger.debug("Adding signal %s", name)
-        # Add our signal to enum list
-        if enum:
-            self.enum_sigs.append(name)
+        return self.add_pv(signal._read_pv, name,
+                           write_pv=getattr(signal, '_write_pv', None))
+
+    def add_pv(self, read_pv, name, write_pv=None):
+        """
+        Add PVs to the SignalPanel
+
+        Parameters
+        ---------
+        read_pv : pyepics.PV
+
+        name : str
+            Name of signal to display
+
+        write_pv : pyepics.PV, optional
+
+        Returns
+        -------
+        loc : int
+            Row number that the signal information was added to in the
+            `SignalPanel.contents.layout()``
+        """
+        logger.debug("Adding PV %s", name)
         # Create label
         label = QLabel(self)
         label.setText(name)
@@ -155,15 +159,14 @@ class SignalPanel(Panel):
         # Create signal display
         val_display = QHBoxLayout()
         # Add readback
-        ro = TyphonLabel(init_channel=channel_name(signal._read_pv.pvname),
+        ro = TyphonLabel(init_channel=channel_name(read_pv.pvname),
                          parent=self)
         val_display.addWidget(ro)
-        # Add write
-        if hasattr(signal, '_write_pv'):
-            ch = channel_name(signal._write_pv.pvname)
+        # Add our write_pv if available
+        if write_pv:
+            ch = channel_name(write_pv.pvname)
             # Check whether our device is an enum or not
-            if (name in self.enum_sigs or (signal.connected
-                                           and signal._write_pv.enum_strs)):
+            if write_pv.enum_strs:
                 edit = TyphonComboBox(init_channel=ch, parent=self)
             else:
                 logger.debug("Adding LineEdit for %s", name)
@@ -171,11 +174,9 @@ class SignalPanel(Panel):
             # Add our control widget to layout
             val_display.addWidget(edit)
         # Add displays to panel
-        loc = len(self.signals)
+        loc = len(self.pvs)
         self.contents.layout().addWidget(label, loc, 0)
         self.contents.layout().addLayout(val_display, loc, 1)
-
         # Store signal
-        self.signals[name] = signal
-
+        self.pvs[name] = (read_pv, write_pv)
         return loc
