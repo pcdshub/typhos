@@ -35,16 +35,6 @@ class DeviceDisplay(QWidget):
     their own DeviceDisplays and placed in a QStackedWidget that can optionally
     be shown and hidden based on the operators request.
 
-    In order to accomodate an offline creation mode, each device is
-    additionally checked for an ``enum_attrs`` property which contains which
-    device signals should be passed to :class:`.Panel` in ``enum_sigs`. If
-    the device you are creating a display for is avaiable through Channel
-    Access, you do not have to worry about this step, as ``typhon`` will
-    introspect the PV information to find which PVs are enums. However,
-    offline, this information is not available and a user may want their screen
-    to have certain EPICS variables displayed as QComboBoxes. In this case,
-    devices and the sub-component devices should have the relevant attributes
-    flagged under `enum_attrs`
 
     Parameters
     ----------
@@ -184,7 +174,6 @@ class DeviceDisplay(QWidget):
         kwargs:
             All keywords are passed to the :class:`typhon.SignalPanel`. The
             signal dictionary is generated from the `signal_names` parameter.
-            The device is also queried for :attr:`.enum_attrs`
 
         Returns
         -------
@@ -193,13 +182,8 @@ class DeviceDisplay(QWidget):
         # Create dictionary mapping of alias -> EpicsSignal
         sig_dict = dict((clean_attr(sig), getattr(self.device, sig))
                         for sig in signal_names)
-        # Search for fixed enum attrs
-        enum_attrs = [clean_attr(sig)
-                      for sig in getattr(self.device, 'enum_attrs', list())]
-        enum_attrs.extend(kwargs.pop('enum_attrs', list()))
         # Create panel
-        panel = SignalPanel(title, signals=sig_dict,
-                            enum_sigs=enum_attrs, **kwargs)
+        panel = SignalPanel(title, signals=sig_dict, **kwargs)
         return panel
 
     def add_subdevice(self, device):
@@ -264,3 +248,4 @@ class DeviceDisplay(QWidget):
             self.ui.component_widget.show()
         # Show the correct subdevice widget
         self.ui.component_stack.setCurrentIndex(idx)
+
