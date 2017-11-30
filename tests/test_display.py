@@ -14,7 +14,7 @@ from ophyd.tests.conftest import using_fake_epics_pv
 # Package #
 ###########
 from typhon.utils import clean_attr
-from typhon.display import DeviceDisplay
+from typhon.display import DeviceButton, DeviceDisplay
 from .conftest import show_widget
 
 
@@ -101,3 +101,13 @@ def test_display_with_hints(device):
     display = DeviceDisplay(device)
     assert len(display.ui.hint_plot.curves) == 1
     return display
+
+@using_fake_epics_pv
+@show_widget
+def test_device_button_init(device):
+    device.hints = {'fields' : [device.name + '_read1']}
+    button = DeviceButton(device)
+    assert button.ui.button_frame.layout().count() == 4
+    return button
+
+
