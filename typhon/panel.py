@@ -76,6 +76,7 @@ class Panel(QWidget):
         # Show or hide the widget if the contents exist
         if self.contents:
             if show:
+                self.show()
                 self.contents.show()
             else:
                 self.contents.hide()
@@ -179,4 +180,6 @@ class SignalPanel(Panel):
         self.contents.layout().addLayout(val_display, loc, 1)
         # Store signal
         self.pvs[name] = (read_pv, write_pv)
+        # Check that our widget is not hidden
+        self.show_contents(True)
         return loc

@@ -420,7 +420,6 @@ class FunctionPanel(Panel):
         self.methods[func_name] = widget
         # Add to panel. Make sure that if this is
         # the first added method that the panel is visible
-        if self.contents.isHidden():
-            self.contents.show()
+        self.show_contents(True)
         self.contents.layout().insertWidget(len(self.methods),
                                             widget)
