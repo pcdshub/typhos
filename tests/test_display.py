@@ -67,23 +67,18 @@ def device():
 def test_display(device):
     display = DeviceDisplay(device)
     # We have all our signals
-    shown_read_sigs = list(display.read_panel.signals.values())
-    assert all([getattr(device, sig) in shown_read_sigs
+    shown_read_sigs = list(display.read_panel.pvs.keys())
+    assert all([clean_attr(sig) in shown_read_sigs
                 for sig in device.read_attrs])
-    shown_cfg_sigs = list(display.config_panel.signals.values())
-    assert all([getattr(device, sig) in shown_cfg_sigs
+    shown_cfg_sigs = list(display.config_panel.pvs.keys())
+    assert all([clean_attr(sig) in shown_cfg_sigs
                 for sig in device.configuration_attrs])
     # We have all our subdevices
-    assert all([getattr(device, dev) in display.all_devices
+    sub_devices = [getattr(disp, 'device', None)
+                   for disp in display.ui.component_stack.children()]
+    assert all([getattr(device, dev) in sub_devices
                 for dev in device._sub_devices])
     return display
-
-
-@using_fake_epics_pv
-def test_enum_attrs(device):
-    device.enum_attrs = ['read1']
-    display = DeviceDisplay(device)
-    assert clean_attr('read1') in display.read_panel.enum_sigs
 
 
 @using_fake_epics_pv
