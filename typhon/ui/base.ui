@@ -78,18 +78,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="prefix_label">
-           <property name="font">
-            <font>
-             <italic>true</italic>
-            </font>
-           </property>
-           <property name="text">
-            <string>(Device Prefix)</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -138,8 +126,14 @@
         <property name="mouseEnabledX" stdset="0">
          <bool>false</bool>
         </property>
+        <property name="curves">
+         <stringlist/>
+        </property>
         <property name="bufferSize">
          <number>2500</number>
+        </property>
+        <property name="updatesAsynchronously">
+         <bool>true</bool>
         </property>
         <property name="timeSpan">
          <double>30.000000000000000</double>

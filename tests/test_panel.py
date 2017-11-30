@@ -6,16 +6,19 @@
 # External #
 ############
 from ophyd.signal import EpicsSignal, EpicsSignalRO
+from ophyd.tests.conftest import using_fake_epics_pv
 from pydm.widgets import PyDMEnumComboBox
+from pydm.PyQt.QtGui import QWidget
 
 ###########
 # Package #
 ###########
-from typhon.panel import SignalPanel
+from typhon.panel import Panel, SignalPanel
 from .conftest import show_widget
 
 
 @show_widget
+@using_fake_epics_pv
 def test_panel_creation():
     panel = SignalPanel("Test Signals", signals={
                     # Signal is its own write
@@ -25,25 +28,29 @@ def test_panel_creation():
                                                   write_pv='Tst:Write'),
                     # Signal is read-only
                     'Read Only': EpicsSignalRO('Tst:Pv:RO')})
-    assert len(panel.signals) == 3
+    assert len(panel.pvs) == 3
     return panel
 
 
 def test_panel_hide():
     # Create basic panel
-    panel = SignalPanel("Test Signals",
-                        signals={'Standard': EpicsSignal("Tst:Pv")})
+    panel = Panel("Test Panel")
+    panel.contents = QWidget()
+    panel.layout().addWidget(panel.contents)
     # Toggle the button
     panel.show_contents(False)
     assert panel.contents.isHidden()
 
 
 @show_widget
+@using_fake_epics_pv
 def test_panel_add_enum():
     panel = SignalPanel("Test Signals")
-    loc = panel.add_signal(EpicsSignal("Tst:Enum"), "Enum PV", enum=True)
-    # Check our signal was added in the `enum_attrs` list
-    assert "Enum PV" in panel.enum_sigs
+    # Create an enum pv
+    sig = EpicsSignal("Tst:Enum")
+    sig._write_pv.enum_strs = ('A', 'B')
+    # Add our signal to the panel
+    loc = panel.add_signal(sig, "Enum PV")
     # Check our signal was added a QCombobox
     # Assume it is the last item in the button layout
     but_layout = panel.contents.layout().itemAtPosition(loc, 1)
