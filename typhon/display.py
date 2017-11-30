@@ -11,7 +11,7 @@ from functools import partial
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt
-from pydm.PyQt.QtGui import QGroupBox, QWidget, QHBoxLayout, QPushButton
+from pydm.PyQt.QtGui import QLabel, QGroupBox, QWidget, QHBoxLayout, QPushButton
 
 ###########
 # Package #
@@ -19,6 +19,7 @@ from pydm.PyQt.QtGui import QGroupBox, QWidget, QHBoxLayout, QPushButton
 from .func import FunctionPanel
 from .panel import SignalPanel
 from .utils import ui_dir, clean_attr, clean_source, channel_name
+from .widgets import TyphonLabel
 
 logger = logging.getLogger(__name__)
 
@@ -234,3 +235,31 @@ class DeviceDisplay(TyphonDisplay):
                                  field)
             except KeyError as exc:
                 logger.error("Unable to find PV name of %s", field)
+
+
+class DeviceButton(QWidget):
+    """
+    Button to display a subdevice
+
+    Parameters
+    ----------
+    """
+    def __init__(self, device, parent=None):
+        super().__init__(parent=parent)
+        self.device = device
+        self.device_description = self.device.describe()
+        # Instantiate UI
+        self.ui = uic.loadUi(os.path.join(ui_dir, 'button.ui'), self)
+        self.ui.name_label.setText(self.device.name)
+        button_layout = self.ui.button_frame.layout()
+        # Create hints
+        for field in getattr(self.device, 'hints', {}).get('fields', list()):
+            # Create label
+            label = QLabel(clean_attr(field))
+            label.setAlignment(Qt.AlignCenter)
+            # Create channel
+            sig_source = self.device_description[field]['source']
+            chan = channel_name(clean_source(sig_source))
+            widget = TyphonLabel(init_channel=chan)
+            button_layout.addWidget(label)
+            button_layout.addWidget(widget)
