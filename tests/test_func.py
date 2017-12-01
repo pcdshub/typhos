@@ -19,7 +19,7 @@ kwargs = dict()
 @pytest.fixture(scope='module')
 def func_display():
     # Create mock function
-    def foo(first, second: float=3.14, hide: bool=True, third: bool=False):
+    def foo(first, second: float=3.14, hide: bool=True, third=False):
         kwargs.update({"first": first, "second": second,
                        "hide": hide, "third": third})
     # Create display
