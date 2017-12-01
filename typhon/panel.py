@@ -50,6 +50,8 @@ class Panel(QWidget):
         # Create Widget Infrastructure
         self.title = title
         self.setLayout(QVBoxLayout())
+        self.layout().setContentsMargins(2, 2, 2, 2)
+        self.layout().setSpacing(5)
         # Create button control
         # Assuming widget is visible, set the button as checked
         self.contents = None
@@ -101,6 +103,7 @@ class SignalPanel(Panel):
         # Create empty panel contents
         self.contents = QWidget()
         self.contents.setLayout(QGridLayout())
+        self.contents.layout().setContentsMargins(2, 2, 2, 2)
         self.layout().addWidget(self.contents)
         # Add supplied signals
         if signals:
