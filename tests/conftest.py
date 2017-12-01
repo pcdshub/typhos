@@ -3,11 +3,13 @@
 ############
 import logging
 from functools import wraps
+
 ############
 # External #
 ############
 import pytest
 from pydm import PyDMApplication
+
 ###########
 # Package #
 ###########
@@ -24,6 +26,8 @@ def pytest_addoption(parser):
                      help="Set the level of the log")
     parser.addoption("--logfile", action="store", default=None,
                      help="Write the log output to specified file path")
+    parser.addoption("--dark", action="store_true", default=False,
+                     help="Use the dark stylesheet to display widgets")
     parser.addoption("--show", action="store_true", default=False,
                      help="Show the widgets produced by each test")
 
@@ -55,12 +59,15 @@ def _show_widgets(pytestconfig):
 
 
 @pytest.fixture(scope='session', autouse=True)
-def qapp():
+def qapp(pytestconfig):
     global application
     if application:
         pass
     else:
         application = PyDMApplication()
+        if pytestconfig.getoption('--dark'):
+            import qdarkstyle
+            application.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     return application
 
 

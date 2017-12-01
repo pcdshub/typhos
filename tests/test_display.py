@@ -75,7 +75,7 @@ def test_display(device):
                 for sig in device.configuration_attrs])
     # We have all our subdevices
     sub_devices = [getattr(disp, 'device', None)
-                   for disp in display.ui.component_stack.children()]
+                   for disp in display.ui.component_widget.children()]
     assert all([getattr(device, dev) in sub_devices
                 for dev in device._sub_devices])
     return display

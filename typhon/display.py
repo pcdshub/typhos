@@ -11,7 +11,7 @@ from functools import partial
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt
-from pydm.PyQt.QtGui import QGroupBox, QWidget, QHBoxLayout, QPushButton
+from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup
 
 ###########
 # Package #
@@ -19,6 +19,7 @@ from pydm.PyQt.QtGui import QGroupBox, QWidget, QHBoxLayout, QPushButton
 from .func import FunctionPanel
 from .panel import SignalPanel
 from .utils import ui_dir, clean_attr, clean_source, channel_name
+from .widgets import ComponentButton
 
 logger = logging.getLogger(__name__)
 
@@ -59,25 +60,28 @@ class TyphonDisplay(QWidget):
         super().__init__(parent=parent)
         # Instantiate UI
         self.ui = uic.loadUi(os.path.join(ui_dir, 'base.ui'), self)
+        self.device_button_group = QButtonGroup()
+        self.device_button_group.addButton(self.ui.hide_button)
+        self.ui.hide_button.clicked.connect(self.hide_subdevices)
         # Set Label Names
         self.ui.name_label.setText(name)
         # Create Panels
-        self.sub_device_group = None
         self.method_panel = FunctionPanel(parent=self)
         self.read_panel = SignalPanel("Read", parent=self)
         self.config_panel = SignalPanel("Configuration", parent=self)
         self.misc_panel = SignalPanel("Miscellaneous", parent=self)
         # Add all the panels
-        self.ui.main_layout.addWidget(self.read_panel)
-        self.ui.main_layout.addWidget(self.method_panel)
-        self.ui.main_layout.addWidget(self.config_panel)
-        self.ui.main_layout.addWidget(self.misc_panel)
+        self.ui.main_layout.insertWidget(2, self.read_panel)
+        self.ui.main_layout.insertWidget(3, self.method_panel)
+        self.ui.main_layout.insertWidget(4, self.config_panel)
+        self.ui.main_layout.insertWidget(5, self.misc_panel)
         # Hide control of read_panel
         self.read_panel.hide_button.hide()
         # Hide widgets until signals are added to them
+        self.ui.buttons.hide()
         self.ui.component_widget.hide()
-        self.config_panel.show_contents(False)
-        self.misc_panel.show_contents(False)
+        self.config_panel.hide()
+        self.misc_panel.hide()
         self.method_panel.hide()
         self.ui.hint_plot.hide()
 
@@ -88,11 +92,13 @@ class TyphonDisplay(QWidget):
         """
         return self.method_panel.methods
 
-    def add_subdisplay(self, name, display):
+    def add_subdisplay(self, name, display, button=None):
         """
 
-        This creates another display for a subcomponent and a QPushButton that
-        will bring the display to the foreground
+        This add adisplay for a subcomponent and a QPushButton that
+        will bring the display to the foreground. Users can either specify
+        their button or have one generate for them. Either way the button is
+        connected to the the `pyqSlot` :meth:`.show_subdevice`
 
         Parameters
         ----------
@@ -101,21 +107,28 @@ class TyphonDisplay(QWidget):
 
         display : QWidget
             QWidget to associate with button
+
+        button : QWidget, optional
+            QWidget with the PyQtSignal ``clicked``. If None, is given a
+            QPushButton is created
         """
-        # Add our button layout if not created
-        if not self.sub_device_group:
-            logger.debug("Creating button layout for subdevices ...")
-            self.sub_device_group = QGroupBox("Component Devices")
-            self.sub_device_group.setLayout(QHBoxLayout())
-            self.ui.main_layout.insertWidget(1, self.sub_device_group)
-        # Create device display
-        idx = self.ui.component_stack.addWidget(display)
         # Create button
-        but = QPushButton()
-        but.setText(name)
-        self.sub_device_group.layout().addWidget(but)
+        if not button:
+            button = QPushButton(self)
+            button.setText(name)
+        # Add the button to the group
+        self.device_button_group.addButton(button)
+        # Add our button to the layout last in the line of buttons
+        # but above the spacer
+        idx = self.ui.buttons.layout().count() - 1
+        self.ui.buttons.layout().insertWidget(idx, button)
+        # Add our display to the widget
+        idx = self.ui.component_widget.addWidget(display)
         # Connect button
-        but.clicked.connect(partial(self.show_subdevice, idx=idx))
+        button.clicked.connect(partial(self.show_subdevice, idx=idx))
+        # Show the widgets if hidden
+        if self.ui.buttons.isHidden():
+            self.ui.buttons.show()
 
     def add_subdevice(self, device, methods=None):
         """
@@ -126,12 +139,22 @@ class TyphonDisplay(QWidget):
         device : ophyd.Device
 
         methods : list of callables, optional
-
         """
+        logger.debug("Creating button for %s", device.name)
+        # Create ComponentButton adding the hints automatically
+        button = ComponentButton(clean_attr(device.name), parent=self)
+        description = device.describe()
+        for field in getattr(device, 'hints', {}).get('fields', list()):
+            sig_source = description[field]['source']
+            button.add_pv(clean_source(sig_source), clean_attr(field))
+        # Create the actual subdisplay and add it to the component widget
+        # along with the button
         logger.debug("Creating subdisplay for %s", device.name)
-        self.add_subdisplay(device.name, DeviceDisplay(device,
-                                                       methods=methods,
-                                                       parent=self))
+        self.add_subdisplay(device.name,
+                            DeviceDisplay(device,
+                                          methods=methods,
+                                          parent=self),
+                            button=button)
 
     def add_pv_to_plot(self, pv, **kwargs):
         """
@@ -169,7 +192,17 @@ class TyphonDisplay(QWidget):
         if self.ui.component_widget.isHidden():
             self.ui.component_widget.show()
         # Show the correct subdevice widget
-        self.ui.component_stack.setCurrentIndex(idx)
+        self.ui.component_widget.setCurrentIndex(idx)
+
+    @pyqtSlot()
+    def hide_subdevices(self):
+        """
+        Hide the component widget and set all buttons unchecked
+        """
+        self.ui.component_widget.hide()
+        # Toggle the button off, each button can use its own pyqtSlot
+        for button in self.device_button_group.buttons():
+            button.toggled.emit(False)
 
 
 class DeviceDisplay(TyphonDisplay):
@@ -234,3 +267,6 @@ class DeviceDisplay(TyphonDisplay):
                                  field)
             except KeyError as exc:
                 logger.error("Unable to find PV name of %s", field)
+        # Hide the lesser needed panels
+        self.config_panel.show_contents(False)
+        self.misc_panel.show_contents(False)
