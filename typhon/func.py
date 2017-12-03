@@ -162,8 +162,8 @@ class FunctionDisplay(QGroupBox):
 
     If a function parameter is not given an annotation, we will attempt to
     infer it from the default value if available. If this is not possible, and
-    the type is not specified in the :param:`.annotations` dictionary an
-    exception will be raised.
+    the type is not specified in the ``annotations`` dictionary an exception
+    will be raised.
 
     The created user interface consists of a button to execute the function,
     the required parameters are always displayed beneath the button, and
@@ -375,8 +375,8 @@ class FunctionPanel(Panel):
     widgets arranged in a row. Each provided method has a
     :class:`.FunctionDisplay` generated for it an added to the layout
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     methods : list of callables, optional
         List of callables to add to the FunctionPanel
 
