@@ -70,6 +70,9 @@ script:
   - set -e
   - |
     if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD_DOCS ]]; then
+      # Install doctr 
+      pip install doctr
+      # Create HTML documentation  
       pushd docs
       sphinx-autogen -o source/generated source/*.rst
       make html
