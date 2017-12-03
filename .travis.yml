@@ -9,6 +9,7 @@ env:
 matrix:
   include:
      - python: 3.6
+       env: BUILD_DOCS=1
 
 services:
   - docker
@@ -66,7 +67,7 @@ script:
   - coverage run run_tests.py
   - coverage report -m
   - |
-    if [[ $TRAVIS_REPO_SLUG == $OFFICIAL_REPO ]]; then
+      if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD_DOCS]]; then
       set -e
       pip install doctr
       cd docs
