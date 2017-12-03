@@ -1,0 +1,404 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Display Types &mdash; Typhon 0.0.0+75.ga274eff documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Typhon 0.0.0+75.ga274eff documentation" href="index.html"/>
+        <link rel="next" title="Widgets" href="widgets.html"/>
+        <link rel="prev" title="Gallery" href="gallery.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0+75.ga274eff
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Display Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#typhondisplay">TyphonDisplay</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#devicedisplay">DeviceDisplay</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Typhon</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Display Types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/display.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="display-types">
+<h1>Display Types<a class="headerlink" href="#display-types" title="Permalink to this headline">¶</a></h1>
+<p>Typhon has two major widgets that users are expected to interface with. The
+first is the <a class="reference internal" href="#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal"><span class="pre">TyphonDisplay</span></code></a>. This is the barebones implementation. No
+signals, or widgets are automatically populated in the screen. In fact, by
+default most of the widgets will be hidden. You can then manually add signals
+to the panels and plots, the panels will only show themselves when you add PVs.</p>
+<p>For a more automated approach, the <a class="reference internal" href="#typhon.DeviceDisplay" title="typhon.DeviceDisplay"><code class="xref py py-class docutils literal"><span class="pre">DeviceDisplay</span></code></a> will take your ophyd
+Device and populate PVs and components into the appropriate locations</p>
+<div class="section" id="typhondisplay">
+<h2>TyphonDisplay<a class="headerlink" href="#typhondisplay" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="typhon.TyphonDisplay">
+<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonDisplay</code><span class="sig-paren">(</span><em>name</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generalized Typhon display</p>
+<p>This widget lays out all of the architecture for a general Typhon display.
+The structure matches an ophyd Device, but for this specific instantation,
+one is not required to be given. There are four main panels are available;
+<code class="xref py py-attr docutils literal"><span class="pre">read_panel</span></code>. <code class="xref py py-attr docutils literal"><span class="pre">config_panel</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">method_panel</span></code>. These
+give four separate panels provide a quick way to organize signals and
+methods by their importance to an operator. In addition, crucial signals
+can be added to a PyDMTimePlot under the attribute <code class="xref py py-attr docutils literal"><span class="pre">hint_plot</span></code>.
+Because each panel can be hidden interactively, the screen works as both an
+expert and novice entry point for users. By default, widgets are hidden
+until contents are added. For instance, if you do not add any methods to
+the main panel it will not be visible.</p>
+<p>This device is the bare bones implementation in the event that someone
+might want to collect a random group of signals and devices together to
+create a screen. A more automated display generator is available  in the
+<a class="reference internal" href="#typhon.DeviceDisplay" title="typhon.DeviceDisplay"><code class="xref py py-class docutils literal"><span class="pre">DeviceDisplay</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Title displayed on the widget</li>
+<li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="typhon.TyphonDisplay.add_pv_to_plot">
+<code class="descname">add_pv_to_plot</code><span class="sig-paren">(</span><em>pv</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_pv_to_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_pv_to_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a PV to the PyDMTimePlot</p>
+<p>The default style of the curve is determined by
+<code class="xref py py-attr docutils literal"><span class="pre">default_curve_opts</span></code>. Though these can be overridden</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pvname</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Name of PV</li>
+<li><strong>kwargs</strong> – All keywords are passed directly to <code class="docutils literal"><span class="pre">PyDMTimePlot.addYChannel</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.add_subdevice">
+<code class="descname">add_subdevice</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_subdevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_subdevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a subdevice to the <cite>component_widget</cite> stack</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>methods</strong> (<em>list of callables</em><em>, </em><em>optional</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.add_subdisplay">
+<code class="descname">add_subdisplay</code><span class="sig-paren">(</span><em>name</em>, <em>display</em>, <em>button=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_subdisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>This add adisplay for a subcomponent and a QPushButton that
+will bring the display to the foreground. Users can either specify
+their button or have one generate for them. Either way the button is
+connected to the the <cite>pyqSlot</cite> <a class="reference internal" href="#typhon.TyphonDisplay.show_subdevice" title="typhon.TyphonDisplay.show_subdevice"><code class="xref py py-meth docutils literal"><span class="pre">show_subdevice()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Name to place on QPushButton</li>
+<li><strong>display</strong> (<em>QWidget</em>) – QWidget to associate with button</li>
+<li><strong>button</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – QWidget with the PyQtSignal <code class="docutils literal"><span class="pre">clicked</span></code>. If None, is given a
+QPushButton is created</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.hide_subdevices">
+<code class="descname">hide_subdevices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.hide_subdevices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.hide_subdevices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hide the component widget and set all buttons unchecked</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="typhon.TyphonDisplay.methods">
+<code class="descname">methods</code><a class="headerlink" href="#typhon.TyphonDisplay.methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods contained within <code class="xref py py-attr docutils literal"><span class="pre">method_panel</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.show_subdevice">
+<code class="descname">show_subdevice</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.show_subdevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.show_subdevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show subdevice display at index <cite>idx</cite> of the QStackedWidget</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idx</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Index of subdevice widget</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="devicedisplay">
+<h2>DeviceDisplay<a class="headerlink" href="#devicedisplay" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="typhon.DeviceDisplay">
+<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">DeviceDisplay</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#DeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.DeviceDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">typhon.display.TyphonDisplay</span></code></p>
+<p>Display an ophyd Device</p>
+<p>Using the panels created by the inherited <a class="reference internal" href="#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal"><span class="pre">TyphonDisplay</span></code></a> the
+sub-devices and signals are added to the appropriate places in the widget.
+The display introspects the <code class="docutils literal"><span class="pre">read_attrs</span></code>, <code class="docutils literal"><span class="pre">configuration_attrs</span></code>,
+<code class="docutils literal"><span class="pre">component_names</span></code> and <code class="docutils literal"><span class="pre">_sub_devices</span></code> to find the signal names and
+heirarchy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<em>ophyd.Device</em>) – Main ophyd device to display</li>
+<li><strong>methods</strong> (<em>list of callables</em><em>, </em><em>optional</em>) – List of callables to pass to <code class="xref py py-meth docutils literal"><span class="pre">FunctionPanel.add_method()</span></code></li>
+<li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="widgets.html" class="btn btn-neutral float-right" title="Widgets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gallery.html" class="btn btn-neutral" title="Gallery" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.0+75.ga274eff',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

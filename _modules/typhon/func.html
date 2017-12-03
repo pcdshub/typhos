@@ -1,0 +1,655 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>typhon.func &mdash; Typhon 0.0.0+75.ga274eff documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Typhon 0.0.0+75.ga274eff documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0+75.ga274eff
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhon</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>typhon.func</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for typhon.func</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Display an arbitrary Python function inside our PyQt UI</span>
+
+<span class="sd">The class :class:`.FunctionDisplay` uses the function annotation language</span>
+<span class="sd">described in PEP 3107 to automatically create a widget based on the arguments</span>
+<span class="sd">and keywords contained within.</span>
+
+<span class="sd">To keep track of parameter information subclassed versions of QWidgets are</span>
+<span class="sd">instantiated. Each one is expected to keep track of the parameter it controls</span>
+<span class="sd">with the attribute ``parameter``, and each one should return the present value</span>
+<span class="sd">with the correct type with the method `get_param_value``. There may be cases</span>
+<span class="sd">where these widgets find that the user has entered inappropriate values, in</span>
+<span class="sd">this case they should return np.nan to halt the function from being called.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">############</span>
+<span class="c1"># Standard #</span>
+<span class="c1">############</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+<span class="c1">############</span>
+<span class="c1"># External #</span>
+<span class="c1">############</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QSize</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QSizePolicy</span><span class="p">,</span> <span class="n">QFont</span><span class="p">,</span> <span class="n">QGroupBox</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QSpacerItem</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QPushButton</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QLineEdit</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QCheckBox</span>
+
+<span class="c1">###########</span>
+<span class="c1"># Package #</span>
+<span class="c1">###########</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">clean_attr</span>
+<span class="kn">from</span> <span class="nn">.panel</span> <span class="k">import</span> <span class="n">Panel</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ParamWidget</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic Parameter Widget</span>
+
+<span class="sd">    This creates the QLabel for the parameter and defines the interface</span>
+<span class="sd">    required for subclasses of the ParamWidget</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span>  <span class="n">default</span><span class="o">=</span><span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Store parameter information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="n">parameter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="n">default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QHBoxLayout</span><span class="p">())</span>
+        <span class="c1"># Create our label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">clean_attr</span><span class="p">(</span><span class="n">parameter</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_label</span><span class="p">)</span>
+        <span class="c1"># Indicate required parameters in bold font</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="o">==</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Inferring that </span><span class="si">%s</span><span class="s2"> has no default&quot;</span><span class="p">,</span> <span class="n">parameter</span><span class="p">)</span>
+            <span class="n">bold</span> <span class="o">=</span> <span class="n">QFont</span><span class="p">()</span>
+            <span class="n">bold</span><span class="o">.</span><span class="n">setBold</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">bold</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_param_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Must be redefined by subclasses&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="k">class</span> <span class="nc">ParamCheckBox</span><span class="p">(</span><span class="n">ParamWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    QCheckBox for operator control of boolean values</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parameter : str</span>
+<span class="sd">        Name of parameter this widget controls</span>
+
+<span class="sd">    default : bool, optional</span>
+<span class="sd">        Default state of the box</span>
+
+<span class="sd">    parent : QWidget, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_control</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_control</span><span class="p">)</span>
+        <span class="c1"># Configure default QCheckBox position</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="o">!=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_control</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_param_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the checked state of the QCheckBox</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_control</span><span class="o">.</span><span class="n">isChecked</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">ParamLineEdit</span><span class="p">(</span><span class="n">ParamWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    QLineEdit for typed user entry control</span>
+
+<span class="sd">    Parameter</span>
+<span class="sd">    ---------</span>
+<span class="sd">    parameter : str</span>
+<span class="sd">        Name of parameter this widget controls</span>
+
+<span class="sd">    _type : type</span>
+<span class="sd">        Type to convert the text to before sending it to the function. All</span>
+<span class="sd">        values are initially `QString`s and then they are converted to the</span>
+<span class="sd">        specified type. If this raises a ``ValueError`` due to an improperly</span>
+<span class="sd">        entered value a ``np.nan`` is returned.</span>
+
+<span class="sd">    default : bool, optional</span>
+<span class="sd">        Default text for the QLineEdit. This if automatically populated into</span>
+<span class="sd">        the QLineEdit field and it is also set as the ``placeHolderText``</span>
+
+<span class="sd">    parent : QWidget, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Store type information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">_type</span>
+        <span class="c1"># Create our LineEdit</span>
+        <span class="c1"># Set our default text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_edit</span> <span class="o">=</span> <span class="n">QLineEdit</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_edit</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_edit</span><span class="p">)</span>
+        <span class="c1"># Configure default text of LineEdit</span>
+        <span class="c1"># If there is no default, still give some placeholder text</span>
+        <span class="c1"># to indicate the type of the command needed</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="o">!=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_edit</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_edit</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_edit</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">get_param_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the current value of the QLineEdit converted to :attr:`._type`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Cast the current text into our type</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_edit</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="c1"># If not possible, capture the exception and report `np.nan`</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Could not convert text to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+
+<div class="viewcode-block" id="FunctionDisplay"><a class="viewcode-back" href="../../generated/typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay">[docs]</a><span class="k">class</span> <span class="nc">FunctionDisplay</span><span class="p">(</span><span class="n">QGroupBox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display controls for an annotated function in a QGroupBox</span>
+
+<span class="sd">    In order to display function arguments in the user interface, the class</span>
+<span class="sd">    must be aware of what the type is of each of the parameters. Instead of</span>
+<span class="sd">    requiring a user to enter this information manually, the class takes</span>
+<span class="sd">    advantage of the function annotation language described in PEP 3107. This</span>
+<span class="sd">    allows us to quickly create the appropriate widget for the given parameter</span>
+<span class="sd">    based on the type.</span>
+
+<span class="sd">    If a function parameter is not given an annotation, we will attempt to</span>
+<span class="sd">    infer it from the default value if available. If this is not possible, and</span>
+<span class="sd">    the type is not specified in the ``annotations`` dictionary an exception</span>
+<span class="sd">    will be raised.</span>
+
+<span class="sd">    The created user interface consists of a button to execute the function,</span>
+<span class="sd">    the required parameters are always displayed beneath the button, and</span>
+<span class="sd">    a :class:`.Panel` object that toggles the view of the optional parameters</span>
+<span class="sd">    below.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    accepted_types : list</span>
+<span class="sd">        List of types FunctionDisplay can create widgets for</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    func : callable</span>
+
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name to label the box with, by default this will be the function</span>
+<span class="sd">        meeting</span>
+
+<span class="sd">    annotations : dict, optional</span>
+<span class="sd">        If the function your are creating a display for is not annotated, you</span>
+<span class="sd">        may manually supply types for parameters by passing in a dictionary of</span>
+<span class="sd">        name to type mapping</span>
+
+<span class="sd">    hide_params : list, optional</span>
+<span class="sd">        List of parameters to exclude from the display. These should have</span>
+<span class="sd">        appropriate defaults. By default, ``self``, ``args`` and ``kwargs`` are</span>
+<span class="sd">        all excluded</span>
+
+<span class="sd">    parent : QWidget, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">accepted_types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+
+<div class="viewcode-block" id="FunctionDisplay.__init__"><a class="viewcode-back" href="../../generated/typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">annotations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">hide_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Function information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="c1"># Initialize parent</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> Parameters&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">clean_attr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span>
+                         <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Ignore certain parameters, args and kwargs by default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">hide_params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hide_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">hide_params</span><span class="p">)</span>
+        <span class="c1"># Create basic layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="p">)</span>
+        <span class="c1"># Create an empty list to fill later with parameter widgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_controls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="c1"># Add our button to execute the function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">clean_attr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="p">)</span>
+        <span class="c1"># Add a panel for the optional parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optional</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span><span class="s2">&quot;Optional Parameters&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">show_contents</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">QSpacerItem</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">vPolicy</span><span class="o">=</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">))</span>
+        <span class="c1"># Create parameters from function signature</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span><span class="n">param</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                      <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hide_params</span><span class="p">]:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding parameter </span><span class="si">%s</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># See if we received a manual annotation for this parameter</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+                <span class="n">_type</span> <span class="o">=</span> <span class="n">annotations</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found manually specified type </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="n">_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="c1"># Try and get the type from the function annotation</span>
+            <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">annotation</span> <span class="o">!=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
+                <span class="n">_type</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">annotation</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found annotated type </span><span class="si">%r</span><span class="s2"> &quot;</span><span class="p">,</span>
+                             <span class="n">_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="c1"># Try and get the type from the default value</span>
+            <span class="k">elif</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
+                <span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Gathered type </span><span class="si">%r</span><span class="s2"> from parameter default &quot;</span><span class="p">,</span>
+                             <span class="n">_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="c1"># If we don&#39;t have a default value or an annotation,</span>
+            <span class="c1"># we can not make a widget for this parameter. Since</span>
+            <span class="c1"># this is a required variable (no default), the function</span>
+            <span class="c1"># will not work without it. Raise an Exception</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Parameter </span><span class="si">{}</span><span class="s2"> has an unspecified &quot;</span>
+                                <span class="s2">&quot;type&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="c1"># Add our parameter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
+        <span class="c1"># Hide optional parameter widget if there are no such parameters</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional_params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">required_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Required parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature</span><span class="o">.</span><span class="n">parameters</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">parameter</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_controls</span>
+                <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">parameter</span><span class="p">]</span><span class="o">.</span><span class="n">default</span> <span class="o">==</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">optional_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Optional parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature</span><span class="o">.</span><span class="n">parameters</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">parameter</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_controls</span>
+                <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">parameter</span><span class="p">]</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">]</span>
+
+    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute :attr:`.func`</span>
+
+<span class="sd">        This takes the parameters configured by the :attr:`.param_controls`</span>
+<span class="sd">        widgets and passes them into the given callable. All generated</span>
+<span class="sd">        exceptions are captured and logged</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Executing </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># If our function does not take any argument</span>
+        <span class="c1"># just pass it on. Otherwise, collect information</span>
+        <span class="c1"># from the appropriate widgets</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">signature</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="c1"># Gather information from parameter widgets</span>
+            <span class="k">for</span> <span class="n">button</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_controls</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Gathering parameters for </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span>
+                             <span class="n">button</span><span class="o">.</span><span class="n">parameter</span><span class="p">)</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">button</span><span class="o">.</span><span class="n">get_param_value</span><span class="p">()</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+                <span class="c1"># Watch for NaN values returned from widgets</span>
+                <span class="c1"># This indicates that there was improper information given</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Invalid information supplied for </span><span class="si">%s</span><span class="s2"> &quot;</span>
+                                 <span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">button</span><span class="o">.</span><span class="n">parameter</span><span class="p">)</span>
+                    <span class="k">return</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">button</span><span class="o">.</span><span class="n">parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="c1"># Button up function call with partial to try below</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Execute our function</span>
+            <span class="n">func</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Exception while executing function&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Operation Complete&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a parameter to the function display</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Parameter name</span>
+
+<span class="sd">        _type : type</span>
+<span class="sd">            Type of variable that we are expecting the user to input</span>
+
+<span class="sd">        default : optional</span>
+<span class="sd">            Default value for the parameter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create our parameter control widget</span>
+        <span class="c1"># QCheckBox field</span>
+        <span class="k">if</span> <span class="n">_type</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="n">cntrl</span> <span class="o">=</span> <span class="n">ParamCheckBox</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Check if this is a valid type</span>
+            <span class="k">if</span> <span class="n">_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepted_types</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Parameter </span><span class="si">{}</span><span class="s2"> has type </span><span class="si">{}</span><span class="s2"> which can not &quot;</span>
+                                <span class="s2">&quot;be represented in a widget&quot;</span>
+                                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+            <span class="c1"># Create our QLineEdit</span>
+            <span class="n">cntrl</span> <span class="o">=</span> <span class="n">ParamLineEdit</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="n">_type</span><span class="p">)</span>
+        <span class="c1"># Add our button to the widget</span>
+        <span class="c1"># If it is required add it above the panel so that it is always</span>
+        <span class="c1"># visisble. Otherwise, add it to the hideable panel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_controls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cntrl</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="o">==</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_params</span><span class="p">),</span> <span class="n">cntrl</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If this is the first optional parameter,</span>
+            <span class="c1"># show the whole optional panel</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="c1"># Add the control widget to our contents</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">cntrl</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Suggested size&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FunctionPanel"><a class="viewcode-back" href="../../generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel">[docs]</a><span class="k">class</span> <span class="nc">FunctionPanel</span><span class="p">(</span><span class="n">Panel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function Panel</span>
+
+<span class="sd">    Similar to :class:`.SignalPanel` but instead displays a set of function</span>
+<span class="sd">    widgets arranged in a row. Each provided method has a</span>
+<span class="sd">    :class:`.FunctionDisplay` generated for it an added to the layout</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    methods : list of callables, optional</span>
+<span class="sd">        List of callables to add to the FunctionPanel</span>
+
+<span class="sd">    parent : QWidget</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="FunctionPanel.__init__"><a class="viewcode-back" href="../../generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Initialize parent</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;Functions&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="c1"># Create Layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QHBoxLayout</span><span class="p">())</span>
+        <span class="c1"># Add two spacers to center our functions without</span>
+        <span class="c1"># expanding them</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">QSpacerItem</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">QSpacerItem</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+        <span class="c1"># Add methods</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="n">methods</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">add_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a :class:`.FunctionDisplay`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        func : callable</span>
+<span class="sd">            Annotated callable function</span>
+
+<span class="sd">        args, kwargs:</span>
+<span class="sd">            All additional parameters are passed directly to the</span>
+<span class="sd">            :class:`.FunctionDisplay` constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create method display</span>
+        <span class="n">func_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding method </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">FunctionDisplay</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Store for posterity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">func_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">widget</span>
+        <span class="c1"># Add to panel. Make sure that if this is</span>
+        <span class="c1"># the first added method that the panel is visible</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_contents</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">),</span>
+                                            <span class="n">widget</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.0.0+75.ga274eff',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

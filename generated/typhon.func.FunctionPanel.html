@@ -1,0 +1,1198 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>typhon.func.FunctionPanel &mdash; Typhon 0.0.0+75.ga274eff documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Typhon 0.0.0+75.ga274eff documentation" href="../index.html"/>
+        <link rel="up" title="Widgets" href="../widgets.html"/>
+        <link rel="next" title="typhon.ComponentButton" href="typhon.ComponentButton.html"/>
+        <link rel="prev" title="typhon.panel.SignalPanel" href="typhon.panel.SignalPanel.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0+75.ga274eff
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery.html">Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../display.html">Display Types</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../widgets.html">Widgets</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../widgets.html#panels">Panels</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="typhon.panel.Panel.html">typhon.panel.Panel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="typhon.panel.SignalPanel.html">typhon.panel.SignalPanel</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">typhon.func.FunctionPanel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../widgets.html#component-widgets">Component Widgets</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Typhon</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../widgets.html">Widgets</a> &raquo;</li>
+        
+      <li>typhon.func.FunctionPanel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/typhon.func.FunctionPanel.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="typhon-func-functionpanel">
+<h1>typhon.func.FunctionPanel<a class="headerlink" href="#typhon-func-functionpanel" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="typhon.func.FunctionPanel">
+<em class="property">class </em><code class="descclassname">typhon.func.</code><code class="descname">FunctionPanel</code><span class="sig-paren">(</span><em>methods=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/typhon/func.html#FunctionPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.func.FunctionPanel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function Panel</p>
+<p>Similar to <a class="reference internal" href="typhon.panel.SignalPanel.html#typhon.panel.SignalPanel" title="typhon.panel.SignalPanel"><code class="xref py py-class docutils literal"><span class="pre">SignalPanel</span></code></a> but instead displays a set of function
+widgets arranged in a row. Each provided method has a
+<a class="reference internal" href="typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay" title="typhon.func.FunctionDisplay"><code class="xref py py-class docutils literal"><span class="pre">FunctionDisplay</span></code></a> generated for it an added to the layout</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>methods</strong> (<em>list of callables</em><em>, </em><em>optional</em>) – List of callables to add to the FunctionPanel</li>
+<li><strong>parent</strong> (<em>QWidget</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="typhon.func.FunctionPanel.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>methods=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/typhon/func.html#FunctionPanel.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.func.FunctionPanel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#typhon.func.FunctionPanel.__init__" title="typhon.func.FunctionPanel.__init__"><code class="xref py py-obj docutils literal"><span class="pre">__init__</span></code></a>([methods,&nbsp;parent])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">acceptDrops</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">accessibleDescription</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">accessibleName</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">actionEvent</span></code>(self,&nbsp;QActionEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">actions</span></code>((self)&nbsp;-&gt;&nbsp;List[QAction])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">activateWindow</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">addAction</span></code>(self,&nbsp;QAction)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">addActions</span></code>(self,&nbsp;object)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">add_method</span></code>(func,&nbsp;*args,&nbsp;**kwargs)</td>
+<td>Add a <a class="reference internal" href="typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay" title="typhon.func.FunctionDisplay"><code class="xref py py-class docutils literal"><span class="pre">FunctionDisplay</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">adjustSize</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">autoFillBackground</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">backgroundRole</span></code>((self)&nbsp;-&gt;&nbsp;QPalette.ColorRole)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">baseSize</span></code>((self)&nbsp;-&gt;&nbsp;QSize)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">blockSignals</span></code>((self,&nbsp;bool)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">changeEvent</span></code>(self,&nbsp;QEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">childAt</span></code>((self,&nbsp;QPoint)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td>childAt(self, int, int) -&gt; QWidget</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">childEvent</span></code>(self,&nbsp;QChildEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">children</span></code>((self)&nbsp;-&gt;&nbsp;object)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">childrenRect</span></code>((self)&nbsp;-&gt;&nbsp;QRect)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">childrenRegion</span></code>((self)&nbsp;-&gt;&nbsp;QRegion)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">clearFocus</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">clearMask</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">close</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">closeEvent</span></code>(self,&nbsp;QCloseEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">colorCount</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">connectNotify</span></code>(self,&nbsp;QMetaMethod)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">contentsMargins</span></code>((self)&nbsp;-&gt;&nbsp;QMargins)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">contentsRect</span></code>((self)&nbsp;-&gt;&nbsp;QRect)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">contextMenuEvent</span></code>(self,&nbsp;QContextMenuEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">contextMenuPolicy</span></code>((self)&nbsp;-&gt;&nbsp;Qt.ContextMenuPolicy)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">create</span></code>(self,&nbsp;window:&nbsp;sip.voidptr&nbsp;=&nbsp;0,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">createWindowContainer</span></code>((QWindow,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">cursor</span></code>((self)&nbsp;-&gt;&nbsp;QCursor)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">customEvent</span></code>(self,&nbsp;QEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">deleteLater</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">depth</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">destroy</span></code>(self,&nbsp;destroyWindow:&nbsp;bool&nbsp;=&nbsp;True,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">devType</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">devicePixelRatio</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">devicePixelRatioF</span></code>((self)&nbsp;-&gt;&nbsp;float)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">devicePixelRatioFScale</span></code>(()&nbsp;-&gt;&nbsp;float)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">disconnect</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">disconnectNotify</span></code>(self,&nbsp;QMetaMethod)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dragEnterEvent</span></code>(self,&nbsp;QDragEnterEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">dragLeaveEvent</span></code>(self,&nbsp;QDragLeaveEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dragMoveEvent</span></code>(self,&nbsp;QDragMoveEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">dropEvent</span></code>(self,&nbsp;QDropEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dumpObjectInfo</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">dumpObjectTree</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dynamicPropertyNames</span></code>((self)&nbsp;-&gt;&nbsp;object)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">effectiveWinId</span></code>((self)&nbsp;-&gt;&nbsp;sip.voidptr)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">ensurePolished</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">enterEvent</span></code>(self,&nbsp;QEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">event</span></code>((self,&nbsp;QEvent)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">eventFilter</span></code>((self,&nbsp;QObject,&nbsp;QEvent)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">find</span></code>((sip.voidptr)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">findChild</span></code>((self,&nbsp;type,&nbsp;name:&nbsp;str&nbsp;=&nbsp;,&nbsp;…)</td>
+<td>findChild(self, Tuple, name: str = ‘’, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; QObject</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">findChildren</span></code>((self,&nbsp;type,&nbsp;name:&nbsp;str&nbsp;=&nbsp;,&nbsp;…)</td>
+<td>findChildren(self, Tuple, name: str = ‘’, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject]</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">focusInEvent</span></code>(self,&nbsp;QFocusEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">focusNextChild</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">focusNextPrevChild</span></code>((self,&nbsp;bool)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">focusOutEvent</span></code>(self,&nbsp;QFocusEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">focusPolicy</span></code>((self)&nbsp;-&gt;&nbsp;Qt.FocusPolicy)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">focusPreviousChild</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">focusProxy</span></code>((self)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">focusWidget</span></code>((self)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">font</span></code>((self)&nbsp;-&gt;&nbsp;QFont)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">fontInfo</span></code>((self)&nbsp;-&gt;&nbsp;QFontInfo)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">fontMetrics</span></code>((self)&nbsp;-&gt;&nbsp;QFontMetrics)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">foregroundRole</span></code>((self)&nbsp;-&gt;&nbsp;QPalette.ColorRole)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">frameGeometry</span></code>((self)&nbsp;-&gt;&nbsp;QRect)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">frameSize</span></code>((self)&nbsp;-&gt;&nbsp;QSize)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">geometry</span></code>((self)&nbsp;-&gt;&nbsp;QRect)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">getContentsMargins</span></code>((self)&nbsp;-&gt;&nbsp;Tuple[int,&nbsp;int,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">grab</span></code>((self,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">grabGesture</span></code>(self,&nbsp;Qt.GestureType,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">grabKeyboard</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">grabMouse</span></code>(self)</td>
+<td>grabMouse(self, Union[QCursor, Qt.CursorShape])</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">grabShortcut</span></code>((self,&nbsp;Union[QKeySequence,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">graphicsEffect</span></code>((self)&nbsp;-&gt;&nbsp;QGraphicsEffect)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">graphicsProxyWidget</span></code>(…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">hasFocus</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">hasHeightForWidth</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">hasMouseTracking</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">height</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">heightForWidth</span></code>((self,&nbsp;int)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">heightMM</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">hide</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">hideEvent</span></code>(self,&nbsp;QHideEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">inherits</span></code>((self,&nbsp;str)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">initPainter</span></code>(self,&nbsp;QPainter)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">inputMethodEvent</span></code>(self,&nbsp;QInputMethodEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">inputMethodHints</span></code>((self)&nbsp;-&gt;&nbsp;Qt.InputMethodHints)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">inputMethodQuery</span></code>((self,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">insertAction</span></code>(self,&nbsp;QAction,&nbsp;QAction)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">insertActions</span></code>(self,&nbsp;QAction,&nbsp;Iterable[QAction])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">installEventFilter</span></code>(self,&nbsp;QObject)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isActiveWindow</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isAncestorOf</span></code>((self,&nbsp;QWidget)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isEnabled</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isEnabledTo</span></code>((self,&nbsp;QWidget)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isFullScreen</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isHidden</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isLeftToRight</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isMaximized</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isMinimized</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isModal</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isRightToLeft</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isSignalConnected</span></code>((self,&nbsp;QMetaMethod)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isVisible</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isVisibleTo</span></code>((self,&nbsp;QWidget)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isWidgetType</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isWindow</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">isWindowModified</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">isWindowType</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">keyPressEvent</span></code>(self,&nbsp;QKeyEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">keyReleaseEvent</span></code>(self,&nbsp;QKeyEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">keyboardGrabber</span></code>(()&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">killTimer</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">layout</span></code>((self)&nbsp;-&gt;&nbsp;QLayout)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">layoutDirection</span></code>((self)&nbsp;-&gt;&nbsp;Qt.LayoutDirection)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">leaveEvent</span></code>(self,&nbsp;QEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">locale</span></code>((self)&nbsp;-&gt;&nbsp;QLocale)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">logicalDpiX</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">logicalDpiY</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">lower</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mapFrom</span></code>((self,&nbsp;QWidget,&nbsp;QPoint)&nbsp;-&gt;&nbsp;QPoint)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">mapFromGlobal</span></code>((self,&nbsp;QPoint)&nbsp;-&gt;&nbsp;QPoint)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mapFromParent</span></code>((self,&nbsp;QPoint)&nbsp;-&gt;&nbsp;QPoint)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">mapTo</span></code>((self,&nbsp;QWidget,&nbsp;QPoint)&nbsp;-&gt;&nbsp;QPoint)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mapToGlobal</span></code>((self,&nbsp;QPoint)&nbsp;-&gt;&nbsp;QPoint)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">mapToParent</span></code>((self,&nbsp;QPoint)&nbsp;-&gt;&nbsp;QPoint)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mask</span></code>((self)&nbsp;-&gt;&nbsp;QRegion)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">maximumHeight</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">maximumSize</span></code>((self)&nbsp;-&gt;&nbsp;QSize)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">maximumWidth</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">metaObject</span></code>((self)&nbsp;-&gt;&nbsp;QMetaObject)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">metric</span></code>((self,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">minimumHeight</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">minimumSize</span></code>((self)&nbsp;-&gt;&nbsp;QSize)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">minimumSizeHint</span></code>((self)&nbsp;-&gt;&nbsp;QSize)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">minimumWidth</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mouseDoubleClickEvent</span></code>(self,&nbsp;QMouseEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">mouseGrabber</span></code>(()&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mouseMoveEvent</span></code>(self,&nbsp;QMouseEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">mousePressEvent</span></code>(self,&nbsp;QMouseEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mouseReleaseEvent</span></code>(self,&nbsp;QMouseEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">move</span></code>(self,&nbsp;QPoint)</td>
+<td>move(self, int, int)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">moveEvent</span></code>(self,&nbsp;QMoveEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">moveToThread</span></code>(self,&nbsp;QThread)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">nativeEvent</span></code>((self,&nbsp;Union[QByteArray,&nbsp;bytes,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">nativeParentWidget</span></code>((self)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">nextInFocusChain</span></code>((self)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">normalGeometry</span></code>((self)&nbsp;-&gt;&nbsp;QRect)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">objectName</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">overrideWindowFlags</span></code>(self,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">overrideWindowState</span></code>(self,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">paintEngine</span></code>((self)&nbsp;-&gt;&nbsp;QPaintEngine)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">paintEvent</span></code>(self,&nbsp;QPaintEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">paintingActive</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">palette</span></code>((self)&nbsp;-&gt;&nbsp;QPalette)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">parent</span></code>((self)&nbsp;-&gt;&nbsp;QObject)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">parentWidget</span></code>((self)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">physicalDpiX</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">physicalDpiY</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">pos</span></code>((self)&nbsp;-&gt;&nbsp;QPoint)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">previousInFocusChain</span></code>((self)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">property</span></code>((self,&nbsp;str)&nbsp;-&gt;&nbsp;Any)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">pyqtConfigure</span></code>(…)</td>
+<td>Each keyword argument is either the name of a Qt property or a Qt signal.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">raise_</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">receivers</span></code>((self,&nbsp;PYQT_SIGNAL)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">rect</span></code>((self)&nbsp;-&gt;&nbsp;QRect)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">releaseKeyboard</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">releaseMouse</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">releaseShortcut</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">removeAction</span></code>(self,&nbsp;QAction)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">removeEventFilter</span></code>(self,&nbsp;QObject)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">render</span></code>(self,&nbsp;QPaintDevice,&nbsp;…)</td>
+<td>render(self, QPainter, targetOffset: QPoint = QPoint(), sourceRegion: QRegion = QRegion(), flags: Union[QWidget.RenderFlags, QWidget.RenderFlag] = QWidget.RenderFlags(QWidget.DrawWindowBackground|QWidget.DrawChildren))</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">repaint</span></code>(self)</td>
+<td>repaint(self, int, int, int, int)</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">resize</span></code>(self,&nbsp;QSize)</td>
+<td>resize(self, int, int)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">resizeEvent</span></code>(self,&nbsp;QResizeEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">restoreGeometry</span></code>((self,&nbsp;Union[QByteArray,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">saveGeometry</span></code>((self)&nbsp;-&gt;&nbsp;QByteArray)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">scroll</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<td>scroll(self, int, int, QRect)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">sender</span></code>((self)&nbsp;-&gt;&nbsp;QObject)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">senderSignalIndex</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setAcceptDrops</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setAccessibleDescription</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setAccessibleName</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setAttribute</span></code>(self,&nbsp;Qt.WidgetAttribute,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setAutoFillBackground</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setBackgroundRole</span></code>(self,&nbsp;QPalette.ColorRole)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setBaseSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<td>setBaseSize(self, QSize)</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setContentsMargins</span></code>(self,&nbsp;int,&nbsp;int,&nbsp;int,&nbsp;int)</td>
+<td>setContentsMargins(self, QMargins)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setContextMenuPolicy</span></code>(self,&nbsp;Qt.ContextMenuPolicy)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setCursor</span></code>(self,&nbsp;Union[QCursor,&nbsp;Qt.CursorShape])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setDisabled</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setEnabled</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setFixedHeight</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setFixedSize</span></code>(self,&nbsp;QSize)</td>
+<td>setFixedSize(self, int, int)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setFixedWidth</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setFocus</span></code>(self)</td>
+<td>setFocus(self, Qt.FocusReason)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setFocusPolicy</span></code>(self,&nbsp;Qt.FocusPolicy)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setFocusProxy</span></code>(self,&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setFont</span></code>(self,&nbsp;QFont)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setForegroundRole</span></code>(self,&nbsp;QPalette.ColorRole)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setGeometry</span></code>(self,&nbsp;QRect)</td>
+<td>setGeometry(self, int, int, int, int)</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setGraphicsEffect</span></code>(self,&nbsp;QGraphicsEffect)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setHidden</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setInputMethodHints</span></code>(self,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setLayout</span></code>(self,&nbsp;QLayout)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setLayoutDirection</span></code>(self,&nbsp;Qt.LayoutDirection)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setLocale</span></code>(self,&nbsp;QLocale)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setMask</span></code>(self,&nbsp;QBitmap)</td>
+<td>setMask(self, QRegion)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setMaximumHeight</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setMaximumSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<td>setMaximumSize(self, QSize)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setMaximumWidth</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setMinimumHeight</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setMinimumSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<td>setMinimumSize(self, QSize)</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setMinimumWidth</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setMouseTracking</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setObjectName</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setPalette</span></code>(self,&nbsp;QPalette)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setParent</span></code>(self,&nbsp;QWidget)</td>
+<td>setParent(self, QWidget, Union[Qt.WindowFlags, Qt.WindowType])</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setProperty</span></code>((self,&nbsp;str,&nbsp;Any)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setShortcutAutoRepeat</span></code>(self,&nbsp;int,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setShortcutEnabled</span></code>(self,&nbsp;int,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setSizeIncrement</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<td>setSizeIncrement(self, QSize)</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setSizePolicy</span></code>(self,&nbsp;QSizePolicy)</td>
+<td>setSizePolicy(self, QSizePolicy.Policy, QSizePolicy.Policy)</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setStatusTip</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setStyle</span></code>(self,&nbsp;QStyle)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setStyleSheet</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setTabOrder</span></code>(QWidget,&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setToolTip</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setToolTipDuration</span></code>(self,&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setUpdatesEnabled</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setVisible</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setWhatsThis</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowFilePath</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowFlags</span></code>(self,&nbsp;Union[Qt.WindowFlags,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowIcon</span></code>(self,&nbsp;QIcon)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowIconText</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowModality</span></code>(self,&nbsp;Qt.WindowModality)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowModified</span></code>(self,&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowOpacity</span></code>(self,&nbsp;float)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowRole</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowState</span></code>(self,&nbsp;Union[Qt.WindowStates,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">setWindowTitle</span></code>(self,&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">sharedPainter</span></code>((self)&nbsp;-&gt;&nbsp;QPainter)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">show</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">showEvent</span></code>(self,&nbsp;QShowEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">showFullScreen</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">showMaximized</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">showMinimized</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">showNormal</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">show_contents</span></code>(show)</td>
+<td>Show the contents of the Widget</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">signalsBlocked</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">size</span></code>((self)&nbsp;-&gt;&nbsp;QSize)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">sizeHint</span></code>((self)&nbsp;-&gt;&nbsp;QSize)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">sizeIncrement</span></code>((self)&nbsp;-&gt;&nbsp;QSize)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">sizePolicy</span></code>((self)&nbsp;-&gt;&nbsp;QSizePolicy)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">stackUnder</span></code>(self,&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">startTimer</span></code>((self,&nbsp;int,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">statusTip</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">style</span></code>((self)&nbsp;-&gt;&nbsp;QStyle)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">styleSheet</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">tabletEvent</span></code>(self,&nbsp;QTabletEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">testAttribute</span></code>((self,&nbsp;Qt.WidgetAttribute)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">thread</span></code>((self)&nbsp;-&gt;&nbsp;QThread)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">timerEvent</span></code>(self,&nbsp;QTimerEvent)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">toolTip</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">toolTipDuration</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">tr</span></code>((self,&nbsp;str,&nbsp;disambiguation:&nbsp;str&nbsp;=&nbsp;None,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">underMouse</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">ungrabGesture</span></code>(self,&nbsp;Qt.GestureType)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">unsetCursor</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">unsetLayoutDirection</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">unsetLocale</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">update</span></code>(self)</td>
+<td>update(self, QRect)</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">updateGeometry</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">updateMicroFocus</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">updatesEnabled</span></code>((self)&nbsp;-&gt;&nbsp;bool)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">visibleRegion</span></code>((self)&nbsp;-&gt;&nbsp;QRegion)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">whatsThis</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">wheelEvent</span></code>(self,&nbsp;QWheelEvent)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">width</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">widthMM</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">winId</span></code>((self)&nbsp;-&gt;&nbsp;sip.voidptr)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">window</span></code>((self)&nbsp;-&gt;&nbsp;QWidget)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">windowFilePath</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">windowFlags</span></code>((self)&nbsp;-&gt;&nbsp;Qt.WindowFlags)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">windowHandle</span></code>((self)&nbsp;-&gt;&nbsp;QWindow)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">windowIcon</span></code>((self)&nbsp;-&gt;&nbsp;QIcon)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">windowIconText</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">windowModality</span></code>((self)&nbsp;-&gt;&nbsp;Qt.WindowModality)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">windowOpacity</span></code>((self)&nbsp;-&gt;&nbsp;float)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">windowRole</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">windowState</span></code>((self)&nbsp;-&gt;&nbsp;Qt.WindowStates)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">windowTitle</span></code>((self)&nbsp;-&gt;&nbsp;str)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">windowType</span></code>((self)&nbsp;-&gt;&nbsp;Qt.WindowType)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">x</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">y</span></code>((self)&nbsp;-&gt;&nbsp;int)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="typhon.ComponentButton.html" class="btn btn-neutral float-right" title="typhon.ComponentButton" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="typhon.panel.SignalPanel.html" class="btn btn-neutral" title="typhon.panel.SignalPanel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.0.0+75.ga274eff',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

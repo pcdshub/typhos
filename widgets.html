@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Widgets &mdash; Typhon 0.0.0+75.ga274eff documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Typhon 0.0.0+75.ga274eff documentation" href="index.html"/>
+        <link rel="next" title="typhon.panel.Panel" href="generated/typhon.panel.Panel.html"/>
+        <link rel="prev" title="Display Types" href="display.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0+75.ga274eff
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Widgets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#panels">Panels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhon.panel.Panel.html">typhon.panel.Panel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhon.panel.SignalPanel.html">typhon.panel.SignalPanel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhon.func.FunctionPanel.html">typhon.func.FunctionPanel</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#component-widgets">Component Widgets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhon.ComponentButton.html">typhon.ComponentButton</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhon.func.FunctionDisplay.html">typhon.func.FunctionDisplay</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Typhon</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Widgets</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/widgets.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="widgets">
+<h1>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h1>
+<p>Typhon uses a few custom widgets to create a clean and concise user interface.
+While most users should not be interacting with these directly, there may be a
+need if a user opts to create their display by hand instead of automatically
+generating one.</p>
+<div class="section" id="panels">
+<h2>Panels<a class="headerlink" href="#panels" title="Permalink to this headline">¶</a></h2>
+<p>One of the major design principles of Typhon is that users should be able to
+see what they need and hide one they don’t. Thefore, many of the widget
+implementations are placed in “Panels” these consist of QPushButton header that
+hides and shows the contents. Each variation in Typhon is documented below.</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.panel.Panel.html#typhon.panel.Panel" title="typhon.panel.Panel"><code class="xref py py-obj docutils literal"><span class="pre">typhon.panel.Panel</span></code></a>(title[,&nbsp;parent])</td>
+<td>Generic Panel Widget</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/typhon.panel.SignalPanel.html#typhon.panel.SignalPanel" title="typhon.panel.SignalPanel"><code class="xref py py-obj docutils literal"><span class="pre">typhon.panel.SignalPanel</span></code></a>(title[,&nbsp;signals,&nbsp;…])</td>
+<td>Base panel display for EPICS signals</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel" title="typhon.func.FunctionPanel"><code class="xref py py-obj docutils literal"><span class="pre">typhon.func.FunctionPanel</span></code></a>([methods,&nbsp;parent])</td>
+<td>Function Panel</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="component-widgets">
+<h2>Component Widgets<a class="headerlink" href="#component-widgets" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.ComponentButton.html#typhon.ComponentButton" title="typhon.ComponentButton"><code class="xref py py-obj docutils literal"><span class="pre">typhon.ComponentButton</span></code></a>(name[,&nbsp;parent])</td>
+<td>Button to display a Component</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay" title="typhon.func.FunctionDisplay"><code class="xref py py-obj docutils literal"><span class="pre">typhon.func.FunctionDisplay</span></code></a>(func[,&nbsp;name,&nbsp;…])</td>
+<td>Display controls for an annotated function in a QGroupBox</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generated/typhon.panel.Panel.html" class="btn btn-neutral float-right" title="typhon.panel.Panel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="display.html" class="btn btn-neutral" title="Display Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.0+75.ga274eff',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

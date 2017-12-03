@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>typhon.panel &mdash; Typhon 0.0.0+75.ga274eff documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Typhon 0.0.0+75.ga274eff documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.0+75.ga274eff
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Gallery</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhon</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>typhon.panel</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for typhon.panel</h1><div class="highlight"><pre>
+<span></span><span class="c1">############</span>
+<span class="c1"># Standard #</span>
+<span class="c1">############</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1">############</span>
+<span class="c1"># External #</span>
+<span class="c1">############</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">pyqtSlot</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QFont</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QGridLayout</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QVBoxLayout</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets</span> <span class="k">import</span> <span class="n">PyDMLineEdit</span>
+
+<span class="c1">#############</span>
+<span class="c1">#  Package  #</span>
+<span class="c1">#############</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">channel_name</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonComboBox</span><span class="p">,</span> <span class="n">TyphonLabel</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Panel"><a class="viewcode-back" href="../../generated/typhon.panel.Panel.html#typhon.panel.Panel">[docs]</a><span class="k">class</span> <span class="nc">Panel</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic Panel Widget</span>
+
+<span class="sd">    Displays a widget below QPushButton that hides and shows the contents. It</span>
+<span class="sd">    is up to subclasses to re-point the attribute :attr:`.contents` to the</span>
+<span class="sd">    widget whose visibility you would like to toggle.</span>
+
+<span class="sd">    By default, it is assumed that the Panel is initialized with the</span>
+<span class="sd">    :attr:`.contents` widget as visible, however the contents will be hidden</span>
+<span class="sd">    and the button synced to the proper position if :meth:`.show_contents` is</span>
+<span class="sd">    called after instance creation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    title : str</span>
+<span class="sd">        Title of Panel. This will be the text on the QPushButton</span>
+
+<span class="sd">    parent : QWidget</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    contents : QWidget</span>
+<span class="sd">        Widget whose visibility is controlled via the QPushButton</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Panel.__init__"><a class="viewcode-back" href="../../generated/typhon.panel.Panel.html#typhon.panel.Panel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Create Widget Infrastructure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="c1"># Create button control</span>
+        <span class="c1"># Assuming widget is visible, set the button as checked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_contents</span><span class="p">)</span></div>
+
+    <span class="nd">@pyqtSlot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">show_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the contents of the Widget</span>
+
+<span class="sd">        Hides the :attr:`.contents` QWidget and sets the :attr:`.hide_button`</span>
+<span class="sd">        to the proper status to indicate whether the widget is hidden or not</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        show : bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Configure our button in case this slot was called elsewhere</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
+        <span class="c1"># Show or hide the widget if the contents exist</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SignalPanel"><a class="viewcode-back" href="../../generated/typhon.panel.SignalPanel.html#typhon.panel.SignalPanel">[docs]</a><span class="k">class</span> <span class="nc">SignalPanel</span><span class="p">(</span><span class="n">Panel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base panel display for EPICS signals</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    title : str</span>
+<span class="sd">        Title for hide button</span>
+
+<span class="sd">    signals : OrderedDict, optional</span>
+<span class="sd">        Signals to include in the panel</span>
+
+<span class="sd">    parent : QWidget, optional</span>
+<span class="sd">        Parent of panel</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SignalPanel.__init__"><a class="viewcode-back" href="../../generated/typhon.panel.SignalPanel.html#typhon.panel.SignalPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Store signal information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pvs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="c1"># Create empty panel contents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QGridLayout</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">)</span>
+        <span class="c1"># Add supplied signals</span>
+        <span class="k">if</span> <span class="n">signals</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">signals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">add_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a signal to the panel</span>
+
+<span class="sd">        The type of widget control that is drawn is dependent on</span>
+<span class="sd">        :attr:`_read_pv`, and :attr:`_write_pv`. attributes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal : EpicsSignal, EpicsSignalRO</span>
+<span class="sd">            Signal to create a widget</span>
+
+<span class="sd">        name : str</span>
+<span class="sd">            Name of signal to display</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        loc : int</span>
+<span class="sd">            Row number that the signal information was added to in the</span>
+<span class="sd">            `SignalPanel.contents.layout()``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding signal </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_pv</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">_read_pv</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
+                           <span class="n">write_pv</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="s1">&#39;_write_pv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">add_pv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_pv</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write_pv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add PVs to the SignalPanel</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ---------</span>
+<span class="sd">        read_pv : pyepics.PV</span>
+
+<span class="sd">        name : str</span>
+<span class="sd">            Name of signal to display</span>
+
+<span class="sd">        write_pv : pyepics.PV, optional</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        loc : int</span>
+<span class="sd">            Row number that the signal information was added to in the</span>
+<span class="sd">            `SignalPanel.contents.layout()``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding PV </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Create label</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">label_font</span> <span class="o">=</span> <span class="n">QFont</span><span class="p">()</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">label_font</span><span class="p">)</span>
+        <span class="c1"># Create signal display</span>
+        <span class="n">val_display</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="c1"># Add readback</span>
+        <span class="n">ro</span> <span class="o">=</span> <span class="n">TyphonLabel</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">channel_name</span><span class="p">(</span><span class="n">read_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">),</span>
+                         <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">val_display</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">ro</span><span class="p">)</span>
+        <span class="c1"># Add our write_pv if available</span>
+        <span class="k">if</span> <span class="n">write_pv</span><span class="p">:</span>
+            <span class="n">ch</span> <span class="o">=</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">write_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
+            <span class="c1"># Check whether our device is an enum or not</span>
+            <span class="k">if</span> <span class="n">write_pv</span><span class="o">.</span><span class="n">enum_strs</span><span class="p">:</span>
+                <span class="n">edit</span> <span class="o">=</span> <span class="n">TyphonComboBox</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">ch</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding LineEdit for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                <span class="n">edit</span> <span class="o">=</span> <span class="n">PyDMLineEdit</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">ch</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="c1"># Add our control widget to layout</span>
+            <span class="n">val_display</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">edit</span><span class="p">)</span>
+        <span class="c1"># Add displays to panel</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">val_display</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Store signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pvs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">read_pv</span><span class="p">,</span> <span class="n">write_pv</span><span class="p">)</span>
+        <span class="c1"># Check that our widget is not hidden</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_contents</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loc</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.0.0+75.ga274eff',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
