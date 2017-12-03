@@ -1,10 +1,6 @@
-<img src="docs/source/_static/hydra.jpg" width="200" height="250" align="right"/>
-  <h1>Typhon</h1>
-  <h3>Automated User Interface Creation from Ophyd Devices</h3>
-</p>
-
-[![Build Status](https://travis-ci.org/pcdshub/typhon.svg?branch=master)](https://travis-ci.org/pcdshub/typhon)
-[![codecov.io](https://codecov.io/github/pcdshub/typhon/coverage.svg?branch=master)](https://codecov.io/github/pcdshub/typhon?branch=master)
+======
+Typhon
+======
 
 EPICS is a flexible and powerful controls system to access to experimental
 information, however, the relation and meaning of process variables is often
@@ -31,9 +27,24 @@ defaults of the representative Python class, these signals are sorted into
 different categories based on their relevance to operators. Typhon uses this
 information to craft user interfaces.
 
-## Related Projects
-[**PyDM**](https://github.com/slaclab/pydm) - PyQT Display Manager for EPICS information
+Related Projects
+----------------
+- `pydm <https://github.com/slaclab/pydm/>`_
+- `ophyd <https://github.com/NSLS-II/ophyd/>`_
 
-[**Ophyd**](https://github.com/NSLS-II/ophyd) - Device abstraction for Experimental Control
+.. toctree::
+   :maxdepth: 1
+   :caption: Tutorial
+   :hidden:
 
-## Examples
+   basic_usage.rst
+   python_methods.rst
+   gallery.rst
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API Documentation
+   :hidden:
+
+   display.rst
+   widgets.rst

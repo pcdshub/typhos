@@ -90,6 +90,9 @@ class SignalPanel(Panel):
 
     Parameters
     ----------
+    title : str
+        Title for hide button
+
     signals : OrderedDict, optional
         Signals to include in the panel
 

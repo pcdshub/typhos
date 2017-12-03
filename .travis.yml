@@ -1,6 +1,11 @@
 language: python
 sudo: required
 dist: trusty
+
+env:
+  global:
+    - secure: "jizHV6LAxLhtQu2GEjUYitGYd8PLv1RSoYt9/NftBRgm958YGNQkDiI+Gw8A6QydgJUYLEHumzGm5/abqqIZkwL3eKDV4obZkuazwyDt6Ueymhp1v/Le1rCXCDGaMEvCHmIq2Bn79+9y0KOBBF7zQKqHw80LMNHbOfA4eM/vsWYfR6LOhGzte4FEeAdFtM0+cJr38v3Rk92q1ghez5EElDUQfEsphraIYGn9N/ayqjGt4TKokxITj6gG46wrIK80TXGn3N5qDgin247QlVk7stPqUDMi5bVIP8/fWDkXGtE05IJSKTzIwvxd4ngoBxVJreJ9XhDBDx3sfvImifWQYidEbszqxlq1i1k9+3TjDooEP9FrUU5+XLjbyA2EiRFypvgcFtVisE+4L+/XO5Lg6sARPJrPXCigO2geGVIH+tmrIsu2UqDV3NMCTMxF9CyDFG/JF5HKKx1bC0SmGUYjvxxvmyDbmt8g/ES5KVFavsKDO22m00WzRUXUB+5zVHdxhMNFnSBK0unrP/j1GwTIHw1bZqWdgnL0IPK3df0w1ZZ92esVVqq4HsN6j57N3DnUKBmIeBLKYEFDBRP/a7yiFB/Q2WOO2kVKcATeVcNhxiwBamd5VpEi9qoQpXPWyBVUpXxpSBq7T0LXbT85SBlspjY4e4m33K9HHjHIU5bFxW0="
+
 matrix:
   include:
      - python: 3.6
@@ -23,6 +28,7 @@ before_install:
   - docker run -d -p $DOCKER0_IP:7000-9000:5064/tcp -v /tmp/data:/data ${DOCKERIMAGE}
   - docker ps -a
   - ip addr
+
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
@@ -59,7 +65,16 @@ before_script:
 script:
   - coverage run run_tests.py
   - coverage report -m
-  - flake8
+  - |
+    if [[ $TRAVIS_REPO_SLUG == $OFFICIAL_REPO ]]; then
+      set -e
+      pip install doctr
+      cd docs
+      sphinx-autogen -o source/generated source/*.rst
+      make html
+      cd ../
+      doctr deploy . --built-docs docs/_build/html --deploy-branch-name gh-pages
+    fi
 
 after_success:
   - codecov

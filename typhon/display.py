@@ -31,7 +31,7 @@ class TyphonDisplay(QWidget):
     This widget lays out all of the architecture for a general Typhon display.
     The structure matches an ophyd Device, but for this specific instantation,
     one is not required to be given. There are four main panels are available;
-    :attr:`.read_panel`. :attr:`.config_panel, :attr:`.method_panel`. These
+    :attr:`.read_panel`. :attr:`.config_panel`, :attr:`.method_panel`. These
     give four separate panels provide a quick way to organize signals and
     methods by their importance to an operator. In addition, crucial signals
     can be added to a PyDMTimePlot under the attribute :attr:`.hint_plot`.
@@ -221,7 +221,7 @@ class DeviceDisplay(TyphonDisplay):
         Main ophyd device to display
 
     methods : list of callables, optional
-        List of callables to pass to :meth:`.FunctionPanel.add_panel`
+        List of callables to pass to :meth:`.FunctionPanel.add_method`
 
     parent : QWidget, optional
     """
