@@ -1,5 +1,6 @@
 pytest
 matplotlib
+ipython
 flake8
 sphinx
 sphinx_rtd_theme
