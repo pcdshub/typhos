@@ -13,6 +13,7 @@
 ./_sources/generated/typhon.func.FunctionPanel.rst.txt
 ./_sources/generated/typhon.panel.Panel.rst.txt
 ./_sources/generated/typhon.panel.SignalPanel.rst.txt
+./_sources/generated/typhon.widgets.RotatingImage.rst.txt
 ./_sources/index.rst.txt
 ./_sources/python_methods.rst.txt
 ./_sources/widgets.rst.txt
@@ -61,6 +62,7 @@
 ./generated/typhon.func.FunctionPanel.html
 ./generated/typhon.panel.Panel.html
 ./generated/typhon.panel.SignalPanel.html
+./generated/typhon.widgets.RotatingImage.html
 ./genindex.html
 ./index.html
 ./objects.inv

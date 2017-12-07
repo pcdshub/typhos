@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.widgets &mdash; Typhon 0.0.0+75.ga274eff documentation</title>
+  <title>typhon.widgets &mdash; Typhon 0.0.0+83.gfd91463 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Typhon 0.0.0+75.ga274eff documentation" href="../../index.html"/>
+    <link rel="top" title="Typhon 0.0.0+83.gfd91463 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.0.0+75.ga274eff
+                0.0.0+83.gfd91463
               </div>
             
           
@@ -166,6 +166,7 @@
 <span></span><span class="c1">############</span>
 <span class="c1"># Standard #</span>
 <span class="c1">############</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 
 <span class="c1">############</span>
@@ -173,13 +174,15 @@
 <span class="c1">############</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt</span> <span class="k">import</span> <span class="n">uic</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Qt</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QAbstractButton</span>
-<span class="kn">from</span> <span class="nn">pydm.widgets</span> <span class="k">import</span> <span class="n">PyDMLabel</span><span class="p">,</span> <span class="n">PyDMEnumComboBox</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QStackedWidget</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QAbstractButton</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets</span> <span class="k">import</span> <span class="n">PyDMDrawingImage</span><span class="p">,</span> <span class="n">PyDMLabel</span><span class="p">,</span> <span class="n">PyDMEnumComboBox</span>
 
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
 <span class="c1">###########</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">channel_name</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">TyphonComboBox</span><span class="p">(</span><span class="n">PyDMEnumComboBox</span><span class="p">):</span>
@@ -270,6 +273,60 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_style</span><span class="p">)</span>
         <span class="c1"># Register with QAbstractButton</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">checked</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RotatingImage"><a class="viewcode-back" href="../../generated/typhon.widgets.RotatingImage.html#typhon.RotatingImage">[docs]</a><span class="k">class</span> <span class="nc">RotatingImage</span><span class="p">(</span><span class="n">QStackedWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rotating Image Handler</span>
+
+<span class="sd">    Allows users to add images with clean user aliases, and then swap between</span>
+<span class="sd">    them using :meth:`.show_image`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : QWidget, optional</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : dict</span>
+<span class="sd">        Table of image names and their index in the stack</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="RotatingImage.__init__"><a class="viewcode-back" href="../../generated/typhon.widgets.RotatingImage.html#typhon.RotatingImage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">add_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an image to the widget</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Absolute or relative path to the widget</span>
+
+<span class="sd">        name : str</span>
+<span class="sd">            Name to refer to the image as</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Warn users if they enter a duplicate name</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Overwriting image for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Create the ImageWidget</span>
+        <span class="n">drawing</span> <span class="o">=</span> <span class="n">PyDMDrawingImage</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># Add the widget to the stack</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">drawing</span><span class="p">)</span>
+        <span class="c1"># Save the idx for reference</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+
+    <span class="k">def</span> <span class="nf">show_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the named image</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Image name saved in the :attr:`.images` dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="n">name</span><span class="p">])</span></div>
 </pre></div>
 
            </div>
@@ -306,7 +363,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.0.0+75.ga274eff',
+            VERSION:'0.0.0+83.gfd91463',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
