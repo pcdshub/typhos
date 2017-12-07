@@ -10,7 +10,7 @@ from ophyd.tests.conftest import using_fake_epics_pv
 ###########
 # Package #
 ###########
-from typhon.display import ComponentButton
+from typhon.display import RotatingImage, ComponentButton
 from .conftest import show_widget
 
 
@@ -37,3 +37,17 @@ def test_component_button_checked():
     button.setChecked(False)
     assert not button.isChecked()
     assert button.styleSheet() == style
+
+
+@show_widget
+def test_rotating_image(test_images):
+    (lenna, python) = test_images
+    # Create widget
+    img = RotatingImage()
+    img.add_image(lenna, 'lenna')
+    img.add_image(python, 'python')
+    # Set image to Python
+    img.show_image('lenna')
+    # Check that we are viewing the "lenna" image
+    assert img.currentWidget().filename == lenna
+    return img

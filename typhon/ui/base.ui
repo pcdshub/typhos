@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
+  <layout class="QHBoxLayout" name="widget_layout">
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
    </property>
@@ -43,7 +43,7 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="main_layout" stretch="0,0,1">
+     <layout class="QVBoxLayout" name="main_layout" stretch="0,0">
       <property name="spacing">
        <number>5</number>
       </property>
@@ -157,19 +157,6 @@
          <double>0.500000000000000</double>
         </property>
        </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>

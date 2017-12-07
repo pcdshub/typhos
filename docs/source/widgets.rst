@@ -28,4 +28,4 @@ Component Widgets
 
    typhon.ComponentButton
    typhon.func.FunctionDisplay
-
+   typhon.widgets.RotatingImage

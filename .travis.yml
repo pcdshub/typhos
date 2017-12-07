@@ -66,6 +66,7 @@ before_script:
 script:
   - coverage run run_tests.py
   - coverage report -m
+  - flake8 typhon
   # Build docs
   - set -e
   - |

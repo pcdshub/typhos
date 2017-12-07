@@ -1,6 +1,7 @@
 ############
 # Standard #
 ############
+import logging
 import os.path
 
 ############
@@ -8,13 +9,15 @@ import os.path
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import QSize, Qt
-from pydm.PyQt.QtGui import QLabel, QAbstractButton
-from pydm.widgets import PyDMLabel, PyDMEnumComboBox
+from pydm.PyQt.QtGui import QStackedWidget, QLabel, QAbstractButton
+from pydm.widgets import PyDMDrawingImage, PyDMLabel, PyDMEnumComboBox
 
 ###########
 # Package #
 ###########
 from .utils import ui_dir, channel_name
+
+logger = logging.getLogger(__name__)
 
 
 class TyphonComboBox(PyDMEnumComboBox):
@@ -105,3 +108,57 @@ class ComponentButton(QAbstractButton):
             self.setStyleSheet(self.fixed_style)
         # Register with QAbstractButton
         super().setChecked(checked)
+
+
+class RotatingImage(QStackedWidget):
+    """
+    Rotating Image Handler
+
+    Allows users to add images with clean user aliases, and then swap between
+    them using :meth:`.show_image`
+
+    Parameters
+    ----------
+    parent : QWidget, optional
+
+    Attributes
+    ----------
+    images : dict
+        Table of image names and their index in the stack
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.images = dict()
+
+    def add_image(self, path, name):
+        """
+        Add an image to the widget
+
+        Parameters
+        ----------
+        path : str
+            Absolute or relative path to the widget
+
+        name : str
+            Name to refer to the image as
+        """
+        # Warn users if they enter a duplicate name
+        if name in self.images:
+            logger.warning("Overwriting image for %s", name)
+        # Create the ImageWidget
+        drawing = PyDMDrawingImage(filename=path)
+        # Add the widget to the stack
+        idx = self.addWidget(drawing)
+        # Save the idx for reference
+        self.images[name] = idx
+
+    def show_image(self, name):
+        """
+        Show the named image
+
+        Parameters
+        ----------
+        name : str
+            Image name saved in the :attr:`.images` dictionary
+        """
+        self.setCurrentIndex(self.images[name])

@@ -19,7 +19,7 @@ from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup
 from .func import FunctionPanel
 from .panel import SignalPanel
 from .utils import ui_dir, clean_attr, clean_source, channel_name
-from .widgets import ComponentButton
+from .widgets import RotatingImage, ComponentButton
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +58,7 @@ class TyphonDisplay(QWidget):
     def __init__(self, name, parent=None):
         # Instantiate Widget
         super().__init__(parent=parent)
+        self.subdisplays = dict()
         # Instantiate UI
         self.ui = uic.loadUi(os.path.join(ui_dir, 'base.ui'), self)
         self.device_button_group = QButtonGroup()
@@ -70,11 +71,13 @@ class TyphonDisplay(QWidget):
         self.read_panel = SignalPanel("Read", parent=self)
         self.config_panel = SignalPanel("Configuration", parent=self)
         self.misc_panel = SignalPanel("Miscellaneous", parent=self)
+        self.image_widget = RotatingImage()
         # Add all the panels
         self.ui.main_layout.insertWidget(2, self.read_panel)
         self.ui.main_layout.insertWidget(3, self.method_panel)
         self.ui.main_layout.insertWidget(4, self.config_panel)
         self.ui.main_layout.insertWidget(5, self.misc_panel)
+        self.ui.widget_layout.insertWidget(0, self.image_widget)
         # Hide control of read_panel
         self.read_panel.hide_button.hide()
         # Hide widgets until signals are added to them
@@ -84,6 +87,7 @@ class TyphonDisplay(QWidget):
         self.misc_panel.hide()
         self.method_panel.hide()
         self.ui.hint_plot.hide()
+        self.image_widget.hide()
 
     @property
     def methods(self):
@@ -94,11 +98,12 @@ class TyphonDisplay(QWidget):
 
     def add_subdisplay(self, name, display, button=None):
         """
+        Add a widget to the display
 
-        This add adisplay for a subcomponent and a QPushButton that
+        This add a display for a subcomponent and a QPushButton that
         will bring the display to the foreground. Users can either specify
         their button or have one generate for them. Either way the button is
-        connected to the the `pyqSlot` :meth:`.show_subdevice`
+        connected to the `pyqSlot` :meth:`.show_subdevice`
 
         Parameters
         ----------
@@ -124,13 +129,14 @@ class TyphonDisplay(QWidget):
         self.ui.buttons.layout().insertWidget(idx, button)
         # Add our display to the widget
         idx = self.ui.component_widget.addWidget(display)
+        self.subdisplays[name] = idx
         # Connect button
-        button.clicked.connect(partial(self.show_subdevice, idx=idx))
+        button.clicked.connect(partial(self.show_subdevice, name=name))
         # Show the widgets if hidden
         if self.ui.buttons.isHidden():
             self.ui.buttons.show()
 
-    def add_subdevice(self, device, methods=None):
+    def add_subdevice(self, device, methods=None, image=None):
         """
         Add a subdevice to the `component_widget` stack
 
@@ -179,20 +185,48 @@ class TyphonDisplay(QWidget):
         plot_opts.update(kwargs)
         self.ui.hint_plot.addYChannel(y_channel=channel_name(pv), **plot_opts)
 
-    @pyqtSlot()
-    def show_subdevice(self, idx):
+    def add_image(self, path, subdevice=None):
         """
-        Show subdevice display at index `idx` of the QStackedWidget
+        Add an image to the display
 
         Parameters
         ----------
-        idx : int
-            Index of subdevice widget
+        path : str
+            Absolute or relative path to image
+
+        subdevice : ophyd.Device
+            Device to associate the image with. If this is left as None, it is
+            assumed that this image corresponds to the main device
+        """
+        # Make a name for the image to be referred to later
+        if subdevice:
+            name = subdevice.name
+        else:
+            name = None
+        # Add the image to the widget. The show_subdevice slot will find this
+        # automatically
+        self.image_widget.add_image(path, name=name)
+        # Show the widget if it is hidden
+        if self.image_widget.isHidden():
+            self.image_widget.show()
+
+    @pyqtSlot()
+    def show_subdevice(self, name):
+        """
+        Show subdevice display of the QStackedWidget
+
+        Parameters
+        ----------
+        name : str
         """
         if self.ui.component_widget.isHidden():
             self.ui.component_widget.show()
         # Show the correct subdevice widget
-        self.ui.component_widget.setCurrentIndex(idx)
+        self.ui.component_widget.setCurrentIndex(self.subdisplays[name])
+        # Show image if we have one for this subdevice
+        if (not self.image_widget.isHidden()
+           and name in self.image_widget.images):
+            self.image_widget.show_image(name)
 
     @pyqtSlot()
     def hide_subdevices(self):
@@ -203,6 +237,9 @@ class TyphonDisplay(QWidget):
         # Toggle the button off, each button can use its own pyqtSlot
         for button in self.device_button_group.buttons():
             button.toggled.emit(False)
+        if (not self.image_widget.isHidden()
+           and None in self.image_widget.images):
+            self.image_widget.show_image(None)
 
 
 class DeviceDisplay(TyphonDisplay):
