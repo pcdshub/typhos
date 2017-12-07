@@ -1,6 +1,7 @@
 ############
 # Standard #
 ############
+import os.path
 import logging
 from functools import wraps
 
@@ -69,6 +70,12 @@ def qapp(pytestconfig):
             import qdarkstyle
             application.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     return application
+
+
+@pytest.fixture(scope='session')
+def test_images():
+    return (os.path.join(os.path.dirname(__file__), 'utils/lenna.png'),
+            os.path.join(os.path.dirname(__file__), 'utils/python.png'))
 
 
 def show_widget(func):

@@ -101,3 +101,22 @@ def test_display_with_hints(device):
     display = DeviceDisplay(device)
     assert len(display.ui.hint_plot.curves) == 1
     return display
+
+
+@using_fake_epics_pv
+@show_widget
+def test_display_with_images(device, test_images):
+    (lenna, python) = test_images
+    display = DeviceDisplay(device)
+    # Add our main image
+    display.add_image(python)
+    # Add our component image
+    display.add_image(lenna, subdevice=device.x)
+    assert not display.image_widget.isHidden()
+    # Show our subdevice and image
+    display.show_subdevice(device.x.name)
+    assert display.image_widget.currentWidget().filename == lenna
+    # Hide all subdevices and show main image
+    display.hide_subdevices()
+    assert display.image_widget.currentWidget().filename == python
+    return display
