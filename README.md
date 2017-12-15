@@ -35,5 +35,3 @@ information to craft user interfaces.
 [**PyDM**](https://github.com/slaclab/pydm) - PyQT Display Manager for EPICS information
 
 [**Ophyd**](https://github.com/NSLS-II/ophyd) - Device abstraction for Experimental Control
-
-## Examples

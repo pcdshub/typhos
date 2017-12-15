@@ -39,7 +39,6 @@ Related Projects
 
    basic_usage.rst
    python_methods.rst
-   gallery.rst
 
 .. toctree::
    :maxdepth: 1
