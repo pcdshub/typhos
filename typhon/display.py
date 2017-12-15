@@ -30,15 +30,15 @@ class TyphonDisplay(QWidget):
 
     This widget lays out all of the architecture for a general Typhon display.
     The structure matches an ophyd Device, but for this specific instantation,
-    one is not required to be given. There are four main panels are available;
-    :attr:`.read_panel`. :attr:`.config_panel`, :attr:`.method_panel`. These
-    give four separate panels provide a quick way to organize signals and
-    methods by their importance to an operator. In addition, crucial signals
-    can be added to a PyDMTimePlot under the attribute :attr:`.hint_plot`.
-    Because each panel can be hidden interactively, the screen works as both an
-    expert and novice entry point for users. By default, widgets are hidden
-    until contents are added. For instance, if you do not add any methods to
-    the main panel it will not be visible.
+    one is not required to be given. There are four main panels available;
+    :attr:`.read_panel`, :attr:`.config_panel`, :attr:`.method_panel`. These
+    each provide a quick way to organize signals and methods by their
+    importance to an operator. In addition, crucial signals can be added to a
+    PyDMTimePlot under the attribute :attr:`.hint_plot`.  Because each panel
+    can be hidden interactively, the screen works as both an expert and novice
+    entry point for users. By default, widgets are hidden until contents are
+    added. For instance, if you do not add any methods to the main panel it
+    will not be visible.
 
     This device is the bare bones implementation in the event that someone
     might want to collect a random group of signals and devices together to
@@ -244,7 +244,7 @@ class TyphonDisplay(QWidget):
 
 class DeviceDisplay(TyphonDisplay):
     """
-    Display an ophyd Device
+    Display an Ophyd Device
 
     Using the panels created by the inherited :class:`.TyphonDisplay` the
     sub-devices and signals are added to the appropriate places in the widget.
