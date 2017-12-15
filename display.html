@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.0.0+83.gfd91463 documentation</title>
+  <title>Display Types &mdash; Typhon 0.1.0 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Typhon 0.0.0+83.gfd91463 documentation" href="index.html"/>
+    <link rel="top" title="Typhon 0.1.0 documentation" href="index.html"/>
         <link rel="next" title="Widgets" href="widgets.html"/>
-        <link rel="prev" title="Gallery" href="gallery.html"/> 
+        <link rel="prev" title="Including Python Code" href="python_methods.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.0+83.gfd91463
+                0.1.0
               </div>
             
           
@@ -94,7 +94,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="gallery.html">Gallery</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
@@ -184,15 +183,15 @@ Device and populate PVs and components into the appropriate locations</p>
 <dd><p>Generalized Typhon display</p>
 <p>This widget lays out all of the architecture for a general Typhon display.
 The structure matches an ophyd Device, but for this specific instantation,
-one is not required to be given. There are four main panels are available;
-<code class="xref py py-attr docutils literal"><span class="pre">read_panel</span></code>. <code class="xref py py-attr docutils literal"><span class="pre">config_panel</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">method_panel</span></code>. These
-give four separate panels provide a quick way to organize signals and
-methods by their importance to an operator. In addition, crucial signals
-can be added to a PyDMTimePlot under the attribute <code class="xref py py-attr docutils literal"><span class="pre">hint_plot</span></code>.
-Because each panel can be hidden interactively, the screen works as both an
-expert and novice entry point for users. By default, widgets are hidden
-until contents are added. For instance, if you do not add any methods to
-the main panel it will not be visible.</p>
+one is not required to be given. There are four main panels available;
+<code class="xref py py-attr docutils literal"><span class="pre">read_panel</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">config_panel</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">method_panel</span></code>. These
+each provide a quick way to organize signals and methods by their
+importance to an operator. In addition, crucial signals can be added to a
+PyDMTimePlot under the attribute <code class="xref py py-attr docutils literal"><span class="pre">hint_plot</span></code>.  Because each panel
+can be hidden interactively, the screen works as both an expert and novice
+entry point for users. By default, widgets are hidden until contents are
+added. For instance, if you do not add any methods to the main panel it
+will not be visible.</p>
 <p>This device is the bare bones implementation in the event that someone
 might want to collect a random group of signals and devices together to
 create a screen. A more automated display generator is available  in the
@@ -325,7 +324,7 @@ QPushButton is created</li>
 <dt id="typhon.DeviceDisplay">
 <em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">DeviceDisplay</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#DeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.DeviceDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">typhon.display.TyphonDisplay</span></code></p>
-<p>Display an ophyd Device</p>
+<p>Display an Ophyd Device</p>
 <p>Using the panels created by the inherited <a class="reference internal" href="#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal"><span class="pre">TyphonDisplay</span></code></a> the
 sub-devices and signals are added to the appropriate places in the widget.
 The display introspects the <code class="docutils literal"><span class="pre">read_attrs</span></code>, <code class="docutils literal"><span class="pre">configuration_attrs</span></code>,
@@ -362,7 +361,7 @@ heirarchy.</p>
         <a href="widgets.html" class="btn btn-neutral float-right" title="Widgets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="gallery.html" class="btn btn-neutral" title="Gallery" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="python_methods.html" class="btn btn-neutral" title="Including Python Code" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -393,7 +392,7 @@ heirarchy.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.0.0+83.gfd91463',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

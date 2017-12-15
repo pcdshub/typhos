@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.0.0+83.gfd91463 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.1.0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Typhon 0.0.0+83.gfd91463 documentation" href="../../index.html"/>
+    <link rel="top" title="Typhon 0.1.0 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.0.0+83.gfd91463
+                0.1.0
               </div>
             
           
@@ -93,7 +93,6 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">Basic Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../gallery.html">Gallery</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
@@ -195,15 +194,15 @@
 
 <span class="sd">    This widget lays out all of the architecture for a general Typhon display.</span>
 <span class="sd">    The structure matches an ophyd Device, but for this specific instantation,</span>
-<span class="sd">    one is not required to be given. There are four main panels are available;</span>
-<span class="sd">    :attr:`.read_panel`. :attr:`.config_panel`, :attr:`.method_panel`. These</span>
-<span class="sd">    give four separate panels provide a quick way to organize signals and</span>
-<span class="sd">    methods by their importance to an operator. In addition, crucial signals</span>
-<span class="sd">    can be added to a PyDMTimePlot under the attribute :attr:`.hint_plot`.</span>
-<span class="sd">    Because each panel can be hidden interactively, the screen works as both an</span>
-<span class="sd">    expert and novice entry point for users. By default, widgets are hidden</span>
-<span class="sd">    until contents are added. For instance, if you do not add any methods to</span>
-<span class="sd">    the main panel it will not be visible.</span>
+<span class="sd">    one is not required to be given. There are four main panels available;</span>
+<span class="sd">    :attr:`.read_panel`, :attr:`.config_panel`, :attr:`.method_panel`. These</span>
+<span class="sd">    each provide a quick way to organize signals and methods by their</span>
+<span class="sd">    importance to an operator. In addition, crucial signals can be added to a</span>
+<span class="sd">    PyDMTimePlot under the attribute :attr:`.hint_plot`.  Because each panel</span>
+<span class="sd">    can be hidden interactively, the screen works as both an expert and novice</span>
+<span class="sd">    entry point for users. By default, widgets are hidden until contents are</span>
+<span class="sd">    added. For instance, if you do not add any methods to the main panel it</span>
+<span class="sd">    will not be visible.</span>
 
 <span class="sd">    This device is the bare bones implementation in the event that someone</span>
 <span class="sd">    might want to collect a random group of signals and devices together to</span>
@@ -409,7 +408,7 @@
 
 <div class="viewcode-block" id="DeviceDisplay"><a class="viewcode-back" href="../../display.html#typhon.DeviceDisplay">[docs]</a><span class="k">class</span> <span class="nc">DeviceDisplay</span><span class="p">(</span><span class="n">TyphonDisplay</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Display an ophyd Device</span>
+<span class="sd">    Display an Ophyd Device</span>
 
 <span class="sd">    Using the panels created by the inherited :class:`.TyphonDisplay` the</span>
 <span class="sd">    sub-devices and signals are added to the appropriate places in the widget.</span>
@@ -508,7 +507,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.0.0+83.gfd91463',
+            VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

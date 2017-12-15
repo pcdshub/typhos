@@ -7,7 +7,6 @@
 ./_modules/typhon/widgets.html
 ./_sources/basic_usage.rst.txt
 ./_sources/display.rst.txt
-./_sources/gallery.rst.txt
 ./_sources/generated/typhon.ComponentButton.rst.txt
 ./_sources/generated/typhon.func.FunctionDisplay.rst.txt
 ./_sources/generated/typhon.func.FunctionPanel.rst.txt
@@ -56,7 +55,6 @@
 ./_static/websupport.js
 ./basic_usage.html
 ./display.html
-./gallery.html
 ./generated/typhon.ComponentButton.html
 ./generated/typhon.func.FunctionDisplay.html
 ./generated/typhon.func.FunctionPanel.html
