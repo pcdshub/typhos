@@ -273,12 +273,14 @@ class DeviceDisplay(TyphonDisplay):
 
         # Create read and configuration panels
         for attr in self.device.read_attrs:
-            self.read_panel.add_signal(getattr(self.device, attr),
-                                       clean_attr(attr))
+            if attr not in self.device._sub_devices:
+                self.read_panel.add_signal(getattr(self.device, attr),
+                                           clean_attr(attr))
 
         for attr in self.device.configuration_attrs:
-            self.config_panel.add_signal(getattr(self.device, attr),
-                                         clean_attr(attr))
+            if attr not in self.device._sub_devices:
+                self.config_panel.add_signal(getattr(self.device, attr),
+                                             clean_attr(attr))
         # Catch the rest of the signals add to misc panel below misc_button
         for attr in self.device.component_names:
             if attr not in (self.device.read_attrs
