@@ -1,5 +1,5 @@
-typhon\.func\.FunctionPanel
-===========================
+typhon.func.FunctionPanel
+=========================
 
 .. currentmodule:: typhon.func
 
@@ -320,5 +320,32 @@ typhon\.func\.FunctionPanel
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FunctionPanel.DrawChildren
+      ~FunctionPanel.DrawWindowBackground
+      ~FunctionPanel.IgnoreMask
+      ~FunctionPanel.PdmDepth
+      ~FunctionPanel.PdmDevicePixelRatio
+      ~FunctionPanel.PdmDevicePixelRatioScaled
+      ~FunctionPanel.PdmDpiX
+      ~FunctionPanel.PdmDpiY
+      ~FunctionPanel.PdmHeight
+      ~FunctionPanel.PdmHeightMM
+      ~FunctionPanel.PdmNumColors
+      ~FunctionPanel.PdmPhysicalDpiX
+      ~FunctionPanel.PdmPhysicalDpiY
+      ~FunctionPanel.PdmWidth
+      ~FunctionPanel.PdmWidthMM
+      ~FunctionPanel.customContextMenuRequested
+      ~FunctionPanel.destroyed
+      ~FunctionPanel.objectNameChanged
+      ~FunctionPanel.staticMetaObject
+      ~FunctionPanel.windowIconChanged
+      ~FunctionPanel.windowIconTextChanged
+      ~FunctionPanel.windowTitleChanged
    
    

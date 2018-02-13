@@ -1,5 +1,5 @@
-typhon\.ComponentButton
-=======================
+typhon.ComponentButton
+======================
 
 .. currentmodule:: typhon
 
@@ -348,5 +348,36 @@ typhon\.ComponentButton
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ComponentButton.DrawChildren
+      ~ComponentButton.DrawWindowBackground
+      ~ComponentButton.IgnoreMask
+      ~ComponentButton.PdmDepth
+      ~ComponentButton.PdmDevicePixelRatio
+      ~ComponentButton.PdmDevicePixelRatioScaled
+      ~ComponentButton.PdmDpiX
+      ~ComponentButton.PdmDpiY
+      ~ComponentButton.PdmHeight
+      ~ComponentButton.PdmHeightMM
+      ~ComponentButton.PdmNumColors
+      ~ComponentButton.PdmPhysicalDpiX
+      ~ComponentButton.PdmPhysicalDpiY
+      ~ComponentButton.PdmWidth
+      ~ComponentButton.PdmWidthMM
+      ~ComponentButton.clicked
+      ~ComponentButton.customContextMenuRequested
+      ~ComponentButton.destroyed
+      ~ComponentButton.objectNameChanged
+      ~ComponentButton.pressed
+      ~ComponentButton.released
+      ~ComponentButton.staticMetaObject
+      ~ComponentButton.toggled
+      ~ComponentButton.windowIconChanged
+      ~ComponentButton.windowIconTextChanged
+      ~ComponentButton.windowTitleChanged
    
    

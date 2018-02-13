@@ -57,7 +57,7 @@ widget
 
    dg1_m1 = EpicsMotor('MFX:DG1:MMS:01', name="DG1 M1")
 
-   typhon_display = TyphonDisplay(dg1_m1)
+   typhon_display = DeviceDisplay(dg1_m1)
 
    typhon_display.show()
 

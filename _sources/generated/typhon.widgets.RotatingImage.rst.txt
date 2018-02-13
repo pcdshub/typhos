@@ -1,5 +1,5 @@
-typhon\.widgets\.RotatingImage
-==============================
+typhon.widgets.RotatingImage
+============================
 
 .. currentmodule:: typhon.widgets
 
@@ -345,5 +345,46 @@ typhon\.widgets\.RotatingImage
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~RotatingImage.Box
+      ~RotatingImage.DrawChildren
+      ~RotatingImage.DrawWindowBackground
+      ~RotatingImage.HLine
+      ~RotatingImage.IgnoreMask
+      ~RotatingImage.NoFrame
+      ~RotatingImage.Panel
+      ~RotatingImage.PdmDepth
+      ~RotatingImage.PdmDevicePixelRatio
+      ~RotatingImage.PdmDevicePixelRatioScaled
+      ~RotatingImage.PdmDpiX
+      ~RotatingImage.PdmDpiY
+      ~RotatingImage.PdmHeight
+      ~RotatingImage.PdmHeightMM
+      ~RotatingImage.PdmNumColors
+      ~RotatingImage.PdmPhysicalDpiX
+      ~RotatingImage.PdmPhysicalDpiY
+      ~RotatingImage.PdmWidth
+      ~RotatingImage.PdmWidthMM
+      ~RotatingImage.Plain
+      ~RotatingImage.Raised
+      ~RotatingImage.Shadow_Mask
+      ~RotatingImage.Shape_Mask
+      ~RotatingImage.StyledPanel
+      ~RotatingImage.Sunken
+      ~RotatingImage.VLine
+      ~RotatingImage.WinPanel
+      ~RotatingImage.currentChanged
+      ~RotatingImage.customContextMenuRequested
+      ~RotatingImage.destroyed
+      ~RotatingImage.objectNameChanged
+      ~RotatingImage.staticMetaObject
+      ~RotatingImage.widgetRemoved
+      ~RotatingImage.windowIconChanged
+      ~RotatingImage.windowIconTextChanged
+      ~RotatingImage.windowTitleChanged
    
    

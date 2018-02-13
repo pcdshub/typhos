@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Including Python Code &mdash; Typhon 0.1.0 documentation</title>
+  <title>Including Python Code &mdash; Typhon 0.1.0+3.g97edae0 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Typhon 0.1.0 documentation" href="index.html"/>
+    <link rel="top" title="Typhon 0.1.0+3.g97edae0 documentation" href="index.html"/>
         <link rel="next" title="Display Types" href="display.html"/>
         <link rel="prev" title="Basic Usage" href="basic_usage.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.0+3.g97edae0
               </div>
             
           
@@ -169,21 +169,21 @@
 <h1>Including Python Code<a class="headerlink" href="#including-python-code" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="adding-methods">
 <h2>Adding Methods<a class="headerlink" href="#adding-methods" title="Permalink to this headline">¶</a></h2>
-<p>Each <a class="reference internal" href="display.html#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal"><span class="pre">TyphonDisplay</span></code></a> has an <code class="xref py py-attr docutils literal"><span class="pre">method_panel</span></code>. You can add methods
+<p>Each <a class="reference internal" href="display.html#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDisplay</span></code></a> has an <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code>. You can add methods
 manually or pass them in via the constructor. In order to make the appropriate
 widgets,  the function signature is examined. For example lets make a mock
 function:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">3.14</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">3.14</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">pass</span>
 </pre></div>
 </div>
-<p>When you add the method to the panel the Python <code class="docutils literal"><span class="pre">inspect</span></code> module looks for
+<p>When you add the method to the panel the Python <code class="docutils literal notranslate"><span class="pre">inspect</span></code> module looks for
 type annotations for each parameter. It also determines which parameters are
 optional and which are not. Boolean variables are given QCheckboxes, while
 others are given QLineEdits for entry. Optional keywords are also hidden from
 the user unless they choose to expand the tab. Using
-<code class="xref py py-meth docutils literal"><span class="pre">FunctionPanel.add_method()</span></code> would look like this:</p>
-<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="n">panel</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">hide_params</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">])</span>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">FunctionPanel.add_method()</span></code> would look like this:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">panel</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">hide_params</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p><a class="reference internal" href="_images/function.png"><img alt="function" src="_images/function.png" style="width: 40%;" /></a> <a class="reference internal" href="_images/expanded.jpg"><img alt="expanded" src="_images/expanded.jpg" style="width: 40%;" /></a></p>
@@ -238,7 +238,7 @@ variable.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'0.1.0+3.g97edae0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

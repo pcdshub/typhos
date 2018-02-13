@@ -1,5 +1,5 @@
-typhon\.func\.FunctionDisplay
-=============================
+typhon.func.FunctionDisplay
+===========================
 
 .. currentmodule:: typhon.func
 
@@ -331,5 +331,37 @@ typhon\.func\.FunctionDisplay
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FunctionDisplay.DrawChildren
+      ~FunctionDisplay.DrawWindowBackground
+      ~FunctionDisplay.IgnoreMask
+      ~FunctionDisplay.PdmDepth
+      ~FunctionDisplay.PdmDevicePixelRatio
+      ~FunctionDisplay.PdmDevicePixelRatioScaled
+      ~FunctionDisplay.PdmDpiX
+      ~FunctionDisplay.PdmDpiY
+      ~FunctionDisplay.PdmHeight
+      ~FunctionDisplay.PdmHeightMM
+      ~FunctionDisplay.PdmNumColors
+      ~FunctionDisplay.PdmPhysicalDpiX
+      ~FunctionDisplay.PdmPhysicalDpiY
+      ~FunctionDisplay.PdmWidth
+      ~FunctionDisplay.PdmWidthMM
+      ~FunctionDisplay.accepted_types
+      ~FunctionDisplay.clicked
+      ~FunctionDisplay.customContextMenuRequested
+      ~FunctionDisplay.destroyed
+      ~FunctionDisplay.objectNameChanged
+      ~FunctionDisplay.optional_params
+      ~FunctionDisplay.required_params
+      ~FunctionDisplay.staticMetaObject
+      ~FunctionDisplay.toggled
+      ~FunctionDisplay.windowIconChanged
+      ~FunctionDisplay.windowIconTextChanged
+      ~FunctionDisplay.windowTitleChanged
    
    

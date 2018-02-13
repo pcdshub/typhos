@@ -1,5 +1,5 @@
-typhon\.panel\.SignalPanel
-==========================
+typhon.panel.SignalPanel
+========================
 
 .. currentmodule:: typhon.panel
 
@@ -321,5 +321,32 @@ typhon\.panel\.SignalPanel
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SignalPanel.DrawChildren
+      ~SignalPanel.DrawWindowBackground
+      ~SignalPanel.IgnoreMask
+      ~SignalPanel.PdmDepth
+      ~SignalPanel.PdmDevicePixelRatio
+      ~SignalPanel.PdmDevicePixelRatioScaled
+      ~SignalPanel.PdmDpiX
+      ~SignalPanel.PdmDpiY
+      ~SignalPanel.PdmHeight
+      ~SignalPanel.PdmHeightMM
+      ~SignalPanel.PdmNumColors
+      ~SignalPanel.PdmPhysicalDpiX
+      ~SignalPanel.PdmPhysicalDpiY
+      ~SignalPanel.PdmWidth
+      ~SignalPanel.PdmWidthMM
+      ~SignalPanel.customContextMenuRequested
+      ~SignalPanel.destroyed
+      ~SignalPanel.objectNameChanged
+      ~SignalPanel.staticMetaObject
+      ~SignalPanel.windowIconChanged
+      ~SignalPanel.windowIconTextChanged
+      ~SignalPanel.windowTitleChanged
    
    

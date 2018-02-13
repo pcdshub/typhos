@@ -1,5 +1,5 @@
-typhon\.panel\.Panel
-====================
+typhon.panel.Panel
+==================
 
 .. currentmodule:: typhon.panel
 
@@ -319,5 +319,32 @@ typhon\.panel\.Panel
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Panel.DrawChildren
+      ~Panel.DrawWindowBackground
+      ~Panel.IgnoreMask
+      ~Panel.PdmDepth
+      ~Panel.PdmDevicePixelRatio
+      ~Panel.PdmDevicePixelRatioScaled
+      ~Panel.PdmDpiX
+      ~Panel.PdmDpiY
+      ~Panel.PdmHeight
+      ~Panel.PdmHeightMM
+      ~Panel.PdmNumColors
+      ~Panel.PdmPhysicalDpiX
+      ~Panel.PdmPhysicalDpiY
+      ~Panel.PdmWidth
+      ~Panel.PdmWidthMM
+      ~Panel.customContextMenuRequested
+      ~Panel.destroyed
+      ~Panel.objectNameChanged
+      ~Panel.staticMetaObject
+      ~Panel.windowIconChanged
+      ~Panel.windowIconTextChanged
+      ~Panel.windowTitleChanged
    
    
