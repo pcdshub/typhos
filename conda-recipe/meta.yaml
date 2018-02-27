@@ -1,0 +1,30 @@
+{% set data = load_setup_py_data() %}
+
+package:
+    name    : typhon
+    version : {{ data.get('version') }}
+
+source:
+    path: ..
+
+requirements:
+    build:
+      - python
+
+
+    run:
+      - python
+      - pydm
+      - ophyd
+
+test:
+    imports:
+      - typhon
+
+    requires: 
+      - pytest
+
+about:
+  home: https://github.com/pcdshub/typhon
+  license: SLAC Open License
+  summary: Automatic User Interface Creation from Ophyd Devices
