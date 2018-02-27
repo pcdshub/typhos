@@ -31,6 +31,15 @@ defaults of the representative Python class, these signals are sorted into
 different categories based on their relevance to operators. Typhon uses this
 information to craft user interfaces.
 
+## Installation
+Recommended installation:
+```
+conda install typhon -c pcds-tag -c pydm-tag -c lightsource2-tag -c conda-forge
+```
+All `-tag` channels have `-dev` counterparts for bleeding edge installations.
+Both `requirements.txt` and optional `dev-requirements.txt` are kept up to date
+as well for those who prefer installation via `pip`
+
 ## Related Projects
 [**PyDM**](https://github.com/slaclab/pydm) - PyQT Display Manager for EPICS information
 
