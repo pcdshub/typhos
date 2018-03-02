@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.func.FunctionDisplay &mdash; Typhon 0.1.0+3.g97edae0 documentation</title>
+  <title>typhon.func.FunctionDisplay &mdash; Typhon 0.1.0+10.g9dd33b5 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Typhon 0.1.0+3.g97edae0 documentation" href="../index.html"/>
+    <link rel="top" title="Typhon 0.1.0+10.g9dd33b5 documentation" href="../index.html"/>
         <link rel="up" title="Widgets" href="../widgets.html"/>
         <link rel="next" title="typhon.widgets.RotatingImage" href="typhon.widgets.RotatingImage.html"/>
         <link rel="prev" title="typhon.ComponentButton" href="typhon.ComponentButton.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0+3.g97edae0
+                0.1.0+10.g9dd33b5
               </div>
             
           
@@ -206,12 +206,12 @@ below.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>func</strong> (<em>callable</em>) – </li>
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a><em>, </em><em>optional</em>) – Name to label the box with, by default this will be the function
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>, </em><em>optional</em>) – Name to label the box with, by default this will be the function
 meeting</li>
-<li><strong>annotations</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a><em>, </em><em>optional</em>) – If the function your are creating a display for is not annotated, you
+<li><strong>annotations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a><em>, </em><em>optional</em>) – If the function your are creating a display for is not annotated, you
 may manually supply types for parameters by passing in a dictionary of
 name to type mapping</li>
-<li><strong>hide_params</strong> (<em>list</em><em>, </em><em>optional</em>) – List of parameters to exclude from the display. These should have
+<li><strong>hide_params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>, </em><em>optional</em>) – List of parameters to exclude from the display. These should have
 appropriate defaults. By default, <code class="docutils literal notranslate"><span class="pre">self</span></code>, <code class="docutils literal notranslate"><span class="pre">args</span></code> and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are
 all excluded</li>
 <li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
@@ -405,16 +405,16 @@ all excluded</li>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute</span></code>()</td>
-<td>Execute <code class="xref py py-attr docutils literal notranslate"><span class="pre">func</span></code></td>
+<td>Execute <code class="xref py py-attr docutils literal notranslate"><span class="pre">func</span></code>.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find</span></code>(sip.voidptr)</td>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">findChild</span></code>(self,&nbsp;type,&nbsp;name,&nbsp;options,&nbsp;…)</td>
-<td>findChild(self, Tuple, name: str = ‘’, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; QObject</td>
+<td>findChild(self, Tuple, name: str = ‘’, options: Union[Qt.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">findChildren</span></code>(self,&nbsp;type,&nbsp;name,&nbsp;options,&nbsp;…)</td>
-<td>findChildren(self, Tuple, name: str = ‘’, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject]</td>
+<td>findChildren(self, Tuple, name: str = ‘’, options: Union[Qt.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusInEvent</span></code>(self,&nbsp;QFocusEvent)</td>
 <td></td>
@@ -474,7 +474,7 @@ all excluded</li>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabMouse</span></code>(self)</td>
-<td>grabMouse(self, Union[QCursor, Qt.CursorShape])</td>
+<td>grabMouse(self, Union[QCursor, Qt.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabShortcut</span></code>(self,&nbsp;Union[QKeySequence,&nbsp;…)</td>
 <td></td>
@@ -786,10 +786,10 @@ all excluded</li>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code>(self,&nbsp;QPaintDevice,&nbsp;targetOffset,&nbsp;…)</td>
-<td>render(self, QPainter, targetOffset: QPoint = QPoint(), sourceRegion: QRegion = QRegion(), flags: Union[QWidget.RenderFlags, QWidget.RenderFlag] = QWidget.RenderFlags(QWidget.DrawWindowBackground|QWidget.DrawChildren))</td>
+<td>render(self, QPainter, targetOffset: QPoint = QPoint(), sourceRegion: QRegion = QRegion(), flags: Union[QWidget.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">repaint</span></code>(self)</td>
-<td>repaint(self, int, int, int, int)</td>
+<td>repaint(self, int, int, int, int) repaint(self, QRect) repaint(self, QRegion)</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize</span></code>(self,&nbsp;QSize)</td>
 <td>resize(self, int, int)</td>
@@ -870,7 +870,7 @@ all excluded</li>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocus</span></code>(self)</td>
-<td>setFocus(self, Qt.FocusReason)</td>
+<td>setFocus(self, Qt.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocusPolicy</span></code>(self,&nbsp;Qt.FocusPolicy)</td>
 <td></td>
@@ -936,7 +936,7 @@ all excluded</li>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setParent</span></code>(self,&nbsp;QWidget)</td>
-<td>setParent(self, QWidget, Union[Qt.WindowFlags, Qt.WindowType])</td>
+<td>setParent(self, QWidget, Union[Qt.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setProperty</span></code>(self,&nbsp;str,&nbsp;Any)</td>
 <td></td>
@@ -951,7 +951,7 @@ all excluded</li>
 <td>setSizeIncrement(self, QSize)</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setSizePolicy</span></code>(self,&nbsp;QSizePolicy)</td>
-<td>setSizePolicy(self, QSizePolicy.Policy, QSizePolicy.Policy)</td>
+<td>setSizePolicy(self, QSizePolicy.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setStatusTip</span></code>(self,&nbsp;str)</td>
 <td></td>
@@ -1104,7 +1104,7 @@ all excluded</li>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>(self)</td>
-<td>update(self, QRect)</td>
+<td>update(self, QRect) update(self, QRegion) update(self, int, int, int, int)</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">updateGeometry</span></code>(self)</td>
 <td></td>
@@ -1315,7 +1315,7 @@ all excluded</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.1.0+3.g97edae0',
+            VERSION:'0.1.0+10.g9dd33b5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
