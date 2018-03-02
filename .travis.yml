@@ -9,7 +9,11 @@ env:
 matrix:
   include:
      - python: 3.6
-       env: BUILD_DOCS=1
+       env:
+          - BUILD=1
+          - PYDM_CHANNEL=pydm-tag
+     - python: 3.6
+       env: PYDM_CHANNEL=pydm-dev
 
 services:
   - docker
@@ -40,19 +44,19 @@ install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda install conda-build anaconda-client
-  - conda update -q conda
+  - conda update -q conda conda-build
+  - conda config --append channels $PYDM_CHANNEL 
+  - conda config --append channels lightsource2-tag
+  - conda config --append channels conda-forge
   # Useful for debugging any issues with conda
   - conda info -a
-  #Grab all dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION swig coverage pydm pip ophyd pyqt=5 pytest -c lightsource2-tag -c pydm-dev -c conda-forge -c gsecars
-  #Launch Conda environment
+  # Grab all dependencies
+  - conda build -q conda-recipe --python=$TRAVIS_PYTHON_VERSION --output-folder bld-dir
+  - conda config --add channels "file://`pwd`/bld-dir"
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION typhon --file dev-requirements.txt
+  # Launch Conda environment
   - source activate test-environment
-  - pip install codecov
-  - pip install -r requirements.txt
-  - pip install -r dev-requirements.txt
-  #Install
-  - python setup.py install
-  #Setup some path environment variables for epics
+  # Setup some path environment variables for epics
   - export PATH=$PATH:$EPICS_BASE/bin/$EPICS_HOST_ARCH
   - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$EPICS_BASE/lib/$EPICS_HOST_ARCH"
   - echo "PATH=$PATH"
@@ -70,9 +74,7 @@ script:
   # Build docs
   - set -e
   - |
-    if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD_DOCS ]]; then
-      # Install doctr 
-      pip install doctr
+    if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD ]]; then
       # Create HTML documentation  
       pushd docs
       sphinx-autogen -o source/generated source/*.rst
@@ -84,3 +86,13 @@ script:
 
 after_success:
   - codecov
+  - |
+    if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == $OFFICIAL_REPO && $TRAVIS_BRANCH == $TRAVIS_TAG  && $TRAVIS_TAG != '' && $BUILD ]]; then
+      export ANACONDA_API_TOKEN=$CONDA_UPLOAD_TOKEN_TAG
+      anaconda upload bld-dir/linux-64/*.tar.bz2
+    fi
+  - |
+    if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == $OFFICIAL_REPO && $TRAVIS_BRANCH == 'master' && $BUILD ]]; then
+      export ANACONDA_API_TOKEN=$CONDA_UPLOAD_TOKEN_DEV
+      anaconda upload bld-dir/linux-64/*.tar.bz2
+    fi
