@@ -8,7 +8,9 @@ import importlib
 ###############
 # Third Party #
 ###############
+import numpy as np
 from pydm.data_plugins.plugin import PyDMConnection
+from pydm.PyQt.QtCore import pyqtSlot, Qt
 
 ##########
 # Module #
@@ -53,7 +55,6 @@ class ClassConnection(PyDMConnection):
         else:
             # NOTE: This was taken entirely from happi/loader.py. The reason it
             # was not directly imported was to avoid an unneeded dependency
-
             # Parse the classname, arguments and keywords from the address
             # First assume the form {class}|{args}|{kwargs}
             try:
@@ -96,3 +97,102 @@ class ClassConnection(PyDMConnection):
         obj : object
         """
         return cls(None, None, preassembled=obj)
+
+
+class SignalConnection(ClassConnection):
+    """
+    Connection to monitor an Ophyd Signal
+
+    This is meant as a generalized connection to any type of Ophyd Signal. It
+    handles reporting new values to listeners as well as pushing new
+    values that users update in the PyDM interface back to the underlying
+    signal
+
+    Attributes
+    ----------
+    obj : ophyd.Signal
+        Stored signal object
+
+    Example
+    -------
+    .. code:: python
+
+        conn = ClassConnection(sig://ophyd.Signal|name=Test,)
+                               ophyd.Signal|name=Test)
+    """
+    supported_types = [int, float, str, np.ndarray]
+
+    def __init__(self, *args, **kwargs):
+        # Create Signal
+        super().__init__(*args, **kwargs)
+        # Subscribe to updates from Ophyd
+        self.obj.subscribe(self.send_new_value, event_type=self.obj.SUB_VALUE)
+        self.signal_type = None
+
+    @pyqtSlot(int)
+    @pyqtSlot(float)
+    @pyqtSlot(str)
+    @pyqtSlot(np.ndarray)
+    def put_value(self, new_val):
+        """
+        Pass a value from the UI to Signal
+
+        We are not guaranteed that this signal is writeable so catch exceptions
+        if they are created
+        """
+        try:
+            self.obj.put(new_val)
+        except Exception as exc:
+            logger.exception("Unable to put %s to %s", new_val, self.obj.name)
+
+    def send_new_value(self, value=None, **kwargs):
+        """
+        Update the UI with a new value from the Signal
+        """
+        # If this is the first time we are receiving a new value note the type
+        # We make the assumption that signals do not change types during a
+        # connection
+        if not self.signal_type:
+            self.signal_type = type(value)
+        self.new_value_signal[self.signal_type].emit(value)
+
+    def add_listener(self, channel):
+        """
+        Add a listener channel to this connection
+
+        This attaches values input by the user to the `send_new_value` function
+        in order to update the Signal object in addition to the default setup
+        performed in PyDMConnection
+        """
+        # Perform the default connection setup
+        super().add_listener(channel)
+        # Send the most recent value to the channel
+        self.send_new_value(value=self.obj.get())
+        # If the channel is used for writing to PVs, hook it up to the 'put'
+        # methods.
+        if channel.value_signal is not None:
+            for _typ in self.supported_types:
+                try:
+                    channel.value_signal[_typ].connect(self.put_value,
+                                                       Qt.QueuedConnection)
+                except KeyError:
+                    logger.debug("%s has no value_signal for type %s",
+                                 channel.address, _typ)
+
+    def remove_listener(self, channel):
+        """
+        Remove a listener channel from this connection
+
+        This removes the `send_new_value` connections from the channel in
+        addition to the default disconnection performed in PyDMConnection
+        """
+        # Disconnect put_value from outgoing channel
+        if channel.value_signal is not None:
+            for _typ in self.supported_types:
+                try:
+                    channel.value_signal[_typ].disconnect(self.put_value)
+                except KeyError:
+                    logger.debug("Unable to disconnect value_signal from %s "
+                                 "for type", channel.address, _typ)
+        # Disconnect any other signals
+        super().remove_listener(channel)

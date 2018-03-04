@@ -1,2 +1,2 @@
-__all__ = ['ClassConnection']
-from .core import ClassConnection
+__all__ = ['ClassConnection', 'SignalConnection']
+from .core import SignalConnection, ClassConnection
