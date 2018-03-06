@@ -1,3 +1,4 @@
+bluesky
 pytest
 codecov
 matplotlib
