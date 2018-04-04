@@ -10,18 +10,92 @@ import logging
 from bluesky import RunEngine
 from bluesky.utils import RunEngineInterrupted, install_qt_kicker
 from pydm.PyQt.QtGui import QVBoxLayout, QLabel, QComboBox, QGroupBox
-from pydm.PyQt.QtCore import pyqtSignal, pyqtSlot
+from pydm.PyQt.QtGui import QStackedWidget, QPushButton
+from pydm.PyQt.QtCore import QObject, pyqtSignal, pyqtSlot
 
 
 logger = logging.getLogger(__name__)
 
 
-def no_plan_warning(*args, **kwargs):
-    """
-    Convienence function to raise a user warning
-    """
-    logger.critical("Attempting to use the RunEngine "
-                    "without configuring a plan")
+class QRunEngine(QObject, RunEngine):
+
+    state_changed = pyqtSignal('QString', 'QString')
+    update_rate = 0.02
+    command_registry = {'Halt': RunEngine.halt,
+                        'Abort': RunEngine.abort,
+                        'Resume': RunEngine.resume,
+                        'Pause': RunEngine.request_pause,
+                        'Stop': RunEngine.stop}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Attach the state_hook to emit signals
+        self.state_hook = self.on_state_change
+        # Create a kicker, not worried about doing this multiple times as this
+        # is checked by `install_qt_kicker` itself
+        install_qt_kicker(update_rate=self.update_rate)
+        # Allow a plan to be stored on the RunEngine
+        self.plan_creator = None
+
+    def on_state_change(self, state, old_state):
+        """
+        Report a state change of the RunEngine
+
+        This is added directly to the `RunEngine.state_hook` and emits the
+        `engine_state_change` signal.
+
+        Parameters
+        ----------
+        state: str
+
+        old_state: str
+
+        """
+        self.state_changed.emit(state, old_state)
+
+    @pyqtSlot()
+    def start(self):
+        """Start the RunEngine"""
+        if not self.plan_creator:
+            logger.error("Commanded RunEngine to start but there "
+                         "is no source for a plan")
+            return
+        # Execute our loaded function
+        try:
+            self.__call__(self.plan_creator())
+        # Pausing raises an exception
+        except RunEngineInterrupted as exc:
+            logger.debug("RunEngine paused")
+
+    @pyqtSlot()
+    def pause(self):
+        """Pause the RunEngine"""
+        self.request_pause()
+
+    @pyqtSlot('QString')
+    def command(self, command):
+        """
+        Accepts commands and instructs the RunEngine accordingly
+
+        Parameters
+        ----------
+        command : str
+            Name of the command in the :attr:`.command_registry:`
+        """
+        logger.info("Requested command %s for RunEngine", command)
+        # Load the function from registry
+        try:
+            func = self.command_registry[command]
+        # Catch commands that we have no idea how to obey 
+        except KeyError as exc:
+            logger.exception('Unrecognized command for RunEngine -> %s',
+                             exc)
+        # Execute the command
+        else:
+            try:
+                func(self)
+            except RunEngineInterrupted as exc:
+                logger.debug("RunEngine paused")
 
 
 class EngineLabel(QLabel):
@@ -47,7 +121,12 @@ class EngineLabel(QLabel):
         self.setStyleSheet('QLabel {background-color: %s}' % color)
 
 
-class EngineControl(QComboBox):
+    def connect(self, engine):
+        """Connect an existing QRunEngine"""
+        engine.state_changed.connect(self.on_state_change)
+        self.on_state_change(engine.state, None)
+
+class EngineControl(QStackedWidget):
     """
     RunEngine through a QComboBox
 
@@ -56,23 +135,41 @@ class EngineControl(QComboBox):
 
     Attributes
     ----------
-    null_command : str
-        Display value for the empty command
+    state_widgets: dict
 
-    available_commands: dict
-        Mapping of state to available RunEngine commands
+    pause_commands: list
+        Available RunEngine commands while the Engine is Paused
     """
-    null_command = '-'
-    available_commands = {'running': ['Halt', 'Pause'],
-                          'idle': ['Start'],
-                          'paused': ['Abort', 'Halt',  'Resume', 'Stop']}
+    pause_commands = ['Abort', 'Halt',  'Resume', 'Stop']
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        # Create our widgets
+        self.state_widgets = {'idle': QPushButton('Start'),
+                              'running': QPushButton('Pause'),
+                              'paused': QComboBox()}
+        # Add the options to QComboBox
+        self.state_widgets['paused'].insertItems(0, self.pause_commands)
+        # Add all the widgets to the stack
+        for widget in self.state_widgets.values():
+            self.addWidget(widget)
 
     @pyqtSlot('QString', 'QString')
     def on_state_change(self, state, old_state):
-        # Clear old commands
-        self.clear()
-        # Find the list of available commands
-        self.addItems([self.null_command] + self.available_commands[state])
+        """Update the control widget based on the state"""
+        self.setCurrentWidget(self.state_widgets[state])
+
+    def connect(self, engine):
+        """Connect a QRunEngine object"""
+        # Connect all the control signals to the engine slots
+        self.state_widgets['idle'].clicked.connect(engine.start)
+        self.state_widgets['running'].clicked.connect(engine.request_pause)
+        self.state_widgets['paused'].activated['QString']\
+                                    .connect(engine.command)
+        # Update our control widgets based on this engine
+        engine.state_changed.connect(self.on_state_change)
+        # Set the current widget correctly
+        self.on_state_change(engine.state, None)
 
 
 class EngineWidget(QGroupBox):
@@ -85,34 +182,12 @@ class EngineWidget(QGroupBox):
         The underlying RunEngine object. A basic version wil be instatiated if
         one is not provided
 
-    plan : callable, optional
+    plan_creator : callable, optional
         A callable  that takes no parameters and returns a generator. If the
         plan is meant to be called repeatedly the function should make sure
         that a refreshed generator is returned each time
-
-    Attributes
-    ----------
-    engine_state_change : pyqtSignal('QString', 'QString')
-        Signal emitted by changes in the RunEngine state. The first string is
-        the current state, the second is the previous state
-
-    update_rate: float
-        Update rate the qt_kicker is installed at
-
-    command_registry: dict
-        Mapping of commands received by the pyqtSlot `command` and actual
-        Python callables
     """
-    engine_state_change = pyqtSignal('QString', 'QString')
-    update_rate = 0.02
-    command_registry = {'Halt': RunEngine.halt,
-                        'Start': no_plan_warning,
-                        'Abort': RunEngine.abort,
-                        'Resume': RunEngine.resume,
-                        'Pause': RunEngine.request_pause,
-                        'Stop': RunEngine.stop}
-
-    def __init__(self, engine=None, plan=None, parent=None):
+    def __init__(self, engine=None, plan_creator=None, parent=None):
         # Instantiate widget information and layout
         super().__init__('Engine Control', parent=parent)
         self.setStyleSheet('QLabel {qproperty-alignment: AlignCenter}')
@@ -128,34 +203,14 @@ class EngineWidget(QGroupBox):
         self.setLayout(lay)
         # Create a new RunEngine if we were not provided one
         self._engine = None
-        self._plan = None
-        self.engine = engine or RunEngine()
-
-    @property
-    def plan(self):
-        """
-        Stored plan callable
-        """
-        return self._plan
-
-    @plan.setter
-    def plan(self, plan):
-        logger.debug("Storing a new plan for the RunEngine")
-        # Do not allow plans to be set while RunEngine is active
-        if self.engine and self.engine.state != 'idle':
-            logger.exception("Can not change the configured plan while the "
-                             "RunEngine is running!")
-            return
-        # Store our plan internally
-        self._plan = plan
-        # Register a new call command
-        self.command_registry['Start'] = (lambda x:
-                                          RunEngine.__call__(x, self.plan()))
+        self.engine = engine or QRunEngine()
+        if plan_creator:
+            self.engine.plan_creator = plan_creator
 
     @property
     def engine(self):
         """
-        Underlying RunEngine object
+        Underlying QRunEngine object
         """
         return self._engine
 
@@ -166,61 +221,7 @@ class EngineWidget(QGroupBox):
         if self._engine and self._engine.state != 'idle':
             raise RuntimeError("Can not change the RunEngine while the "
                                "RunEngine is running!")
-        # Create a kicker, not worried about doing this multiple times as this
-        # is checked by `install_qt_kicker` itself
-        install_qt_kicker(update_rate=self.update_rate)
-        engine.state_hook = self.on_state_change
         # Connect signals
         self._engine = engine
-        self.engine_state_change.connect(self.label.on_state_change)
-        self.engine_state_change.connect(self.control.on_state_change)
-        self.control.currentIndexChanged['QString'].connect(self.command)
-        # Run callbacks manually to initialize widgets. We can not emit the
-        # signal specifically because we can not emit signals in __init__
-        state = self._engine.state
-        self.label.on_state_change(state, None)
-        self.control.on_state_change(state, None)
-
-    def on_state_change(self, state, old_state):
-        """
-        Report a state change of the RunEngine
-
-        This is added directly to the `RunEngine.state_hook` and emits the
-        `engine_state_change` signal.
-
-        Parameters
-        ----------
-        state: str
-
-        old_state: str
-
-        """
-        self.engine_state_change.emit(state, old_state)
-
-    @pyqtSlot('QString')
-    def command(self, command):
-        """
-        Accepts commands and instructs the RunEngine accordingly
-
-        Parameters
-        ----------
-        command : str
-            Name of the command in the :attr:`.command_registry:`
-        """
-        # Ignore null commands
-        if not command or command == self.control.null_command:
-            return
-        logger.info("Requested command %s for RunEngine", command)
-        # Load thefunction from registry
-        try:
-            func = self.command_registry[command]
-        except KeyError as exc:
-            logger.exception('Unrecognized command for RunEngine -> %s',
-                             exc)
-            return
-        # Execute our loaded function
-        try:
-            func(self.engine)
-        # Pausing raises an exception
-        except RunEngineInterrupted as exc:
-            logger.debug("RunEngine paused")
+        self.label.connect(self._engine)
+        self.control.connect(self._engine)
