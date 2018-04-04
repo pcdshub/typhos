@@ -86,7 +86,7 @@ class QRunEngine(QObject, RunEngine):
         # Load the function from registry
         try:
             func = self.command_registry[command]
-        # Catch commands that we have no idea how to obey 
+        # Catch commands that we have no idea how to obey
         except KeyError as exc:
             logger.exception('Unrecognized command for RunEngine -> %s',
                              exc)
@@ -120,11 +120,11 @@ class EngineLabel(QLabel):
         color = self.color_map[state]
         self.setStyleSheet('QLabel {background-color: %s}' % color)
 
-
     def connect(self, engine):
         """Connect an existing QRunEngine"""
         engine.state_changed.connect(self.on_state_change)
         self.on_state_change(engine.state, None)
+
 
 class EngineControl(QStackedWidget):
     """
