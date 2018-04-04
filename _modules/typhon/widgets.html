@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.widgets &mdash; Typhon 0.1.0+10.g9dd33b5 documentation</title>
+  <title>typhon.widgets &mdash; Typhon 0.1.0+13.gbdf9f0a documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Typhon 0.1.0+10.g9dd33b5 documentation" href="../../index.html"/>
+    <link rel="top" title="Typhon 0.1.0+13.gbdf9f0a documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.0+10.g9dd33b5
+                0.1.0+13.gbdf9f0a
               </div>
             
           
@@ -228,8 +228,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;button.ui&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setChecked</span><span class="p">)</span>
-        <span class="c1"># Store orignal stylesheet</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styleSheet</span><span class="p">()</span>
+        <span class="c1"># Store orignal stylesheet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fixed_style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">styleSheet</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">add_pv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -270,8 +270,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;QFrame {border-color : cyan}&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fixed_style</span><span class="p">)</span>
-        <span class="c1"># Register with QAbstractButton</span></div>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">checked</span><span class="p">)</span>
+        <span class="c1"># Register with QAbstractButton</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">checked</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RotatingImage"><a class="viewcode-back" href="../../generated/typhon.widgets.RotatingImage.html#typhon.RotatingImage">[docs]</a><span class="k">class</span> <span class="nc">RotatingImage</span><span class="p">(</span><span class="n">QStackedWidget</span><span class="p">):</span>
@@ -291,8 +291,8 @@
 <span class="sd">        Table of image names and their index in the stack</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="RotatingImage.__init__"><a class="viewcode-back" href="../../generated/typhon.widgets.RotatingImage.html#typhon.RotatingImage.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">add_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -324,8 +324,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        name : str</span>
 <span class="sd">            Image name saved in the :attr:`.images` dictionary</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="n">name</span><span class="p">])</span></div>
 </pre></div>
 
            </div>
@@ -362,7 +362,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+10.g9dd33b5',
+            VERSION:'0.1.0+13.gbdf9f0a',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

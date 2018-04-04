@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.1.0+10.g9dd33b5 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.1.0+13.gbdf9f0a documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Typhon 0.1.0+10.g9dd33b5 documentation" href="../../index.html"/>
+    <link rel="top" title="Typhon 0.1.0+13.gbdf9f0a documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.0+10.g9dd33b5
+                0.1.0+13.gbdf9f0a
               </div>
             
           
@@ -297,8 +297,8 @@
         <span class="c1"># Connect button</span>
         <span class="n">button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_subdevice</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">))</span>
         <span class="c1"># Show the widgets if hidden</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">buttons</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span></div>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">buttons</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">buttons</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">buttons</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.add_subdevice"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_subdevice">[docs]</a>    <span class="k">def</span> <span class="nf">add_subdevice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -323,8 +323,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_subdisplay</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                             <span class="n">DeviceDisplay</span><span class="p">(</span><span class="n">device</span><span class="p">,</span>
                                           <span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">,</span>
-                                          <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">),</span></div>
-                            <span class="n">button</span><span class="o">=</span><span class="n">button</span><span class="p">)</span>
+                                          <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">),</span>
+                            <span class="n">button</span><span class="o">=</span><span class="n">button</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.add_pv_to_plot"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_pv_to_plot">[docs]</a>    <span class="k">def</span> <span class="nf">add_pv_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -346,8 +346,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hint_plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         <span class="c1"># Combine user supplied options with defaults</span>
         <span class="n">plot_opts</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_curve_opts</span><span class="p">)</span>
-        <span class="n">plot_opts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hint_plot</span><span class="o">.</span><span class="n">addYChannel</span><span class="p">(</span><span class="n">y_channel</span><span class="o">=</span><span class="n">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">),</span> <span class="o">**</span><span class="n">plot_opts</span><span class="p">)</span>
+        <span class="n">plot_opts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hint_plot</span><span class="o">.</span><span class="n">addYChannel</span><span class="p">(</span><span class="n">y_channel</span><span class="o">=</span><span class="n">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">),</span> <span class="o">**</span><span class="n">plot_opts</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.add_image"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_image">[docs]</a>    <span class="k">def</span> <span class="nf">add_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">subdevice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -371,8 +371,8 @@
         <span class="c1"># automatically</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="c1"># Show the widget if it is hidden</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span></div>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.show_subdevice"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.show_subdevice">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">show_subdevice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -389,8 +389,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subdisplays</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
         <span class="c1"># Show image if we have one for this subdevice</span>
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">isHidden</span><span class="p">()</span>
-           <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">images</span><span class="p">):</span></div>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+           <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">images</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.hide_subdevices"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.hide_subdevices">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">hide_subdevices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -402,8 +402,8 @@
         <span class="k">for</span> <span class="n">button</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_button_group</span><span class="o">.</span><span class="n">buttons</span><span class="p">():</span>
             <span class="n">button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">isHidden</span><span class="p">()</span>
-           <span class="ow">and</span> <span class="kc">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">images</span><span class="p">):</span></div></div>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+           <span class="ow">and</span> <span class="kc">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">images</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="DeviceDisplay"><a class="viewcode-back" href="../../display.html#typhon.DeviceDisplay">[docs]</a><span class="k">class</span> <span class="nc">DeviceDisplay</span><span class="p">(</span><span class="n">TyphonDisplay</span><span class="p">):</span>
@@ -471,8 +471,8 @@
             <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to find PV name of </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
         <span class="c1"># Hide the lesser needed panels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="o">.</span><span class="n">show_contents</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
-        <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="o">.</span><span class="n">show_contents</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="o">.</span><span class="n">show_contents</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="o">.</span><span class="n">show_contents</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -509,7 +509,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+10.g9dd33b5',
+            VERSION:'0.1.0+13.gbdf9f0a',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

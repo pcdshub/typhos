@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.panel.Panel &mdash; Typhon 0.1.0+10.g9dd33b5 documentation</title>
+  <title>typhon.panel.Panel &mdash; Typhon 0.1.0+13.gbdf9f0a documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="Typhon 0.1.0+10.g9dd33b5 documentation" href="../index.html"/>
+    <link rel="top" title="Typhon 0.1.0+13.gbdf9f0a documentation" href="../index.html"/>
         <link rel="up" title="Widgets" href="../widgets.html"/>
         <link rel="next" title="typhon.panel.SignalPanel" href="typhon.panel.SignalPanel.html"/>
         <link rel="prev" title="Widgets" href="../widgets.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.0+10.g9dd33b5
+                0.1.0+13.gbdf9f0a
               </div>
             
           
@@ -387,10 +387,10 @@ called after instance creation</p>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">findChild</span></code>(self,&nbsp;type,&nbsp;name,&nbsp;options,&nbsp;…)</td>
-<td>findChild(self, Tuple, name: str = ‘’, options: Union[Qt.</td>
+<td>findChild(self, Tuple, name: str = ‘’, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; QObject</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">findChildren</span></code>(self,&nbsp;type,&nbsp;name,&nbsp;options,&nbsp;…)</td>
-<td>findChildren(self, Tuple, name: str = ‘’, options: Union[Qt.</td>
+<td>findChildren(self, Tuple, name: str = ‘’, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject] findChildren(self, type, QRegExp, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject] findChildren(self, Tuple, QRegExp, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject] findChildren(self, type, QRegularExpression, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject] findChildren(self, Tuple, QRegularExpression, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject]</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusInEvent</span></code>(self,&nbsp;QFocusEvent)</td>
 <td></td>
@@ -450,7 +450,7 @@ called after instance creation</p>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabMouse</span></code>(self)</td>
-<td>grabMouse(self, Union[QCursor, Qt.</td>
+<td>grabMouse(self, Union[QCursor, Qt.CursorShape])</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabShortcut</span></code>(self,&nbsp;Union[QKeySequence,&nbsp;…)</td>
 <td></td>
@@ -750,7 +750,7 @@ called after instance creation</p>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code>(self,&nbsp;QPaintDevice,&nbsp;targetOffset,&nbsp;…)</td>
-<td>render(self, QPainter, targetOffset: QPoint = QPoint(), sourceRegion: QRegion = QRegion(), flags: Union[QWidget.</td>
+<td>render(self, QPainter, targetOffset: QPoint = QPoint(), sourceRegion: QRegion = QRegion(), flags: Union[QWidget.RenderFlags, QWidget.RenderFlag] = QWidget.RenderFlags(QWidget.DrawWindowBackground|QWidget.DrawChildren))</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">repaint</span></code>(self)</td>
 <td>repaint(self, int, int, int, int) repaint(self, QRect) repaint(self, QRegion)</td>
@@ -822,7 +822,7 @@ called after instance creation</p>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocus</span></code>(self)</td>
-<td>setFocus(self, Qt.</td>
+<td>setFocus(self, Qt.FocusReason)</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocusPolicy</span></code>(self,&nbsp;Qt.FocusPolicy)</td>
 <td></td>
@@ -888,7 +888,7 @@ called after instance creation</p>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setParent</span></code>(self,&nbsp;QWidget)</td>
-<td>setParent(self, QWidget, Union[Qt.</td>
+<td>setParent(self, QWidget, Union[Qt.WindowFlags, Qt.WindowType])</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setProperty</span></code>(self,&nbsp;str,&nbsp;Any)</td>
 <td></td>
@@ -903,7 +903,7 @@ called after instance creation</p>
 <td>setSizeIncrement(self, QSize)</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setSizePolicy</span></code>(self,&nbsp;QSizePolicy)</td>
-<td>setSizePolicy(self, QSizePolicy.</td>
+<td>setSizePolicy(self, QSizePolicy.Policy, QSizePolicy.Policy)</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setStatusTip</span></code>(self,&nbsp;str)</td>
 <td></td>
@@ -1249,7 +1249,7 @@ called after instance creation</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.1.0+10.g9dd33b5',
+            VERSION:'0.1.0+13.gbdf9f0a',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
