@@ -32,7 +32,7 @@ from pydm.PyQt.QtGui import QLineEdit, QVBoxLayout, QCheckBox
 # Package #
 ###########
 from .utils import clean_attr
-from .panel import Panel
+from .widgets import TogglePanel
 
 logger = logging.getLogger(__name__)
 
@@ -167,8 +167,8 @@ class FunctionDisplay(QGroupBox):
 
     The created user interface consists of a button to execute the function,
     the required parameters are always displayed beneath the button, and
-    a :class:`.Panel` object that toggles the view of the optional parameters
-    below.
+    a :class:`.TogglePanel` object that toggles the view of the optional
+    parameters below.
 
     Attributes
     ----------
@@ -222,7 +222,7 @@ class FunctionDisplay(QGroupBox):
         self.execute_button.clicked.connect(self.execute)
         self._layout.addWidget(self.execute_button)
         # Add a panel for the optional parameters
-        self.optional = Panel("Optional Parameters")
+        self.optional = TogglePanel("Optional Parameters")
         self.optional.contents = QWidget()
         self.optional.contents.setLayout(QVBoxLayout())
         self.optional.contents.layout().setSpacing(2)
@@ -367,7 +367,7 @@ class FunctionDisplay(QGroupBox):
         return QSize(175, 100)
 
 
-class FunctionPanel(Panel):
+class FunctionPanel(TogglePanel):
     """
     Function Panel
 
