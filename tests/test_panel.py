@@ -42,7 +42,7 @@ def test_panel_add_enum():
     loc = panel.add_signal(sig, "Enum PV")
     # Check our signal was added a QCombobox
     # Assume it is the last item in the button layout
-    but_layout = panel.contents.layout().itemAtPosition(loc, 1)
+    but_layout = panel.layout().itemAtPosition(loc, 1)
     assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
                       PyDMEnumComboBox)
     return panel
