@@ -18,7 +18,7 @@ from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup
 ###########
 from .func import FunctionPanel
 from .panel import SignalPanel
-from .utils import ui_dir, clean_attr, clean_source, channel_name
+from .utils import ui_dir, clean_attr, clean_source, clean_name, channel_name
 from .widgets import RotatingImage, ComponentButton
 
 logger = logging.getLogger(__name__)
@@ -148,7 +148,7 @@ class TyphonDisplay(QWidget):
         """
         logger.debug("Creating button for %s", device.name)
         # Create ComponentButton adding the hints automatically
-        button = ComponentButton(clean_attr(device.name), parent=self)
+        button = ComponentButton(clean_name(device), parent=self)
         description = device.describe()
         for field in getattr(device, 'hints', {}).get('fields', list()):
             sig_source = description[field]['source']
@@ -263,7 +263,8 @@ class DeviceDisplay(TyphonDisplay):
     parent : QWidget, optional
     """
     def __init__(self, device, methods=None, parent=None):
-        super().__init__(device.name, parent=parent)
+        super().__init__(clean_name(device, strip_parent=False),
+                         parent=parent)
         # Examine and store device for later reference
         self.device = device
         self.device_description = self.device.describe()
