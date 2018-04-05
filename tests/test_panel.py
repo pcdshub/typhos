@@ -8,12 +8,11 @@
 from ophyd.signal import EpicsSignal, EpicsSignalRO
 from ophyd.tests.conftest import using_fake_epics_pv
 from pydm.widgets import PyDMEnumComboBox
-from pydm.PyQt.QtGui import QWidget
 
 ###########
 # Package #
 ###########
-from typhon.panel import Panel, SignalPanel
+from typhon.panel import SignalPanel
 from .conftest import show_widget
 
 
@@ -30,16 +29,6 @@ def test_panel_creation():
                     'Read Only': EpicsSignalRO('Tst:Pv:RO')})
     assert len(panel.pvs) == 3
     return panel
-
-
-def test_panel_hide():
-    # Create basic panel
-    panel = Panel("Test Panel")
-    panel.contents = QWidget()
-    panel.layout().addWidget(panel.contents)
-    # Toggle the button
-    panel.show_contents(False)
-    assert panel.contents.isHidden()
 
 
 @show_widget

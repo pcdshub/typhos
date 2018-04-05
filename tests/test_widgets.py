@@ -6,12 +6,24 @@
 # External #
 ############
 from ophyd.tests.conftest import using_fake_epics_pv
+from pydm.PyQt.QtGui import QWidget
 
 ###########
 # Package #
 ###########
 from typhon.display import RotatingImage, ComponentButton
+from typhon.widgets import TogglePanel
 from .conftest import show_widget
+
+
+def test_toggle_panel_hide():
+    # Create basic panel
+    panel = TogglePanel("Test Panel")
+    panel.contents = QWidget()
+    panel.layout().addWidget(panel.contents)
+    # Toggle the button
+    panel.show_contents(False)
+    assert panel.contents.isHidden()
 
 
 @using_fake_epics_pv
