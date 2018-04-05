@@ -36,3 +36,22 @@ def clean_source(source):
     Strip the PV prefix off the `source` returned from an Ophyd description
     """
     return source.lstrip('PV:')
+
+
+def clean_name(device, strip_parent=True):
+    """
+    Create a human readable name for a device
+
+    Parameters
+    ----------
+    device: ophyd.Device
+
+    strip_parent: bool
+        Remove the parent name of the device from name
+    """
+    name = device.name
+    # Strip the parent name if present and desired
+    if device.parent and strip_parent:
+        name = name.lstrip(device.parent.name + '_')
+    # Return the cleaned alias
+    return clean_attr(name)
