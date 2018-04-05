@@ -34,14 +34,12 @@ class SignalPanel(QWidget):
         Parent of panel
     """
     def __init__(self, title, signals=None, parent=None):
-        super().__init__(title, parent=parent)
+        super().__init__(parent=parent)
         # Store signal information
         self.pvs = dict()
-        # Create empty panel contents
-        self.contents = QWidget()
-        self.contents.setLayout(QGridLayout())
-        self.contents.layout().setContentsMargins(2, 2, 2, 2)
-        self.layout().addWidget(self.contents)
+        # Create panel layout
+        self.setLayout(QGridLayout())
+        self.layout().setContentsMargins(2, 2, 2, 2)
         # Add supplied signals
         if signals:
             for name, sig in signals.items():
@@ -66,7 +64,7 @@ class SignalPanel(QWidget):
         -------
         loc : int
             Row number that the signal information was added to in the
-            `SignalPanel.contents.layout()``
+            `SignalPanel.layout()``
         """
         logger.debug("Adding signal %s", name)
         return self.add_pv(signal._read_pv, name,
@@ -89,7 +87,7 @@ class SignalPanel(QWidget):
         -------
         loc : int
             Row number that the signal information was added to in the
-            `SignalPanel.contents.layout()``
+            `SignalPanel.layout()``
         """
         logger.debug("Adding PV %s", name)
         # Create label
@@ -116,10 +114,8 @@ class SignalPanel(QWidget):
             val_display.addWidget(edit)
         # Add displays to panel
         loc = len(self.pvs)
-        self.contents.layout().addWidget(label, loc, 0)
-        self.contents.layout().addLayout(val_display, loc, 1)
+        self.layout().addWidget(label, loc, 0)
+        self.layout().addLayout(val_display, loc, 1)
         # Store signal
         self.pvs[name] = (read_pv, write_pv)
-        # Check that our widget is not hidden
-        self.show_contents(True)
         return loc
