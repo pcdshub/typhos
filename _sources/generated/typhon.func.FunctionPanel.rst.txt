@@ -98,6 +98,7 @@ typhon.func.FunctionPanel
       ~FunctionPanel.hasFocus
       ~FunctionPanel.hasHeightForWidth
       ~FunctionPanel.hasMouseTracking
+      ~FunctionPanel.hasTabletTracking
       ~FunctionPanel.height
       ~FunctionPanel.heightForWidth
       ~FunctionPanel.heightMM
@@ -247,12 +248,14 @@ typhon.func.FunctionPanel
       ~FunctionPanel.setStyle
       ~FunctionPanel.setStyleSheet
       ~FunctionPanel.setTabOrder
+      ~FunctionPanel.setTabletTracking
       ~FunctionPanel.setToolTip
       ~FunctionPanel.setToolTipDuration
       ~FunctionPanel.setUpdatesEnabled
       ~FunctionPanel.setVisible
       ~FunctionPanel.setWhatsThis
       ~FunctionPanel.setWindowFilePath
+      ~FunctionPanel.setWindowFlag
       ~FunctionPanel.setWindowFlags
       ~FunctionPanel.setWindowIcon
       ~FunctionPanel.setWindowIconText

@@ -1,7 +1,7 @@
-typhon.panel.SignalPanel
-========================
+typhon.signal.SignalPanel
+=========================
 
-.. currentmodule:: typhon.panel
+.. currentmodule:: typhon.signal
 
 .. autoclass:: SignalPanel
 
@@ -99,6 +99,7 @@ typhon.panel.SignalPanel
       ~SignalPanel.hasFocus
       ~SignalPanel.hasHeightForWidth
       ~SignalPanel.hasMouseTracking
+      ~SignalPanel.hasTabletTracking
       ~SignalPanel.height
       ~SignalPanel.heightForWidth
       ~SignalPanel.heightMM
@@ -248,12 +249,14 @@ typhon.panel.SignalPanel
       ~SignalPanel.setStyle
       ~SignalPanel.setStyleSheet
       ~SignalPanel.setTabOrder
+      ~SignalPanel.setTabletTracking
       ~SignalPanel.setToolTip
       ~SignalPanel.setToolTipDuration
       ~SignalPanel.setUpdatesEnabled
       ~SignalPanel.setVisible
       ~SignalPanel.setWhatsThis
       ~SignalPanel.setWindowFilePath
+      ~SignalPanel.setWindowFlag
       ~SignalPanel.setWindowFlags
       ~SignalPanel.setWindowIcon
       ~SignalPanel.setWindowIconText
@@ -270,7 +273,6 @@ typhon.panel.SignalPanel
       ~SignalPanel.showMaximized
       ~SignalPanel.showMinimized
       ~SignalPanel.showNormal
-      ~SignalPanel.show_contents
       ~SignalPanel.signalsBlocked
       ~SignalPanel.size
       ~SignalPanel.sizeHint

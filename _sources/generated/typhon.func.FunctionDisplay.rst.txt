@@ -100,6 +100,7 @@ typhon.func.FunctionDisplay
       ~FunctionDisplay.hasFocus
       ~FunctionDisplay.hasHeightForWidth
       ~FunctionDisplay.hasMouseTracking
+      ~FunctionDisplay.hasTabletTracking
       ~FunctionDisplay.height
       ~FunctionDisplay.heightForWidth
       ~FunctionDisplay.heightMM
@@ -257,6 +258,7 @@ typhon.func.FunctionDisplay
       ~FunctionDisplay.setStyle
       ~FunctionDisplay.setStyleSheet
       ~FunctionDisplay.setTabOrder
+      ~FunctionDisplay.setTabletTracking
       ~FunctionDisplay.setTitle
       ~FunctionDisplay.setToolTip
       ~FunctionDisplay.setToolTipDuration
@@ -264,6 +266,7 @@ typhon.func.FunctionDisplay
       ~FunctionDisplay.setVisible
       ~FunctionDisplay.setWhatsThis
       ~FunctionDisplay.setWindowFilePath
+      ~FunctionDisplay.setWindowFlag
       ~FunctionDisplay.setWindowFlags
       ~FunctionDisplay.setWindowIcon
       ~FunctionDisplay.setWindowIconText

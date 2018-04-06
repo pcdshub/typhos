@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Widgets &mdash; Typhon 0.1.0+13.gbdf9f0a documentation</title>
+  <title>Widgets &mdash; Typhon 0.1.0+23.g350d523 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Typhon 0.1.0+13.gbdf9f0a documentation" href="index.html"/>
-        <link rel="next" title="typhon.panel.Panel" href="generated/typhon.panel.Panel.html"/>
+    <link rel="top" title="Typhon 0.1.0+23.g350d523 documentation" href="index.html"/>
+        <link rel="next" title="typhon.signal.SignalPanel" href="generated/typhon.signal.SignalPanel.html"/>
         <link rel="prev" title="Display Types" href="display.html"/> 
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.0+13.gbdf9f0a
+                0.1.0+23.g350d523
               </div>
             
           
@@ -100,14 +100,14 @@
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Widgets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#panels">Panels</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/typhon.panel.Panel.html">typhon.panel.Panel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/typhon.panel.SignalPanel.html">typhon.panel.SignalPanel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhon.signal.SignalPanel.html">typhon.signal.SignalPanel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/typhon.func.FunctionPanel.html">typhon.func.FunctionPanel</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#component-widgets">Component Widgets</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/typhon.ComponentButton.html">typhon.ComponentButton</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/typhon.func.FunctionDisplay.html">typhon.func.FunctionDisplay</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhon.widgets.TogglePanel.html">typhon.widgets.TogglePanel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/typhon.widgets.RotatingImage.html">typhon.widgets.RotatingImage</a></li>
 </ul>
 </li>
@@ -194,13 +194,10 @@ hides and shows the contents. Each variation in Typhon is documented below.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.panel.Panel.html#typhon.panel.Panel" title="typhon.panel.Panel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.panel.Panel</span></code></a>(title[,&nbsp;parent])</td>
-<td>Generic Panel Widget</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/typhon.panel.SignalPanel.html#typhon.panel.SignalPanel" title="typhon.panel.SignalPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.panel.SignalPanel</span></code></a>(title[,&nbsp;signals,&nbsp;…])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.signal.SignalPanel</span></code></a>(title[,&nbsp;signals,&nbsp;…])</td>
 <td>Base panel display for EPICS signals</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel" title="typhon.func.FunctionPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.func.FunctionPanel</span></code></a>([methods,&nbsp;parent])</td>
+<tr class="row-even"><td><a class="reference internal" href="generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel" title="typhon.func.FunctionPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.func.FunctionPanel</span></code></a>([methods,&nbsp;parent])</td>
 <td>Function Panel</td>
 </tr>
 </tbody>
@@ -220,7 +217,10 @@ hides and shows the contents. Each variation in Typhon is documented below.</p>
 <tr class="row-even"><td><a class="reference internal" href="generated/typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay" title="typhon.func.FunctionDisplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.func.FunctionDisplay</span></code></a>(func[,&nbsp;name,&nbsp;…])</td>
 <td>Display controls for an annotated function in a QGroupBox</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.widgets.RotatingImage.html#typhon.widgets.RotatingImage" title="typhon.widgets.RotatingImage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.widgets.RotatingImage</span></code></a>([parent])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.widgets.TogglePanel.html#typhon.widgets.TogglePanel" title="typhon.widgets.TogglePanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.widgets.TogglePanel</span></code></a>(title[,&nbsp;parent])</td>
+<td>Generic Panel Widget</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/typhon.widgets.RotatingImage.html#typhon.widgets.RotatingImage" title="typhon.widgets.RotatingImage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.widgets.RotatingImage</span></code></a>([parent])</td>
 <td>Rotating Image Handler</td>
 </tr>
 </tbody>
@@ -238,7 +238,7 @@ hides and shows the contents. Each variation in Typhon is documented below.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generated/typhon.panel.Panel.html" class="btn btn-neutral float-right" title="typhon.panel.Panel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generated/typhon.signal.SignalPanel.html" class="btn btn-neutral float-right" title="typhon.signal.SignalPanel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="display.html" class="btn btn-neutral" title="Display Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -272,7 +272,7 @@ hides and shows the contents. Each variation in Typhon is documented below.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0+13.gbdf9f0a',
+            VERSION:'0.1.0+23.g350d523',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

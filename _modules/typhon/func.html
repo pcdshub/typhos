@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.func &mdash; Typhon 0.1.0+13.gbdf9f0a documentation</title>
+  <title>typhon.func &mdash; Typhon 0.1.0+23.g350d523 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Typhon 0.1.0+13.gbdf9f0a documentation" href="../../index.html"/>
+    <link rel="top" title="Typhon 0.1.0+23.g350d523 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.0+13.gbdf9f0a
+                0.1.0+23.g350d523
               </div>
             
           
@@ -196,7 +196,7 @@
 <span class="c1"># Package #</span>
 <span class="c1">###########</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">clean_attr</span>
-<span class="kn">from</span> <span class="nn">.panel</span> <span class="k">import</span> <span class="n">Panel</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TogglePanel</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -331,8 +331,8 @@
 
 <span class="sd">    The created user interface consists of a button to execute the function,</span>
 <span class="sd">    the required parameters are always displayed beneath the button, and</span>
-<span class="sd">    a :class:`.Panel` object that toggles the view of the optional parameters</span>
-<span class="sd">    below.</span>
+<span class="sd">    a :class:`.TogglePanel` object that toggles the view of the optional</span>
+<span class="sd">    parameters below.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -386,7 +386,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="p">)</span>
         <span class="c1"># Add a panel for the optional parameters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">optional</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span><span class="s2">&quot;Optional Parameters&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optional</span> <span class="o">=</span> <span class="n">TogglePanel</span><span class="p">(</span><span class="s2">&quot;Optional Parameters&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
@@ -531,7 +531,7 @@
         <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="FunctionPanel"><a class="viewcode-back" href="../../generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel">[docs]</a><span class="k">class</span> <span class="nc">FunctionPanel</span><span class="p">(</span><span class="n">Panel</span><span class="p">):</span>
+<div class="viewcode-block" id="FunctionPanel"><a class="viewcode-back" href="../../generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel">[docs]</a><span class="k">class</span> <span class="nc">FunctionPanel</span><span class="p">(</span><span class="n">TogglePanel</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function Panel</span>
 
@@ -623,7 +623,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+13.gbdf9f0a',
+            VERSION:'0.1.0+23.g350d523',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

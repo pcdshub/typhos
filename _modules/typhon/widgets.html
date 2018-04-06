@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.widgets &mdash; Typhon 0.1.0+13.gbdf9f0a documentation</title>
+  <title>typhon.widgets &mdash; Typhon 0.1.0+23.g350d523 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="Typhon 0.1.0+13.gbdf9f0a documentation" href="../../index.html"/>
+    <link rel="top" title="Typhon 0.1.0+23.g350d523 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.0+13.gbdf9f0a
+                0.1.0+23.g350d523
               </div>
             
           
@@ -172,8 +172,9 @@
 <span class="c1"># External #</span>
 <span class="c1">############</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt</span> <span class="k">import</span> <span class="n">uic</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Qt</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QStackedWidget</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QAbstractButton</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">pyqtSlot</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QAbstractButton</span><span class="p">,</span> <span class="n">QStackedWidget</span><span class="p">,</span> <span class="n">QLabel</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QWidget</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets</span> <span class="k">import</span> <span class="n">PyDMDrawingImage</span><span class="p">,</span> <span class="n">PyDMLabel</span><span class="p">,</span> <span class="n">PyDMEnumComboBox</span>
 
 <span class="c1">###########</span>
@@ -182,6 +183,70 @@
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">channel_name</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TogglePanel"><a class="viewcode-back" href="../../generated/typhon.widgets.TogglePanel.html#typhon.TogglePanel">[docs]</a><span class="k">class</span> <span class="nc">TogglePanel</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic Panel Widget</span>
+
+<span class="sd">    Displays a widget below QPushButton that hides and shows the contents. It</span>
+<span class="sd">    is up to subclasses to re-point the attribute :attr:`.contents` to the</span>
+<span class="sd">    widget whose visibility you would like to toggle.</span>
+
+<span class="sd">    By default, it is assumed that the Panel is initialized with the</span>
+<span class="sd">    :attr:`.contents` widget as visible, however the contents will be hidden</span>
+<span class="sd">    and the button synced to the proper position if :meth:`.show_contents` is</span>
+<span class="sd">    called after instance creation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    title : str</span>
+<span class="sd">        Title of Panel. This will be the text on the QPushButton</span>
+
+<span class="sd">    parent : QWidget</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    contents : QWidget</span>
+<span class="sd">        Widget whose visibility is controlled via the QPushButton</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TogglePanel.__init__"><a class="viewcode-back" href="../../generated/typhon.widgets.TogglePanel.html#typhon.TogglePanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Create Widget Infrastructure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="c1"># Create button control</span>
+        <span class="c1"># Assuming widget is visible, set the button as checked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_contents</span><span class="p">)</span></div>
+
+    <span class="nd">@pyqtSlot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">show_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the contents of the Widget</span>
+
+<span class="sd">        Hides the :attr:`.contents` QWidget and sets the :attr:`.hide_button`</span>
+<span class="sd">        to the proper status to indicate whether the widget is hidden or not</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        show : bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Configure our button in case this slot was called elsewhere</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
+        <span class="c1"># Show or hide the widget if the contents exist</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span></div>
 
 
 <span class="k">class</span> <span class="nc">TyphonComboBox</span><span class="p">(</span><span class="n">PyDMEnumComboBox</span><span class="p">):</span>
@@ -362,7 +427,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+13.gbdf9f0a',
+            VERSION:'0.1.0+23.g350d523',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

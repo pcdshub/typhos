@@ -108,6 +108,7 @@ typhon.widgets.RotatingImage
       ~RotatingImage.hasFocus
       ~RotatingImage.hasHeightForWidth
       ~RotatingImage.hasMouseTracking
+      ~RotatingImage.hasTabletTracking
       ~RotatingImage.height
       ~RotatingImage.heightForWidth
       ~RotatingImage.heightMM
@@ -271,12 +272,14 @@ typhon.widgets.RotatingImage
       ~RotatingImage.setStyle
       ~RotatingImage.setStyleSheet
       ~RotatingImage.setTabOrder
+      ~RotatingImage.setTabletTracking
       ~RotatingImage.setToolTip
       ~RotatingImage.setToolTipDuration
       ~RotatingImage.setUpdatesEnabled
       ~RotatingImage.setVisible
       ~RotatingImage.setWhatsThis
       ~RotatingImage.setWindowFilePath
+      ~RotatingImage.setWindowFlag
       ~RotatingImage.setWindowFlags
       ~RotatingImage.setWindowIcon
       ~RotatingImage.setWindowIconText
