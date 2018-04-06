@@ -16,8 +16,7 @@ hides and shows the contents. Each variation in Typhon is documented below.
 .. autosummary::
    :toctree: generated
 
-   typhon.panel.Panel
-   typhon.panel.SignalPanel
+   typhon.signal.SignalPanel
    typhon.func.FunctionPanel
 
 Component Widgets
@@ -28,4 +27,5 @@ Component Widgets
 
    typhon.ComponentButton
    typhon.func.FunctionDisplay
+   typhon.widgets.TogglePanel
    typhon.widgets.RotatingImage
