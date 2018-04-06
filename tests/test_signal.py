@@ -12,7 +12,7 @@ from pydm.widgets import PyDMEnumComboBox
 ###########
 # Package #
 ###########
-from typhon.panel import SignalPanel
+from typhon.signal import SignalPanel
 from .conftest import show_widget
 
 

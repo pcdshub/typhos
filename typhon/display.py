@@ -17,7 +17,7 @@ from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup
 # Package #
 ###########
 from .func import FunctionPanel
-from .panel import SignalPanel
+from .signal import SignalPanel
 from .utils import ui_dir, clean_attr, clean_source, clean_name, channel_name
 from .widgets import RotatingImage, ComponentButton
 
