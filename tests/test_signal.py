@@ -8,12 +8,11 @@
 from ophyd.signal import EpicsSignal, EpicsSignalRO
 from ophyd.tests.conftest import using_fake_epics_pv
 from pydm.widgets import PyDMEnumComboBox
-from pydm.PyQt.QtGui import QWidget
 
 ###########
 # Package #
 ###########
-from typhon.panel import Panel, SignalPanel
+from typhon.signal import SignalPanel
 from .conftest import show_widget
 
 
@@ -32,16 +31,6 @@ def test_panel_creation():
     return panel
 
 
-def test_panel_hide():
-    # Create basic panel
-    panel = Panel("Test Panel")
-    panel.contents = QWidget()
-    panel.layout().addWidget(panel.contents)
-    # Toggle the button
-    panel.show_contents(False)
-    assert panel.contents.isHidden()
-
-
 @show_widget
 @using_fake_epics_pv
 def test_panel_add_enum():
@@ -53,7 +42,7 @@ def test_panel_add_enum():
     loc = panel.add_signal(sig, "Enum PV")
     # Check our signal was added a QCombobox
     # Assume it is the last item in the button layout
-    but_layout = panel.contents.layout().itemAtPosition(loc, 1)
+    but_layout = panel.layout().itemAtPosition(loc, 1)
     assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
                       PyDMEnumComboBox)
     return panel

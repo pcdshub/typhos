@@ -43,7 +43,7 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="main_layout" stretch="0,0">
+     <layout class="QVBoxLayout" name="main_layout" stretch="0,0,0">
       <property name="spacing">
        <number>5</number>
       </property>
@@ -122,40 +122,69 @@
         <property name="whatsThis">
          <string/>
         </property>
-        <property name="showXGrid">
+        <property name="showXGrid" stdset="0">
          <bool>true</bool>
         </property>
-        <property name="showYGrid">
+        <property name="showYGrid" stdset="0">
          <bool>true</bool>
         </property>
-        <property name="axisColor">
+        <property name="axisColor" stdset="0">
          <color>
           <red>212</red>
           <green>212</green>
           <blue>212</blue>
          </color>
         </property>
-        <property name="showLegend">
+        <property name="showLegend" stdset="0">
          <bool>true</bool>
         </property>
         <property name="mouseEnabledX" stdset="0">
          <bool>false</bool>
         </property>
-        <property name="curves">
+        <property name="curves" stdset="0">
          <stringlist/>
         </property>
-        <property name="bufferSize">
+        <property name="bufferSize" stdset="0">
          <number>60</number>
         </property>
-        <property name="updatesAsynchronously">
+        <property name="updatesAsynchronously" stdset="0">
          <bool>true</bool>
         </property>
-        <property name="timeSpan">
+        <property name="timeSpan" stdset="0">
          <double>30.000000000000000</double>
         </property>
-        <property name="updateInterval">
+        <property name="updateInterval" stdset="0">
          <double>0.500000000000000</double>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="signal_tab">
+        <property name="tabPosition">
+         <enum>QTabWidget::North</enum>
+        </property>
+        <property name="tabShape">
+         <enum>QTabWidget::Rounded</enum>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <property name="elideMode">
+         <enum>Qt::ElideNone</enum>
+        </property>
+        <property name="tabBarAutoHide">
+         <bool>false</bool>
+        </property>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>Tab 1</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>Tab 2</string>
+         </attribute>
+        </widget>
        </widget>
       </item>
      </layout>

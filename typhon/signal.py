@@ -6,9 +6,7 @@ import logging
 ############
 # External #
 ############
-from pydm.PyQt.QtCore import pyqtSlot
 from pydm.PyQt.QtGui import QHBoxLayout, QFont, QLabel, QWidget, QGridLayout
-from pydm.PyQt.QtGui import QPushButton, QVBoxLayout
 from pydm.widgets import PyDMLineEdit
 
 #############
@@ -20,71 +18,7 @@ from .widgets import TyphonComboBox, TyphonLabel
 logger = logging.getLogger(__name__)
 
 
-class Panel(QWidget):
-    """
-    Generic Panel Widget
-
-    Displays a widget below QPushButton that hides and shows the contents. It
-    is up to subclasses to re-point the attribute :attr:`.contents` to the
-    widget whose visibility you would like to toggle.
-
-    By default, it is assumed that the Panel is initialized with the
-    :attr:`.contents` widget as visible, however the contents will be hidden
-    and the button synced to the proper position if :meth:`.show_contents` is
-    called after instance creation
-
-    Parameters
-    ----------
-    title : str
-        Title of Panel. This will be the text on the QPushButton
-
-    parent : QWidget
-
-    Attributes
-    ----------
-    contents : QWidget
-        Widget whose visibility is controlled via the QPushButton
-    """
-    def __init__(self, title, parent=None):
-        super().__init__(parent=parent)
-        # Create Widget Infrastructure
-        self.title = title
-        self.setLayout(QVBoxLayout())
-        self.layout().setContentsMargins(2, 2, 2, 2)
-        self.layout().setSpacing(5)
-        # Create button control
-        # Assuming widget is visible, set the button as checked
-        self.contents = None
-        self.hide_button = QPushButton(self.title)
-        self.hide_button.setCheckable(True)
-        self.hide_button.setChecked(True)
-        self.layout().addWidget(self.hide_button)
-        self.hide_button.clicked.connect(self.show_contents)
-
-    @pyqtSlot(bool)
-    def show_contents(self, show):
-        """
-        Show the contents of the Widget
-
-        Hides the :attr:`.contents` QWidget and sets the :attr:`.hide_button`
-        to the proper status to indicate whether the widget is hidden or not
-
-        Parameters
-        ----------
-        show : bool
-        """
-        # Configure our button in case this slot was called elsewhere
-        self.hide_button.setChecked(show)
-        # Show or hide the widget if the contents exist
-        if self.contents:
-            if show:
-                self.show()
-                self.contents.show()
-            else:
-                self.contents.hide()
-
-
-class SignalPanel(Panel):
+class SignalPanel(QWidget):
     """
     Base panel display for EPICS signals
 
@@ -100,14 +34,12 @@ class SignalPanel(Panel):
         Parent of panel
     """
     def __init__(self, title, signals=None, parent=None):
-        super().__init__(title, parent=parent)
+        super().__init__(parent=parent)
         # Store signal information
         self.pvs = dict()
-        # Create empty panel contents
-        self.contents = QWidget()
-        self.contents.setLayout(QGridLayout())
-        self.contents.layout().setContentsMargins(2, 2, 2, 2)
-        self.layout().addWidget(self.contents)
+        # Create panel layout
+        self.setLayout(QGridLayout())
+        self.layout().setContentsMargins(2, 2, 2, 2)
         # Add supplied signals
         if signals:
             for name, sig in signals.items():
@@ -132,7 +64,7 @@ class SignalPanel(Panel):
         -------
         loc : int
             Row number that the signal information was added to in the
-            `SignalPanel.contents.layout()``
+            `SignalPanel.layout()``
         """
         logger.debug("Adding signal %s", name)
         return self.add_pv(signal._read_pv, name,
@@ -155,7 +87,7 @@ class SignalPanel(Panel):
         -------
         loc : int
             Row number that the signal information was added to in the
-            `SignalPanel.contents.layout()``
+            `SignalPanel.layout()``
         """
         logger.debug("Adding PV %s", name)
         # Create label
@@ -182,10 +114,8 @@ class SignalPanel(Panel):
             val_display.addWidget(edit)
         # Add displays to panel
         loc = len(self.pvs)
-        self.contents.layout().addWidget(label, loc, 0)
-        self.contents.layout().addLayout(val_display, loc, 1)
+        self.layout().addWidget(label, loc, 0)
+        self.layout().addLayout(val_display, loc, 1)
         # Store signal
         self.pvs[name] = (read_pv, write_pv)
-        # Check that our widget is not hidden
-        self.show_contents(True)
         return loc
