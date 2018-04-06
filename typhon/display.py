@@ -74,17 +74,15 @@ class TyphonDisplay(QWidget):
         self.image_widget = RotatingImage()
         # Add all the panels
         self.ui.main_layout.insertWidget(2, self.read_panel)
-        self.ui.main_layout.insertWidget(3, self.method_panel)
-        self.ui.main_layout.insertWidget(4, self.config_panel)
-        self.ui.main_layout.insertWidget(5, self.misc_panel)
+        self.ui.main_layout.insertWidget(3, self.misc_panel)
         self.ui.widget_layout.insertWidget(0, self.image_widget)
-        # Hide control of read_panel
-        self.read_panel.hide_button.hide()
+        # Create tabs
+        self.ui.signal_tab.clear()
+        self.ui.signal_tab.addTab(self.config_panel, 'Configuration')
+        self.ui.signal_tab.addTab(self.misc_panel, 'Miscellaneous')
         # Hide widgets until signals are added to them
         self.ui.buttons.hide()
         self.ui.component_widget.hide()
-        self.config_panel.hide()
-        self.misc_panel.hide()
         self.method_panel.hide()
         self.ui.hint_plot.hide()
         self.image_widget.hide()
@@ -307,6 +305,3 @@ class DeviceDisplay(TyphonDisplay):
                                  field)
             except KeyError as exc:
                 logger.error("Unable to find PV name of %s", field)
-        # Hide the lesser needed panels
-        self.config_panel.show_contents(False)
-        self.misc_panel.show_contents(False)
