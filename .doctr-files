@@ -32,6 +32,8 @@
 ./_static/fonts/Inconsolata-Bold.ttf
 ./_static/fonts/Inconsolata-Regular.ttf
 ./_static/fonts/Lato-Bold.ttf
+./_static/fonts/Lato-BoldItalic.ttf
+./_static/fonts/Lato-Italic.ttf
 ./_static/fonts/Lato-Regular.ttf
 ./_static/fonts/RobotoSlab-Bold.ttf
 ./_static/fonts/RobotoSlab-Regular.ttf
@@ -39,6 +41,7 @@
 ./_static/fonts/fontawesome-webfont.svg
 ./_static/fonts/fontawesome-webfont.ttf
 ./_static/fonts/fontawesome-webfont.woff
+./_static/fonts/fontawesome-webfont.woff2
 ./_static/function.png
 ./_static/hydra.jpg
 ./_static/jquery-3.2.1.js
