@@ -32,8 +32,8 @@ class ClassConnection(PyDMConnection):
     -------
     .. code:: python
 
-        conn = ClassConnection(cls://ophyd.EpicsMotor|'Tst:Mtr:07'|name=Test,
-                               ophyd.EpicsMotor|'Tst:Mtr:07'|name=Test)
+        conn = ClassConnection("cls://ophyd.EpicsMotor|'Tst:Mtr:07'|name=Test",
+                               "ophyd.EpicsMotor|'Tst:Mtr:07'|name=Test")
 
     Notes
     -----
