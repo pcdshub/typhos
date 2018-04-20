@@ -25,7 +25,7 @@ application = None
 def pytest_addoption(parser):
     parser.addoption("--dark", action="store_true", default=False,
                      help="Use the dark stylesheet to display widgets")
-    parser.addoption("--show", action="store_true", default=False,
+    parser.addoption("--show-ui", action="store_true", default=False,
                      help="Show the widgets produced by each test")
 
 
@@ -33,7 +33,7 @@ def pytest_addoption(parser):
 @pytest.fixture(scope='session', autouse=True)
 def _show_widgets(pytestconfig):
     global show_widgets
-    show_widgets = pytestconfig.getoption('--show')
+    show_widgets = pytestconfig.getoption('--show-ui')
     if show_widgets:
         logger.info("Running tests while showing created widgets ...")
 
