@@ -117,8 +117,8 @@ class SignalConnection(ClassConnection):
     -------
     .. code:: python
 
-        conn = ClassConnection(sig://ophyd.Signal|name=Test,)
-                               ophyd.Signal|name=Test)
+        conn = ClassConnection('sig://ophyd.Signal|name=Test',)
+                               'ophyd.Signal|name=Test')
     """
     supported_types = [int, float, str, np.ndarray]
 
