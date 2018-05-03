@@ -143,7 +143,7 @@ class SignalConnection(ClassConnection):
         try:
             self.obj.put(new_val)
         except Exception as exc:
-            logger.exception("Unable to put %s to %s", new_val, self.obj.name)
+            logger.exception("Unable to put %r to %s", new_val, self.obj.name)
 
     def send_new_value(self, value=None, **kwargs):
         """
@@ -193,6 +193,6 @@ class SignalConnection(ClassConnection):
                     channel.value_signal[_typ].disconnect(self.put_value)
                 except KeyError:
                     logger.debug("Unable to disconnect value_signal from %s "
-                                 "for type", channel.address, _typ)
+                                 "for type %s", channel.address, _typ)
         # Disconnect any other signals
         super().remove_listener(channel)
