@@ -9,7 +9,7 @@ import importlib
 # Third Party #
 ###############
 import numpy as np
-from pydm.data_plugins.plugin import PyDMConnection
+from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
 from pydm.PyQt.QtCore import pyqtSlot, Qt
 
 ##########
@@ -223,3 +223,16 @@ class SignalConnection(ClassConnection):
                                  "for type %s", channel.address, _typ)
         # Disconnect any other signals
         super().remove_listener(channel)
+
+
+class ClassPlugin(PyDMPlugin):
+    """Plugin for generic Python objects"""
+    protocol = 'obj'
+    connection_class = ClassConnection
+
+
+class SignalPlugin(PyDMPlugin):
+    """Plugin for Ophyd Signal objects"""
+    protocol = 'sig'
+    connection_class = SignalConnection
+
