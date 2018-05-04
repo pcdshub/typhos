@@ -14,11 +14,16 @@ from pydm.PyQt.QtGui import QWidget
 # Module #
 ##########
 from typhon.plugins import SignalConnection, ClassConnection
-
+from typhon.plugins.core import obj_from_string
 
 class WritableWidget(QWidget, PyDMWritableWidget):
     """Simple Testing Widget"""
     pass
+
+
+def test_obj_from_string():
+    obj = obj_from_string('io.StringIO', 'random text')
+    assert obj.read() == 'random text'
 
 
 def test_class_connection():
