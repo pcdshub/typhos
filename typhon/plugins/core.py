@@ -110,6 +110,9 @@ class ClassConnection(PyDMConnection):
             # Create our object
             logger.debug("Instantiating %s ...", cls)
             self.obj = obj_from_string(cls, args, kwargs)
+        # Report the object as accessible and connected
+        self.write_access_signal.emit(True)
+        self.connection_state_signal.emit(True)
 
     @classmethod
     def from_object(cls, obj):
