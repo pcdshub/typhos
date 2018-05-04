@@ -19,6 +19,52 @@ from pydm.PyQt.QtCore import pyqtSlot, Qt
 logger = logging.getLogger(__name__)
 
 
+def obj_from_string(clsname, args=None, kwargs=None):
+    """
+    Create an object from a string specification
+
+    Provide a name of a class as well as optional arguments and keywords. This
+    class handles importing the class and instantiating a new object.
+
+    Parameters
+    ----------
+    clsname : str
+
+    args: optional
+        Passed directly to class constructor
+
+    kwargs: optional
+        Passed directly to class constructor
+
+    Returns
+    -------
+    obj: object
+        Object of type ``clsname``
+    """
+    # Import the class
+    mod, cls = clsname.rsplit('.', 1)
+    if mod in sys.modules:
+        mod = sys.modules[mod]
+    else:
+        logger.debug("Importing %s", mod)
+        mod = importlib.import_module(mod)
+    # Grab our device
+    cls = getattr(mod, cls)
+    # Format arguments
+    if args:
+        args = args.split(',')
+    else:
+        args = list()
+    # Format keywords
+    if kwargs:
+        kwargs = dict([pair.split('=', 1)
+                       for pair in kwargs.split(',')])
+    else:
+        kwargs = dict()
+    # Create object
+    return cls(*args, **kwargs)
+
+
 class ClassConnection(PyDMConnection):
     """
     Connection which spawns an object of specified class
@@ -53,8 +99,6 @@ class ClassConnection(PyDMConnection):
             logger.debug("Using an already instantiated object as reference")
             self.obj = preassembled
         else:
-            # NOTE: This was taken entirely from happi/loader.py. The reason it
-            # was not directly imported was to avoid an unneeded dependency
             # Parse the classname, arguments and keywords from the address
             # First assume the form {class}|{args}|{kwargs}
             try:
@@ -63,29 +107,9 @@ class ClassConnection(PyDMConnection):
             except ValueError:
                 cls, args = address.split('|', 1)
                 kwargs = None
-            # Import the class
-            mod, cls = cls.rsplit('.', 1)
-            if mod in sys.modules:
-                mod = sys.modules[mod]
-            else:
-                logger.debug("Importing %s", mod)
-                mod = importlib.import_module(mod)
-            # Grab our device
-            cls = getattr(mod, cls)
-            # Format arguments
-            if args:
-                args = args.split(',')
-            else:
-                args = list()
-            # Format keywords
-            if kwargs:
-                kwargs = dict([pair.split('=', 1)
-                               for pair in kwargs.split(',')])
-            else:
-                kwargs = dict()
             # Create our object
-            logger.debug("Instantiating %s ...", cls.__name__)
-            self.obj = cls(*args, **kwargs)
+            logger.debug("Instantiating %s ...", cls)
+            self.obj = obj_from_string(cls, args, kwargs)
 
     @classmethod
     def from_object(cls, obj):
