@@ -68,3 +68,9 @@ def test_signal_connection(qapp):
     widget.send_value_signal.emit(1)
     qapp.processEvents()
     assert sig.get() == 3
+
+
+def test_plugin_loading(qapp):
+    print(qapp.plugins)
+    assert qapp.plugins['sig'] == SignalConnection
+    assert qapp.plugins['obj'] == SignalConnection
