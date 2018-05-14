@@ -112,6 +112,9 @@ class SignalPanel(QWidget):
                 edit = TyphonLineEdit(init_channel=ch, parent=self)
             # Add our control widget to layout
             val_display.addWidget(edit)
+            # Make sure they share space evenly
+            val_display.setStretch(0, 1)
+            val_display.setStretch(1, 1)
         # Add displays to panel
         loc = len(self.pvs)
         self.layout().addWidget(label, loc, 0)
