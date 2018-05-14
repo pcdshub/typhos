@@ -7,7 +7,6 @@ import logging
 # External #
 ############
 from pydm.PyQt.QtGui import QHBoxLayout, QFont, QLabel, QWidget, QGridLayout
-#from pydm.widgets import TyphonLineEdit
 
 #############
 #  Package  #

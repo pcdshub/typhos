@@ -90,7 +90,7 @@ class TyphonComboBox(PyDMEnumComboBox):
     Reimplementation of PyDMEnumComboBox to set some custom defaults
     """
     def sizeHint(self):
-       return QSize(100, 30)
+        return QSize(100, 30)
 
 
 class TyphonLineEdit(PyDMLineEdit):
