@@ -11,8 +11,8 @@ from pydm.PyQt import uic
 from pydm.PyQt.QtCore import QSize, Qt, pyqtSlot
 from pydm.PyQt.QtGui import QAbstractButton, QStackedWidget, QLabel
 from pydm.PyQt.QtGui import QVBoxLayout, QPushButton, QWidget
-from pydm.widgets import PyDMDrawingImage, PyDMLabel, PyDMEnumComboBox
-
+from pydm.widgets import (PyDMDrawingImage, PyDMLabel, PyDMEnumComboBox,
+                          PyDMLineEdit)
 ###########
 # Package #
 ###########
@@ -90,7 +90,14 @@ class TyphonComboBox(PyDMEnumComboBox):
     Reimplementation of PyDMEnumComboBox to set some custom defaults
     """
     def sizeHint(self):
-        # This is to match teh PyDMLineEdit sizeHint
+       return QSize(100, 30)
+
+
+class TyphonLineEdit(PyDMLineEdit):
+    """
+    Reimplementation of PyDMLineEdit to set some custom defaults
+    """
+    def sizeHint(self):
         return QSize(100, 30)
 
 
@@ -103,7 +110,6 @@ class TyphonLabel(PyDMLabel):
         self.setAlignment(Qt.AlignCenter)
 
     def sizeHint(self):
-        # This is to match the PyDMLineEdit sizeHint
         return QSize(100, 30)
 
 
