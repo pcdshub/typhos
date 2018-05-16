@@ -38,7 +38,7 @@ class SignalPanel(QWidget):
         self.pvs = dict()
         # Create panel layout
         self.setLayout(QGridLayout())
-        self.layout().setContentsMargins(2, 2, 2, 2)
+        self.layout().setContentsMargins(20, 20, 20, 20)
         # Add supplied signals
         if signals:
             for name, sig in signals.items():
