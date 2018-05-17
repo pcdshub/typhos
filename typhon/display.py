@@ -74,7 +74,6 @@ class TyphonDisplay(QWidget):
         self.image_widget = RotatingImage()
         # Add all the panels
         self.ui.main_layout.insertWidget(2, self.read_panel)
-        self.ui.main_layout.insertWidget(3, self.misc_panel)
         self.ui.widget_layout.insertWidget(0, self.image_widget)
         # Create tabs
         self.ui.signal_tab.clear()
