@@ -69,7 +69,7 @@ before_script:
   - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
   - sleep 3 # give xvfb some time to start
   # Run windows manager
-  - herbstluftwm &"
+  - "herbstluftwm &"
   - sleep 1
 
 script:
