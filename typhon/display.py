@@ -11,7 +11,7 @@ from functools import partial
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt
-from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup
+from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup, QVBoxLayout
 
 ###########
 # Package #
@@ -77,8 +77,8 @@ class TyphonDisplay(QWidget):
         self.ui.widget_layout.insertWidget(0, self.image_widget)
         # Create tabs
         self.ui.signal_tab.clear()
-        self.ui.signal_tab.addTab(self.config_panel, 'Configuration')
-        self.ui.signal_tab.addTab(self.misc_panel, 'Miscellaneous')
+        self.add_tab('Configuration', self.config_panel)
+        self.add_tab('Miscellaneous', self.misc_panel)
         # Hide widgets until signals are added to them
         self.ui.buttons.hide()
         self.ui.component_widget.hide()
@@ -181,6 +181,13 @@ class TyphonDisplay(QWidget):
         plot_opts = copy.copy(self.default_curve_opts)
         plot_opts.update(kwargs)
         self.ui.hint_plot.addYChannel(y_channel=channel_name(pv), **plot_opts)
+
+    def add_tab(self, name, widget):
+        qw = QWidget()
+        qw.setLayout(QVBoxLayout())
+        qw.layout().addWidget(widget)
+        qw.layout().addStretch(1)
+        self.ui.signal_tab.addTab(qw, name)
 
     def add_image(self, path, subdevice=None):
         """
