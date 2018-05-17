@@ -55,16 +55,14 @@ class MockDevice(Device):
         """Fake remove function to display"""
         pass
 
-
-@using_fake_epics_pv
-@pytest.fixture(scope='module')
-def device():
-    return MockDevice("Tst:Dev", name="MockDevice")
-
+    @property
+    def hints(self):
+        return {'fields': [self.name+'_read1']}
 
 @using_fake_epics_pv
 @show_widget
-def test_display(device):
+def test_display():
+    device = MockDevice("Tst:Dev", name="MockDevice")
     display = DeviceDisplay(device)
     # We have all our signals
     shown_read_sigs = list(display.read_panel.pvs.keys())
@@ -78,12 +76,15 @@ def test_display(device):
                    for disp in display.ui.component_widget.children()]
     assert all([getattr(device, dev) in sub_devices
                 for dev in device._sub_devices])
+    # Check that the hints are included in the plot
+    assert len(display.ui.hint_plot.curves) == 1
     return display
 
 
 @using_fake_epics_pv
 @show_widget
-def test_display_with_funcs(device):
+def test_display_with_funcs():
+    device = MockDevice("Tst:Dev", name="MockDevice")
     display = DeviceDisplay(device, methods=[device.insert,
                                              device.remove])
     # The method panel is visible
@@ -96,16 +97,8 @@ def test_display_with_funcs(device):
 
 @using_fake_epics_pv
 @show_widget
-def test_display_with_hints(device):
-    device.hints = {'fields': [device.name + '_read1']}
-    display = DeviceDisplay(device)
-    assert len(display.ui.hint_plot.curves) == 1
-    return display
-
-
-@using_fake_epics_pv
-@show_widget
-def test_display_with_images(device, test_images):
+def test_display_with_images(test_images):
+    device = MockDevice("Tst:Dev", name="MockDevice")
     (lenna, python) = test_images
     display = DeviceDisplay(device)
     # Add our main image
