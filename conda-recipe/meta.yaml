@@ -15,7 +15,7 @@ requirements:
     run:
       - python
       - pydm
-      - ophyd
+      - ophyd <=1.1.0
 
 test:
     imports:
