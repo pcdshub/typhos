@@ -73,7 +73,7 @@ before_script:
   - sleep 1
 
 script:
-  - coverage run run_tests.py
+  - coverage run run_tests.py --timeout 15 
   - coverage report -m
   - flake8 typhon
   # Build docs
