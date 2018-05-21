@@ -36,6 +36,8 @@ before_install:
 
 install:
   - sudo apt-get update
+  # Install windows manager
+  - sudo apt-get install -y xvfb herbstluftwm
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -64,11 +66,14 @@ install:
 before_script:
     #Taken from docs.travis-ci.com/user/gui-and-headless-browsers
   - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
   - sleep 3 # give xvfb some time to start
+  # Run windows manager
+  - "herbstluftwm &"
+  - sleep 1
 
 script:
-  - coverage run run_tests.py
+  - coverage run run_tests.py --timeout 15 
   - coverage report -m
   - flake8 typhon
   # Build docs

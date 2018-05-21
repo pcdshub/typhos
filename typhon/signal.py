@@ -7,13 +7,12 @@ import logging
 # External #
 ############
 from pydm.PyQt.QtGui import QHBoxLayout, QFont, QLabel, QWidget, QGridLayout
-from pydm.widgets import PyDMLineEdit
 
 #############
 #  Package  #
 #############
 from .utils import channel_name
-from .widgets import TyphonComboBox, TyphonLabel
+from .widgets import TyphonLineEdit, TyphonComboBox, TyphonLabel
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ class SignalPanel(QWidget):
         self.pvs = dict()
         # Create panel layout
         self.setLayout(QGridLayout())
-        self.layout().setContentsMargins(2, 2, 2, 2)
+        self.layout().setContentsMargins(20, 20, 20, 20)
         # Add supplied signals
         if signals:
             for name, sig in signals.items():
@@ -109,9 +108,12 @@ class SignalPanel(QWidget):
                 edit = TyphonComboBox(init_channel=ch, parent=self)
             else:
                 logger.debug("Adding LineEdit for %s", name)
-                edit = PyDMLineEdit(init_channel=ch, parent=self)
+                edit = TyphonLineEdit(init_channel=ch, parent=self)
             # Add our control widget to layout
             val_display.addWidget(edit)
+            # Make sure they share space evenly
+            val_display.setStretch(0, 1)
+            val_display.setStretch(1, 1)
         # Add displays to panel
         loc = len(self.pvs)
         self.layout().addWidget(label, loc, 0)

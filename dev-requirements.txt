@@ -1,4 +1,5 @@
 pytest
+pytest-timeout
 codecov
 matplotlib
 ipython
