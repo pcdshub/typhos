@@ -151,13 +151,28 @@ class TyphonDisplay(QWidget):
                             button=button)
 
     def add_tab(self, name, widget):
+        """
+        Add a widget to the main signal tab
+
+        Use this rather than directly setting ``signal_tab.addTab`` to ensure
+        that the tab has the proper stretch to avoid distorting the size of the
+        widget you are adding.
+
+        Parameters
+        ----------
+        name : str
+            Name that will be displayed on tab
+
+        widget : QWidget
+            Widget to be contained within the new tab
+        """
         qw = QWidget()
         qw.setLayout(QVBoxLayout())
         qw.layout().addWidget(widget)
         qw.layout().addStretch(1)
         self.ui.signal_tab.addTab(qw, name)
 
-    def add_image(self, path, subdevice=None):
+    def add_image(self, path):
         """
         Add an image to the display
 
