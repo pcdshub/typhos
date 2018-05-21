@@ -33,12 +33,10 @@ class TyphonDisplay(QWidget):
     one is not required to be given. There are four main panels available;
     :attr:`.read_panel`, :attr:`.config_panel`, :attr:`.method_panel`. These
     each provide a quick way to organize signals and methods by their
-    importance to an operator. In addition, crucial signals can be added to a
-    PyDMTimePlot under the attribute :attr:`.hint_plot`.  Because each panel
-    can be hidden interactively, the screen works as both an expert and novice
-    entry point for users. By default, widgets are hidden until contents are
-    added. For instance, if you do not add any methods to the main panel it
-    will not be visible.
+    importance to an operator. Because each panel can be hidden interactively,
+    the screen works as both an expert and novice entry point for users. By
+    default, widgets are hidden until contents are added. For instance, if you
+    do not add any methods to the main panel it will not be visible.
 
     This device is the bare bones implementation in the event that someone
     might want to collect a random group of signals and devices together to
@@ -52,9 +50,6 @@ class TyphonDisplay(QWidget):
 
     parent : QWidget, optional
     """
-    default_curve_opts = {'lineStyle': Qt.SolidLine, 'symbol': 'o',
-                          'lineWidth': 2, 'symbolSize': 4}
-
     def __init__(self, name, parent=None):
         # Instantiate Widget
         super().__init__(parent=parent)
@@ -81,7 +76,6 @@ class TyphonDisplay(QWidget):
         self.ui.buttons.hide()
         self.ui.component_widget.hide()
         self.method_panel.hide()
-        self.ui.hint_plot.hide()
 
     @property
     def methods(self):
@@ -155,29 +149,6 @@ class TyphonDisplay(QWidget):
                                           methods=methods,
                                           parent=self),
                             button=button)
-
-    def add_pv_to_plot(self, pv, **kwargs):
-        """
-        Add a PV to the PyDMTimePlot
-
-        The default style of the curve is determined by
-        :attr:`.default_curve_opts`. Though these can be overridden
-
-        Parameters
-        ----------
-        pvname : str
-            Name of PV
-
-        kwargs:
-            All keywords are passed directly to ``PyDMTimePlot.addYChannel``
-        """
-        # Show our plot if it was previously hidden
-        if self.ui.hint_plot.isHidden():
-            self.ui.hint_plot.show()
-        # Combine user supplied options with defaults
-        plot_opts = copy.copy(self.default_curve_opts)
-        plot_opts.update(kwargs)
-        self.ui.hint_plot.addYChannel(y_channel=channel_name(pv), **plot_opts)
 
     def add_tab(self, name, widget):
         qw = QWidget()
@@ -294,17 +265,3 @@ class DeviceDisplay(TyphonDisplay):
         methods = methods or list()
         for method in methods:
                 self.method_panel.add_method(method)
-
-        # Add our hints
-        for field in getattr(self.device, 'hints', {}).get('fields', list()):
-            try:
-                # Get a description of the signal. Add the the PV name
-                # to the hint_panel if it is a number and not a string
-                sig_desc = self.device_description[field]
-                if sig_desc['dtype'] == 'number':
-                    self.add_pv_to_plot(clean_source(sig_desc['source']))
-                else:
-                    logger.debug("Not adding %s because it is not a number",
-                                 field)
-            except KeyError as exc:
-                logger.error("Unable to find PV name of %s", field)

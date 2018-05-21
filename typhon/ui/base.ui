@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>520</width>
-    <height>599</height>
+    <height>862</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,7 +43,7 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="main_layout" stretch="0,0,0">
+     <layout class="QVBoxLayout" name="main_layout" stretch="0,0">
       <property name="spacing">
        <number>5</number>
       </property>
@@ -106,56 +106,6 @@
           </spacer>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="PyDMTimePlot" name="hint_plot">
-        <property name="minimumSize">
-         <size>
-          <width>350</width>
-          <height>350</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="whatsThis">
-         <string/>
-        </property>
-        <property name="showXGrid" stdset="0">
-         <bool>true</bool>
-        </property>
-        <property name="showYGrid" stdset="0">
-         <bool>true</bool>
-        </property>
-        <property name="axisColor" stdset="0">
-         <color>
-          <red>212</red>
-          <green>212</green>
-          <blue>212</blue>
-         </color>
-        </property>
-        <property name="showLegend" stdset="0">
-         <bool>true</bool>
-        </property>
-        <property name="mouseEnabledX" stdset="0">
-         <bool>false</bool>
-        </property>
-        <property name="curves" stdset="0">
-         <stringlist/>
-        </property>
-        <property name="bufferSize" stdset="0">
-         <number>60</number>
-        </property>
-        <property name="updatesAsynchronously" stdset="0">
-         <bool>true</bool>
-        </property>
-        <property name="timeSpan" stdset="0">
-         <double>30.000000000000000</double>
-        </property>
-        <property name="updateInterval" stdset="0">
-         <double>0.500000000000000</double>
-        </property>
        </widget>
       </item>
       <item>
@@ -275,13 +225,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>PyDMTimePlot</class>
-   <extends>QGraphicsView</extends>
-   <header>pydm.widgets.timeplot</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
