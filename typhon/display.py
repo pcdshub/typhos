@@ -19,7 +19,7 @@ from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup, QVBoxLayout
 from .func import FunctionPanel
 from .signal import SignalPanel
 from .utils import ui_dir, clean_attr, clean_source, clean_name, channel_name
-from .widgets import RotatingImage, ComponentButton
+from .widgets import ComponentButton
 
 logger = logging.getLogger(__name__)
 
@@ -71,10 +71,8 @@ class TyphonDisplay(QWidget):
         self.read_panel = SignalPanel("Read", parent=self)
         self.config_panel = SignalPanel("Configuration", parent=self)
         self.misc_panel = SignalPanel("Miscellaneous", parent=self)
-        self.image_widget = RotatingImage()
         # Add all the panels
         self.ui.main_layout.insertWidget(2, self.read_panel)
-        self.ui.widget_layout.insertWidget(0, self.image_widget)
         # Create tabs
         self.ui.signal_tab.clear()
         self.add_tab('Configuration', self.config_panel)
@@ -84,7 +82,6 @@ class TyphonDisplay(QWidget):
         self.ui.component_widget.hide()
         self.method_panel.hide()
         self.ui.hint_plot.hide()
-        self.image_widget.hide()
 
     @property
     def methods(self):
