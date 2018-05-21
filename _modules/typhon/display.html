@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.1.0+26.ge924199 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.1.0+42.g3f90499 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+26.ge924199
+                0.1.0+42.g3f90499
               </div>
             
           
@@ -166,7 +166,7 @@
 <span class="c1">############</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt</span> <span class="k">import</span> <span class="n">uic</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">Qt</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QButtonGroup</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QButtonGroup</span><span class="p">,</span> <span class="n">QVBoxLayout</span>
 
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
@@ -229,12 +229,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span> <span class="o">=</span> <span class="n">RotatingImage</span><span class="p">()</span>
         <span class="c1"># Add all the panels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">widget_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="p">)</span>
         <span class="c1"># Create tabs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="p">,</span> <span class="s1">&#39;Configuration&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="p">,</span> <span class="s1">&#39;Miscellaneous&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="s1">&#39;Configuration&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="s1">&#39;Miscellaneous&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="p">)</span>
         <span class="c1"># Hide widgets until signals are added to them</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">buttons</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
@@ -337,6 +336,13 @@
         <span class="n">plot_opts</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_curve_opts</span><span class="p">)</span>
         <span class="n">plot_opts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hint_plot</span><span class="o">.</span><span class="n">addYChannel</span><span class="p">(</span><span class="n">y_channel</span><span class="o">=</span><span class="n">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">),</span> <span class="o">**</span><span class="n">plot_opts</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">add_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">qw</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">qw</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+        <span class="n">qw</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="n">qw</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">qw</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TyphonDisplay.add_image"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_image">[docs]</a>    <span class="k">def</span> <span class="nf">add_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">subdevice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -494,7 +500,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+26.ge924199',
+            VERSION:'0.1.0+42.g3f90499',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

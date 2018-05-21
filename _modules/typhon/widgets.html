@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.widgets &mdash; Typhon 0.1.0+26.ge924199 documentation</title>
+  <title>typhon.widgets &mdash; Typhon 0.1.0+42.g3f90499 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+26.ge924199
+                0.1.0+42.g3f90499
               </div>
             
           
@@ -166,8 +166,8 @@
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">pyqtSlot</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QAbstractButton</span><span class="p">,</span> <span class="n">QStackedWidget</span><span class="p">,</span> <span class="n">QLabel</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QWidget</span>
-<span class="kn">from</span> <span class="nn">pydm.widgets</span> <span class="k">import</span> <span class="n">PyDMDrawingImage</span><span class="p">,</span> <span class="n">PyDMLabel</span><span class="p">,</span> <span class="n">PyDMEnumComboBox</span>
-
+<span class="kn">from</span> <span class="nn">pydm.widgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">PyDMDrawingImage</span><span class="p">,</span> <span class="n">PyDMLabel</span><span class="p">,</span> <span class="n">PyDMEnumComboBox</span><span class="p">,</span>
+                          <span class="n">PyDMLineEdit</span><span class="p">)</span>
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
 <span class="c1">###########</span>
@@ -244,8 +244,22 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reimplementation of PyDMEnumComboBox to set some custom defaults</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># This will need to be removed when the PyDMEnumComboBox directly</span>
+        <span class="c1"># inherits from QComboBox</span>
+        <span class="c1"># https://github.com/slaclab/pydm/issues/315</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># This is to match teh PyDMLineEdit sizeHint</span>
+        <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">TyphonLineEdit</span><span class="p">(</span><span class="n">PyDMLineEdit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reimplementation of PyDMLineEdit to set some custom defaults</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
 
 
@@ -258,7 +272,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># This is to match the PyDMLineEdit sizeHint</span>
         <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
 
 
@@ -416,7 +429,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+26.ge924199',
+            VERSION:'0.1.0+42.g3f90499',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
