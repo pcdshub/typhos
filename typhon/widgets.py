@@ -89,13 +89,6 @@ class TyphonComboBox(PyDMEnumComboBox):
     """
     Reimplementation of PyDMEnumComboBox to set some custom defaults
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # This will need to be removed when the PyDMEnumComboBox directly
-        # inherits from QComboBox
-        # https://github.com/slaclab/pydm/issues/315
-        self.layout().setContentsMargins(0, 0, 0, 0)
-
     def sizeHint(self):
         return QSize(100, 30)
 
