@@ -11,8 +11,7 @@ from pydm.PyQt.QtGui import QWidget
 ###########
 # Package #
 ###########
-from typhon.display import RotatingImage, ComponentButton
-from typhon.widgets import TogglePanel
+from typhon.widgets import RotatingImage, TogglePanel, ComponentButton
 from .conftest import show_widget
 
 
