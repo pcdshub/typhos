@@ -197,7 +197,7 @@ class TyphonDisplay(QWidget):
             Absolute or relative path to image
 
         subdevice: ophyd.Device
-            Name of ophyd object that has been previously added with
+            Ophyd object that has been previously added with
             :meth:`.add_subdevice`
         """
         # Find the nested widget for this specific device
