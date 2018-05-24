@@ -1,7 +1,6 @@
 ############
 # Standard #
 ############
-import copy
 import os.path
 import logging
 from functools import partial
@@ -19,7 +18,7 @@ from pydm.widgets.drawing import PyDMDrawingImage
 ###########
 from .func import FunctionPanel
 from .signal import SignalPanel
-from .utils import ui_dir, clean_attr, clean_source, clean_name, channel_name
+from .utils import ui_dir, clean_attr, clean_source, clean_name
 from .widgets import ComponentButton
 
 logger = logging.getLogger(__name__)
@@ -223,7 +222,6 @@ class TyphonDisplay(QWidget):
             self.image_widget.setMaximumSize(350, 350)
             self.ui.main_layout.insertWidget(2, self.image_widget,
                                              0, Qt.AlignCenter)
-
 
     @pyqtSlot()
     def show_subdevice(self, name):
