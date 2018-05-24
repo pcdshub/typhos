@@ -235,4 +235,3 @@ class SignalPlugin(PyDMPlugin):
     """Plugin for Ophyd Signal objects"""
     protocol = 'sig'
     connection_class = SignalConnection
-
