@@ -210,10 +210,6 @@ class TyphonDisplay(QWidget):
             self.ui.component_widget.show()
         # Show the correct subdevice widget
         self.ui.component_widget.setCurrentIndex(self.subdisplays[name])
-        # Show image if we have one for this subdevice
-        if (not self.image_widget.isHidden()
-           and name in self.image_widget.images):
-            self.image_widget.show_image(name)
 
     @pyqtSlot()
     def hide_subdevices(self):
@@ -224,9 +220,6 @@ class TyphonDisplay(QWidget):
         # Toggle the button off, each button can use its own pyqtSlot
         for button in self.device_button_group.buttons():
             button.toggled.emit(False)
-        if (not self.image_widget.isHidden()
-           and None in self.image_widget.images):
-            self.image_widget.show_image(None)
 
 
 class DeviceDisplay(TyphonDisplay):
