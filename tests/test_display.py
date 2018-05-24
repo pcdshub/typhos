@@ -76,8 +76,6 @@ def test_display():
                    for disp in display.ui.component_widget.children()]
     assert all([getattr(device, dev) in sub_devices
                 for dev in device._sub_devices])
-    # Check that the hints are included in the plot
-    assert len(display.ui.hint_plot.curves) == 1
     return display
 
 
