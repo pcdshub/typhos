@@ -43,17 +43,23 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="main_layout" stretch="0,0">
+     <property name="maximumSize">
+      <size>
+       <width>450</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <layout class="QVBoxLayout" name="main_layout" stretch="0,0,0">
       <property name="spacing">
        <number>5</number>
       </property>
       <property name="sizeConstraint">
-       <enum>QLayout::SetFixedSize</enum>
+       <enum>QLayout::SetMaximumSize</enum>
       </property>
       <item>
        <widget class="QFrame" name="title_frame">
         <property name="frameShape">
-         <enum>QFrame::Box</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Plain</enum>
@@ -82,6 +88,7 @@
           <widget class="QLabel" name="name_label">
            <property name="font">
             <font>
+             <family>Sans Serif</family>
              <pointsize>20</pointsize>
              <weight>75</weight>
              <bold>true</bold>
@@ -106,6 +113,25 @@
           </spacer>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="underline">
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::HLine</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="lineWidth">
+         <number>10</number>
+        </property>
        </widget>
       </item>
       <item>
