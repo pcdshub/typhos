@@ -13,7 +13,7 @@ from pydm.PyQt.QtGui import QWidget
 ##########
 # Module #
 ##########
-from typhon.plugins import SignalConnection, ClassConnection
+from typhon.plugins import SignalPlugin, SignalConnection, ClassConnection
 from typhon.plugins.core import obj_from_string
 
 class WritableWidget(QWidget, PyDMWritableWidget):
@@ -71,6 +71,4 @@ def test_signal_connection(qapp):
 
 
 def test_plugin_loading(qapp):
-    print(qapp.plugins)
-    assert qapp.plugins['sig'] == SignalConnection
-    assert qapp.plugins['obj'] == SignalConnection
+    assert isinstance(qapp.plugins['sig'], SignalPlugin)
