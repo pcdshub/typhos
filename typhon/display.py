@@ -12,6 +12,7 @@ from functools import partial
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt
 from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup, QVBoxLayout
+from pydm.widgets.drawing import PyDMDrawingImage
 
 ###########
 # Package #
@@ -173,30 +174,44 @@ class TyphonDisplay(QWidget):
         qw.layout().addStretch(1)
         self.ui.signal_tab.addTab(qw, name)
 
-    def add_image(self, path):
+    def add_image(self, path, subdevice=None):
         """
-        Add an image to the display
+        Set the image of the PyDMDrawingImage
+
+        Setting this twice will overwrite the first image given.
 
         Parameters
         ----------
         path : str
             Absolute or relative path to image
 
-        subdevice : ophyd.Device
-            Device to associate the image with. If this is left as None, it is
-            assumed that this image corresponds to the main device
+        subdevice: ophyd.Device
+            Name of ophyd object that has been previously added with
+            :meth:`.add_subdevice`
         """
-        # Make a name for the image to be referred to later
+        # Find the nested widget for this specific device
         if subdevice:
             name = subdevice.name
+            try:
+                idx = self.subdisplays[name]
+            except KeyError as exc:
+                raise ValueError("Device %s has not been added to the "
+                                 "DeviceDisplay yet", name) from exc
+            # Add image to widget
+            widget = self.ui.component_widget.widget(idx)
+            return widget.add_image(path, subdevice=None)
+        # Set existing image file
+        logger.debug("Adding an image file %s ...", path)
+        if self.image_widget:
+            self.image_widget.filename = path
         else:
-            name = None
-        # Add the image to the widget. The show_subdevice slot will find this
-        # automatically
-        self.image_widget.add_image(path, name=name)
-        # Show the widget if it is hidden
-        if self.image_widget.isHidden():
-            self.image_widget.show()
+            logger.debug("Creating a new PyDMDrawingImage")
+            self.image_widget = PyDMDrawingImage(filename=path,
+                                                 parent=self)
+            self.image_widget.setMaximumSize(350, 350)
+            self.ui.main_layout.insertWidget(2, self.image_widget,
+                                             0, Qt.AlignCenter)
+
 
     @pyqtSlot()
     def show_subdevice(self, name):
