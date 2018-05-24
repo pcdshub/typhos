@@ -49,9 +49,12 @@ class TyphonDisplay(QWidget):
     name : str
         Title displayed on the widget
 
+    image :str, optional
+        Path to an image file to include in the display.
+
     parent : QWidget, optional
     """
-    def __init__(self, name, parent=None):
+    def __init__(self, name, image=None, parent=None):
         # Instantiate Widget
         super().__init__(parent=parent)
         self.subdisplays = dict()
@@ -78,6 +81,11 @@ class TyphonDisplay(QWidget):
         self.ui.buttons.hide()
         self.ui.component_widget.hide()
         self.method_panel.hide()
+        # Create PyDMDrawingImage
+        if image:
+            self.add_image(image)
+        else:
+            self.image_widget = None
 
     @property
     def methods(self):
@@ -135,6 +143,9 @@ class TyphonDisplay(QWidget):
         device : ophyd.Device
 
         methods : list of callables, optional
+
+        image: str, optional
+            Path to image to display for device
         """
         logger.debug("Creating button for %s", device.name)
         # Create ComponentButton adding the hints automatically
@@ -149,6 +160,7 @@ class TyphonDisplay(QWidget):
         self.add_subdisplay(device.name,
                             DeviceDisplay(device,
                                           methods=methods,
+                                          image=image,
                                           parent=self),
                             button=button)
 
@@ -256,9 +268,12 @@ class DeviceDisplay(TyphonDisplay):
     methods : list of callables, optional
         List of callables to pass to :meth:`.FunctionPanel.add_method`
 
+    image : str, optional
+        Path to image to add to display
+
     parent : QWidget, optional
     """
-    def __init__(self, device, methods=None, parent=None):
+    def __init__(self, device, methods=None, image=None, parent=None):
         super().__init__(clean_name(device, strip_parent=False),
                          parent=parent)
         # Examine and store device for later reference
