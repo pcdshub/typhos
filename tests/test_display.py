@@ -96,10 +96,12 @@ def test_display_with_funcs():
 @using_fake_epics_pv
 @show_widget
 def test_display_with_images(test_images):
-    device = MockDevice("Tst:Dev", name="MockDevice")
     (lenna, python) = test_images
-    display = DeviceDisplay(device)
-    # Add our main image
+    device = MockDevice("Tst:Dev", name="MockDevice")
+    # Create a display with our image
+    display = DeviceDisplay(device, image=lenna)
+    assert display.image_widget.filename == lenna
+    # Add our python image
     display.add_image(python)
     assert display.image_widget.filename == python
     # Add our component image
