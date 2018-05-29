@@ -76,8 +76,6 @@ def test_display():
                    for disp in display.ui.component_widget.children()]
     assert all([getattr(device, dev) in sub_devices
                 for dev in device._sub_devices])
-    # Check that the hints are included in the plot
-    assert len(display.ui.hint_plot.curves) == 1
     return display
 
 
@@ -98,18 +96,21 @@ def test_display_with_funcs():
 @using_fake_epics_pv
 @show_widget
 def test_display_with_images(test_images):
-    device = MockDevice("Tst:Dev", name="MockDevice")
     (lenna, python) = test_images
-    display = DeviceDisplay(device)
-    # Add our main image
+    device = MockDevice("Tst:Dev", name="MockDevice")
+    # Create a display with our image
+    display = DeviceDisplay(device, image=lenna)
+    assert display.image_widget.filename == lenna
+    # Add our python image
     display.add_image(python)
+    assert display.image_widget.filename == python
     # Add our component image
     display.add_image(lenna, subdevice=device.x)
-    assert not display.image_widget.isHidden()
     # Show our subdevice and image
     display.show_subdevice(device.x.name)
-    assert display.image_widget.currentWidget().filename == lenna
-    # Hide all subdevices and show main image
-    display.hide_subdevices()
-    assert display.image_widget.currentWidget().filename == python
+    sub_display = display.ui.component_widget.currentWidget()
+    assert sub_display.image_widget.filename == lenna
+    # Bad input
+    with pytest.raises(ValueError):
+        display.add_image(lenna, subdevice=device)
     return display

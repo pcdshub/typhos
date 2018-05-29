@@ -1,7 +1,6 @@
 ############
 # Standard #
 ############
-import copy
 import os.path
 import logging
 from functools import partial
@@ -12,14 +11,15 @@ from functools import partial
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt
 from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup, QVBoxLayout
+from pydm.widgets.drawing import PyDMDrawingImage
 
 ###########
 # Package #
 ###########
 from .func import FunctionPanel
 from .signal import SignalPanel
-from .utils import ui_dir, clean_attr, clean_source, clean_name, channel_name
-from .widgets import RotatingImage, ComponentButton
+from .utils import ui_dir, clean_attr, clean_source, clean_name
+from .widgets import ComponentButton
 
 logger = logging.getLogger(__name__)
 
@@ -33,12 +33,10 @@ class TyphonDisplay(QWidget):
     one is not required to be given. There are four main panels available;
     :attr:`.read_panel`, :attr:`.config_panel`, :attr:`.method_panel`. These
     each provide a quick way to organize signals and methods by their
-    importance to an operator. In addition, crucial signals can be added to a
-    PyDMTimePlot under the attribute :attr:`.hint_plot`.  Because each panel
-    can be hidden interactively, the screen works as both an expert and novice
-    entry point for users. By default, widgets are hidden until contents are
-    added. For instance, if you do not add any methods to the main panel it
-    will not be visible.
+    importance to an operator. Because each panel can be hidden interactively,
+    the screen works as both an expert and novice entry point for users. By
+    default, widgets are hidden until contents are added. For instance, if you
+    do not add any methods to the main panel it will not be visible.
 
     This device is the bare bones implementation in the event that someone
     might want to collect a random group of signals and devices together to
@@ -50,12 +48,12 @@ class TyphonDisplay(QWidget):
     name : str
         Title displayed on the widget
 
+    image :str, optional
+        Path to an image file to include in the display.
+
     parent : QWidget, optional
     """
-    default_curve_opts = {'lineStyle': Qt.SolidLine, 'symbol': 'o',
-                          'lineWidth': 2, 'symbolSize': 4}
-
-    def __init__(self, name, parent=None):
+    def __init__(self, name, image=None, parent=None):
         # Instantiate Widget
         super().__init__(parent=parent)
         self.subdisplays = dict()
@@ -71,10 +69,9 @@ class TyphonDisplay(QWidget):
         self.read_panel = SignalPanel("Read", parent=self)
         self.config_panel = SignalPanel("Configuration", parent=self)
         self.misc_panel = SignalPanel("Miscellaneous", parent=self)
-        self.image_widget = RotatingImage()
         # Add all the panels
         self.ui.main_layout.insertWidget(2, self.read_panel)
-        self.ui.widget_layout.insertWidget(0, self.image_widget)
+        self.ui.main_layout.insertWidget(3, self.method_panel)
         # Create tabs
         self.ui.signal_tab.clear()
         self.add_tab('Configuration', self.config_panel)
@@ -83,8 +80,10 @@ class TyphonDisplay(QWidget):
         self.ui.buttons.hide()
         self.ui.component_widget.hide()
         self.method_panel.hide()
-        self.ui.hint_plot.hide()
-        self.image_widget.hide()
+        # Create PyDMDrawingImage
+        self.image_widget = None
+        if image:
+            self.add_image(image)
 
     @property
     def methods(self):
@@ -142,6 +141,9 @@ class TyphonDisplay(QWidget):
         device : ophyd.Device
 
         methods : list of callables, optional
+
+        image: str, optional
+            Path to image to display for device
         """
         logger.debug("Creating button for %s", device.name)
         # Create ComponentButton adding the hints automatically
@@ -156,33 +158,26 @@ class TyphonDisplay(QWidget):
         self.add_subdisplay(device.name,
                             DeviceDisplay(device,
                                           methods=methods,
+                                          image=image,
                                           parent=self),
                             button=button)
 
-    def add_pv_to_plot(self, pv, **kwargs):
+    def add_tab(self, name, widget):
         """
-        Add a PV to the PyDMTimePlot
+        Add a widget to the main signal tab
 
-        The default style of the curve is determined by
-        :attr:`.default_curve_opts`. Though these can be overridden
+        Use this rather than directly setting ``signal_tab.addTab`` to ensure
+        that the tab has the proper stretch to avoid distorting the size of the
+        widget you are adding.
 
         Parameters
         ----------
-        pvname : str
-            Name of PV
+        name : str
+            Name that will be displayed on tab
 
-        kwargs:
-            All keywords are passed directly to ``PyDMTimePlot.addYChannel``
+        widget : QWidget
+            Widget to be contained within the new tab
         """
-        # Show our plot if it was previously hidden
-        if self.ui.hint_plot.isHidden():
-            self.ui.hint_plot.show()
-        # Combine user supplied options with defaults
-        plot_opts = copy.copy(self.default_curve_opts)
-        plot_opts.update(kwargs)
-        self.ui.hint_plot.addYChannel(y_channel=channel_name(pv), **plot_opts)
-
-    def add_tab(self, name, widget):
         qw = QWidget()
         qw.setLayout(QVBoxLayout())
         qw.layout().addWidget(widget)
@@ -191,28 +186,41 @@ class TyphonDisplay(QWidget):
 
     def add_image(self, path, subdevice=None):
         """
-        Add an image to the display
+        Set the image of the PyDMDrawingImage
+
+        Setting this twice will overwrite the first image given.
 
         Parameters
         ----------
         path : str
             Absolute or relative path to image
 
-        subdevice : ophyd.Device
-            Device to associate the image with. If this is left as None, it is
-            assumed that this image corresponds to the main device
+        subdevice: ophyd.Device
+            Ophyd object that has been previously added with
+            :meth:`.add_subdevice`
         """
-        # Make a name for the image to be referred to later
+        # Find the nested widget for this specific device
         if subdevice:
             name = subdevice.name
+            try:
+                idx = self.subdisplays[name]
+            except KeyError as exc:
+                raise ValueError("Device %s has not been added to the "
+                                 "DeviceDisplay yet", name) from exc
+            # Add image to widget
+            widget = self.ui.component_widget.widget(idx)
+            return widget.add_image(path, subdevice=None)
+        # Set existing image file
+        logger.debug("Adding an image file %s ...", path)
+        if self.image_widget:
+            self.image_widget.filename = path
         else:
-            name = None
-        # Add the image to the widget. The show_subdevice slot will find this
-        # automatically
-        self.image_widget.add_image(path, name=name)
-        # Show the widget if it is hidden
-        if self.image_widget.isHidden():
-            self.image_widget.show()
+            logger.debug("Creating a new PyDMDrawingImage")
+            self.image_widget = PyDMDrawingImage(filename=path,
+                                                 parent=self)
+            self.image_widget.setMaximumSize(350, 350)
+            self.ui.main_layout.insertWidget(2, self.image_widget,
+                                             0, Qt.AlignCenter)
 
     @pyqtSlot()
     def show_subdevice(self, name):
@@ -227,10 +235,6 @@ class TyphonDisplay(QWidget):
             self.ui.component_widget.show()
         # Show the correct subdevice widget
         self.ui.component_widget.setCurrentIndex(self.subdisplays[name])
-        # Show image if we have one for this subdevice
-        if (not self.image_widget.isHidden()
-           and name in self.image_widget.images):
-            self.image_widget.show_image(name)
 
     @pyqtSlot()
     def hide_subdevices(self):
@@ -241,9 +245,6 @@ class TyphonDisplay(QWidget):
         # Toggle the button off, each button can use its own pyqtSlot
         for button in self.device_button_group.buttons():
             button.toggled.emit(False)
-        if (not self.image_widget.isHidden()
-           and None in self.image_widget.images):
-            self.image_widget.show_image(None)
 
 
 class DeviceDisplay(TyphonDisplay):
@@ -264,11 +265,14 @@ class DeviceDisplay(TyphonDisplay):
     methods : list of callables, optional
         List of callables to pass to :meth:`.FunctionPanel.add_method`
 
+    image : str, optional
+        Path to image to add to display
+
     parent : QWidget, optional
     """
-    def __init__(self, device, methods=None, parent=None):
+    def __init__(self, device, methods=None, image=None, parent=None):
         super().__init__(clean_name(device, strip_parent=False),
-                         parent=parent)
+                         image=image, parent=parent)
         # Examine and store device for later reference
         self.device = device
         self.device_description = self.device.describe()
@@ -297,17 +301,3 @@ class DeviceDisplay(TyphonDisplay):
         methods = methods or list()
         for method in methods:
                 self.method_panel.add_method(method)
-
-        # Add our hints
-        for field in getattr(self.device, 'hints', {}).get('fields', list()):
-            try:
-                # Get a description of the signal. Add the the PV name
-                # to the hint_panel if it is a number and not a string
-                sig_desc = self.device_description[field]
-                if sig_desc['dtype'] == 'number':
-                    self.add_pv_to_plot(clean_source(sig_desc['source']))
-                else:
-                    logger.debug("Not adding %s because it is not a number",
-                                 field)
-            except KeyError as exc:
-                logger.error("Unable to find PV name of %s", field)
