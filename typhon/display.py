@@ -81,10 +81,9 @@ class TyphonDisplay(QWidget):
         self.ui.component_widget.hide()
         self.method_panel.hide()
         # Create PyDMDrawingImage
+        self.image_widget = None
         if image:
             self.add_image(image)
-        else:
-            self.image_widget = None
 
     @property
     def methods(self):
@@ -273,7 +272,7 @@ class DeviceDisplay(TyphonDisplay):
     """
     def __init__(self, device, methods=None, image=None, parent=None):
         super().__init__(clean_name(device, strip_parent=False),
-                         parent=parent)
+                         image=image, parent=parent)
         # Examine and store device for later reference
         self.device = device
         self.device_description = self.device.describe()
