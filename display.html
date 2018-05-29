@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.1.0+46.g79dc75c documentation</title>
+  <title>Display Types &mdash; Typhon 0.1.0+62.gbf620af documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1.0+46.g79dc75c
+                0.1.0+62.gbf620af
               </div>
             
           
@@ -173,19 +173,17 @@ Device and populate PVs and components into the appropriate locations</p>
 <h2>TyphonDisplay<a class="headerlink" href="#typhondisplay" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="typhon.TyphonDisplay">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonDisplay</code><span class="sig-paren">(</span><em>name</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonDisplay</code><span class="sig-paren">(</span><em>name</em>, <em>image=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generalized Typhon display</p>
 <p>This widget lays out all of the architecture for a general Typhon display.
 The structure matches an ophyd Device, but for this specific instantation,
 one is not required to be given. There are four main panels available;
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_panel</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">config_panel</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code>. These
 each provide a quick way to organize signals and methods by their
-importance to an operator. In addition, crucial signals can be added to a
-PyDMTimePlot under the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">hint_plot</span></code>.  Because each panel
-can be hidden interactively, the screen works as both an expert and novice
-entry point for users. By default, widgets are hidden until contents are
-added. For instance, if you do not add any methods to the main panel it
-will not be visible.</p>
+importance to an operator. Because each panel can be hidden interactively,
+the screen works as both an expert and novice entry point for users. By
+default, widgets are hidden until contents are added. For instance, if you
+do not add any methods to the main panel it will not be visible.</p>
 <p>This device is the bare bones implementation in the event that someone
 might want to collect a random group of signals and devices together to
 create a screen. A more automated display generator is available  in the
@@ -196,6 +194,7 @@ create a screen. A more automated display generator is available  in the
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Title displayed on the widget</li>
+<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>, </em><em>optional</em>) – Path to an image file to include in the display.</li>
 <li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
 </ul>
 </td>
@@ -205,35 +204,16 @@ create a screen. A more automated display generator is available  in the
 <dl class="method">
 <dt id="typhon.TyphonDisplay.add_image">
 <code class="descname">add_image</code><span class="sig-paren">(</span><em>path</em>, <em>subdevice=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add an image to the display</p>
+<dd><p>Set the image of the PyDMDrawingImage</p>
+<p>Setting this twice will overwrite the first image given.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Absolute or relative path to image</li>
-<li><strong>subdevice</strong> (<em>ophyd.Device</em>) – Device to associate the image with. If this is left as None, it is
-assumed that this image corresponds to the main device</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="typhon.TyphonDisplay.add_pv_to_plot">
-<code class="descname">add_pv_to_plot</code><span class="sig-paren">(</span><em>pv</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_pv_to_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_pv_to_plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a PV to the PyDMTimePlot</p>
-<p>The default style of the curve is determined by
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">default_curve_opts</span></code>. Though these can be overridden</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>pvname</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name of PV</li>
-<li><strong>kwargs</strong> – All keywords are passed directly to <code class="docutils literal notranslate"><span class="pre">PyDMTimePlot.addYChannel</span></code></li>
+<li><strong>subdevice</strong> (<em>ophyd.Device</em>) – Ophyd object that has been previously added with
+<a class="reference internal" href="#typhon.TyphonDisplay.add_subdevice" title="typhon.TyphonDisplay.add_subdevice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_subdevice()</span></code></a></li>
 </ul>
 </td>
 </tr>
@@ -252,6 +232,7 @@ assumed that this image corresponds to the main device</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
 <li><strong>methods</strong> (<em>list of callables</em><em>, </em><em>optional</em>) – </li>
+<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>, </em><em>optional</em>) – Path to image to display for device</li>
 </ul>
 </td>
 </tr>
@@ -276,6 +257,27 @@ connected to the <cite>pyqSlot</cite> <a class="reference internal" href="#typho
 <li><strong>display</strong> (<em>QWidget</em>) – QWidget to associate with button</li>
 <li><strong>button</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – QWidget with the PyQtSignal <code class="docutils literal notranslate"><span class="pre">clicked</span></code>. If None, is given a
 QPushButton is created</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.add_tab">
+<code class="descname">add_tab</code><span class="sig-paren">(</span><em>name</em>, <em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_tab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a widget to the main signal tab</p>
+<p>Use this rather than directly setting <code class="docutils literal notranslate"><span class="pre">signal_tab.addTab</span></code> to ensure
+that the tab has the proper stretch to avoid distorting the size of the
+widget you are adding.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name that will be displayed on tab</li>
+<li><strong>widget</strong> (<em>QWidget</em>) – Widget to be contained within the new tab</li>
 </ul>
 </td>
 </tr>
@@ -316,7 +318,7 @@ QPushButton is created</li>
 <h2>DeviceDisplay<a class="headerlink" href="#devicedisplay" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="typhon.DeviceDisplay">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">DeviceDisplay</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#DeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.DeviceDisplay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">DeviceDisplay</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>image=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#DeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.DeviceDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typhon.display.TyphonDisplay</span></code></p>
 <p>Display an Ophyd Device</p>
 <p>Using the panels created by the inherited <a class="reference internal" href="#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDisplay</span></code></a> the
@@ -331,6 +333,7 @@ heirarchy.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – Main ophyd device to display</li>
 <li><strong>methods</strong> (<em>list of callables</em><em>, </em><em>optional</em>) – List of callables to pass to <code class="xref py py-meth docutils literal notranslate"><span class="pre">FunctionPanel.add_method()</span></code></li>
+<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>, </em><em>optional</em>) – Path to image to add to display</li>
 <li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
 </ul>
 </td>
@@ -384,7 +387,7 @@ heirarchy.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0+46.g79dc75c',
+            VERSION:'0.1.0+62.gbf620af',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -405,9 +408,7 @@ heirarchy.</p>
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 

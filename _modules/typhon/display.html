@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.1.0+46.g79dc75c documentation</title>
+  <title>typhon.display &mdash; Typhon 0.1.0+62.gbf620af documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+46.g79dc75c
+                0.1.0+62.gbf620af
               </div>
             
           
@@ -156,7 +156,6 @@
 <span></span><span class="c1">############</span>
 <span class="c1"># Standard #</span>
 <span class="c1">############</span>
-<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
@@ -167,14 +166,15 @@
 <span class="kn">from</span> <span class="nn">pydm.PyQt</span> <span class="k">import</span> <span class="n">uic</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">Qt</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QButtonGroup</span><span class="p">,</span> <span class="n">QVBoxLayout</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.drawing</span> <span class="k">import</span> <span class="n">PyDMDrawingImage</span>
 
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
 <span class="c1">###########</span>
 <span class="kn">from</span> <span class="nn">.func</span> <span class="k">import</span> <span class="n">FunctionPanel</span>
 <span class="kn">from</span> <span class="nn">.signal</span> <span class="k">import</span> <span class="n">SignalPanel</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_source</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">channel_name</span>
-<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">RotatingImage</span><span class="p">,</span> <span class="n">ComponentButton</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_source</span><span class="p">,</span> <span class="n">clean_name</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">ComponentButton</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -188,12 +188,10 @@
 <span class="sd">    one is not required to be given. There are four main panels available;</span>
 <span class="sd">    :attr:`.read_panel`, :attr:`.config_panel`, :attr:`.method_panel`. These</span>
 <span class="sd">    each provide a quick way to organize signals and methods by their</span>
-<span class="sd">    importance to an operator. In addition, crucial signals can be added to a</span>
-<span class="sd">    PyDMTimePlot under the attribute :attr:`.hint_plot`.  Because each panel</span>
-<span class="sd">    can be hidden interactively, the screen works as both an expert and novice</span>
-<span class="sd">    entry point for users. By default, widgets are hidden until contents are</span>
-<span class="sd">    added. For instance, if you do not add any methods to the main panel it</span>
-<span class="sd">    will not be visible.</span>
+<span class="sd">    importance to an operator. Because each panel can be hidden interactively,</span>
+<span class="sd">    the screen works as both an expert and novice entry point for users. By</span>
+<span class="sd">    default, widgets are hidden until contents are added. For instance, if you</span>
+<span class="sd">    do not add any methods to the main panel it will not be visible.</span>
 
 <span class="sd">    This device is the bare bones implementation in the event that someone</span>
 <span class="sd">    might want to collect a random group of signals and devices together to</span>
@@ -205,12 +203,12 @@
 <span class="sd">    name : str</span>
 <span class="sd">        Title displayed on the widget</span>
 
+<span class="sd">    image :str, optional</span>
+<span class="sd">        Path to an image file to include in the display.</span>
+
 <span class="sd">    parent : QWidget, optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">default_curve_opts</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lineStyle&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SolidLine</span><span class="p">,</span> <span class="s1">&#39;symbol&#39;</span><span class="p">:</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;lineWidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;symbolSize&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Instantiate Widget</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subdisplays</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -226,10 +224,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span> <span class="o">=</span> <span class="n">SignalPanel</span><span class="p">(</span><span class="s2">&quot;Read&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span> <span class="o">=</span> <span class="n">SignalPanel</span><span class="p">(</span><span class="s2">&quot;Configuration&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span> <span class="o">=</span> <span class="n">SignalPanel</span><span class="p">(</span><span class="s2">&quot;Miscellaneous&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span> <span class="o">=</span> <span class="n">RotatingImage</span><span class="p">()</span>
         <span class="c1"># Add all the panels</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">widget_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="p">)</span>
         <span class="c1"># Create tabs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="s1">&#39;Configuration&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="p">)</span>
@@ -238,8 +235,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">buttons</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hint_plot</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="c1"># Create PyDMDrawingImage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">methods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -297,6 +296,9 @@
 <span class="sd">        device : ophyd.Device</span>
 
 <span class="sd">        methods : list of callables, optional</span>
+
+<span class="sd">        image: str, optional</span>
+<span class="sd">            Path to image to display for device</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating button for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="c1"># Create ComponentButton adding the hints automatically</span>
@@ -311,63 +313,69 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_subdisplay</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                             <span class="n">DeviceDisplay</span><span class="p">(</span><span class="n">device</span><span class="p">,</span>
                                           <span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">,</span>
+                                          <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
                                           <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">),</span>
                             <span class="n">button</span><span class="o">=</span><span class="n">button</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TyphonDisplay.add_pv_to_plot"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_pv_to_plot">[docs]</a>    <span class="k">def</span> <span class="nf">add_pv_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonDisplay.add_tab"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_tab">[docs]</a>    <span class="k">def</span> <span class="nf">add_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a PV to the PyDMTimePlot</span>
+<span class="sd">        Add a widget to the main signal tab</span>
 
-<span class="sd">        The default style of the curve is determined by</span>
-<span class="sd">        :attr:`.default_curve_opts`. Though these can be overridden</span>
+<span class="sd">        Use this rather than directly setting ``signal_tab.addTab`` to ensure</span>
+<span class="sd">        that the tab has the proper stretch to avoid distorting the size of the</span>
+<span class="sd">        widget you are adding.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pvname : str</span>
-<span class="sd">            Name of PV</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name that will be displayed on tab</span>
 
-<span class="sd">        kwargs:</span>
-<span class="sd">            All keywords are passed directly to ``PyDMTimePlot.addYChannel``</span>
+<span class="sd">        widget : QWidget</span>
+<span class="sd">            Widget to be contained within the new tab</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Show our plot if it was previously hidden</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hint_plot</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hint_plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-        <span class="c1"># Combine user supplied options with defaults</span>
-        <span class="n">plot_opts</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_curve_opts</span><span class="p">)</span>
-        <span class="n">plot_opts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hint_plot</span><span class="o">.</span><span class="n">addYChannel</span><span class="p">(</span><span class="n">y_channel</span><span class="o">=</span><span class="n">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">),</span> <span class="o">**</span><span class="n">plot_opts</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">add_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="n">qw</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
         <span class="n">qw</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
         <span class="n">qw</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
         <span class="n">qw</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">qw</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">qw</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.add_image"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_image">[docs]</a>    <span class="k">def</span> <span class="nf">add_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">subdevice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add an image to the display</span>
+<span class="sd">        Set the image of the PyDMDrawingImage</span>
+
+<span class="sd">        Setting this twice will overwrite the first image given.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        path : str</span>
 <span class="sd">            Absolute or relative path to image</span>
 
-<span class="sd">        subdevice : ophyd.Device</span>
-<span class="sd">            Device to associate the image with. If this is left as None, it is</span>
-<span class="sd">            assumed that this image corresponds to the main device</span>
+<span class="sd">        subdevice: ophyd.Device</span>
+<span class="sd">            Ophyd object that has been previously added with</span>
+<span class="sd">            :meth:`.add_subdevice`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Make a name for the image to be referred to later</span>
+        <span class="c1"># Find the nested widget for this specific device</span>
         <span class="k">if</span> <span class="n">subdevice</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">subdevice</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdisplays</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Device </span><span class="si">%s</span><span class="s2"> has not been added to the &quot;</span>
+                                 <span class="s2">&quot;DeviceDisplay yet&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+            <span class="c1"># Add image to widget</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">widget</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">subdevice</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># Set existing image file</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding an image file </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">path</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="c1"># Add the image to the widget. The show_subdevice slot will find this</span>
-        <span class="c1"># automatically</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-        <span class="c1"># Show the widget if it is hidden</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating a new PyDMDrawingImage&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span> <span class="o">=</span> <span class="n">PyDMDrawingImage</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                                                 <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">350</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="p">,</span>
+                                             <span class="mi">0</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.show_subdevice"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.show_subdevice">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">show_subdevice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -381,11 +389,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         <span class="c1"># Show the correct subdevice widget</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subdisplays</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
-        <span class="c1"># Show image if we have one for this subdevice</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">isHidden</span><span class="p">()</span>
-           <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">images</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subdisplays</span><span class="p">[</span><span class="n">name</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.hide_subdevices"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.hide_subdevices">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">hide_subdevices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -395,10 +399,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
         <span class="c1"># Toggle the button off, each button can use its own pyqtSlot</span>
         <span class="k">for</span> <span class="n">button</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_button_group</span><span class="o">.</span><span class="n">buttons</span><span class="p">():</span>
-            <span class="n">button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">isHidden</span><span class="p">()</span>
-           <span class="ow">and</span> <span class="kc">None</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">images</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">show_image</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div></div>
+            <span class="n">button</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="DeviceDisplay"><a class="viewcode-back" href="../../display.html#typhon.DeviceDisplay">[docs]</a><span class="k">class</span> <span class="nc">DeviceDisplay</span><span class="p">(</span><span class="n">TyphonDisplay</span><span class="p">):</span>
@@ -419,11 +420,14 @@
 <span class="sd">    methods : list of callables, optional</span>
 <span class="sd">        List of callables to pass to :meth:`.FunctionPanel.add_method`</span>
 
+<span class="sd">    image : str, optional</span>
+<span class="sd">        Path to image to add to display</span>
+
 <span class="sd">    parent : QWidget, optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-                         <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+                         <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="c1"># Examine and store device for later reference</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device_description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
@@ -451,21 +455,7 @@
         <span class="c1"># Add our methods to the panel</span>
         <span class="n">methods</span> <span class="o">=</span> <span class="n">methods</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
-
-        <span class="c1"># Add our hints</span>
-        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;hints&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fields&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">()):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># Get a description of the signal. Add the the PV name</span>
-                <span class="c1"># to the hint_panel if it is a number and not a string</span>
-                <span class="n">sig_desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_description</span><span class="p">[</span><span class="n">field</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">sig_desc</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;number&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">add_pv_to_plot</span><span class="p">(</span><span class="n">clean_source</span><span class="p">(</span><span class="n">sig_desc</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Not adding </span><span class="si">%s</span><span class="s2"> because it is not a number&quot;</span><span class="p">,</span>
-                                 <span class="n">field</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to find PV name of </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -500,7 +490,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+46.g79dc75c',
+            VERSION:'0.1.0+62.gbf620af',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -521,9 +511,7 @@
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
