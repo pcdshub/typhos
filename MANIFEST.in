@@ -1,2 +1,4 @@
 include versioneer.py
 include typhon/_version.py
+include typhon/ui/base.ui
+include typhon/ui/style.qss
