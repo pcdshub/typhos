@@ -9,11 +9,12 @@ import pytest
 from ophyd.signal import EpicsSignal, EpicsSignalRO
 from ophyd import Device, EpicsMotor, Component as C, FormattedComponent as FC
 from ophyd.tests.conftest import using_fake_epics_pv
+from pydm.PyQt.QtGui import QWidget
 
 ###########
 # Package #
 ###########
-from typhon.utils import clean_attr
+from typhon.utils import clean_attr, clean_name
 from typhon.display import DeviceDisplay
 from .conftest import show_widget
 
@@ -115,4 +116,30 @@ def test_display_with_images(test_images):
     # Bad input
     with pytest.raises(ValueError):
         display.add_image(lenna, subdevice=device)
+    return display
+
+@using_fake_epics_pv
+@show_widget
+def test_subdisplay(qapp):
+    device = MockDevice("Tst:Dev", name="MockDevice")
+    # Set display by Device component
+    display = DeviceDisplay(device)
+    display.show_subdisplay(device.x)
+    assert not display.ui.subdisplay.isHidden()
+    assert display.ui.subdisplay.currentWidget().device == device.x
+    # Set display by name
+    display.show_subdisplay(clean_name(device.y))
+    assert display.ui.subdisplay.currentWidget().device == device.y
+    # Add a tool
+    w = QWidget()
+    display.add_tool('My Tool', w)
+    # Release a model press event
+    tool_item = display.ui.tool_list.item(0)
+    tool_model = display.ui.tool_list.indexFromItem(tool_item)
+    display.show_subdisplay(tool_model)
+    assert display.ui.subdisplay.currentWidget() == w
+    # Hide all our subdisplays
+    display.hide_subdisplays()
+    assert display.ui.tool_list.selectedIndexes() == []
+    assert display.ui.tool_list.selectedIndexes() == []
     return display
