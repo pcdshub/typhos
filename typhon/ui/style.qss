@@ -1,0 +1,38 @@
+QWidget{
+   background-color: #ffffff;
+   color: black;
+   font: bold;
+}
+
+PyDMLineEdit {
+    color: #A9A9A9;
+}
+
+PyDMLineEdit:focus {
+    border-color: blue;
+    color: black;
+}
+
+PyDMLabel {
+    color: white;
+    background-color: #0b3ae8;
+    border-radius: 5px;
+}
+
+QComboBox {
+    border-radius 10px;
+    color: #A9A9A9;
+}
+
+QComboBox:on {
+    color: black;
+}
+
+QComboBox QAbstractItemView {
+    border: 2px solid #0b3ae8;
+    border-radius 10px;
+}
+
+QComboBox:hover {
+    border: 2px solid #0b3ae8;
+}
