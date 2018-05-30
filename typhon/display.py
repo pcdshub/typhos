@@ -59,9 +59,6 @@ class TyphonDisplay(QWidget):
         self.subdisplays = dict()
         # Instantiate UI
         self.ui = uic.loadUi(os.path.join(ui_dir, 'base.ui'), self)
-        self.device_button_group = QButtonGroup()
-        self.device_button_group.addButton(self.ui.hide_button)
-        self.ui.hide_button.clicked.connect(self.hide_subdevices)
         # Set Label Names
         self.ui.name_label.setText(name)
         # Create Panels
@@ -113,24 +110,16 @@ class TyphonDisplay(QWidget):
             QWidget with the PyQtSignal ``clicked``. If None, is given a
             QPushButton is created
         """
-        # Create button
-        if not button:
-            button = QPushButton(self)
-            button.setText(name)
-        # Add the button to the group
-        self.device_button_group.addButton(button)
-        # Add our button to the layout last in the line of buttons
-        # but above the spacer
-        idx = self.ui.buttons.layout().count() - 1
-        self.ui.buttons.layout().insertWidget(idx, button)
-        # Add our display to the widget
-        idx = self.ui.component_widget.addWidget(display)
-        self.subdisplays[name] = idx
-        # Connect button
-        button.clicked.connect(partial(self.show_subdevice, name=name))
+        # Create QListViewItem to store the display information
+        list_item = QListWidgetItem(name)
+        list_item.setData(Qt.UserRole, display)
+        list_widget.addItem(list_item)
+        # Add our display to the component widget
+        self.ui.subdisplay.addWidget(display)
+        self.subdisplays[name] = list_item
         # Show the widgets if hidden
-        if self.ui.buttons.isHidden():
-            self.ui.buttons.show()
+        if list_widget.isHidden():
+            list_widget.show()
 
     def add_subdevice(self, device, methods=None, image=None):
         """
