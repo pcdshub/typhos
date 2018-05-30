@@ -76,6 +76,12 @@ script:
   - coverage run run_tests.py --timeout 15 
   - coverage report -m
   - flake8 typhon
+  # Test again but with installed version
+  - mkdir notest
+  - mv typhon/*.* notest
+  - python run_tests.py
+  - mv notest/* typhon
+  - rmdir notest
   # Build docs
   - set -e
   - |
