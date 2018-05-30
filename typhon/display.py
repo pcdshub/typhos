@@ -127,7 +127,7 @@ class TyphonDisplay(QWidget):
         if list_widget.isHidden():
             list_widget.show()
 
-    def add_subdevice(self, device, methods=None, image=None):
+    def add_subdevice(self, device, **kwargs):
         """
         Add a subdevice to the `component_widget` stack
 
@@ -140,15 +140,6 @@ class TyphonDisplay(QWidget):
         image: str, optional
             Path to image to display for device
         """
-        logger.debug("Creating button for %s", device.name)
-        # Create ComponentButton adding the hints automatically
-        button = ComponentButton(clean_name(device), parent=self)
-        description = device.describe()
-        for field in getattr(device, 'hints', {}).get('fields', list()):
-            sig_source = description[field]['source']
-            button.add_pv(clean_source(sig_source), clean_attr(field))
-        # Create the actual subdisplay and add it to the component widget
-        # along with the button
         logger.debug("Creating subdisplay for %s", device.name)
         self.add_subdisplay(device.name,
                             DeviceDisplay(device,
