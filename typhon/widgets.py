@@ -10,7 +10,7 @@ import os.path
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import QSize, Qt, pyqtSlot
 from pydm.PyQt.QtGui import QAbstractButton, QStackedWidget, QLabel
-from pydm.PyQt.QtGui import QVBoxLayout, QPushButton, QWidget
+from pydm.PyQt.QtGui import QVBoxLayout, QPushButton, QWidget, QListWidgetItem
 from pydm.widgets import (PyDMDrawingImage, PyDMLabel, PyDMEnumComboBox,
                           PyDMLineEdit)
 ###########
@@ -233,3 +233,12 @@ class RotatingImage(QStackedWidget):
             Image name saved in the :attr:`.images` dictionary
         """
         self.setCurrentIndex(self.images[name])
+
+
+class TyphonSidebarItem(QListWidgetItem):
+    """
+    QListWidgetItem to display in DeviceDisplay sidebar
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setTextAlignment(Qt.AlignCenter)

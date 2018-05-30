@@ -10,7 +10,7 @@ from ophyd import Device
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt, QModelIndex
-from pydm.PyQt.QtGui import QWidget, QListWidgetItem, QVBoxLayout
+from pydm.PyQt.QtGui import QWidget, QVBoxLayout
 from pydm.widgets.drawing import PyDMDrawingImage
 
 ###########
@@ -19,6 +19,7 @@ from pydm.widgets.drawing import PyDMDrawingImage
 from .func import FunctionPanel
 from .signal import SignalPanel
 from .utils import ui_dir, clean_attr, clean_name
+from .widgets import TyphonSidebarItem
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +118,7 @@ class TyphonDisplay(QWidget):
             QPushButton is created
         """
         # Create QListViewItem to store the display information
-        list_item = QListWidgetItem(name)
+        list_item = TyphonSidebarItem(name)
         list_item.setData(Qt.UserRole, display)
         list_widget.addItem(list_item)
         # Add our display to the component widget
