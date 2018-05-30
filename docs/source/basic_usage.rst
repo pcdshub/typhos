@@ -93,5 +93,3 @@ user displays.
 
 Making Modifications
 ====================
-
-
