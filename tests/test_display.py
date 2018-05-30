@@ -74,7 +74,7 @@ def test_display():
                 for sig in device.configuration_attrs])
     # We have all our subdevices
     sub_devices = [getattr(disp, 'device', None)
-                   for disp in display.ui.component_widget.children()]
+                   for disp in display.ui.subdisplay.children()]
     assert all([getattr(device, dev) in sub_devices
                 for dev in device._sub_devices])
     return display
@@ -110,8 +110,7 @@ def test_display_with_images(test_images):
     # Add our component image
     display.add_image(lenna, subdevice=device.x)
     # Show our subdevice and image
-    display.show_subdevice(device.x.name)
-    sub_display = display.ui.component_widget.currentWidget()
+    sub_display = display.get_subdisplay(device.x)
     assert sub_display.image_widget.filename == lenna
     # Bad input
     with pytest.raises(ValueError):
