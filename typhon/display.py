@@ -141,12 +141,27 @@ class TyphonDisplay(QWidget):
             Path to image to display for device
         """
         logger.debug("Creating subdisplay for %s", device.name)
-        self.add_subdisplay(device.name,
-                            DeviceDisplay(device,
-                                          methods=methods,
-                                          image=image,
-                                          parent=self),
-                            button=button)
+        dd = DeviceDisplay(device, **kwargs)
+        # Hide the toolbar from children
+        dd.ui.sidebar.hide()
+        # Do not duplicate the margins around the display
+        dd.ui.widget_layout.setContentsMargins(0, 0, 0, 0)
+        self.add_subdisplay(clean_name(device),
+                            dd, self.ui.component_list)
+
+    def add_tool(self, name, tool):
+        """
+        Add a widget to the toolbar
+
+        Parameters
+        ----------
+        name :str
+            Name of tool to be displayed in sidebar
+
+        tool: QWidget
+            Widget to be added to ``.ui.subdisplay``
+        """
+        self.add_subdisplay(name, tool, self.ui.tool_list)
 
     def add_tab(self, name, widget):
         """
@@ -187,14 +202,7 @@ class TyphonDisplay(QWidget):
         """
         # Find the nested widget for this specific device
         if subdevice:
-            name = subdevice.name
-            try:
-                idx = self.subdisplays[name]
-            except KeyError as exc:
-                raise ValueError("Device %s has not been added to the "
-                                 "DeviceDisplay yet", name) from exc
-            # Add image to widget
-            widget = self.ui.component_widget.widget(idx)
+            widget = self.get_subdisplay(subdevice)
             return widget.add_image(path, subdevice=None)
         # Set existing image file
         logger.debug("Adding an image file %s ...", path)
