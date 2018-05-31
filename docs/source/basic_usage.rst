@@ -91,5 +91,11 @@ operator to view lower level details as they see fit. This allows for the
 representation of complex devices with nested structures in clean consistent
 user displays. 
 
+Using the StyleSheet
+====================
+While it is no means a requirement, Typhon ships with a custom stylesheet to
+improve the look of the widgets. By default this isn't activated, but can be
+configured with `:func:`.use_stylesheet`
+
 Making Modifications
 ====================
