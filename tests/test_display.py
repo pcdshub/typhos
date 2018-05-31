@@ -63,6 +63,7 @@ class MockDevice(Device):
 @show_widget
 def test_display():
     device = MockDevice("Tst:Dev", name="MockDevice")
+    device.wait_for_connection()
     display = DeviceDisplay(device)
     # We have all our signals
     shown_read_sigs = list(display.read_panel.pvs.keys())
@@ -83,6 +84,7 @@ def test_display():
 @show_widget
 def test_display_with_funcs():
     device = MockDevice("Tst:Dev", name="MockDevice")
+    device.wait_for_connection()
     display = DeviceDisplay(device, methods=[device.insert,
                                              device.remove])
     # The method panel is visible
@@ -98,6 +100,7 @@ def test_display_with_funcs():
 def test_display_with_images(test_images):
     (lenna, python) = test_images
     device = MockDevice("Tst:Dev", name="MockDevice")
+    device.wait_for_connection()
     # Create a display with our image
     display = DeviceDisplay(device, image=lenna)
     assert display.image_widget.filename == lenna
