@@ -125,7 +125,7 @@ def test_subdisplay(qapp):
     # Set display by Device component
     display = DeviceDisplay(device)
     display.show_subdisplay(device.x)
-    assert not display.ui.subdisplay.isHidden()
+    assert not display.ui.subwindow.isHidden()
     assert display.ui.subdisplay.currentWidget().device == device.x
     # Set display by name
     display.show_subdisplay(clean_name(device.y))
@@ -140,6 +140,7 @@ def test_subdisplay(qapp):
     assert display.ui.subdisplay.currentWidget() == w
     # Hide all our subdisplays
     display.hide_subdisplays()
+    assert display.ui.subwindow.isHidden()
     assert display.ui.tool_list.selectedIndexes() == []
     assert display.ui.tool_list.selectedIndexes() == []
     return display
