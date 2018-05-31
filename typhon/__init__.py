@@ -1,5 +1,5 @@
 __all__ = ['TyphonDisplay', 'DeviceDisplay', 'ComponentButton',
-           'load_stylesheet']
+           'use_stylesheet']
 from .display import TyphonDisplay, DeviceDisplay
 from .widgets import ComponentButton
 from .utils import use_stylesheet
