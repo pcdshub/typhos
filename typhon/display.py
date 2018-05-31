@@ -82,7 +82,7 @@ class TyphonDisplay(QWidget):
         self.ui.component_list.clicked.connect(
                 self.ui.tool_list.clearSelection)
         # Hide widgets until signals are added to them
-        self.ui.subdisplay.hide()
+        self.ui.subwindow.hide()
         self.method_panel.hide()
         # Create PyDMDrawingImage
         self.image_widget = None
@@ -278,8 +278,8 @@ class TyphonDisplay(QWidget):
         else:
             display = self.get_subdisplay(item)
         # Show our subdisplay if previously hidden
-        if self.ui.subdisplay.isHidden():
-            self.ui.subdisplay.show()
+        if self.ui.subwindow.isHidden():
+            self.ui.subwindow.show()
         # Set the current display
         self.ui.subdisplay.setCurrentWidget(display)
 
@@ -289,7 +289,7 @@ class TyphonDisplay(QWidget):
         Hide the component widget and set all buttons unchecked
         """
         # Hide the main display
-        self.ui.subdisplay.hide()
+        self.ui.subwindow.hide()
         self.ui.component_list.clearSelection()
         self.ui.tool_list.clearSelection()
 
