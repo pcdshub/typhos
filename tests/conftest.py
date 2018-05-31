@@ -14,6 +14,7 @@ from pydm import PyDMApplication
 ###########
 # Package #
 ###########
+import typhon
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,8 @@ def qapp(pytestconfig):
         if pytestconfig.getoption('--dark'):
             import qdarkstyle
             application.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        else:
+            typhon.use_stylesheet()
     return application
 
 

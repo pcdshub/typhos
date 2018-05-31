@@ -9,6 +9,7 @@ import os.path
 ############
 # External #
 ############
+from pydm.PyQt.QtGui import QApplication
 
 #############
 #  Package  #
@@ -55,3 +56,18 @@ def clean_name(device, strip_parent=True):
         name = name.lstrip(device.parent.name + '_')
     # Return the cleaned alias
     return clean_attr(name)
+
+
+def use_stylesheet():
+    """
+    Use the Typhon stylesheet
+    """
+    # Load the path to the file
+    style_path = os.path.join(ui_dir, 'style.qss')
+    if not os.path.exists(style_path):
+        raise EnvironmentError("Unable to find Typhon stylesheet in {}"
+                               "".format(style_path))
+    # Load the stylesheet from the file
+    with open(style_path, 'r') as handle:
+        app = QApplication.instance()
+        app.setStyleSheet(handle.read())
