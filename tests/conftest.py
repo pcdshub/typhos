@@ -50,7 +50,7 @@ def qapp(pytestconfig):
             import qdarkstyle
             application.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         else:
-            application.setStyleSheet(typhon.load_stylesheet())
+            typhon.use_stylesheet()
     return application
 
 

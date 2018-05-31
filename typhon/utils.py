@@ -9,6 +9,7 @@ import os.path
 ############
 # External #
 ############
+from pydm.PyQt.QtGui import QApplication
 
 #############
 #  Package  #
@@ -57,9 +58,9 @@ def clean_name(device, strip_parent=True):
     return clean_attr(name)
 
 
-def load_stylesheet():
+def use_stylesheet():
     """
-    Load the Typhon Stylesheet
+    Use the Typhon stylesheet
     """
     # Load the path to the file
     style_path = os.path.join(ui_dir, 'style.qss')
@@ -68,4 +69,5 @@ def load_stylesheet():
                                "".format(style_path))
     # Load the stylesheet from the file
     with open(style_path, 'r') as handle:
-        return handle.read()
+        app = QApplication.instance()
+        app.setStyleSheet(handle.read())

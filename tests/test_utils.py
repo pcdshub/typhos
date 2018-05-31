@@ -1,6 +1,5 @@
-from typhon.utils import load_stylesheet
+from typhon.utils import use_stylesheet
 
 
 def test_stylesheet():
-    sty = load_stylesheet()
-    assert 'QWidget' in sty
+    use_stylesheet()
