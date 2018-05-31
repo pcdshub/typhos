@@ -6,5 +6,6 @@ setup(name='typhon',
       cmdclass=versioneer.get_cmdclass(),
       author='SLAC National Accelerator Laboratory',
       packages=find_packages(),
+      include_package_data=True,
       description='Interface generation for ophyd devices',
       )
