@@ -23,7 +23,13 @@ signal_registry = dict()
 
 
 def register_signal(signal):
-    """Add a new Signal to the registry"""
+    """
+    Add a new Signal to the registry
+
+    The Signal object is kept within ``signal_registry`` for reference by name
+    in the :class:`.SignalConnection`. Signals can be added multiple times and
+    overwritten but a warning will be emitted.
+    """
     # Warn the user if they are adding twice
     if signal.name in signal_registry:
         logger.error("A signal named %s is already registered!", signal.name)
@@ -43,12 +49,6 @@ class SignalConnection(PyDMConnection):
     ----------
     signal : ophyd.Signal
         Stored signal object
-
-    Example
-    -------
-    .. code:: python
-        conn = ClassConnection('sig://ophyd.Signal|name=Test',)
-                               'ophyd.Signal|name=Test')
     """
     supported_types = [int, float, str, np.ndarray]
 
@@ -77,6 +77,7 @@ class SignalConnection(PyDMConnection):
     def put_value(self, new_val):
         """
         Pass a value from the UI to Signal
+
         We are not guaranteed that this signal is writeable so catch exceptions
         if they are created
         """
@@ -99,6 +100,7 @@ class SignalConnection(PyDMConnection):
     def add_listener(self, channel):
         """
         Add a listener channel to this connection
+
         This attaches values input by the user to the `send_new_value` function
         in order to update the Signal object in addition to the default setup
         performed in PyDMConnection
@@ -145,5 +147,6 @@ class SignalConnection(PyDMConnection):
 
 
 class SignalPlugin(PyDMPlugin):
+    """Plugin registered with PyDM to handle SignalConnection"""
     protocol = 'sig'
     connection_class = SignalConnection
