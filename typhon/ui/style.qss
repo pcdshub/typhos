@@ -36,3 +36,16 @@ QComboBox QAbstractItemView {
 QComboBox:hover {
     border: 2px solid #0b3ae8;
 }
+
+QListWidget::item {
+    bold: False;
+}
+
+QListWidget::item:selected {
+    background-color: #0b3ae8;;
+    color: white;
+}
+
+QListWidget::item:!selected:hover {
+    background-color: #A9A9A9;
+}
