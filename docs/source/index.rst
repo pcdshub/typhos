@@ -38,6 +38,7 @@ Related Projects
    :hidden:
 
    basic_usage.rst
+   connections.rst
    python_methods.rst
 
 .. toctree::
@@ -47,3 +48,4 @@ Related Projects
 
    display.rst
    widgets.rst
+   plugins.rst
