@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.1.0+78.g6f00a07 documentation</title>
+  <title>Display Types &mdash; Typhon 0.1.0+91.g8b209a3 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1.0+78.g6f00a07
+                0.1.0+91.g8b209a3
               </div>
             
           
@@ -223,7 +223,7 @@ create a screen. A more automated display generator is available  in the
 
 <dl class="method">
 <dt id="typhon.TyphonDisplay.add_subdevice">
-<code class="descname">add_subdevice</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>image=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_subdevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_subdevice" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_subdevice</code><span class="sig-paren">(</span><em>device</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_subdevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_subdevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a subdevice to the <cite>component_widget</cite> stack</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -242,12 +242,12 @@ create a screen. A more automated display generator is available  in the
 
 <dl class="method">
 <dt id="typhon.TyphonDisplay.add_subdisplay">
-<code class="descname">add_subdisplay</code><span class="sig-paren">(</span><em>name</em>, <em>display</em>, <em>button=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_subdisplay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a widget to the display</p>
+<code class="descname">add_subdisplay</code><span class="sig-paren">(</span><em>name</em>, <em>display</em>, <em>list_widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_subdisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a widget to one of the button layouts</p>
 <p>This add a display for a subcomponent and a QPushButton that
 will bring the display to the foreground. Users can either specify
 their button or have one generate for them. Either way the button is
-connected to the <cite>pyqSlot</cite> <a class="reference internal" href="#typhon.TyphonDisplay.show_subdevice" title="typhon.TyphonDisplay.show_subdevice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">show_subdevice()</span></code></a></p>
+connected to the <cite>pyqSlot</cite> <code class="xref py py-meth docutils literal notranslate"><span class="pre">show_subdevice()</span></code></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -286,8 +286,51 @@ widget you are adding.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonDisplay.hide_subdevices">
-<code class="descname">hide_subdevices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.hide_subdevices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.hide_subdevices" title="Permalink to this definition">¶</a></dt>
+<dt id="typhon.TyphonDisplay.add_tool">
+<code class="descname">add_tool</code><span class="sig-paren">(</span><em>name</em>, <em>tool</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_tool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a widget to the toolbar</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name of tool to be displayed in sidebar</li>
+<li><strong>tool</strong> (<em>QWidget</em>) – Widget to be added to <code class="docutils literal notranslate"><span class="pre">.ui.subdisplay</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.get_subdisplay">
+<code class="descname">get_subdisplay</code><span class="sig-paren">(</span><em>display</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.get_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.get_subdisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a subdisplay by name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>display</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em> or </em><em>Device</em>) – Name of subdisplay. This will be the text shown on the sidebar. For
+component devices screens you can pass in the component device
+itself</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>widget</strong> – Widget that is a member of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">ui.subdisplay</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">QWidget</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_display</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="n">my_device</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<span class="n">my_displyay</span><span class="o">.</span><span class="n">get_subsdisplay</span><span class="p">(</span><span class="s1">&#39;My Tool&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.hide_subdisplays">
+<code class="descname">hide_subdisplays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.hide_subdisplays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.hide_subdisplays" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hide the component widget and set all buttons unchecked</p>
 </dd></dl>
 
@@ -298,14 +341,14 @@ widget you are adding.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonDisplay.show_subdevice">
-<code class="descname">show_subdevice</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.show_subdevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.show_subdevice" title="Permalink to this definition">¶</a></dt>
+<dt id="typhon.TyphonDisplay.show_subdisplay">
+<code class="descname">show_subdisplay</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.show_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.show_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show subdevice display of the QStackedWidget</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>, </em><em>Device</em><em> or </em><em>QModelIndex</em>) – </td>
 </tr>
 </tbody>
 </table>
@@ -387,7 +430,7 @@ heirarchy.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0+78.g6f00a07',
+            VERSION:'0.1.0+91.g8b209a3',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

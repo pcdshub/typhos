@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.widgets &mdash; Typhon 0.1.0+78.g6f00a07 documentation</title>
+  <title>typhon.widgets &mdash; Typhon 0.1.0+91.g8b209a3 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+78.g6f00a07
+                0.1.0+91.g8b209a3
               </div>
             
           
@@ -165,7 +165,7 @@
 <span class="kn">from</span> <span class="nn">pydm.PyQt</span> <span class="k">import</span> <span class="n">uic</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">pyqtSlot</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QAbstractButton</span><span class="p">,</span> <span class="n">QStackedWidget</span><span class="p">,</span> <span class="n">QLabel</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QWidget</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QListWidgetItem</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">PyDMDrawingImage</span><span class="p">,</span> <span class="n">PyDMLabel</span><span class="p">,</span> <span class="n">PyDMEnumComboBox</span><span class="p">,</span>
                           <span class="n">PyDMLineEdit</span><span class="p">)</span>
 <span class="c1">###########</span>
@@ -388,6 +388,15 @@
 <span class="sd">            Image name saved in the :attr:`.images` dictionary</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="n">name</span><span class="p">])</span></div>
+
+
+<span class="k">class</span> <span class="nc">TyphonSidebarItem</span><span class="p">(</span><span class="n">QListWidgetItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    QListWidgetItem to display in DeviceDisplay sidebar</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setTextAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -422,7 +431,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+78.g6f00a07',
+            VERSION:'0.1.0+91.g8b209a3',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
