@@ -49,3 +49,7 @@ QListWidget::item:selected {
 QListWidget::item:!selected:hover {
     background-color: #A9A9A9;
 }
+
+PyDMLogDisplay > QPlainTextEdit {
+    font: 10px normal;
+}
