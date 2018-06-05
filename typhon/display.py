@@ -3,14 +3,14 @@
 ############
 import os.path
 import logging
-from functools import partial
+from ophyd import Device
 
 ############
 # External #
 ############
 from pydm.PyQt import uic
-from pydm.PyQt.QtCore import pyqtSlot, Qt
-from pydm.PyQt.QtGui import QWidget, QPushButton, QButtonGroup, QVBoxLayout
+from pydm.PyQt.QtCore import pyqtSlot, Qt, QModelIndex
+from pydm.PyQt.QtGui import QWidget, QVBoxLayout
 from pydm.widgets.drawing import PyDMDrawingImage
 
 ###########
@@ -18,8 +18,8 @@ from pydm.widgets.drawing import PyDMDrawingImage
 ###########
 from .func import FunctionPanel
 from .signal import SignalPanel
-from .utils import ui_dir, clean_attr, clean_source, clean_name
-from .widgets import ComponentButton
+from .utils import ui_dir, clean_attr, clean_name
+from .widgets import TyphonSidebarItem
 
 logger = logging.getLogger(__name__)
 
@@ -59,9 +59,6 @@ class TyphonDisplay(QWidget):
         self.subdisplays = dict()
         # Instantiate UI
         self.ui = uic.loadUi(os.path.join(ui_dir, 'base.ui'), self)
-        self.device_button_group = QButtonGroup()
-        self.device_button_group.addButton(self.ui.hide_button)
-        self.ui.hide_button.clicked.connect(self.hide_subdevices)
         # Set Label Names
         self.ui.name_label.setText(name)
         # Create Panels
@@ -76,9 +73,18 @@ class TyphonDisplay(QWidget):
         self.ui.signal_tab.clear()
         self.add_tab('Configuration', self.config_panel)
         self.add_tab('Miscellaneous', self.misc_panel)
-        # Hide widgets until signals are added to them
-        self.ui.buttons.hide()
-        self.ui.component_widget.hide()
+        # Connect signals to slots
+        self.ui.hide_button.clicked.connect(self.hide_subdisplays)
+        self.ui.tool_list.clicked.connect(self.show_subdisplay)
+        self.ui.tool_list.clicked.connect(
+                self.ui.component_list.clearSelection)
+        self.ui.component_list.clicked.connect(self.show_subdisplay)
+        self.ui.component_list.clicked.connect(
+                self.ui.tool_list.clearSelection)
+        # Hide widgets until objects are added to them
+        self.ui.subwindow.hide()
+        self.ui.tool_sidebar.hide()
+        self.ui.component_sidebar.hide()
         self.method_panel.hide()
         # Create PyDMDrawingImage
         self.image_widget = None
@@ -92,9 +98,9 @@ class TyphonDisplay(QWidget):
         """
         return self.method_panel.methods
 
-    def add_subdisplay(self, name, display, button=None):
+    def add_subdisplay(self, name, display, list_widget):
         """
-        Add a widget to the display
+        Add a widget to one of the button layouts
 
         This add a display for a subcomponent and a QPushButton that
         will bring the display to the foreground. Users can either specify
@@ -113,26 +119,19 @@ class TyphonDisplay(QWidget):
             QWidget with the PyQtSignal ``clicked``. If None, is given a
             QPushButton is created
         """
-        # Create button
-        if not button:
-            button = QPushButton(self)
-            button.setText(name)
-        # Add the button to the group
-        self.device_button_group.addButton(button)
-        # Add our button to the layout last in the line of buttons
-        # but above the spacer
-        idx = self.ui.buttons.layout().count() - 1
-        self.ui.buttons.layout().insertWidget(idx, button)
-        # Add our display to the widget
-        idx = self.ui.component_widget.addWidget(display)
-        self.subdisplays[name] = idx
-        # Connect button
-        button.clicked.connect(partial(self.show_subdevice, name=name))
-        # Show the widgets if hidden
-        if self.ui.buttons.isHidden():
-            self.ui.buttons.show()
+        # Create QListViewItem to store the display information
+        list_item = TyphonSidebarItem(name)
+        list_item.setData(Qt.UserRole, display)
+        list_widget.addItem(list_item)
+        # Add our display to the component widget
+        self.ui.subdisplay.addWidget(display)
+        self.subdisplays[name] = list_item
+        # Hide the parent widget if hidden
+        sidebar = list_widget.parent()
+        if sidebar.isHidden():
+            sidebar.show()
 
-    def add_subdevice(self, device, methods=None, image=None):
+    def add_subdevice(self, device, **kwargs):
         """
         Add a subdevice to the `component_widget` stack
 
@@ -145,22 +144,28 @@ class TyphonDisplay(QWidget):
         image: str, optional
             Path to image to display for device
         """
-        logger.debug("Creating button for %s", device.name)
-        # Create ComponentButton adding the hints automatically
-        button = ComponentButton(clean_name(device), parent=self)
-        description = device.describe()
-        for field in getattr(device, 'hints', {}).get('fields', list()):
-            sig_source = description[field]['source']
-            button.add_pv(clean_source(sig_source), clean_attr(field))
-        # Create the actual subdisplay and add it to the component widget
-        # along with the button
         logger.debug("Creating subdisplay for %s", device.name)
-        self.add_subdisplay(device.name,
-                            DeviceDisplay(device,
-                                          methods=methods,
-                                          image=image,
-                                          parent=self),
-                            button=button)
+        dd = DeviceDisplay(device, **kwargs)
+        # Hide the toolbar from children
+        dd.ui.sidebar.hide()
+        # Do not duplicate the margins around the display
+        dd.ui.widget_layout.setContentsMargins(0, 0, 0, 0)
+        self.add_subdisplay(clean_name(device),
+                            dd, self.ui.component_list)
+
+    def add_tool(self, name, tool):
+        """
+        Add a widget to the toolbar
+
+        Parameters
+        ----------
+        name :str
+            Name of tool to be displayed in sidebar
+
+        tool: QWidget
+            Widget to be added to ``.ui.subdisplay``
+        """
+        self.add_subdisplay(name, tool, self.ui.tool_list)
 
     def add_tab(self, name, widget):
         """
@@ -201,14 +206,7 @@ class TyphonDisplay(QWidget):
         """
         # Find the nested widget for this specific device
         if subdevice:
-            name = subdevice.name
-            try:
-                idx = self.subdisplays[name]
-            except KeyError as exc:
-                raise ValueError("Device %s has not been added to the "
-                                 "DeviceDisplay yet", name) from exc
-            # Add image to widget
-            widget = self.ui.component_widget.widget(idx)
+            widget = self.get_subdisplay(subdevice)
             return widget.add_image(path, subdevice=None)
         # Set existing image file
         logger.debug("Adding an image file %s ...", path)
@@ -222,29 +220,81 @@ class TyphonDisplay(QWidget):
             self.ui.main_layout.insertWidget(2, self.image_widget,
                                              0, Qt.AlignCenter)
 
-    @pyqtSlot()
-    def show_subdevice(self, name):
+    def _item_from_sidebar(self, name):
+        """
+        Get a child display based on the name given
+
+        Parameters
+        ----------
+        name: str
+            Name of display
+        """
+        # Gather QListWidgetItem
+        try:
+            list_item = self.subdisplays[name]
+        except KeyError as exc:
+            raise ValueError("Display {} has not been added to the "
+                             "DeviceDisplay yet".format(name)) from exc
+        return list_item
+
+    def get_subdisplay(self, display):
+        """
+        Get a subdisplay by name
+
+        Parameters
+        ----------
+        display :str or Device
+            Name of subdisplay. This will be the text shown on the sidebar. For
+            component devices screens you can pass in the component device
+            itself
+
+        Returns
+        -------
+        widget : QWidget
+            Widget that is a member of the :attr:`.ui.subdisplay`
+
+        Example
+        -------
+        .. code:: python
+
+            my_display.get_subdisplay(my_device.x)
+            my_displyay.get_subsdisplay('My Tool')
+        """
+        # Get the cleaned Device name if passed a Device
+        if isinstance(display, Device):
+            display = clean_name(display)
+        return self._item_from_sidebar(display).data(Qt.UserRole)
+
+    @pyqtSlot(str)
+    @pyqtSlot(QModelIndex)
+    def show_subdisplay(self, item):
         """
         Show subdevice display of the QStackedWidget
 
         Parameters
         ----------
-        name : str
+        name : str, Device or QModelIndex
         """
-        if self.ui.component_widget.isHidden():
-            self.ui.component_widget.show()
-        # Show the correct subdevice widget
-        self.ui.component_widget.setCurrentIndex(self.subdisplays[name])
+        # Grab the relevant display
+        if isinstance(item, QModelIndex):
+            display = item.data(Qt.UserRole)
+        else:
+            display = self.get_subdisplay(item)
+        # Show our subdisplay if previously hidden
+        if self.ui.subwindow.isHidden():
+            self.ui.subwindow.show()
+        # Set the current display
+        self.ui.subdisplay.setCurrentWidget(display)
 
     @pyqtSlot()
-    def hide_subdevices(self):
+    def hide_subdisplays(self):
         """
         Hide the component widget and set all buttons unchecked
         """
-        self.ui.component_widget.hide()
-        # Toggle the button off, each button can use its own pyqtSlot
-        for button in self.device_button_group.buttons():
-            button.toggled.emit(False)
+        # Hide the main display
+        self.ui.subwindow.hide()
+        self.ui.component_list.clearSelection()
+        self.ui.tool_list.clearSelection()
 
 
 class DeviceDisplay(TyphonDisplay):
