@@ -5,11 +5,12 @@ Utility functions for typhon
 # Standard #
 ############
 import os.path
+import random
 
 ############
 # External #
 ############
-from pydm.PyQt.QtGui import QApplication
+from pydm.PyQt.QtGui import QApplication, QColor
 
 #############
 #  Package  #
@@ -71,3 +72,10 @@ def use_stylesheet():
     with open(style_path, 'r') as handle:
         app = QApplication.instance()
         app.setStyleSheet(handle.read())
+
+
+def random_color():
+    """Return a random hex color description"""
+    return QColor(random.randint(0, 255),
+                  random.randint(0, 255),
+                  random.randint(0, 255))
