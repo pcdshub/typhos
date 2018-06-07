@@ -86,9 +86,13 @@ class SignalConnection(PyDMConnection):
         Pass a value from the UI to Signal
 
         We are not guaranteed that this signal is writeable so catch exceptions
-        if they are created
+        if they are created. We attempt to cast the received value into the
+        reported type of the signal unless it is of type ``np.ndarray``
         """
         try:
+            # Cast into the correct type
+            if self.signal_type is not np.ndarray:
+                new_val = self.signal_type(new_val)
             self.signal.put(new_val)
         except Exception as exc:
             logger.exception("Unable to put %r to %s", new_val, self.address)
