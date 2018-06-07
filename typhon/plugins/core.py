@@ -10,6 +10,7 @@ import logging
 # Third Party #
 ###############
 import numpy as np
+from ophyd.utils.epics_pvs import _type_map
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
 from pydm.PyQt.QtCore import pyqtSlot, Qt
 
@@ -44,6 +45,10 @@ class SignalConnection(PyDMConnection):
     This is meant as a generalized connection to any type of Ophyd Signal. It
     handles reporting updates to listeners as well as pushing new values that
     users request in the PyDM interface back to the underlying signal
+
+    The signal `data_type` is used to inform PyDM on the Python type that the
+    signal will expect and emit. It is expected that this type is static
+    through the execution of the application
 
     Attributes
     ----------
@@ -96,7 +101,9 @@ class SignalConnection(PyDMConnection):
         # We make the assumption that signals do not change types during a
         # connection
         if not self.signal_type:
-            self.signal_type = type(value)
+            dtype = self.signal.describe()[self.signal.name]['dtype']
+            # Only way this raises a KeyError is if ophyd is confused
+            self.signal_type =  _type_map[dtype][0]
         self.new_value_signal[self.signal_type].emit(value)
 
     def add_listener(self, channel):
