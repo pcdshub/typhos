@@ -89,24 +89,33 @@ class SignalPanel(QWidget):
             `SignalPanel.layout()``
         """
         logger.debug("Adding PV %s", name)
+        # Configure optional write PV settings
+        if write_pv:
+            is_enum = write_pv.enum_strs
+            write_pv = channel_name(write_pv.pvname)
+        else:
+            is_enum = False
+        # Add readback and discovered write PV to grid
+        return self._add_row(channel_name(read_pv.pvname), name,
+                             write=write_pv, is_enum=is_enum)
+
+    def _add_row(self, read, name, write=None, is_enum=False):
         # Create label
         label = QLabel(self)
         label.setText(name)
         # Create signal display
         val_display = QHBoxLayout()
         # Add readback
-        ro = TyphonLabel(init_channel=channel_name(read_pv.pvname),
-                         parent=self)
+        ro = TyphonLabel(init_channel=read, parent=self)
         val_display.addWidget(ro)
         # Add our write_pv if available
-        if write_pv:
-            ch = channel_name(write_pv.pvname)
+        if write:
             # Check whether our device is an enum or not
-            if write_pv.enum_strs:
-                edit = TyphonComboBox(init_channel=ch, parent=self)
+            if is_enum:
+                edit = TyphonComboBox(init_channel=write, parent=self)
             else:
                 logger.debug("Adding LineEdit for %s", name)
-                edit = TyphonLineEdit(init_channel=ch, parent=self)
+                edit = TyphonLineEdit(init_channel=write, parent=self)
             # Add our control widget to layout
             val_display.addWidget(edit)
             # Make sure they share space evenly
@@ -117,5 +126,5 @@ class SignalPanel(QWidget):
         self.layout().addWidget(label, loc, 0)
         self.layout().addLayout(val_display, loc, 1)
         # Store signal
-        self.pvs[name] = (read_pv, write_pv)
+        self.pvs[name] = (read, write)
         return loc
