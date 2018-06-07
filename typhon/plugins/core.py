@@ -69,6 +69,8 @@ class SignalConnection(PyDMConnection):
             # Subscribe to updates from Ophyd
             self.signal.subscribe(self.send_new_value,
                                   event_type=self.signal.SUB_VALUE)
+        # Add listener
+        self.add_listener(channel)
 
     @pyqtSlot(int)
     @pyqtSlot(float)
