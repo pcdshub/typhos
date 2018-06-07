@@ -20,7 +20,6 @@ from .conftest import show_widget
 @show_widget
 @using_fake_epics_pv
 def test_panel_creation():
-
     panel = SignalPanel("Test Signals", signals={
                     # Signal is its own write
                     'Standard': EpicsSignal('Tst:Pv'),
