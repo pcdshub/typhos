@@ -32,7 +32,7 @@ def test_panel_creation():
                     # Simulated Signal
                     'Simulated': SynSignal(name='simul'),
                     'SimulatedRO': SynSignalRO(name='simul_ro')})
-    assert len(panel.pvs) == 5
+    assert len(panel.signals) == 5
     # Check read-only channels do not have write widgets
     panel.layout().itemAtPosition(2, 1).layout().count() == 1
     panel.layout().itemAtPosition(4, 1).layout().count() == 1

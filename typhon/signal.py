@@ -38,7 +38,7 @@ class SignalPanel(QWidget):
     def __init__(self, title, signals=None, parent=None):
         super().__init__(parent=parent)
         # Store signal information
-        self.pvs = dict()
+        self.signals = dict()
         # Create panel layout
         self.setLayout(QGridLayout())
         self.layout().setContentsMargins(20, 20, 20, 20)
@@ -142,9 +142,9 @@ class SignalPanel(QWidget):
             val_display.setStretch(0, 1)
             val_display.setStretch(1, 1)
         # Add displays to panel
-        loc = len(self.pvs)
+        loc = len(self.signals)
         self.layout().addWidget(label, loc, 0)
         self.layout().addLayout(val_display, loc, 1)
         # Store signal
-        self.pvs[name] = (read, write)
+        self.signals[name] = (read, write)
         return loc
