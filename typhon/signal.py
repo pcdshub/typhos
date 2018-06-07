@@ -92,8 +92,6 @@ class SignalPanel(QWidget):
         # Create label
         label = QLabel(self)
         label.setText(name)
-        label_font = QFont()
-        label.setFont(label_font)
         # Create signal display
         val_display = QHBoxLayout()
         # Add readback
