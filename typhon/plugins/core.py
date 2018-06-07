@@ -108,7 +108,12 @@ class SignalConnection(PyDMConnection):
             dtype = self.signal.describe()[self.signal.name]['dtype']
             # Only way this raises a KeyError is if ophyd is confused
             self.signal_type =  _type_map[dtype][0]
-        self.new_value_signal[self.signal_type].emit(value)
+        if type(value) == self.signal_type:
+            self.new_value_signal[self.signal_type].emit(value)
+        else:
+            logger.error("Value %r does not match %r, "
+                         "the reported data type of %s",
+                         value, self.signal_type, self.signal.name)
 
     def add_listener(self, channel):
         """
