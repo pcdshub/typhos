@@ -6,13 +6,16 @@ import logging
 ############
 # External #
 ############
-from pydm.PyQt.QtGui import QHBoxLayout, QFont, QLabel, QWidget, QGridLayout
+from ophyd.signal import EpicsSignalBase
+from ophyd.sim import SignalRO
+from pydm.PyQt.QtGui import QHBoxLayout, QLabel, QWidget, QGridLayout
 
 #############
 #  Package  #
 #############
 from .utils import channel_name
 from .widgets import TyphonLineEdit, TyphonComboBox, TyphonLabel
+from .plugins import register_signal
 
 logger = logging.getLogger(__name__)
 
@@ -66,8 +69,25 @@ class SignalPanel(QWidget):
             `SignalPanel.layout()``
         """
         logger.debug("Adding signal %s", name)
-        return self.add_pv(signal._read_pv, name,
-                           write_pv=getattr(signal, '_write_pv', None))
+        # Reroute EpicsSignals to use PyDM EPICS Plugins
+        if isinstance(signal, EpicsSignalBase):
+            return self.add_pv(signal._read_pv, name,
+                               write_pv=getattr(signal,
+                                                '_write_pv',
+                                                None))
+        # Otherwise use SignalPlugin
+        else:
+            # Register signal with plugin
+            register_signal(signal)
+            # Check read-only
+            if isinstance(signal, SignalRO):
+                write = None
+            else:
+                write = channel_name(signal.name, protocol='sig')
+            # Add signal row
+            return self._add_row(channel_name(signal.name,
+                                              protocol='sig'),
+                                 name, write=write)
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
