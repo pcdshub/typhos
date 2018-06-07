@@ -107,7 +107,7 @@ class SignalConnection(PyDMConnection):
         if not self.signal_type:
             dtype = self.signal.describe()[self.signal.name]['dtype']
             # Only way this raises a KeyError is if ophyd is confused
-            self.signal_type =  _type_map[dtype][0]
+            self.signal_type = _type_map[dtype][0]
         if type(value) == self.signal_type:
             self.new_value_signal[self.signal_type].emit(value)
         else:
