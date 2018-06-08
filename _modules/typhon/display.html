@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.1.0+139.gc13326b documentation</title>
+  <title>typhon.display &mdash; Typhon 0.1.0+158.gfb3db87 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+139.gc13326b
+                0.1.0+158.gfb3db87
               </div>
             
           
@@ -167,7 +167,7 @@
 <span class="c1">############</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt</span> <span class="k">import</span> <span class="n">uic</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QModelIndex</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QVBoxLayout</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QScrollArea</span><span class="p">,</span> <span class="n">QWidget</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets.drawing</span> <span class="k">import</span> <span class="n">PyDMDrawingImage</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets.logdisplay</span> <span class="k">import</span> <span class="n">PyDMLogDisplay</span>
 
@@ -227,8 +227,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span> <span class="o">=</span> <span class="n">SignalPanel</span><span class="p">(</span><span class="s2">&quot;Configuration&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span> <span class="o">=</span> <span class="n">SignalPanel</span><span class="p">(</span><span class="s2">&quot;Miscellaneous&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="c1"># Add all the panels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span><span class="p">,</span>
+                                         <span class="mi">0</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="p">,</span>
+                                         <span class="mi">0</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
         <span class="c1"># Create tabs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="s1">&#39;Configuration&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="p">)</span>
@@ -343,10 +345,10 @@
 <span class="sd">        widget : QWidget</span>
 <span class="sd">            Widget to be contained within the new tab</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">qw</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
-        <span class="n">qw</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
-        <span class="n">qw</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
-        <span class="n">qw</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">qw</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">qw</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="n">qw</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
+        <span class="n">qw</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">addTab</span><span class="p">(</span><span class="n">qw</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.add_image"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_image">[docs]</a>    <span class="k">def</span> <span class="nf">add_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">subdevice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -444,7 +446,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subwindow</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subwindow</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         <span class="c1"># Set the current display</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subdisplay</span><span class="o">.</span><span class="n">setCurrentWidget</span><span class="p">(</span><span class="n">display</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subdisplay</span><span class="o">.</span><span class="n">setCurrentWidget</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subdisplay</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">display</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.hide_subdisplays"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.hide_subdisplays">[docs]</a>    <span class="nd">@pyqtSlot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">hide_subdisplays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -550,7 +553,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+139.gc13326b',
+            VERSION:'0.1.0+158.gfb3db87',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
