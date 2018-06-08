@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Typhon Plugins &mdash; Typhon 0.1.0+115.g0f9f080 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0+115.g0f9f080
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Typhon Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#signalplugin">SignalPlugin</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Typhon</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Typhon Plugins</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/plugins.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="typhon-plugins">
+<h1>Typhon Plugins<a class="headerlink" href="#typhon-plugins" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="signalplugin">
+<h2>SignalPlugin<a class="headerlink" href="#signalplugin" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="typhon.plugins.register_signal">
+<code class="descclassname">typhon.plugins.</code><code class="descname">register_signal</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#register_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.register_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new Signal to the registry</p>
+<p>The Signal object is kept within <code class="docutils literal notranslate"><span class="pre">signal_registry</span></code> for reference by name
+in the <a class="reference internal" href="#typhon.plugins.SignalConnection" title="typhon.plugins.SignalConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalConnection</span></code></a>. Signals can be added multiple times and
+overwritten but a warning will be emitted.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="typhon.plugins.SignalConnection">
+<em class="property">class </em><code class="descclassname">typhon.plugins.</code><code class="descname">SignalConnection</code><span class="sig-paren">(</span><em>channel</em>, <em>address</em>, <em>protocol=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connection to monitor an Ophyd Signal</p>
+<p>This is meant as a generalized connection to any type of Ophyd Signal. It
+handles reporting updates to listeners as well as pushing new values that
+users request in the PyDM interface back to the underlying signal</p>
+<p>The signal <cite>data_type</cite> is used to inform PyDM on the Python type that the
+signal will expect and emit. It is expected that this type is static
+through the execution of the application</p>
+<dl class="attribute">
+<dt id="typhon.plugins.SignalConnection.signal">
+<code class="descname">signal</code><a class="headerlink" href="#typhon.plugins.SignalConnection.signal" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ophyd.Signal</em> – Stored signal object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.plugins.SignalConnection.add_listener">
+<code class="descname">add_listener</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.add_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.add_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a listener channel to this connection</p>
+<p>This attaches values input by the user to the <cite>send_new_value</cite> function
+in order to update the Signal object in addition to the default setup
+performed in PyDMConnection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.plugins.SignalConnection.put_value">
+<code class="descname">put_value</code><span class="sig-paren">(</span><em>new_val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.put_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.put_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass a value from the UI to Signal</p>
+<p>We are not guaranteed that this signal is writeable so catch exceptions
+if they are created. We attempt to cast the received value into the
+reported type of the signal unless it is of type <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.plugins.SignalConnection.remove_listener">
+<code class="descname">remove_listener</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.remove_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.remove_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a listener channel from this connection</p>
+<p>This removes the <cite>send_new_value</cite> connections from the channel in
+addition to the default disconnection performed in PyDMConnection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.plugins.SignalConnection.send_new_value">
+<code class="descname">send_new_value</code><span class="sig-paren">(</span><em>value=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.send_new_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.send_new_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the UI with a new value from the Signal</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="typhon.plugins.SignalPlugin">
+<em class="property">class </em><code class="descclassname">typhon.plugins.</code><code class="descname">SignalPlugin</code><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalPlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plugin registered with PyDM to handle SignalConnection</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0+115.g0f9f080',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.1.0+93.g145ed01 documentation</title>
+  <title>typhon.signal &mdash; Typhon 0.1.0+115.g0f9f080 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+93.g145ed01
+                0.1.0+115.g0f9f080
               </div>
             
           
@@ -84,12 +84,14 @@
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhon Plugins</a></li>
 </ul>
 
             
@@ -161,13 +163,16 @@
 <span class="c1">############</span>
 <span class="c1"># External #</span>
 <span class="c1">############</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QFont</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QGridLayout</span>
+<span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="k">import</span> <span class="n">EpicsSignalBase</span>
+<span class="kn">from</span> <span class="nn">ophyd.sim</span> <span class="k">import</span> <span class="n">SignalRO</span>
+<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QGridLayout</span>
 
 <span class="c1">#############</span>
 <span class="c1">#  Package  #</span>
 <span class="c1">#############</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">channel_name</span>
 <span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonLineEdit</span><span class="p">,</span> <span class="n">TyphonComboBox</span><span class="p">,</span> <span class="n">TyphonLabel</span>
+<span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -190,7 +195,7 @@
 <div class="viewcode-block" id="SignalPanel.__init__"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="c1"># Store signal information</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pvs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="c1"># Create panel layout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QGridLayout</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
@@ -221,8 +226,25 @@
 <span class="sd">            `SignalPanel.layout()``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding signal </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_pv</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">_read_pv</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
-                           <span class="n">write_pv</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="s1">&#39;_write_pv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="c1"># Reroute EpicsSignals to use PyDM EPICS Plugins</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_pv</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">_read_pv</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
+                               <span class="n">write_pv</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span>
+                                                <span class="s1">&#39;_write_pv&#39;</span><span class="p">,</span>
+                                                <span class="kc">None</span><span class="p">))</span>
+        <span class="c1"># Otherwise use SignalPlugin</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Register signal with plugin</span>
+            <span class="n">register_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+            <span class="c1"># Check read-only</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">SignalRO</span><span class="p">):</span>
+                <span class="n">write</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">write</span> <span class="o">=</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">)</span>
+            <span class="c1"># Add signal row</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_row</span><span class="p">(</span><span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                              <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">),</span>
+                                 <span class="n">name</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_pv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_pv</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write_pv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -244,37 +266,44 @@
 <span class="sd">            `SignalPanel.layout()``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding PV </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Configure optional write PV settings</span>
+        <span class="k">if</span> <span class="n">write_pv</span><span class="p">:</span>
+            <span class="n">is_enum</span> <span class="o">=</span> <span class="n">write_pv</span><span class="o">.</span><span class="n">enum_strs</span>
+            <span class="n">write_pv</span> <span class="o">=</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">write_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_enum</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># Add readback and discovered write PV to grid</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_row</span><span class="p">(</span><span class="n">channel_name</span><span class="p">(</span><span class="n">read_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">),</span> <span class="n">name</span><span class="p">,</span>
+                             <span class="n">write</span><span class="o">=</span><span class="n">write_pv</span><span class="p">,</span> <span class="n">is_enum</span><span class="o">=</span><span class="n">is_enum</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">is_enum</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Create label</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">label_font</span> <span class="o">=</span> <span class="n">QFont</span><span class="p">()</span>
-        <span class="n">label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">label_font</span><span class="p">)</span>
         <span class="c1"># Create signal display</span>
         <span class="n">val_display</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
         <span class="c1"># Add readback</span>
-        <span class="n">ro</span> <span class="o">=</span> <span class="n">TyphonLabel</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">channel_name</span><span class="p">(</span><span class="n">read_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">),</span>
-                         <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ro</span> <span class="o">=</span> <span class="n">TyphonLabel</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">read</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">val_display</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">ro</span><span class="p">)</span>
         <span class="c1"># Add our write_pv if available</span>
-        <span class="k">if</span> <span class="n">write_pv</span><span class="p">:</span>
-            <span class="n">ch</span> <span class="o">=</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">write_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
             <span class="c1"># Check whether our device is an enum or not</span>
-            <span class="k">if</span> <span class="n">write_pv</span><span class="o">.</span><span class="n">enum_strs</span><span class="p">:</span>
-                <span class="n">edit</span> <span class="o">=</span> <span class="n">TyphonComboBox</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">ch</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_enum</span><span class="p">:</span>
+                <span class="n">edit</span> <span class="o">=</span> <span class="n">TyphonComboBox</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding LineEdit for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-                <span class="n">edit</span> <span class="o">=</span> <span class="n">TyphonLineEdit</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">ch</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">edit</span> <span class="o">=</span> <span class="n">TyphonLineEdit</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="c1"># Add our control widget to layout</span>
             <span class="n">val_display</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">edit</span><span class="p">)</span>
             <span class="c1"># Make sure they share space evenly</span>
             <span class="n">val_display</span><span class="o">.</span><span class="n">setStretch</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">val_display</span><span class="o">.</span><span class="n">setStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Add displays to panel</span>
-        <span class="n">loc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvs</span><span class="p">)</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">val_display</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Store signal</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pvs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">read_pv</span><span class="p">,</span> <span class="n">write_pv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">read</span><span class="p">,</span> <span class="n">write</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loc</span></div>
 </pre></div>
 
@@ -310,7 +339,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+93.g145ed01',
+            VERSION:'0.1.0+115.g0f9f080',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Application Connections &mdash; Typhon 0.1.0+115.g0f9f080 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Including Python Code" href="python_methods.html" />
+    <link rel="prev" title="Basic Usage" href="basic_usage.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0+115.g0f9f080
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Application Connections</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ophyd-signals">Ophyd Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Typhon</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Application Connections</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/connections.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="application-connections">
+<h1>Application Connections<a class="headerlink" href="#application-connections" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="ophyd-signals">
+<h2>Ophyd Signals<a class="headerlink" href="#ophyd-signals" title="Permalink to this headline">¶</a></h2>
+<p>Typhon takes advantage of the flexible data plugin system contained within
+<code class="docutils literal notranslate"><span class="pre">PyDM</span></code> and the abstraction of the “control layer” within <code class="docutils literal notranslate"><span class="pre">Ophyd</span></code>. In the
+<a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, objects signals are queried for their type. If these are
+determined to be coming from <code class="docutils literal notranslate"><span class="pre">EPICS</span></code> the data plugin configured within
+<code class="docutils literal notranslate"><span class="pre">PyDM</span></code> is used directly, any other kind of signal goes through the generic
+<a class="reference internal" href="plugins.html#typhon.plugins.SignalPlugin" title="typhon.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a>. This uses the subscription system contained within
+<code class="docutils literal notranslate"><span class="pre">Ophyd</span></code> to keep widgets values updated. One caveat is that <code class="docutils literal notranslate"><span class="pre">PyDM</span></code> requires
+that channels are specified by a string identifier. In the case of
+<code class="docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> objects we want to ensure that these are passed by reference
+to avoid duplicating objects. This means the workflow for adding these has one
+more additonal step where the <code class="docutils literal notranslate"><span class="pre">Signal</span></code> is registered with the <code class="docutils literal notranslate"><span class="pre">PyDM</span></code>
+plugin.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typhon.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
+
+<span class="c1"># Create an Ophyd Signal</span>
+<span class="n">my_signal</span> <span class="o">=</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;this_signal&#39;</span><span class="p">)</span>
+<span class="c1"># Register this with the Plugin</span>
+<span class="n">register_signal</span><span class="p">(</span><span class="n">my_signal</span><span class="p">)</span>
+<span class="c1"># This signal is now available for use with PyDM widgets</span>
+<span class="n">PyDMWidget</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s1">&#39;sig://this_signal&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that this is all done for you if you use the <a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, but
+maybe useful if you would like to use the <a class="reference internal" href="plugins.html#typhon.plugins.SignalPlugin" title="typhon.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a> directly.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="python_methods.html" class="btn btn-neutral float-right" title="Including Python Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="basic_usage.html" class="btn btn-neutral" title="Basic Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0+115.g0f9f080',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

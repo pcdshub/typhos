@@ -3,15 +3,18 @@
 ./_modules/index.html
 ./_modules/typhon/display.html
 ./_modules/typhon/func.html
+./_modules/typhon/plugins/core.html
 ./_modules/typhon/signal.html
 ./_modules/typhon/widgets.html
 ./_sources/basic_usage.rst.txt
+./_sources/connections.rst.txt
 ./_sources/display.rst.txt
 ./_sources/generated/typhon.func.FunctionDisplay.rst.txt
 ./_sources/generated/typhon.func.FunctionPanel.rst.txt
 ./_sources/generated/typhon.signal.SignalPanel.rst.txt
 ./_sources/generated/typhon.widgets.TogglePanel.rst.txt
 ./_sources/index.rst.txt
+./_sources/plugins.rst.txt
 ./_sources/python_methods.rst.txt
 ./_sources/widgets.rst.txt
 ./_static/ajax-loader.gif
@@ -56,6 +59,7 @@
 ./_static/up.png
 ./_static/websupport.js
 ./basic_usage.html
+./connections.html
 ./display.html
 ./generated/typhon.func.FunctionDisplay.html
 ./generated/typhon.func.FunctionPanel.html
@@ -64,6 +68,7 @@
 ./genindex.html
 ./index.html
 ./objects.inv
+./plugins.html
 ./python_methods.html
 ./search.html
 ./searchindex.js
