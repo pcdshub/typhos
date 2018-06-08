@@ -70,8 +70,10 @@ class TyphonDisplay(QWidget):
         self.config_panel = SignalPanel("Configuration", parent=self)
         self.misc_panel = SignalPanel("Miscellaneous", parent=self)
         # Add all the panels
-        self.ui.main_layout.insertWidget(2, self.read_panel)
-        self.ui.main_layout.insertWidget(3, self.method_panel)
+        self.ui.main_layout.insertWidget(2, self.read_panel,
+                                         0, Qt.AlignHCenter)
+        self.ui.main_layout.insertWidget(3, self.method_panel,
+                                         0, Qt.AlignHCenter)
         # Create tabs
         self.ui.signal_tab.clear()
         self.add_tab('Configuration', self.config_panel)
