@@ -280,7 +280,7 @@
        <number>5</number>
       </property>
       <property name="sizeConstraint">
-       <enum>QLayout::SetMaximumSize</enum>
+       <enum>QLayout::SetFixedSize</enum>
       </property>
       <item>
        <widget class="QFrame" name="title_frame">
@@ -368,6 +368,12 @@
       </item>
       <item>
        <widget class="QTabWidget" name="signal_tab">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>300</height>
+         </size>
+        </property>
         <property name="tabPosition">
          <enum>QTabWidget::North</enum>
         </property>
@@ -433,7 +439,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item alignment="Qt::AlignTop">
        <widget class="QStackedWidget" name="subdisplay">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">

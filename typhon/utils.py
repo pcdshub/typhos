@@ -45,13 +45,6 @@ def clean_attr(attr):
     return ' '.join([word[0].upper() + word[1:] for word in attr.split('_')])
 
 
-def clean_source(source):
-    """
-    Strip the PV prefix off the `source` returned from an Ophyd description
-    """
-    return source.lstrip('PV:')
-
-
 def clean_name(device, strip_parent=True):
     """
     Create a human readable name for a device
@@ -66,7 +59,7 @@ def clean_name(device, strip_parent=True):
     name = device.name
     # Strip the parent name if present and desired
     if device.parent and strip_parent:
-        name = name.lstrip(device.parent.name + '_')
+        name = name.replace(device.parent.name + '_', '')
     # Return the cleaned alias
     return clean_attr(name)
 

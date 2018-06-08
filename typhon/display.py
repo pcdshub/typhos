@@ -10,7 +10,7 @@ from ophyd import Device
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt, QModelIndex
-from pydm.PyQt.QtGui import QWidget, QVBoxLayout
+from pydm.PyQt.QtGui import QScrollArea, QWidget
 from pydm.widgets.drawing import PyDMDrawingImage
 from pydm.widgets.logdisplay import PyDMLogDisplay
 
@@ -70,8 +70,10 @@ class TyphonDisplay(QWidget):
         self.config_panel = SignalPanel("Configuration", parent=self)
         self.misc_panel = SignalPanel("Miscellaneous", parent=self)
         # Add all the panels
-        self.ui.main_layout.insertWidget(2, self.read_panel)
-        self.ui.main_layout.insertWidget(3, self.method_panel)
+        self.ui.main_layout.insertWidget(2, self.read_panel,
+                                         0, Qt.AlignHCenter)
+        self.ui.main_layout.insertWidget(3, self.method_panel,
+                                         0, Qt.AlignHCenter)
         # Create tabs
         self.ui.signal_tab.clear()
         self.add_tab('Configuration', self.config_panel)
@@ -186,10 +188,10 @@ class TyphonDisplay(QWidget):
         widget : QWidget
             Widget to be contained within the new tab
         """
-        qw = QWidget()
-        qw.setLayout(QVBoxLayout())
-        qw.layout().addWidget(widget)
-        qw.layout().addStretch(1)
+        qw = QScrollArea(self)
+        qw.setWidget(widget)
+        qw.setAlignment(Qt.AlignHCenter)
+        qw.setWidgetResizable(True)
         self.ui.signal_tab.addTab(qw, name)
 
     def add_image(self, path, subdevice=None):
@@ -288,6 +290,7 @@ class TyphonDisplay(QWidget):
             self.ui.subwindow.show()
         # Set the current display
         self.ui.subdisplay.setCurrentWidget(display)
+        self.ui.subdisplay.setFixedWidth(display.sizeHint().width())
 
     @pyqtSlot()
     def hide_subdisplays(self):
