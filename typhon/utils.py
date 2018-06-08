@@ -10,6 +10,7 @@ import random
 ############
 # External #
 ############
+from ophyd.signal import EpicsSignalBase
 from pydm.PyQt.QtGui import QApplication, QColor
 
 #############
@@ -17,6 +18,17 @@ from pydm.PyQt.QtGui import QApplication, QColor
 #############
 
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
+
+
+def channel_from_signal(signal):
+    """
+    Create a PyDM address from arbitrary signal type
+    """
+    # Add an item
+    if isinstance(signal, EpicsSignalBase):
+        return channel_name(signal._read_pv.pvname)
+    else:
+        return channel_name(signal.name, protocol='sig')
 
 
 def channel_name(pv, protocol='ca'):
