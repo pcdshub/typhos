@@ -43,7 +43,7 @@ class SignalPanel(QWidget):
         lay = QGridLayout()
         lay.setSizeConstraint(QGridLayout.SetFixedSize)
         self.setLayout(lay)
-        self.layout().setContentsMargins(20, 20, 20, 20)
+        self.layout().setContentsMargins(5, 5, 5, 5)
         # Add supplied signals
         if signals:
             for name, sig in signals.items():
