@@ -67,10 +67,10 @@ def test_display():
     device.wait_for_connection()
     display = DeviceDisplay(device)
     # We have all our signals
-    shown_read_sigs = list(display.read_panel.pvs.keys())
+    shown_read_sigs = list(display.read_panel.signals.keys())
     assert all([clean_attr(sig) in shown_read_sigs
                 for sig in device.read_attrs])
-    shown_cfg_sigs = list(display.config_panel.pvs.keys())
+    shown_cfg_sigs = list(display.config_panel.signals.keys())
     assert all([clean_attr(sig) in shown_cfg_sigs
                 for sig in device.configuration_attrs])
     # We have all our subdevices

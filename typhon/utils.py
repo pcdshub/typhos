@@ -18,11 +18,11 @@ from pydm.PyQt.QtGui import QApplication
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
 
 
-def channel_name(pv):
+def channel_name(pv, protocol='ca'):
     """
     Create a valid PyDM channel from a PV name
     """
-    return 'ca://' + pv
+    return protocol + '://' + pv
 
 
 def clean_attr(attr):
