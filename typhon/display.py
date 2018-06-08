@@ -21,6 +21,8 @@ from .func import FunctionPanel
 from .signal import SignalPanel
 from .utils import ui_dir, clean_attr, clean_name
 from .widgets import TyphonSidebarItem
+from .plot import DeviceTimePlot
+
 
 logger = logging.getLogger(__name__)
 
@@ -352,6 +354,8 @@ class DeviceDisplay(TyphonDisplay):
         methods = methods or list()
         for method in methods:
                 self.method_panel.add_method(method)
+        # Add the plot tool
+        self.add_tool('Plotting Tool', DeviceTimePlot(device))
         # Add a LogWidget to our toolset
         self.add_tool('Device Log', PyDMLogDisplay(logname=device.log.name,
                                                    level=logging.INFO))

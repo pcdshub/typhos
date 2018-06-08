@@ -6,6 +6,7 @@
 # External #
 ############
 from ophyd.signal import EpicsSignal, EpicsSignalRO
+from ophyd.sim import SynSignal, SynSignalRO
 from ophyd.tests.conftest import using_fake_epics_pv
 from pydm.widgets import PyDMEnumComboBox
 
@@ -26,8 +27,18 @@ def test_panel_creation():
                     'Read and Write': EpicsSignal('Tst:Read',
                                                   write_pv='Tst:Write'),
                     # Signal is read-only
-                    'Read Only': EpicsSignalRO('Tst:Pv:RO')})
-    assert len(panel.pvs) == 3
+                    'Read Only': EpicsSignalRO('Tst:Pv:RO'),
+                    # Simulated Signal
+                    'Simulated': SynSignal(name='simul'),
+                    'SimulatedRO': SynSignalRO(name='simul_ro')})
+    assert len(panel.signals) == 5
+    # Check read-only channels do not have write widgets
+    panel.layout().itemAtPosition(2, 1).layout().count() == 1
+    panel.layout().itemAtPosition(4, 1).layout().count() == 1
+    # Check write widgets are present
+    panel.layout().itemAtPosition(0, 1).layout().count() == 2
+    panel.layout().itemAtPosition(1, 1).layout().count() == 2
+    panel.layout().itemAtPosition(3, 1).layout().count() == 2
     return panel
 
 

@@ -9,6 +9,7 @@ from functools import wraps
 # External #
 ############
 import pytest
+import ophyd.sim
 from pydm import PyDMApplication
 
 ###########
@@ -74,3 +75,11 @@ def show_widget(func):
             # Start the application
             application.exec_()
     return func_wrapper
+
+
+@pytest.fixture(scope='session')
+def motor():
+    # Register all signals
+    for sig in ophyd.sim.motor.component_names:
+        typhon.register_signal(getattr(ophyd.sim.motor, sig))
+    return ophyd.sim.motor

@@ -5,11 +5,13 @@ Utility functions for typhon
 # Standard #
 ############
 import os.path
+import random
 
 ############
 # External #
 ############
-from pydm.PyQt.QtGui import QApplication
+from ophyd.signal import EpicsSignalBase
+from pydm.PyQt.QtGui import QApplication, QColor
 
 #############
 #  Package  #
@@ -18,11 +20,22 @@ from pydm.PyQt.QtGui import QApplication
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
 
 
-def channel_name(pv):
+def channel_from_signal(signal):
+    """
+    Create a PyDM address from arbitrary signal type
+    """
+    # Add an item
+    if isinstance(signal, EpicsSignalBase):
+        return channel_name(signal._read_pv.pvname)
+    else:
+        return channel_name(signal.name, protocol='sig')
+
+
+def channel_name(pv, protocol='ca'):
     """
     Create a valid PyDM channel from a PV name
     """
-    return 'ca://' + pv
+    return protocol + '://' + pv
 
 
 def clean_attr(attr):
@@ -71,3 +84,10 @@ def use_stylesheet():
     with open(style_path, 'r') as handle:
         app = QApplication.instance()
         app.setStyleSheet(handle.read())
+
+
+def random_color():
+    """Return a random hex color description"""
+    return QColor(random.randint(0, 255),
+                  random.randint(0, 255),
+                  random.randint(0, 255))
