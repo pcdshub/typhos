@@ -280,7 +280,7 @@
        <number>5</number>
       </property>
       <property name="sizeConstraint">
-       <enum>QLayout::SetMaximumSize</enum>
+       <enum>QLayout::SetFixedSize</enum>
       </property>
       <item>
        <widget class="QFrame" name="title_frame">
