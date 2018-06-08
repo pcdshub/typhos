@@ -132,6 +132,8 @@ def test_subdisplay(qapp):
     assert display.ui.subdisplay.currentWidget().device == device.y
     # Add a tool
     w = QWidget()
+    # Clear other tools
+    display.ui.tool_list.clear()
     display.add_tool('My Tool', w)
     # Release a model press event
     tool_item = display.ui.tool_list.item(0)
