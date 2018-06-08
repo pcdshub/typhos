@@ -10,7 +10,7 @@ from ophyd import Device
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt, QModelIndex
-from pydm.PyQt.QtGui import QWidget, QVBoxLayout
+from pydm.PyQt.QtGui import QScrollArea, QWidget, QVBoxLayout
 from pydm.widgets.drawing import PyDMDrawingImage
 from pydm.widgets.logdisplay import PyDMLogDisplay
 
@@ -186,10 +186,10 @@ class TyphonDisplay(QWidget):
         widget : QWidget
             Widget to be contained within the new tab
         """
-        qw = QWidget()
-        qw.setLayout(QVBoxLayout())
-        qw.layout().addWidget(widget)
-        qw.layout().addStretch(1)
+        qw = QScrollArea(self)
+        qw.setWidget(widget)
+        qw.setAlignment(Qt.AlignHCenter)
+        qw.setWidgetResizable(True)
         self.ui.signal_tab.addTab(qw, name)
 
     def add_image(self, path, subdevice=None):
