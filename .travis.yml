@@ -28,7 +28,8 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda install conda-build anaconda-client
   - conda update -q conda conda-build
-  - conda config --append channels $PYDM_CHANNEL 
+  - conda config --add channels $PYDM_CHANNEL 
+  - conda config --append channels pydm-tag
   - conda config --append channels lightsource2-tag
   - conda config --append channels conda-forge
   # Useful for debugging any issues with conda
