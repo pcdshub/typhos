@@ -10,7 +10,7 @@ from ophyd import Device
 ############
 from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt, QModelIndex
-from pydm.PyQt.QtGui import QScrollArea, QWidget, QVBoxLayout
+from pydm.PyQt.QtGui import QScrollArea, QWidget
 from pydm.widgets.drawing import PyDMDrawingImage
 from pydm.widgets.logdisplay import PyDMLogDisplay
 
