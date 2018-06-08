@@ -66,7 +66,7 @@ def clean_name(device, strip_parent=True):
     name = device.name
     # Strip the parent name if present and desired
     if device.parent and strip_parent:
-        name = name.lstrip(device.parent.name + '_')
+        name = name.replace(device.parent.name + '_', '')
     # Return the cleaned alias
     return clean_attr(name)
 
