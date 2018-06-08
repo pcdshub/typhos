@@ -19,7 +19,7 @@ from pydm.PyQt.QtCore import Qt, pyqtSlot
 ##########
 # Module #
 ##########
-from .utils import ui_dir, channel_name, clean_attr, random_color
+from .utils import ui_dir, channel_from_signal, clean_attr, random_color
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,9 @@ class TyphonTimePlot(QWidget):
         """
         Add an Ophyd signal to the list of available channels
 
+        If the Signal is not an EPICS Signal object you are responsible for
+        registering this yourself, if not already done.
+
         Parameters
         ----------
         signal: ophyd.Signal
@@ -78,9 +81,7 @@ class TyphonTimePlot(QWidget):
         name: str
             Alias for signal to display in QComboBox
         """
-        # Add an item
-        self.ui.signal_combo.addItem(name,
-                                     channel_name(signal._read_pv.pvname))
+        self.ui.signal_combo.addItem(name, channel_from_signal(signal))
 
     def add_curve(self, channel, name=None, color=None):
         """
@@ -194,7 +195,7 @@ class DeviceTimePlot(TyphonTimePlot):
                         self.add_available_signal(sig, clean_attr(component))
                         # Automatically plot if in Device hints
                         if sig.name in self.device.hints.get('fields', []):
-                            self.add_curve(channel_name(sig._read_pv.pvname),
+                            self.add_curve(channel_from_signal(sig),
                                            name=clean_attr(component))
                 except Exception as exc:
                     logger.exception("Unable to add %s to plot-able signals",
