@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.1.0+127.gb31fc10 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.1.0+135.g26d73bf documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+127.gb31fc10
+                0.1.0+135.g26d73bf
               </div>
             
           
@@ -169,6 +169,7 @@
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QModelIndex</span>
 <span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QVBoxLayout</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets.drawing</span> <span class="k">import</span> <span class="n">PyDMDrawingImage</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.logdisplay</span> <span class="k">import</span> <span class="n">PyDMLogDisplay</span>
 
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
@@ -511,7 +512,10 @@
         <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
         <span class="c1"># Add the plot tool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="s1">&#39;Plotting Tool&#39;</span><span class="p">,</span> <span class="n">DeviceTimePlot</span><span class="p">(</span><span class="n">device</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="s1">&#39;Plotting Tool&#39;</span><span class="p">,</span> <span class="n">DeviceTimePlot</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+        <span class="c1"># Add a LogWidget to our toolset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="s1">&#39;Device Log&#39;</span><span class="p">,</span> <span class="n">PyDMLogDisplay</span><span class="p">(</span><span class="n">logname</span><span class="o">=</span><span class="n">device</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                   <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -546,7 +550,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0+127.gb31fc10',
+            VERSION:'0.1.0+135.g26d73bf',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
