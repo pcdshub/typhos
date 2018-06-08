@@ -8,6 +8,7 @@ import logging
 ############
 from ophyd.signal import EpicsSignalBase
 from ophyd.sim import SignalRO
+from pydm.PyQt.QtCore import QSize
 from pydm.PyQt.QtGui import QHBoxLayout, QLabel, QWidget, QGridLayout
 
 #############
@@ -48,6 +49,9 @@ class SignalPanel(QWidget):
         if signals:
             for name, sig in signals.items():
                 self.add_signal(sig, name)
+
+    def sizeHint(self):
+        return QSize(375, 375)
 
     def add_signal(self, signal, name):
         """
