@@ -288,7 +288,7 @@ class TyphonDisplay(QWidget):
             self.ui.subwindow.show()
         # Set the current display
         self.ui.subdisplay.setCurrentWidget(display)
-        self.ui.subdisplay.setFixedSize(display.sizeHint())
+        self.ui.subdisplay.setFixedWidth(display.sizeHint().width())
 
     @pyqtSlot()
     def hide_subdisplays(self):
