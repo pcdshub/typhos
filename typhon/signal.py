@@ -40,7 +40,9 @@ class SignalPanel(QWidget):
         # Store signal information
         self.signals = dict()
         # Create panel layout
-        self.setLayout(QGridLayout())
+        lay = QGridLayout()
+        lay.setSizeConstraint(QGridLayout.SetFixedSize)
+        self.setLayout(lay)
         self.layout().setContentsMargins(20, 20, 20, 20)
         # Add supplied signals
         if signals:
