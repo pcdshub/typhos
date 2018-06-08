@@ -15,25 +15,6 @@ matrix:
      - python: 3.6
        env: PYDM_CHANNEL=pydm-dev
 
-services:
-  - docker
-
-before_install:
-  - git clone https://github.com/NSLS-II/nsls2-ci --branch master --single-branch ~/ci_scripts
-  - export DOCKER0_IP=$(/sbin/ifconfig docker0 |grep 'inet addr' | sed -e 's/.*addr:\([^ ]*\).*/\1/')
-  - export EPICS_CA_ADDR_LIST=$( echo $DOCKER0_IP | sed -e 's/^\([0-9]\+\)\.\([0-9]\+\)\..*$/\1.\2.255.255/' )
-  - export EPICS_CA_AUTO_ADDR_LIST="no"
-  - export EPICS_CA_MAX_ARRAY_BYTES=10000000
-  - export DOCKERIMAGE="klauer/epics-docker"
-  - export EPICS_BASE=/usr/lib/epics
-  - mkdir /tmp/data
-  - perl --version
-  - docker pull ${DOCKERIMAGE}
-  - docker images
-  - docker run -d -p $DOCKER0_IP:7000-9000:5064/tcp -v /tmp/data:/data ${DOCKERIMAGE}
-  - docker ps -a
-  - ip addr
-
 install:
   - sudo apt-get update
   # Install windows manager
