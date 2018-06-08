@@ -83,11 +83,8 @@ def device():
     return MockDevice('Tst:This', name='Simulated Device')
 
 
-@using_fake_epics_pv
 @show_widget
-def test_display():
-    device = MockDevice("Tst:Dev", name="MockDevice")
-    device.wait_for_connection()
+def test_display(device):
     display = DeviceDisplay(device)
     # We have all our signals
     shown_read_sigs = list(display.read_panel.signals.keys())
@@ -104,11 +101,8 @@ def test_display():
     return display
 
 
-@using_fake_epics_pv
 @show_widget
-def test_display_with_funcs():
-    device = MockDevice("Tst:Dev", name="MockDevice")
-    device.wait_for_connection()
+def test_display_with_funcs(device):
     display = DeviceDisplay(device, methods=[device.insert,
                                              device.remove])
     # The method panel is visible
@@ -119,12 +113,9 @@ def test_display_with_funcs():
     return display
 
 
-@using_fake_epics_pv
 @show_widget
-def test_display_with_images(test_images):
+def test_display_with_images(device, test_images):
     (lenna, python) = test_images
-    device = MockDevice("Tst:Dev", name="MockDevice")
-    device.wait_for_connection()
     # Create a display with our image
     display = DeviceDisplay(device, image=lenna)
     assert display.image_widget.filename == lenna
@@ -141,10 +132,8 @@ def test_display_with_images(test_images):
         display.add_image(lenna, subdevice=device)
     return display
 
-@using_fake_epics_pv
 @show_widget
-def test_subdisplay(qapp):
-    device = MockDevice("Tst:Dev", name="MockDevice")
+def test_subdisplay(qapp, device):
     # Set display by Device component
     display = DeviceDisplay(device)
     display.show_subdisplay(device.x)
