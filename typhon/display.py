@@ -12,6 +12,7 @@ from pydm.PyQt import uic
 from pydm.PyQt.QtCore import pyqtSlot, Qt, QModelIndex
 from pydm.PyQt.QtGui import QWidget, QVBoxLayout
 from pydm.widgets.drawing import PyDMDrawingImage
+from pydm.widgets.logdisplay import PyDMLogDisplay
 
 ###########
 # Package #
@@ -355,3 +356,6 @@ class DeviceDisplay(TyphonDisplay):
                 self.method_panel.add_method(method)
         # Add the plot tool
         self.add_tool('Plotting Tool', DeviceTimePlot(device))
+        # Add a LogWidget to our toolset
+        self.add_tool('Device Log', PyDMLogDisplay(logname=device.log.name,
+                                                   level=logging.INFO))
