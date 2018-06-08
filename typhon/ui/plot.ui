@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>538</width>
-    <height>466</height>
+    <width>534</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,0">
+   <property name="spacing">
+    <number>10</number>
+   </property>
    <item>
     <widget class="PyDMTimePlot" name="timeplot">
      <property name="toolTip">
@@ -193,6 +196,18 @@
    </item>
    <item>
     <widget class="QFrame" name="live_channels">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>150</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -214,7 +229,7 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>162</height>
+          <height>5</height>
          </size>
         </property>
        </spacer>
