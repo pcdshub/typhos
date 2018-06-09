@@ -130,6 +130,7 @@ class SignalConnection(PyDMConnection):
             # Report as connected
             self.write_access_signal.emit(True)
             self.connection_state_signal.emit(True)
+            self.new_severity_signal.emit(0)
             self.send_new_value(value=self.signal.get())
             # If the channel is used for writing to PVs, hook it up to the
             # 'put' methods.
