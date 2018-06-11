@@ -130,8 +130,14 @@ class SignalConnection(PyDMConnection):
             # Report as connected
             self.write_access_signal.emit(True)
             self.connection_state_signal.emit(True)
+            # Report as no-alarm state
             self.new_severity_signal.emit(0)
+            # Report the current value
             self.send_new_value(value=self.signal.get())
+            # Report the precision
+            prec = self.signal.describe()[self.signal.name].get('precision')
+            if prec:
+                self.prec_signal.emit(prec)
             # If the channel is used for writing to PVs, hook it up to the
             # 'put' methods.
             if channel.value_signal is not None:
