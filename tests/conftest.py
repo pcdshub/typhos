@@ -72,6 +72,7 @@ def show_widget(func):
         if show_widgets:
             # Display the widget
             widget.show()
+            application.establish_widget_connections(widget)
             # Start the application
             application.exec_()
     return func_wrapper
