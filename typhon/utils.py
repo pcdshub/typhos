@@ -65,19 +65,33 @@ def clean_name(device, strip_parent=True):
     return clean_attr(name)
 
 
-def use_stylesheet():
+def use_stylesheet(dark=False):
     """
     Use the Typhon stylesheet
+
+    Parameters
+    ----------
+    dark: bool, optional
+        Whether or not to use the QDarkStyleSheet theme. By default the light
+        theme is chosen.
     """
-    # Load the path to the file
-    style_path = os.path.join(ui_dir, 'style.qss')
-    if not os.path.exists(style_path):
-        raise EnvironmentError("Unable to find Typhon stylesheet in {}"
-                               "".format(style_path))
-    # Load the stylesheet from the file
-    with open(style_path, 'r') as handle:
-        app = QApplication.instance()
-        app.setStyleSheet(handle.read())
+    # Dark Style
+    if dark:
+        import qdarkstyle
+        style = qdarkstyle.load_stylesheet_pyqt5()
+    # Light Style
+    else:
+        # Load the path to the file
+        style_path = os.path.join(ui_dir, 'style.qss')
+        if not os.path.exists(style_path):
+            raise EnvironmentError("Unable to find Typhon stylesheet in {}"
+                                   "".format(style_path))
+        # Load the stylesheet from the file
+        with open(style_path, 'r') as handle:
+            style = handle.read()
+    # Set stylesheet
+    app = QApplication.instance()
+    app.setStyleSheet(style)
 
 
 def random_color():
