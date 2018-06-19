@@ -34,7 +34,7 @@ information to craft user interfaces.
 ## Installation
 Recommended installation:
 ```
-conda install typhon -c pcds-tag -c pydm-tag -c lightsource2-tag -c conda-forge
+conda install typhon -c pcds-tag -c conda-forge
 ```
 All `-tag` channels have `-dev` counterparts for bleeding edge installations.
 Both `requirements.txt` and optional `dev-requirements.txt` are kept up to date
