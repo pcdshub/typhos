@@ -47,11 +47,7 @@ def qapp(pytestconfig):
         pass
     else:
         application = PyDMApplication(use_main_window=False)
-        if pytestconfig.getoption('--dark'):
-            import qdarkstyle
-            application.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-        else:
-            typhon.use_stylesheet()
+        typhon.use_stylesheet(pytestconfig.getoption('--dark'))
     return application
 
 
