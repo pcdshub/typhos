@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>534</width>
-    <height>604</height>
+    <height>611</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -95,7 +95,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="signal_combo"/>
+       <widget class="QComboBox" name="signal_combo">
+        <property name="insertPolicy">
+         <enum>QComboBox::InsertAlphabetically</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer_4">

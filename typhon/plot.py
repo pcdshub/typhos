@@ -19,7 +19,8 @@ from pydm.PyQt.QtCore import Qt, pyqtSlot
 ##########
 # Module #
 ##########
-from .utils import ui_dir, channel_from_signal, clean_attr, random_color
+from .utils import (ui_dir, channel_from_signal, clean_attr, random_color,
+                    clean_name)
 
 logger = logging.getLogger(__name__)
 
@@ -183,20 +184,28 @@ class DeviceTimePlot(TyphonTimePlot):
         # Seed so that our colors are consistent
         random.seed(54321343)
         # Sort through components
-        for component in self.device.component_names:
-            # Find all signals
-            if component not in self.device._sub_devices:
-                try:
-                    sig = getattr(self.device, component)
-                    # Only include scalars
-                    if sig.describe()[sig.name]['dtype'] in ('integer',
-                                                             'number'):
-                        # Add to list of availabe signals
-                        self.add_available_signal(sig, clean_attr(component))
-                        # Automatically plot if in Device hints
-                        if sig.name in self.device.hints.get('fields', []):
-                            self.add_curve(channel_from_signal(sig),
-                                           name=clean_attr(component))
-                except Exception as exc:
-                    logger.exception("Unable to add %s to plot-able signals",
-                                     component)
+        devices = [self.device] + [getattr(device, sub)
+                                   for sub in device._sub_devices]
+        for device in devices:
+            for component in device.component_names:
+                # Find all signals
+                if component not in device._sub_devices:
+                    try:
+                        sig = getattr(device, component)
+                        # Only include scalars
+                        if sig.describe()[sig.name]['dtype'] in ('integer',
+                                                                 'number'):
+                            # Make component name
+                            name = clean_attr(component)
+                            if device != self.device:
+                                name = ' '.join((clean_name(device), name))
+                            # Add to list of available signals
+                            self.add_available_signal(sig, name)
+                            # Automatically plot if in Device hints
+                            if sig.name in device.hints.get('fields', []):
+                                self.add_curve(channel_from_signal(sig),
+                                               name=name)
+                    except Exception as exc:
+                        logger.exception("Unable to add %s to "
+                                         "plot-able signals",
+                                         component)
