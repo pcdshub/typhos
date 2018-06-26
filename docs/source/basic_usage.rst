@@ -93,9 +93,12 @@ user displays.
 
 Using the StyleSheet
 ====================
-While it is no means a requirement, Typhon ships with a custom stylesheet to
+While it is no means a requirement, Typhon ships with two stylesheets to
 improve the look of the widgets. By default this isn't activated, but can be
-configured with `:func:`.use_stylesheet`
+configured with :func:`typhon.use_stylesheet`. The operator can elect whether to use
+the "light" or "dark" stylesheets by using the optional ``dark`` keyword. This
+method also handles setting the "Fusion" ``QStyle`` which helps make the
+interface have an operating system independent look and feel.
 
 Making Modifications
 ====================
