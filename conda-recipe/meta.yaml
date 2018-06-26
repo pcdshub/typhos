@@ -16,6 +16,7 @@ requirements:
       - python
       - pydm >=1.2.0
       - ophyd >=1.2.0
+      - qdarkstyle
 
 test:
     imports:

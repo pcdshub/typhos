@@ -37,10 +37,6 @@ QComboBox:hover {
     border: 2px solid #0b3ae8;
 }
 
-QListWidget::item {
-    bold: False;
-}
-
 QListWidget::item:selected {
     background-color: #0b3ae8;;
     color: white;
