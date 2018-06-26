@@ -11,7 +11,7 @@ import random
 # External #
 ############
 from ophyd.signal import EpicsSignalBase
-from pydm.PyQt.QtGui import QApplication, QColor
+from pydm.PyQt.QtGui import QApplication, QColor, QStyleFactory
 
 #############
 #  Package  #
@@ -89,8 +89,11 @@ def use_stylesheet(dark=False):
         # Load the stylesheet from the file
         with open(style_path, 'r') as handle:
             style = handle.read()
-    # Set stylesheet
+    # Find application
     app = QApplication.instance()
+    # Set Fusion style
+    app.setStyle(QStyleFactory.create('Fusion'))
+    # Set Stylesheet
     app.setStyleSheet(style)
 
 
