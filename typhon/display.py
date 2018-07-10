@@ -66,9 +66,9 @@ class TyphonDisplay(QWidget):
         self.ui.name_label.setText(name)
         # Create Panels
         self.method_panel = FunctionPanel(parent=self)
-        self.read_panel = SignalPanel("Read", parent=self)
-        self.config_panel = SignalPanel("Configuration", parent=self)
-        self.misc_panel = SignalPanel("Miscellaneous", parent=self)
+        self.read_panel = SignalPanel(parent=self)
+        self.config_panel = SignalPanel(parent=self)
+        self.misc_panel = SignalPanel(parent=self)
         # Add all the panels
         self.ui.main_layout.insertWidget(2, self.read_panel,
                                          0, Qt.AlignHCenter)
