@@ -20,7 +20,7 @@ from .conftest import show_widget
 @show_widget
 @using_fake_epics_pv
 def test_panel_creation():
-    panel = SignalPanel("Test Signals", signals={
+    panel = SignalPanel(signals={
                     # Signal is its own write
                     'Standard': EpicsSignal('Tst:Pv'),
                     # Signal has separate write/read
@@ -45,7 +45,7 @@ def test_panel_creation():
 @show_widget
 @using_fake_epics_pv
 def test_panel_add_enum():
-    panel = SignalPanel("Test Signals")
+    panel = SignalPanel()
     # Create an enum pv
     sig = EpicsSignal("Tst:Enum")
     sig._write_pv.enum_strs = ('A', 'B')

@@ -10,6 +10,7 @@ from ophyd.signal import EpicsSignalBase
 from ophyd.sim import SignalRO
 from pydm.PyQt.QtCore import QSize
 from pydm.PyQt.QtGui import QHBoxLayout, QLabel, QWidget, QGridLayout
+from warnings import warn
 
 #############
 #  Package  #
@@ -27,17 +28,18 @@ class SignalPanel(QWidget):
 
     Parameters
     ----------
-    title : str
-        Title for hide button
-
     signals : OrderedDict, optional
         Signals to include in the panel
 
     parent : QWidget, optional
         Parent of panel
     """
-    def __init__(self, title, signals=None, parent=None):
+    def __init__(self, title=None, signals=None, parent=None):
         super().__init__(parent=parent)
+        # Title is no longer supported
+        if title:
+            warn("The 'title' option for SignalPanel is deprecated. "
+                 "It will be removed in future releases.")
         # Store signal information
         self.signals = dict()
         # Create panel layout
