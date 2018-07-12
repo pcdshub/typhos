@@ -134,10 +134,17 @@ class SignalConnection(PyDMConnection):
             self.new_severity_signal.emit(0)
             # Report the current value
             self.send_new_value(value=self.signal.get())
-            # Report the precision
-            prec = self.signal.describe()[self.signal.name].get('precision')
-            if prec:
-                self.prec_signal.emit(prec)
+            # Report metadata
+            signal_desc = self.signal.describe()[self.signal.name]
+            for (field, signal) in (
+                            ('precision', self.prec_signal),
+                            ('enum_strs', self.enum_strings_signal),
+                            ('units', self.unit_signal)):
+                # Check if we have metadata to send for field
+                val = signal_desc.get(field)
+                # If so emit it to our listeners
+                if val:
+                    signal.emit(val)
             # If the channel is used for writing to PVs, hook it up to the
             # 'put' methods.
             if channel.value_signal is not None:
