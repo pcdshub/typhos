@@ -10,6 +10,15 @@ class WritableWidget(QWidget, PyDMWritableWidget):
     pass
 
 
+class RichSignal(Signal):
+
+    def describe(self):
+        return {self.name : {'enum_strs': ('a', 'b', 'c'),
+                             'precision': 2,
+                             'units': 'urad',
+                             'dtype': 'number',
+                             'shape': []}}
+
 def test_signal_connection(qapp):
     # Create a signal and attach our listener
     sig = Signal(name='my_signal', value=1)
@@ -50,3 +59,17 @@ def test_invalid_signal():
     sig_conn = SignalConnection(listener, 'my_signal')
     assert not widget._connected
     assert not widget._write_access
+
+
+def test_metadata(qapp):
+    widget = WritableWidget()
+    listener = widget.channels()[0]
+    # Create a signal and attach our listener
+    sig = RichSignal(name='md_signal', value=1)
+    register_signal(sig)
+    sig_conn = SignalConnection(listener, 'md_signal')
+    qapp.processEvents()
+    # Check that metadata the metadata got there
+    assert widget.enum_strings == ('a', 'b', 'c')
+    assert widget._unit == 'urad'
+    assert widget._prec == 2
