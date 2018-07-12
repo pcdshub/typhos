@@ -175,3 +175,15 @@ class SignalPlugin(PyDMPlugin):
     """Plugin registered with PyDM to handle SignalConnection"""
     protocol = 'sig'
     connection_class = SignalConnection
+
+    def add_connection(self, channel):
+        """Add a connection to a channel"""
+        try:
+            # Add a PyDMConnection for the channel
+            super().add_connection(channel)
+        # There is a chance that we raise an Exception on subscription. If so,
+        # don't add this to our list of good to go exceptions so the next
+        # attempt we try again.
+        except Exception:
+            logger.exception("Unable to create a connection to %r",
+                             channel)
