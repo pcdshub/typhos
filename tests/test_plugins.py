@@ -19,6 +19,15 @@ class RichSignal(Signal):
                              'dtype': 'number',
                              'shape': []}}
 
+class DeadSignal(Signal):
+
+    def get(self, *args, **kwargs):
+        raise TimeoutError("Timeout on get")
+
+    def describe(self, *args, **kwargs):
+        raise TimeoutError("Timeout on describe")
+
+
 def test_signal_connection(qapp):
     # Create a signal and attach our listener
     sig = Signal(name='my_signal', value=1)
@@ -73,3 +82,15 @@ def test_metadata(qapp):
     assert widget.enum_strings == ('a', 'b', 'c')
     assert widget._unit == 'urad'
     assert widget._prec == 2
+
+
+def test_disconnection(qapp):
+    widget = WritableWidget()
+    listener = widget.channels()[0]
+    # Create a signal and attach our listener
+    sig = DeadSignal(name='broken_signal', value=1)
+    register_signal(sig)
+    sig_conn = SignalConnection(listener, 'broken_signal')
+    sig_conn.add_listener(sig_b)
+    assert not widget._connected
+    assert not widget._write_access
