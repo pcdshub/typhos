@@ -20,6 +20,13 @@ class RichSignal(Signal):
                              'shape': []}}
 
 class DeadSignal(Signal):
+    subscribable = False
+
+    def subscribe(self, *args, **kwargs):
+        if self.subscribable:
+            pass
+        else:
+            raise TimeoutError("Timeout on subscribe")
 
     def get(self, *args, **kwargs):
         raise TimeoutError("Timeout on get")
@@ -61,14 +68,6 @@ def test_signal_connection(qapp):
     qapp.processEvents()
     assert sig.get() == 3
 
-def test_invalid_signal():
-    widget = WritableWidget()
-    listener = widget.channels()[0]
-    # Invalid Signal
-    sig_conn = SignalConnection(listener, 'my_signal')
-    assert not widget._connected
-    assert not widget._write_access
-
 
 def test_metadata(qapp):
     widget = WritableWidget()
@@ -87,10 +86,16 @@ def test_metadata(qapp):
 def test_disconnection(qapp):
     widget = WritableWidget()
     listener = widget.channels()[0]
-    # Create a signal and attach our listener
+    listener.address = 'sig://invalid'
+    plugin = SignalPlugin()
+    # Non-existant signal doesn't raise an error
+    plugin.add_connection(listener)
+    # Create a signal that will raise a TimeoutError
     sig = DeadSignal(name='broken_signal', value=1)
     register_signal(sig)
+    listener.address = 'sig://broken_signal'
+    # This should fail on the subscribe
+    plugin.add_connection(listener)
+    # This should fail on the get
+    sig.subscribable = True
     sig_conn = SignalConnection(listener, 'broken_signal')
-    sig_conn.add_listener(sig_b)
-    assert not widget._connected
-    assert not widget._write_access
