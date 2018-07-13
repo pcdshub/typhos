@@ -154,6 +154,7 @@ class SignalPanel(QWidget):
         if write:
             # Check whether our device is an enum or not
             if is_enum:
+                logger.debug("Adding Combobox for %s", name)
                 edit = TyphonComboBox(init_channel=write, parent=self)
             else:
                 logger.debug("Adding LineEdit for %s", name)
