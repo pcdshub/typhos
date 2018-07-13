@@ -90,12 +90,21 @@ class SignalPanel(QWidget):
             # Check read-only
             if isinstance(signal, SignalRO):
                 write = None
+                is_enum = False
             else:
                 write = channel_name(signal.name, protocol='sig')
+                try:
+                    is_enum = signal.describe()[signal.name].get('enum_strs',
+                                                                 False)
+                except Exception:
+                    is_enum = False
+                    logger.exception("Unable to check if %r is an enum",
+                                     signal.name)
             # Add signal row
             return self._add_row(channel_name(signal.name,
                                               protocol='sig'),
-                                 name, write=write)
+                                 name, write=write,
+                                 is_enum=is_enum)
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
