@@ -121,7 +121,7 @@ class SignalConnection(PyDMConnection):
         self.new_severity_signal.emit(0)
         try:
             # Gather the current value
-            signal_val =self.signal.get()
+            signal_val = self.signal.get()
             # Gather metadata
             signal_desc = self.signal.describe()[self.signal.name]
         except Exception:
@@ -132,7 +132,7 @@ class SignalConnection(PyDMConnection):
         # Report as connected
         self.write_access_signal.emit(True)
         self.connection_state_signal.emit(True)
-        # Report new value 
+        # Report new value
         self.send_new_value(signal_val)
         # Report metadata
         for (field, signal) in (
