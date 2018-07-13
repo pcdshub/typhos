@@ -28,6 +28,22 @@ plugin.
    # This signal is now available for use with PyDM widgets
    PyDMWidget(channel='sig://this_signal')
 
-
 Note that this is all done for you if you use the :class:`.SignalPanel`, but
 maybe useful if you would like to use the :class:`.SignalPlugin` directly.
+
+Inclusion of Metadata
+---------------------
+In many cases just knowing the value of a signal is not enough to accurately
+display it. Extra pieces of information such as the units and precision of
+information can provide a richer operator experience. ``Typhon`` counts on this
+information being available in the output of ``describe`` method of the signal.
+If you want your child ``ophyd.Signal`` class to convey this information make
+sure that it is expressed properly in the output of ``describe``.
+
+===================== ===============
+Metadata              Description Key
+===================== ===============
+Precision             `"precision"`
+Enumeration Strings   `"enum_strs"`
+Engineering Units     `"units"`
+===================== ===============
