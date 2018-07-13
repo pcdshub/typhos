@@ -5,7 +5,7 @@
 ############
 # External #
 ############
-from ophyd.signal import EpicsSignal, EpicsSignalRO
+from ophyd.signal import Signal, EpicsSignal, EpicsSignalRO
 from ophyd.sim import SynSignal, SynSignalRO
 from ophyd.tests.conftest import using_fake_epics_pv
 from pydm.widgets import PyDMEnumComboBox
@@ -14,7 +14,7 @@ from pydm.widgets import PyDMEnumComboBox
 # Package #
 ###########
 from typhon.signal import SignalPanel
-from .conftest import show_widget
+from .conftest import show_widget, RichSignal
 
 
 @show_widget
@@ -50,8 +50,7 @@ def test_panel_add_enum():
     epics_sig = EpicsSignal("Tst:Enum")
     epics_sig._write_pv.enum_strs = ('A', 'B')
     # Create an enum signal
-    syn_sig = SynSignal(name='Syn:Enum')
-    syn_sig.enum_strs = ('C', 'D')
+    syn_sig = RichSignal(name='Syn:Enum', value=1)
     # Add our signals to the panel
     loc1 = panel.add_signal(epics_sig, "EPICS Enum PV")
     loc2 = panel.add_signal(syn_sig, "Sim Enum PV")
