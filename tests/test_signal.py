@@ -47,13 +47,22 @@ def test_panel_creation():
 def test_panel_add_enum():
     panel = SignalPanel()
     # Create an enum pv
-    sig = EpicsSignal("Tst:Enum")
-    sig._write_pv.enum_strs = ('A', 'B')
-    # Add our signal to the panel
-    loc = panel.add_signal(sig, "Enum PV")
+    epics_sig = EpicsSignal("Tst:Enum")
+    epics_sig._write_pv.enum_strs = ('A', 'B')
+    # Create an enum signal
+    syn_sig = SynSignal(name='Syn:Enum')
+    syn_sig.enum_strs = ('C', 'D')
+    # Add our signals to the panel
+    loc1 = panel.add_signal(epics_sig, "EPICS Enum PV")
+    loc2 = panel.add_signal(syn_sig, "Sim Enum PV")
     # Check our signal was added a QCombobox
     # Assume it is the last item in the button layout
-    but_layout = panel.layout().itemAtPosition(loc, 1)
+    but_layout = panel.layout().itemAtPosition(loc1, 1)
+    assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
+                      PyDMEnumComboBox)
+    # Check our signal was added a QCombobox
+    # Assume it is the last item in the button layout
+    but_layout = panel.layout().itemAtPosition(loc2, 1)
     assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
                       PyDMEnumComboBox)
     return panel
