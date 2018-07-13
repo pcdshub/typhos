@@ -127,11 +127,16 @@ class SignalPanel(QWidget):
         """
         logger.debug("Adding PV %s", name)
         # Configure optional write PV settings
+        is_enum = False
         if write_pv:
-            is_enum = write_pv.enum_strs
-            write_pv = channel_name(write_pv.pvname)
-        else:
-            is_enum = False
+            try:
+                is_enum = write_pv.enum_strs
+            except Exception:
+                logger.exception("Unable to determine if %r is an enum",
+                                 write_pv)
+                is_enum = False
+            finally:
+                write_pv = channel_name(write_pv.pvname)
         # Add readback and discovered write PV to grid
         return self._add_row(channel_name(read_pv.pvname), name,
                              write=write_pv, is_enum=is_enum)
