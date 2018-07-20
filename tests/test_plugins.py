@@ -5,7 +5,7 @@ from pydm.PyQt.QtGui import QWidget
 from typhon.plugins.core import (SignalPlugin, SignalConnection,
                                  register_signal)
 
-from .conftest import RichSignal
+from .conftest import DeadSignal, RichSignal
 
 
 class WritableWidget(QWidget, PyDMWritableWidget):
@@ -13,20 +13,6 @@ class WritableWidget(QWidget, PyDMWritableWidget):
     pass
 
 
-class DeadSignal(Signal):
-    subscribable = False
-
-    def subscribe(self, *args, **kwargs):
-        if self.subscribable:
-            pass
-        else:
-            raise TimeoutError("Timeout on subscribe")
-
-    def get(self, *args, **kwargs):
-        raise TimeoutError("Timeout on get")
-
-    def describe(self, *args, **kwargs):
-        raise TimeoutError("Timeout on describe")
 
 
 def test_signal_connection(qapp):
