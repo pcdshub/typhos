@@ -14,8 +14,7 @@ from pydm.widgets import PyDMEnumComboBox
 # Package #
 ###########
 from typhon.signal import SignalPanel
-from .conftest import show_widget, RichSignal
-
+from .conftest import show_widget, RichSignal, DeadSignal
 
 @show_widget
 @using_fake_epics_pv
@@ -65,3 +64,10 @@ def test_panel_add_enum():
     assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
                       PyDMEnumComboBox)
     return panel
+
+
+def test_add_dead_signal():
+    panel = SignalPanel()
+    dead_sig = DeadSignal(name='ded')
+    panel.add_signal(dead_sig, 'Dead Signal')
+    assert 'Dead Signal' in panel.signals
