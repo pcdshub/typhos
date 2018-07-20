@@ -23,7 +23,24 @@ logger = logging.getLogger(__name__)
 
 
 def signal_widget(signal, read_only=False):
-    """Factory for creating writeable widget"""
+    """
+    Factory for creating a PyDMWidget from a signal
+
+    Parameters
+    ----------
+    signal : ophyd.Signal
+        Signal object to create widget
+
+    read_only: bool, optional
+        Whether this widget should be able to write back to the signal you
+        provided
+
+    Returns
+    -------
+    widget : PyDMWidget
+        PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
+        be able to write back to the widget and if the signal has ``enum_strs``
+    """
     # Grab our channel name
     # Still re-route EpicsSignal through the ca:// plugin
     if isinstance(signal, EpicsSignalBase):
