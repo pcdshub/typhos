@@ -71,3 +71,13 @@ def test_add_dead_signal():
     dead_sig = DeadSignal(name='ded')
     panel.add_signal(dead_sig, 'Dead Signal')
     assert 'Dead Signal' in panel.signals
+
+
+@using_fake_epics_pv
+def test_add_pv():
+    panel = SignalPanel()
+    panel.add_pv('Tst:A', 'Read Only')
+    assert 'Read Only' in panel.signals
+    assert panel.layout().itemAtPosition(0, 1).count() == 1
+    panel.add_pv('Tst:A', "Write", write_pv='Tst:B')
+    assert panel.layout().itemAtPosition(1, 1).count() == 2
