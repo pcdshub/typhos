@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Application Connections &mdash; Typhon 0.2.0+6.g6a2342e documentation</title>
+  <title>Application Connections &mdash; Typhon 0.2.0+20.gfcb7e83 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.0+6.g6a2342e
+                0.2.0+20.gfcb7e83
               </div>
             
           
@@ -86,7 +86,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Application Connections</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#ophyd-signals">Ophyd Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ophyd-signals">Ophyd Signals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inclusion-of-metadata">Inclusion of Metadata</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
@@ -188,6 +191,37 @@ plugin.</p>
 </div>
 <p>Note that this is all done for you if you use the <a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, but
 maybe useful if you would like to use the <a class="reference internal" href="plugins.html#typhon.plugins.SignalPlugin" title="typhon.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a> directly.</p>
+<div class="section" id="inclusion-of-metadata">
+<h3>Inclusion of Metadata<a class="headerlink" href="#inclusion-of-metadata" title="Permalink to this headline">¶</a></h3>
+<p>In many cases just knowing the value of a signal is not enough to accurately
+display it. Extra pieces of information such as the units and precision of
+information can provide a richer operator experience. <code class="docutils literal notranslate"><span class="pre">Typhon</span></code> counts on this
+information being available in the output of <code class="docutils literal notranslate"><span class="pre">describe</span></code> method of the signal.
+If you want your child <code class="docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> class to convey this information make
+sure that it is expressed properly in the output of <code class="docutils literal notranslate"><span class="pre">describe</span></code>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Metadata</th>
+<th class="head">Description Key</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Precision</td>
+<td><cite>“precision”</cite></td>
+</tr>
+<tr class="row-odd"><td>Enumeration Strings</td>
+<td><cite>“enum_strs”</cite></td>
+</tr>
+<tr class="row-even"><td>Engineering Units</td>
+<td><cite>“units”</cite></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 
@@ -233,7 +267,7 @@ maybe useful if you would like to use the <a class="reference internal" href="pl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0+6.g6a2342e',
+            VERSION:'0.2.0+20.gfcb7e83',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

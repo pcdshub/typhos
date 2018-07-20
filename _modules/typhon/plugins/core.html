@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.plugins.core &mdash; Typhon 0.2.0+6.g6a2342e documentation</title>
+  <title>typhon.plugins.core &mdash; Typhon 0.2.0+20.gfcb7e83 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.0+6.g6a2342e
+                0.2.0+20.gfcb7e83
               </div>
             
           
@@ -217,19 +217,11 @@
         <span class="c1"># Create base connection</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="c1"># Get Signal from registry</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to find signal </span><span class="si">%s</span><span class="s2"> in signal registry.&quot;</span>
-                             <span class="s2">&quot;Use typhon.plugins.register_signal()&quot;</span><span class="p">,</span>
-                             <span class="n">address</span><span class="p">)</span>
-            <span class="c1"># Report as disconnected</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Subscribe to updates from Ophyd</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">,</span>
-                                  <span class="n">event_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">SUB_VALUE</span><span class="p">)</span>
+        <span class="c1"># Collect our signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="c1"># Subscribe to updates from Ophyd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">,</span>
+                              <span class="n">event_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">SUB_VALUE</span><span class="p">)</span>
         <span class="c1"># Add listener</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
 
@@ -281,32 +273,43 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Perform the default connection setup</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-        <span class="c1"># Send the most recent value to the channel</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">:</span>
-            <span class="c1"># Report as connected</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">write_access_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">connection_state_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="c1"># Report as no-alarm state</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">new_severity_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="c1"># Report the current value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
-            <span class="c1"># Report the precision</span>
-            <span class="n">prec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">prec</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">prec_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">prec</span><span class="p">)</span>
-            <span class="c1"># If the channel is used for writing to PVs, hook it up to the</span>
-            <span class="c1"># &#39;put&#39; methods.</span>
-            <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">_typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_types</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">val_sig</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span><span class="p">[</span><span class="n">_typ</span><span class="p">]</span>
-                        <span class="n">val_sig</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">put_value</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no value_signal for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                                     <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">write_access_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">connection_state_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="c1"># Report as no-alarm state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_severity_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Gather the current value</span>
+            <span class="n">signal_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="c1"># Gather metadata</span>
+            <span class="n">signal_desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to gather proper information &quot;</span>
+                             <span class="s2">&quot;from signal </span><span class="si">%r</span><span class="s2"> to initialize </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Report as connected</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_access_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_state_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Report new value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">(</span><span class="n">signal_val</span><span class="p">)</span>
+        <span class="c1"># Report metadata</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prec_signal</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;enum_strs&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enum_strings_signal</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_signal</span><span class="p">)):</span>
+            <span class="c1"># Check if we have metadata to send for field</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">signal_desc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+            <span class="c1"># If so emit it to our listeners</span>
+            <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
+                <span class="n">signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="c1"># If the channel is used for writing to PVs, hook it up to the</span>
+        <span class="c1"># &#39;put&#39; methods.</span>
+        <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_types</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">val_sig</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span><span class="p">[</span><span class="n">_typ</span><span class="p">]</span>
+                    <span class="n">val_sig</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">put_value</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no value_signal for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                                 <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SignalConnection.remove_listener"><a class="viewcode-back" href="../../../plugins.html#typhon.plugins.SignalConnection.remove_listener">[docs]</a>    <span class="k">def</span> <span class="nf">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -337,9 +340,13 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Add a PyDMConnection for the channel</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-        <span class="c1"># There is a chance that we raise an Exception on subscription. If so,</span>
-        <span class="c1"># don&#39;t add this to our list of good to go exceptions so the next</span>
+        <span class="c1"># There is a chance that we raise an Exception on creation. If so,</span>
+        <span class="c1"># don&#39;t add this to our list of good to go connections. The next</span>
         <span class="c1"># attempt we try again.</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to find signal for </span><span class="si">%r</span><span class="s2"> in signal registry.&quot;</span>
+                         <span class="s2">&quot;Use typhon.plugins.register_signal()&quot;</span><span class="p">,</span>
+                         <span class="n">channel</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to create a connection to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
                              <span class="n">channel</span><span class="p">)</span></div>
@@ -377,7 +384,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.2.0+6.g6a2342e',
+            VERSION:'0.2.0+20.gfcb7e83',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
