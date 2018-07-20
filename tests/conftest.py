@@ -10,6 +10,7 @@ from functools import wraps
 ############
 import pytest
 import ophyd.sim
+from ophyd import Signal
 from pydm import PyDMApplication
 
 ###########
@@ -80,3 +81,14 @@ def motor():
     for sig in ophyd.sim.motor.component_names:
         typhon.register_signal(getattr(ophyd.sim.motor, sig))
     return ophyd.sim.motor
+
+
+
+class RichSignal(Signal):
+
+    def describe(self):
+        return {self.name : {'enum_strs': ('a', 'b', 'c'),
+                             'precision': 2,
+                             'units': 'urad',
+                             'dtype': 'number',
+                             'shape': []}}

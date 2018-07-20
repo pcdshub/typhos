@@ -93,6 +93,10 @@ class TyphonLineEdit(PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.showUnits = True
+
     def sizeHint(self):
         return QSize(100, 30)
 
@@ -104,6 +108,7 @@ class TyphonLabel(PyDMLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAlignment(Qt.AlignCenter)
+        self.showUnits = True
 
     def sizeHint(self):
         return QSize(100, 30)

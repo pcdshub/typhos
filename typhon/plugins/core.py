@@ -61,19 +61,11 @@ class SignalConnection(PyDMConnection):
         # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
         self.signal_type = None
-        # Get Signal from registry
-        try:
-            self.signal = signal_registry[address]
-        except KeyError as exc:
-            logger.exception("Unable to find signal %s in signal registry."
-                             "Use typhon.plugins.register_signal()",
-                             address)
-            # Report as disconnected
-            self.signal = None
-        else:
-            # Subscribe to updates from Ophyd
-            self.signal.subscribe(self.send_new_value,
-                                  event_type=self.signal.SUB_VALUE)
+        # Collect our signal
+        self.signal = signal_registry[address]
+        # Subscribe to updates from Ophyd
+        self.signal.subscribe(self.send_new_value,
+                              event_type=self.signal.SUB_VALUE)
         # Add listener
         self.add_listener(channel)
 
@@ -125,32 +117,43 @@ class SignalConnection(PyDMConnection):
         """
         # Perform the default connection setup
         super().add_listener(channel)
-        # Send the most recent value to the channel
-        if self.signal:
-            # Report as connected
-            self.write_access_signal.emit(True)
-            self.connection_state_signal.emit(True)
-            # Report as no-alarm state
-            self.new_severity_signal.emit(0)
-            # Report the current value
-            self.send_new_value(value=self.signal.get())
-            # Report the precision
-            prec = self.signal.describe()[self.signal.name].get('precision')
-            if prec:
-                self.prec_signal.emit(prec)
-            # If the channel is used for writing to PVs, hook it up to the
-            # 'put' methods.
-            if channel.value_signal is not None:
-                for _typ in self.supported_types:
-                    try:
-                        val_sig = channel.value_signal[_typ]
-                        val_sig.connect(self.put_value, Qt.QueuedConnection)
-                    except KeyError:
-                        logger.debug("%s has no value_signal for type %s",
-                                     channel.address, _typ)
-        else:
-            self.write_access_signal.emit(False)
-            self.connection_state_signal.emit(False)
+        # Report as no-alarm state
+        self.new_severity_signal.emit(0)
+        try:
+            # Gather the current value
+            signal_val = self.signal.get()
+            # Gather metadata
+            signal_desc = self.signal.describe()[self.signal.name]
+        except Exception:
+            logger.exception("Failed to gather proper information "
+                             "from signal %r to initialize %r",
+                             self.signal.name, channel)
+            return
+        # Report as connected
+        self.write_access_signal.emit(True)
+        self.connection_state_signal.emit(True)
+        # Report new value
+        self.send_new_value(signal_val)
+        # Report metadata
+        for (field, signal) in (
+                    ('precision', self.prec_signal),
+                    ('enum_strs', self.enum_strings_signal),
+                    ('units', self.unit_signal)):
+            # Check if we have metadata to send for field
+            val = signal_desc.get(field)
+            # If so emit it to our listeners
+            if val:
+                signal.emit(val)
+        # If the channel is used for writing to PVs, hook it up to the
+        # 'put' methods.
+        if channel.value_signal is not None:
+            for _typ in self.supported_types:
+                try:
+                    val_sig = channel.value_signal[_typ]
+                    val_sig.connect(self.put_value, Qt.QueuedConnection)
+                except KeyError:
+                    logger.debug("%s has no value_signal for type %s",
+                                 channel.address, _typ)
 
     def remove_listener(self, channel):
         """
@@ -181,9 +184,13 @@ class SignalPlugin(PyDMPlugin):
         try:
             # Add a PyDMConnection for the channel
             super().add_connection(channel)
-        # There is a chance that we raise an Exception on subscription. If so,
-        # don't add this to our list of good to go exceptions so the next
+        # There is a chance that we raise an Exception on creation. If so,
+        # don't add this to our list of good to go connections. The next
         # attempt we try again.
+        except KeyError:
+            logger.error("Unable to find signal for %r in signal registry."
+                         "Use typhon.plugins.register_signal()",
+                         channel)
         except Exception:
             logger.exception("Unable to create a connection to %r",
                              channel)

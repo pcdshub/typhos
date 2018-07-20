@@ -5,9 +5,28 @@ from pydm.PyQt.QtGui import QWidget
 from typhon.plugins.core import (SignalPlugin, SignalConnection,
                                  register_signal)
 
+from .conftest import RichSignal
+
+
 class WritableWidget(QWidget, PyDMWritableWidget):
     """Simple Testing Widget"""
     pass
+
+
+class DeadSignal(Signal):
+    subscribable = False
+
+    def subscribe(self, *args, **kwargs):
+        if self.subscribable:
+            pass
+        else:
+            raise TimeoutError("Timeout on subscribe")
+
+    def get(self, *args, **kwargs):
+        raise TimeoutError("Timeout on get")
+
+    def describe(self, *args, **kwargs):
+        raise TimeoutError("Timeout on describe")
 
 
 def test_signal_connection(qapp):
@@ -43,10 +62,34 @@ def test_signal_connection(qapp):
     qapp.processEvents()
     assert sig.get() == 3
 
-def test_invalid_signal():
+
+def test_metadata(qapp):
     widget = WritableWidget()
     listener = widget.channels()[0]
-    # Invalid Signal
-    sig_conn = SignalConnection(listener, 'my_signal')
-    assert not widget._connected
-    assert not widget._write_access
+    # Create a signal and attach our listener
+    sig = RichSignal(name='md_signal', value=1)
+    register_signal(sig)
+    sig_conn = SignalConnection(listener, 'md_signal')
+    qapp.processEvents()
+    # Check that metadata the metadata got there
+    assert widget.enum_strings == ('a', 'b', 'c')
+    assert widget._unit == 'urad'
+    assert widget._prec == 2
+
+
+def test_disconnection(qapp):
+    widget = WritableWidget()
+    listener = widget.channels()[0]
+    listener.address = 'sig://invalid'
+    plugin = SignalPlugin()
+    # Non-existant signal doesn't raise an error
+    plugin.add_connection(listener)
+    # Create a signal that will raise a TimeoutError
+    sig = DeadSignal(name='broken_signal', value=1)
+    register_signal(sig)
+    listener.address = 'sig://broken_signal'
+    # This should fail on the subscribe
+    plugin.add_connection(listener)
+    # This should fail on the get
+    sig.subscribable = True
+    sig_conn = SignalConnection(listener, 'broken_signal')
