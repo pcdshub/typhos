@@ -92,3 +92,19 @@ class RichSignal(Signal):
                              'units': 'urad',
                              'dtype': 'number',
                              'shape': []}}
+
+
+class DeadSignal(Signal):
+    subscribable = False
+
+    def subscribe(self, *args, **kwargs):
+        if self.subscribable:
+            pass
+        else:
+            raise TimeoutError("Timeout on subscribe")
+
+    def get(self, *args, **kwargs):
+        raise TimeoutError("Timeout on get")
+
+    def describe(self, *args, **kwargs):
+        raise TimeoutError("Timeout on describe")

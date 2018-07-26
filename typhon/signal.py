@@ -6,7 +6,7 @@ import logging
 ############
 # External #
 ############
-from ophyd.signal import EpicsSignalBase
+from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
 from ophyd.sim import SignalRO
 from pydm.PyQt.QtCore import QSize
 from pydm.PyQt.QtGui import QHBoxLayout, QLabel, QWidget, QGridLayout
@@ -20,6 +20,60 @@ from .widgets import TyphonLineEdit, TyphonComboBox, TyphonLabel
 from .plugins import register_signal
 
 logger = logging.getLogger(__name__)
+
+
+def signal_widget(signal, read_only=False):
+    """
+    Factory for creating a PyDMWidget from a signal
+
+    Parameters
+    ----------
+    signal : ophyd.Signal
+        Signal object to create widget
+
+    read_only: bool, optional
+        Whether this widget should be able to write back to the signal you
+        provided
+
+    Returns
+    -------
+    widget : PyDMWidget
+        PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
+        be able to write back to the widget and if the signal has ``enum_strs``
+    """
+    # Grab our channel name
+    # Still re-route EpicsSignal through the ca:// plugin
+    if isinstance(signal, EpicsSignalBase):
+        if read_only:
+            pv = signal._read_pv
+        else:
+            pv = signal._write_pv
+        chan = channel_name(pv.pvname)
+    else:
+        # Register signal with plugin
+        register_signal(signal)
+        chan = channel_name(signal.name, protocol='sig')
+    # Check for enum_strs, if so create a QCombobox
+    if read_only:
+        logger.debug("Creating Label for %s", signal.name)
+        widget = TyphonLabel
+    else:
+        # Grab a description of the widget to see the correct widget type
+        try:
+            desc = signal.describe()[signal.name]
+        except Exception as exc:
+            logger.error("Unable to connect to %r during widget creation",
+                         signal)
+            desc = {}
+        # Create a QCombobox if the widget has enum_strs
+        if 'enum_strs' in desc:
+            logger.debug("Creating Combobox for %s", signal.name)
+            widget = TyphonComboBox
+        # Otherwise a LineEdit will suffice
+        else:
+            logger.debug("Creating LineEdit for %s", signal.name)
+            widget = TyphonLineEdit
+    return widget(init_channel=chan)
 
 
 class SignalPanel(QWidget):
@@ -77,34 +131,15 @@ class SignalPanel(QWidget):
             `SignalPanel.layout()``
         """
         logger.debug("Adding signal %s", name)
-        # Reroute EpicsSignals to use PyDM EPICS Plugins
-        if isinstance(signal, EpicsSignalBase):
-            return self.add_pv(signal._read_pv, name,
-                               write_pv=getattr(signal,
-                                                '_write_pv',
-                                                None))
-        # Otherwise use SignalPlugin
+        # Create the read-only signal
+        read = signal_widget(signal, read_only=True)
+        # Create the write signal
+        if not isinstance(signal, (SignalRO, EpicsSignalRO)):
+            write = signal_widget(signal)
         else:
-            # Register signal with plugin
-            register_signal(signal)
-            # Check read-only
-            if isinstance(signal, SignalRO):
-                write = None
-                is_enum = False
-            else:
-                write = channel_name(signal.name, protocol='sig')
-                try:
-                    is_enum = signal.describe()[signal.name].get('enum_strs',
-                                                                 False)
-                except Exception:
-                    is_enum = False
-                    logger.exception("Unable to check if %r is an enum",
-                                     signal.name)
-            # Add signal row
-            return self._add_row(channel_name(signal.name,
-                                              protocol='sig'),
-                                 name, write=write,
-                                 is_enum=is_enum)
+            write = None
+        # Add to the layout
+        return self._add_row(read, name, write=write)
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
@@ -127,40 +162,24 @@ class SignalPanel(QWidget):
         """
         logger.debug("Adding PV %s", name)
         # Configure optional write PV settings
-        is_enum = False
         if write_pv:
-            try:
-                is_enum = write_pv.enum_strs
-            except Exception:
-                logger.exception("Unable to determine if %r is an enum",
-                                 write_pv)
-                is_enum = False
-            finally:
-                write_pv = channel_name(write_pv.pvname)
-        # Add readback and discovered write PV to grid
-        return self._add_row(channel_name(read_pv.pvname), name,
-                             write=write_pv, is_enum=is_enum)
+            sig = EpicsSignal(read_pv, name=name, write_pv=write_pv)
+        else:
+            sig = EpicsSignalRO(read_pv, name=name)
+        return self.add_signal(sig, name)
 
-    def _add_row(self, read, name, write=None, is_enum=False):
+    def _add_row(self, read, name, write=None):
         # Create label
         label = QLabel(self)
         label.setText(name)
         # Create signal display
         val_display = QHBoxLayout()
         # Add readback
-        ro = TyphonLabel(init_channel=read, parent=self)
-        val_display.addWidget(ro)
+        val_display.addWidget(read)
         # Add our write_pv if available
-        if write:
-            # Check whether our device is an enum or not
-            if is_enum:
-                logger.debug("Adding Combobox for %s", name)
-                edit = TyphonComboBox(init_channel=write, parent=self)
-            else:
-                logger.debug("Adding LineEdit for %s", name)
-                edit = TyphonLineEdit(init_channel=write, parent=self)
+        if write is not None:
             # Add our control widget to layout
-            val_display.addWidget(edit)
+            val_display.addWidget(write)
             # Make sure they share space evenly
             val_display.setStretch(0, 1)
             val_display.setStretch(1, 1)
