@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Widgets &mdash; Typhon 0.2.0+20.gfcb7e83 documentation</title>
+  <title>Widgets &mdash; Typhon 0.2.0+26.gc1de178 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.0+20.gfcb7e83
+                0.2.0+26.gc1de178
               </div>
             
           
@@ -174,7 +174,34 @@
 <p>Typhon uses a few custom widgets to create a clean and concise user interface.
 While most users should not be interacting with these directly, there may be a
 need if a user opts to create their display by hand instead of automatically
-generating one.</p>
+generating one. If you would just like a widget for an <code class="docutils literal notranslate"><span class="pre">ophyd.Signal</span></code>, there
+is a function available:</p>
+<dl class="function">
+<dt id="typhon.signal.signal_widget">
+<code class="descclassname">typhon.signal.</code><code class="descname">signal_widget</code><span class="sig-paren">(</span><em>signal</em>, <em>read_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/signal.html#signal_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.signal.signal_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory for creating a PyDMWidget from a signal</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>signal</strong> (<em>ophyd.Signal</em>) – Signal object to create widget</li>
+<li><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether this widget should be able to write back to the signal you
+provided</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>widget</strong> – PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
+be able to write back to the widget and if the signal has <code class="docutils literal notranslate"><span class="pre">enum_strs</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">PyDMWidget</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <div class="section" id="panels">
 <h2>Panels<a class="headerlink" href="#panels" title="Permalink to this headline">¶</a></h2>
 <p>One of the major design principles of Typhon is that users should be able to
@@ -263,7 +290,7 @@ hides and shows the contents. Each variation in Typhon is documented below.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0+20.gfcb7e83',
+            VERSION:'0.2.0+26.gc1de178',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

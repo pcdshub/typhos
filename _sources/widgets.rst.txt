@@ -4,7 +4,10 @@ Widgets
 Typhon uses a few custom widgets to create a clean and concise user interface.
 While most users should not be interacting with these directly, there may be a
 need if a user opts to create their display by hand instead of automatically
-generating one.
+generating one. If you would just like a widget for an ``ophyd.Signal``, there
+is a function available:
+
+.. autofunction:: typhon.signal.signal_widget
 
 Panels
 ======
