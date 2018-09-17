@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.func &mdash; Typhon 0.2.0+26.gc1de178 documentation</title>
+  <title>typhon.func &mdash; Typhon 0.2.0+32.g8388c4b documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.0+26.gc1de178
+                0.2.0+32.g8388c4b
               </div>
             
           
@@ -179,10 +179,11 @@
 <span class="c1"># External #</span>
 <span class="c1">############</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtCore</span> <span class="k">import</span> <span class="n">pyqtSlot</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QSize</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QSizePolicy</span><span class="p">,</span> <span class="n">QFont</span><span class="p">,</span> <span class="n">QGroupBox</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QSpacerItem</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QPushButton</span>
-<span class="kn">from</span> <span class="nn">pydm.PyQt.QtGui</span> <span class="k">import</span> <span class="n">QLineEdit</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QCheckBox</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QSize</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="k">import</span> <span class="n">QFont</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QSizePolicy</span><span class="p">,</span> <span class="n">QGroupBox</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QSpacerItem</span><span class="p">,</span>
+                            <span class="n">QWidget</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QLineEdit</span><span class="p">,</span> <span class="n">QCheckBox</span><span class="p">,</span>
+                            <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">)</span>
 
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
@@ -437,7 +438,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">parameter</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_controls</span>
                 <span class="k">if</span> <span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">parameter</span><span class="p">]</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">]</span>
 
-    <span class="nd">@pyqtSlot</span><span class="p">()</span>
+    <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute :attr:`.func`</span>
@@ -613,7 +614,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.0+26.gc1de178',
+            VERSION:'0.2.0+32.g8388c4b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
