@@ -12,7 +12,7 @@ import logging
 import numpy as np
 from ophyd.utils.epics_pvs import _type_map
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
-from pydm.PyQt.QtCore import pyqtSlot, Qt
+from qtpy.QtCore import Slot, Qt
 
 ##########
 # Module #
@@ -69,10 +69,10 @@ class SignalConnection(PyDMConnection):
         # Add listener
         self.add_listener(channel)
 
-    @pyqtSlot(int)
-    @pyqtSlot(float)
-    @pyqtSlot(str)
-    @pyqtSlot(np.ndarray)
+    @Slot(int)
+    @Slot(float)
+    @Slot(str)
+    @Slot(np.ndarray)
     def put_value(self, new_val):
         """
         Pass a value from the UI to Signal

@@ -9,7 +9,7 @@ import numpy as np
 from ophyd import Device, Component as C, FormattedComponent as FC
 from ophyd.sim import SynAxis, Signal, SynPeriodicSignal, SignalRO
 import pytest
-from pydm.PyQt.QtGui import QWidget
+from qtpy.QtWidgets import QWidget
 
 ###########
 # Package #

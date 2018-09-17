@@ -10,9 +10,9 @@ import logging
 # Third Party #
 ###############
 from ophyd import EpicsSignal, Signal
-from pydm.PyQt.QtGui import QColor
-from pydm.PyQt.QtCore import Qt
 import pytest
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QColor
 
 ##########
 # Module #
@@ -82,4 +82,4 @@ def test_device_plot(motor):
     # Add the hint
     assert len(dtp.ui.timeplot.curves) == 1
     # Added all the signals
-    assert dtp.ui.signal_combo.count() == 2
+    assert dtp.ui.signal_combo.count() == len(motor.component_names)

@@ -1,11 +1,21 @@
+############
+# Standard #
+############
+
+############
+# External #
+############
 from ophyd import Signal
 from pydm.widgets.base import PyDMWritableWidget
-from pydm.PyQt.QtGui import QWidget
+from qtpy.QtWidgets import QWidget
 
+###########
+# Package #
+###########
+from .conftest import DeadSignal, RichSignal
 from typhon.plugins.core import (SignalPlugin, SignalConnection,
                                  register_signal)
 
-from .conftest import DeadSignal, RichSignal
 
 
 class WritableWidget(QWidget, PyDMWritableWidget):

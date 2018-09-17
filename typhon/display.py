@@ -1,18 +1,18 @@
 ############
 # Standard #
 ############
-import os.path
 import logging
-from ophyd import Device
+import os.path
 
 ############
 # External #
 ############
-from pydm.PyQt import uic
-from pydm.PyQt.QtCore import pyqtSlot, Qt, QModelIndex
-from pydm.PyQt.QtGui import QScrollArea, QWidget
+from ophyd import Device
 from pydm.widgets.drawing import PyDMDrawingImage
 from pydm.widgets.logdisplay import PyDMLogDisplay
+from qtpy import uic
+from qtpy.QtCore import Slot, Qt, QModelIndex
+from qtpy.QtWidgets import QScrollArea, QWidget
 
 ###########
 # Package #
@@ -270,8 +270,8 @@ class TyphonDisplay(QWidget):
             display = clean_name(display)
         return self._item_from_sidebar(display).data(Qt.UserRole)
 
-    @pyqtSlot(str)
-    @pyqtSlot(QModelIndex)
+    @Slot(str)
+    @Slot(QModelIndex)
     def show_subdisplay(self, item):
         """
         Show subdevice display of the QStackedWidget
@@ -292,7 +292,7 @@ class TyphonDisplay(QWidget):
         self.ui.subdisplay.setCurrentWidget(display)
         self.ui.subdisplay.setFixedWidth(display.sizeHint().width())
 
-    @pyqtSlot()
+    @Slot()
     def hide_subdisplays(self):
         """
         Hide the component widget and set all buttons unchecked
@@ -341,7 +341,6 @@ class DeviceDisplay(TyphonDisplay):
             if attr not in self.device._sub_devices:
                 self.read_panel.add_signal(getattr(self.device, attr),
                                            clean_attr(attr))
-
         for attr in self.device.configuration_attrs:
             if attr not in self.device._sub_devices:
                 self.config_panel.add_signal(getattr(self.device, attr),

@@ -1,3 +1,5 @@
 git+https://github.com/slaclab/pydm.git
 git+https://github.com/NSLS-II/ophyd.git
 git+https://github.com/pcdshub/QDarkStyleSheet.git
+numpy
+qtpy

@@ -11,7 +11,8 @@ import random
 # External #
 ############
 from ophyd.signal import EpicsSignalBase
-from pydm.PyQt.QtGui import QApplication, QColor, QStyleFactory
+from qtpy.QtGui import QColor
+from qtpy.QtWidgets import QApplication, QStyleFactory
 
 #############
 #  Package  #
