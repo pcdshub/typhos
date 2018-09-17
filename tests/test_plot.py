@@ -82,4 +82,4 @@ def test_device_plot(motor):
     # Add the hint
     assert len(dtp.ui.timeplot.curves) == 1
     # Added all the signals
-    assert dtp.ui.signal_combo.count() == 2
+    assert dtp.ui.signal_combo.count() == len(motor.component_names)
