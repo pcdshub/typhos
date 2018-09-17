@@ -12,9 +12,10 @@ from functools import partial
 ###############
 # Third Party #
 ###############
-from pydm.PyQt import uic
-from pydm.PyQt.QtGui import QApplication, QWidget, QBrush
-from pydm.PyQt.QtCore import Qt, pyqtSlot
+from qtpy import uic
+from qtpy.QtCore import Qt, Slot
+from qtpy.QtGui import QBrush
+from qtpy.QtWidgets import QApplication, QWidget
 
 ##########
 # Module #
@@ -52,7 +53,7 @@ class TyphonTimePlot(QWidget):
     configure the plotted signals. The list of signals available to the
     operator can be controlled via :meth:`.add_available_signal`. Shortcuts can
     be added to the plot itself via :meth:`.add_curve` or the
-    :meth:`.creation_requested` ``pyqtSlot`` which takes the current status of
+    :meth:`.creation_requested` ``Slot`` which takes the current status of
     the requested combinations
 
     Parameters
@@ -127,7 +128,7 @@ class TyphonTimePlot(QWidget):
         # Select new random color
         self.ui.color.brush = QBrush(random_color(), Qt.SolidPattern)
 
-    @pyqtSlot()
+    @Slot()
     def remove_curve(self, name):
         """
         Remove a curve from the plot
@@ -149,7 +150,7 @@ class TyphonTimePlot(QWidget):
         else:
             logger.error("Curve %r was not found in DeviceTimePlot", name)
 
-    @pyqtSlot()
+    @Slot()
     def creation_requested(self):
         """
         Reaction to ``create_button`` press

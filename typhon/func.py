@@ -23,10 +23,11 @@ from functools import partial
 # External #
 ############
 import numpy as np
-from pydm.PyQt.QtCore import pyqtSlot, Qt, QSize
-from pydm.PyQt.QtGui import QSizePolicy, QFont, QGroupBox, QHBoxLayout, QLabel
-from pydm.PyQt.QtGui import QSpacerItem, QWidget, QPushButton
-from pydm.PyQt.QtGui import QLineEdit, QVBoxLayout, QCheckBox
+from qtpy.QtCore import Slot, Qt, QSize
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import (QSizePolicy, QGroupBox, QLabel, QSpacerItem,
+                            QWidget, QPushButton, QLineEdit, QCheckBox,
+                            QHBoxLayout, QVBoxLayout)
 
 ###########
 # Package #
@@ -281,7 +282,7 @@ class FunctionDisplay(QGroupBox):
         return [param.parameter for param in self.param_controls
                 if parameters[param.parameter].default != inspect._empty]
 
-    @pyqtSlot()
+    @Slot()
     def execute(self):
         """
         Execute :attr:`.func`

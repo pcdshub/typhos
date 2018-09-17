@@ -2,15 +2,15 @@
 # Standard #
 ############
 import logging
+from warnings import warn
 
 ############
 # External #
 ############
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
 from ophyd.sim import SignalRO
-from pydm.PyQt.QtCore import QSize
-from pydm.PyQt.QtGui import QHBoxLayout, QLabel, QWidget, QGridLayout
-from warnings import warn
+from qtpy.QtCore import QSize
+from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel, QWidget)
 
 #############
 #  Package  #

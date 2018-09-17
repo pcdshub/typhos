@@ -10,9 +10,9 @@ import logging
 # Third Party #
 ###############
 from ophyd import EpicsSignal, Signal
-from pydm.PyQt.QtGui import QColor
-from pydm.PyQt.QtCore import Qt
 import pytest
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QColor
 
 ##########
 # Module #

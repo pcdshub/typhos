@@ -6,8 +6,9 @@ import logging
 ############
 # External #
 ############
-from pydm.PyQt.QtCore import QSize, Qt, pyqtSlot
-from pydm.PyQt.QtGui import QVBoxLayout, QPushButton, QWidget, QListWidgetItem
+from qtpy.QtCore import QSize, Qt, Slot
+from qtpy.QtWidgets import (QListWidgetItem, QPushButton, QVBoxLayout,
+                            QWidget)
 from pydm.widgets import PyDMLabel, PyDMEnumComboBox, PyDMLineEdit
 
 ###########
@@ -58,7 +59,7 @@ class TogglePanel(QWidget):
         self.layout().addWidget(self.hide_button)
         self.hide_button.clicked.connect(self.show_contents)
 
-    @pyqtSlot(bool)
+    @Slot(bool)
     def show_contents(self, show):
         """
         Show the contents of the Widget
