@@ -1,9 +1,9 @@
+codecov
+doctr
+flake8
+ipython
+matplotlib
 pytest
 pytest-timeout
-codecov
-matplotlib
-ipython
-flake8
 sphinx
 sphinx_rtd_theme
-doctr
