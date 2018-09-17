@@ -18,6 +18,7 @@ requirements:
       - numpy
       - ophyd >=1.2.0
       - qdarkstyle
+      - qtpy
 
 test:
     imports:
