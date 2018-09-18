@@ -43,8 +43,7 @@ def clean_attr(attr):
     """
     Create a nicer, human readable alias from a Python attribute name
     """
-    attr = attr.replace('.', '_')
-    return ' '.join([word[0].upper() + word[1:] for word in attr.split('_')])
+    return attr.replace('.', ' ').replace('_', ' ')
 
 
 def clean_name(device, strip_parent=True):
