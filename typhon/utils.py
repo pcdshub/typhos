@@ -10,6 +10,7 @@ import random
 ############
 # External #
 ############
+import ophyd
 from ophyd.signal import EpicsSignalBase
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import QApplication, QStyleFactory
@@ -54,13 +55,19 @@ def clean_name(device, strip_parent=True):
     ----------
     device: ophyd.Device
 
-    strip_parent: bool
-        Remove the parent name of the device from name
+    strip_parent: bool or Device
+        Remove the parent name of the device from name. If strip_parent is
+        True, the name of the direct parent of the device is stripped. If a
+        device is provided the name of that device is used. This allows
+        specification for removal at any point of the device schema
     """
     name = device.name
-    # Strip the parent name if present and desired
-    if device.parent and strip_parent:
-        name = name.replace(device.parent.name + '_', '')
+    if strip_parent:
+        if isinstance(strip_parent, ophyd.Device):
+            parent_name = strip_parent.name
+        else:
+            parent_name = device.parent.name
+        name = name.replace(parent_name + '_', '')
     # Return the cleaned alias
     return clean_attr(name)
 
