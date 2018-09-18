@@ -132,8 +132,6 @@ class SignalConnection(PyDMConnection):
         # Report as connected
         self.write_access_signal.emit(True)
         self.connection_state_signal.emit(True)
-        # Report new value
-        self.send_new_value(signal_val)
         # Report metadata
         for (field, signal) in (
                     ('precision', self.prec_signal),
@@ -144,6 +142,8 @@ class SignalConnection(PyDMConnection):
             # If so emit it to our listeners
             if val:
                 signal.emit(val)
+        # Report new value
+        self.send_new_value(signal_val)
         # If the channel is used for writing to PVs, hook it up to the
         # 'put' methods.
         if channel.value_signal is not None:
