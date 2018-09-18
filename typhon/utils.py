@@ -79,7 +79,7 @@ def clean_name(device, strip_parent=True):
         specification for removal at any point of the device schema
     """
     name = device.name
-    if strip_parent:
+    if strip_parent and device.parent:
         if isinstance(strip_parent, ophyd.Device):
             parent_name = strip_parent.name
         else:
