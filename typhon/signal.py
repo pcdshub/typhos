@@ -8,14 +8,13 @@ from warnings import warn
 # External #
 ############
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
-from ophyd.sim import SignalRO
 from qtpy.QtCore import QSize
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel, QWidget)
 
 #############
 #  Package  #
 #############
-from .utils import channel_name
+from .utils import channel_name, is_signal_ro
 from .widgets import TyphonLineEdit, TyphonComboBox, TyphonLabel
 from .plugins import register_signal
 
@@ -134,7 +133,7 @@ class SignalPanel(QWidget):
         # Create the read-only signal
         read = signal_widget(signal, read_only=True)
         # Create the write signal
-        if not isinstance(signal, (SignalRO, EpicsSignalRO)):
+        if not is_signal_ro(signal):
             write = signal_widget(signal)
         else:
             write = None
