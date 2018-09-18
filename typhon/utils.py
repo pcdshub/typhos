@@ -10,7 +10,9 @@ import random
 ############
 # External #
 ############
-from ophyd.signal import EpicsSignalBase
+import ophyd
+from ophyd.signal import EpicsSignalBase, EpicsSignalRO
+from ophyd.sim import SignalRO
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import QApplication, QStyleFactory
 
@@ -32,6 +34,22 @@ def channel_from_signal(signal):
         return channel_name(signal.name, protocol='sig')
 
 
+def is_signal_ro(signal):
+    """
+    Return whether the signal is read-only
+
+    In the future this may be easier to do through improvements to
+    introspection in the ophyd library. Until that day we need to check classes
+    """
+    return isinstance(signal, (SignalRO, EpicsSignalRO))
+
+
+def grab_hints(device):
+    """Grab the hints of an ophyd Device"""
+    return [getattr(device, cpt) for cpt in device.read_attrs
+            if getattr(device, cpt).kind == ophyd.Kind.hinted]
+
+
 def channel_name(pv, protocol='ca'):
     """
     Create a valid PyDM channel from a PV name
@@ -43,8 +61,7 @@ def clean_attr(attr):
     """
     Create a nicer, human readable alias from a Python attribute name
     """
-    attr = attr.replace('.', '_')
-    return ' '.join([word[0].upper() + word[1:] for word in attr.split('_')])
+    return attr.replace('.', ' ').replace('_', ' ')
 
 
 def clean_name(device, strip_parent=True):
@@ -55,13 +72,19 @@ def clean_name(device, strip_parent=True):
     ----------
     device: ophyd.Device
 
-    strip_parent: bool
-        Remove the parent name of the device from name
+    strip_parent: bool or Device
+        Remove the parent name of the device from name. If strip_parent is
+        True, the name of the direct parent of the device is stripped. If a
+        device is provided the name of that device is used. This allows
+        specification for removal at any point of the device schema
     """
     name = device.name
-    # Strip the parent name if present and desired
-    if device.parent and strip_parent:
-        name = name.replace(device.parent.name + '_', '')
+    if strip_parent and device.parent:
+        if isinstance(strip_parent, ophyd.Device):
+            parent_name = strip_parent.name
+        else:
+            parent_name = device.parent.name
+        name = name.replace(parent_name + '_', '')
     # Return the cleaned alias
     return clean_attr(name)
 
