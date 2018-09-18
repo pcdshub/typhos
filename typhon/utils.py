@@ -11,7 +11,8 @@ import random
 # External #
 ############
 import ophyd
-from ophyd.signal import EpicsSignalBase
+from ophyd.signal import EpicsSignalBase, EpicsSignalRO
+from ophyd.sim import SignalRO
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import QApplication, QStyleFactory
 
@@ -33,6 +34,14 @@ def channel_from_signal(signal):
         return channel_name(signal.name, protocol='sig')
 
 
+def is_signal_ro(signal):
+    """
+    Return whether the signal is read-only
+
+    In the future this may be easier to do through improvements to
+    introspection in the ophyd library. Until that day we need to check classes
+    """
+    return isinstance(signal, (SignalRO, EpicsSignalRO))
 def channel_name(pv, protocol='ca'):
     """
     Create a valid PyDM channel from a PV name
