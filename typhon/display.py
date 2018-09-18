@@ -324,17 +324,22 @@ class DeviceDisplay(TyphonDisplay):
     image : str, optional
         Path to image to add to display
 
+    children: str, optional
+        Choice to include child Device components
+
     parent : QWidget, optional
     """
-    def __init__(self, device, methods=None, image=None, parent=None):
+    def __init__(self, device, methods=None, image=None,
+                 children=True, parent=None):
         super().__init__(clean_name(device, strip_parent=False),
                          image=image, parent=parent)
         # Examine and store device for later reference
         self.device = device
         self.device_description = self.device.describe()
         # Handle child devices
-        for dev_name in self.device._sub_devices:
-            self.add_subdevice(getattr(self.device, dev_name))
+        if children:
+            for dev_name in self.device._sub_devices:
+                self.add_subdevice(getattr(self.device, dev_name))
 
         # Create read and configuration panels
         for attr in self.device.read_attrs:

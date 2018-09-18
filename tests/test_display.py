@@ -98,6 +98,12 @@ def test_display(device):
                    for disp in display.ui.subdisplay.children()]
     assert all([getattr(device, dev) in sub_devices
                 for dev in device._sub_devices])
+    # No children
+    childless = DeviceDisplay(device, children=False)
+    sub_display = [disp
+                   for disp in childless.ui.subdisplay.children()
+                   if isinstance(disp, DeviceDisplay)]
+    assert len(sub_display) == 0
     return display
 
 
