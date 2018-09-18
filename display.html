@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.2.0+32.g8388c4b documentation</title>
+  <title>Display Types &mdash; Typhon 0.2.0+35.gdac6133 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.0+32.g8388c4b
+                0.2.0+35.gdac6133
               </div>
             
           
@@ -362,7 +362,7 @@ itself</td>
 <h2>DeviceDisplay<a class="headerlink" href="#devicedisplay" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="typhon.DeviceDisplay">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">DeviceDisplay</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>image=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#DeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.DeviceDisplay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">DeviceDisplay</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>image=None</em>, <em>children=True</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#DeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.DeviceDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typhon.display.TyphonDisplay</span></code></p>
 <p>Display an Ophyd Device</p>
 <p>Using the panels created by the inherited <a class="reference internal" href="#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDisplay</span></code></a> the
@@ -378,6 +378,7 @@ heirarchy.</p>
 <li><strong>device</strong> (<em>ophyd.Device</em>) – Main ophyd device to display</li>
 <li><strong>methods</strong> (<em>list of callables</em><em>, </em><em>optional</em>) – List of callables to pass to <code class="xref py py-meth docutils literal notranslate"><span class="pre">FunctionPanel.add_method()</span></code></li>
 <li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to image to add to display</li>
+<li><strong>children</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Choice to include child Device components</li>
 <li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
 </ul>
 </td>
@@ -431,7 +432,7 @@ heirarchy.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0+32.g8388c4b',
+            VERSION:'0.2.0+35.gdac6133',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
