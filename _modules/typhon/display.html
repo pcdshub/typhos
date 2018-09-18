@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.2.0+35.gdac6133 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.2.0+46.g7e855f1 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.0+35.gdac6133
+                0.2.0+46.g7e855f1
               </div>
             
           
@@ -499,20 +499,21 @@
 
         <span class="c1"># Create read and configuration panels</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">read_attrs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">_sub_devices</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span>
-                                           <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">configuration_attrs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">_sub_devices</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span>
-                                             <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
         <span class="c1"># Catch the rest of the signals add to misc panel below misc_button</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">component_names</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">read_attrs</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">configuration_attrs</span>
                             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">_sub_devices</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">),</span>
-                                           <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
+                <span class="n">signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
         <span class="c1"># Add our methods to the panel</span>
         <span class="n">methods</span> <span class="o">=</span> <span class="n">methods</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
@@ -556,7 +557,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.0+35.gdac6133',
+            VERSION:'0.2.0+46.g7e855f1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

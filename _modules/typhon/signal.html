@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.2.0+35.gdac6133 documentation</title>
+  <title>typhon.signal &mdash; Typhon 0.2.0+46.g7e855f1 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.0+35.gdac6133
+                0.2.0+46.g7e855f1
               </div>
             
           
@@ -164,14 +164,13 @@
 <span class="c1"># External #</span>
 <span class="c1">############</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="k">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
-<span class="kn">from</span> <span class="nn">ophyd.sim</span> <span class="k">import</span> <span class="n">SignalRO</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">QSize</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">)</span>
 
 <span class="c1">#############</span>
 <span class="c1">#  Package  #</span>
 <span class="c1">#############</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">channel_name</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">is_signal_ro</span>
 <span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonLineEdit</span><span class="p">,</span> <span class="n">TyphonComboBox</span><span class="p">,</span> <span class="n">TyphonLabel</span>
 <span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
 
@@ -290,7 +289,7 @@
         <span class="c1"># Create the read-only signal</span>
         <span class="n">read</span> <span class="o">=</span> <span class="n">signal_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Create the write signal</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="p">(</span><span class="n">SignalRO</span><span class="p">,</span> <span class="n">EpicsSignalRO</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_signal_ro</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
             <span class="n">write</span> <span class="o">=</span> <span class="n">signal_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">write</span> <span class="o">=</span> <span class="kc">None</span>
@@ -380,7 +379,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.0+35.gdac6133',
+            VERSION:'0.2.0+46.g7e855f1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
