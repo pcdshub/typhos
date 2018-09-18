@@ -42,6 +42,14 @@ def is_signal_ro(signal):
     introspection in the ophyd library. Until that day we need to check classes
     """
     return isinstance(signal, (SignalRO, EpicsSignalRO))
+
+
+def grab_hints(device):
+    """Grab the hints of an ophyd Device"""
+    return [getattr(device, cpt) for cpt in device.read_attrs
+            if getattr(device, cpt).kind == ophyd.Kind.hinted]
+
+
 def channel_name(pv, protocol='ca'):
     """
     Create a valid PyDM channel from a PV name
