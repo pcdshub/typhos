@@ -5,6 +5,7 @@ logs/*
 __pycache__/
 *.py[cod]
 *$py.class
+*.pytest_cache
 
 # Ignore generated MacOS files
 .DS_Store
