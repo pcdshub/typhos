@@ -1,4 +1,4 @@
 """Module for all insertable Typhon tools"""
-__all__ = ['DeviceTimePlot']
+__all__ = ['TyphonTimePlot']
 
-from .plot import DeviceTimePlot
+from .plot import TyphonTimePlot

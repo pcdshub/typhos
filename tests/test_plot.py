@@ -78,7 +78,7 @@ def test_curve_creation_button(sim_signal):
     assert len(ttp.ui.timeplot.curves) == 1
 
 def test_device_plot(motor):
-    dtp = DeviceTimePlot(motor)
+    dtp = TyphonTimePlot.from_device(motor)
     # Add the hint
     assert len(dtp.ui.timeplot.curves) == 1
     # Added all the signals
