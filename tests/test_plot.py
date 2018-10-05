@@ -18,7 +18,7 @@ from qtpy.QtGui import QColor
 # Module #
 ##########
 from typhon import register_signal
-from typhon.plot import ChannelDisplay, TyphonTimePlot, DeviceTimePlot
+from typhon.tools.plot import ChannelDisplay, TyphonTimePlot, DeviceTimePlot
 
 @pytest.fixture(scope='session')
 def sim_signal():

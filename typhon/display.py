@@ -21,7 +21,7 @@ from .func import FunctionPanel
 from .signal import SignalPanel
 from .utils import ui_dir, clean_attr, clean_name
 from .widgets import TyphonSidebarItem
-from .plot import DeviceTimePlot
+from .tools import DeviceTimePlot
 
 
 logger = logging.getLogger(__name__)

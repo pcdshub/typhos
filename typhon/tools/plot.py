@@ -20,8 +20,8 @@ from qtpy.QtWidgets import QApplication, QWidget
 ##########
 # Module #
 ##########
-from .utils import (ui_dir, channel_from_signal, clean_attr, random_color,
-                    clean_name)
+from ..utils import (ui_dir, channel_from_signal, clean_attr, random_color,
+                     clean_name)
 
 logger = logging.getLogger(__name__)
 
