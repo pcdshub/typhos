@@ -4,14 +4,16 @@ Typhon Plotting Interface
 ############
 # Standard #
 ############
-import random
 import os.path
 import logging
 from functools import partial
+from warnings import warn
 
 ###############
 # Third Party #
 ###############
+from ophyd import Device
+
 from qtpy import uic
 from qtpy.QtCore import Qt, Slot
 from qtpy.QtGui import QBrush
@@ -20,6 +22,7 @@ from qtpy.QtWidgets import QApplication, QWidget
 ##########
 # Module #
 ##########
+from .core import TyphonTool
 from ..utils import (ui_dir, channel_from_signal, clean_attr, random_color,
                      clean_name)
 
@@ -45,7 +48,7 @@ class ChannelDisplay(QWidget):
         self.ui.color.brush = QBrush(color, Qt.SolidPattern)
 
 
-class TyphonTimePlot(QWidget):
+class TyphonTimePlot(TyphonTool):
     """
     Generalized widget for plotting Ophyd signals
 
@@ -165,48 +168,39 @@ class TyphonTimePlot(QWidget):
         # Add to the plot
         self.add_curve(channel, name=name, color=self.ui.color.brush.color())
 
-
-class DeviceTimePlot(TyphonTimePlot):
-    """
-    TyphonTimePlot auto-populated by a Device
-
-    The device is inspected for all scalar signals and are made available for
-    the operator to select. Device hints are automatically added to the plot.
-
-    Parameters
-    ----------
-    device : ophyd.Device
-
-    parent: QWidget, object
-    """
-    def __init__(self, device, parent=None):
-        super().__init__(parent=parent)
-        self.device = device
-        # Seed so that our colors are consistent
-        random.seed(54321343)
+    def add_device(self, device):
+        """Add a device and it's component signals to the plot"""
+        super().add_device(device)
         # Sort through components
-        devices = [self.device] + [getattr(device, sub)
-                                   for sub in device._sub_devices]
-        for device in devices:
-            for component in device.component_names:
+        devices = [device] + [getattr(device, sub)
+                              for sub in device._sub_devices]
+        for subdevice in devices:
+            logger.debug("Adding signals for %s to plot ...", subdevice.name)
+            for component in subdevice.component_names:
                 # Find all signals
-                if component not in device._sub_devices:
+                if not isinstance(component, Device):
                     try:
-                        sig = getattr(device, component)
+                        sig = getattr(subdevice, component)
                         # Only include scalars
                         if sig.describe()[sig.name]['dtype'] in ('integer',
                                                                  'number'):
                             # Make component name
                             name = clean_attr(component)
-                            if device != self.device:
-                                name = ' '.join((clean_name(device), name))
+                            if subdevice != device:
+                                name = ' '.join((clean_name(subdevice), name))
                             # Add to list of available signals
                             self.add_available_signal(sig, name)
                             # Automatically plot if in Device hints
-                            if sig.name in device.hints.get('fields', []):
+                            if sig.name in subdevice.hints.get('fields', []):
                                 self.add_curve(channel_from_signal(sig),
                                                name=name)
                     except Exception as exc:
                         logger.exception("Unable to add %s to "
                                          "plot-able signals",
                                          component)
+
+
+def DeviceTimePlot(device, parent=None):
+    warn("DeviceTimePlot has been deprecated. "
+         "Use TyphonTimePlot.from_device instead.")
+    return TyphonTimePlot.from_device(device, parent=parent)
