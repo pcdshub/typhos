@@ -62,7 +62,7 @@ def signal_widget(signal, read_only=False):
             desc = signal.describe()[signal.name]
         except Exception as exc:
             logger.error("Unable to connect to %r during widget creation",
-                         signal)
+                         signal.name)
             desc = {}
         # Create a QCombobox if the widget has enum_strs
         if 'enum_strs' in desc:
