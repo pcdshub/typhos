@@ -8,8 +8,7 @@ from warnings import warn
 # External #
 ############
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
-from qtpy.QtCore import QSize
-from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel, QWidget)
+from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 
 #############
 #  Package  #
@@ -75,7 +74,7 @@ def signal_widget(signal, read_only=False):
     return widget(init_channel=chan)
 
 
-class SignalPanel(QWidget):
+class SignalPanel(QGridLayout):
     """
     Base panel display for EPICS signals
 
@@ -83,30 +82,20 @@ class SignalPanel(QWidget):
     ----------
     signals : OrderedDict, optional
         Signals to include in the panel
-
-    parent : QWidget, optional
         Parent of panel
     """
-    def __init__(self, title=None, signals=None, parent=None):
-        super().__init__(parent=parent)
+    def __init__(self, title=None, signals=None):
+        super().__init__()
         # Title is no longer supported
         if title:
             warn("The 'title' option for SignalPanel is deprecated. "
                  "It will be removed in future releases.")
         # Store signal information
         self.signals = dict()
-        # Create panel layout
-        lay = QGridLayout()
-        lay.setSizeConstraint(QGridLayout.SetFixedSize)
-        self.setLayout(lay)
-        self.layout().setContentsMargins(5, 5, 5, 5)
         # Add supplied signals
         if signals:
             for name, sig in signals.items():
                 self.add_signal(sig, name)
-
-    def sizeHint(self):
-        return QSize(375, 375)
 
     def add_signal(self, signal, name):
         """
@@ -169,7 +158,7 @@ class SignalPanel(QWidget):
 
     def _add_row(self, read, name, write=None):
         # Create label
-        label = QLabel(self)
+        label = QLabel()
         label.setText(name)
         # Create signal display
         val_display = QHBoxLayout()
@@ -184,8 +173,8 @@ class SignalPanel(QWidget):
             val_display.setStretch(1, 1)
         # Add displays to panel
         loc = len(self.signals)
-        self.layout().addWidget(label, loc, 0)
-        self.layout().addLayout(val_display, loc, 1)
+        self.addWidget(label, loc, 0)
+        self.addLayout(val_display, loc, 1)
         # Store signal
         self.signals[name] = (read, write)
         return loc
