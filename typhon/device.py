@@ -6,17 +6,16 @@ from ophyd import Device
 from pydm.widgets.drawing import PyDMDrawingImage
 from qtpy import uic
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QWidget
 
 from .func import FunctionPanel
 from .signal import SignalPanel
 from .utils import ui_dir, clean_attr, clean_name
-
+from .tools import TyphonTool
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonPanel(QWidget):
+class TyphonPanel(TyphonTool):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -27,7 +26,7 @@ class TyphonPanel(QWidget):
 
     Parameters
     ----------
-    name: str
+    name: str, optional
         Name to displayed at the top of the panel
 
     image: str, optional
@@ -35,14 +34,14 @@ class TyphonPanel(QWidget):
 
     parent: QWidget, optional
     """
-    def __init__(self, name, image=None, parent=None):
+    def __init__(self, name=None, image=None, parent=None):
         super().__init__(parent=parent)
         # Instantiate UI
         self.ui = uic.loadUi(os.path.join(ui_dir, 'device.ui'), self)
         # Set Label Names
-        self.ui.name_label.setText(name)
+        if name:
+            self.title = name
         # Create child panels
-        self.device = None
         self.method_panel = FunctionPanel()
         self.read_panel = SignalPanel()
         self.config_panel = SignalPanel()
@@ -58,6 +57,15 @@ class TyphonPanel(QWidget):
         self.image_widget = None
         if image:
             self.add_image(image)
+
+    @property
+    def title(self):
+        """Title at the top of panel"""
+        return self.name_label.text()
+
+    @title.setter
+    def title(self, text):
+        self.name_label.setText(text)
 
     def add_image(self, path):
         """
@@ -82,43 +90,43 @@ class TyphonPanel(QWidget):
             self.ui.main_layout.insertWidget(2, self.image_widget,
                                              0, Qt.AlignCenter)
 
-    @classmethod
-    def from_device(cls, device, methods=None, **kwargs):
+    def add_device(self, device, title=None, methods=None):
         """
-        Create a Typhon Panel from a device
+        Add a Device and signals to the TyphonPanel
 
         Parameters
         ----------
         device: ophyd.Device
 
-        methods: list, optional
-            Any methods you would like to make accessible in the UI
+        title: str, optional
+            Reset the title. By default this will overwrite the previous
+            title with a cleaned version of the device's name
 
-        kwargs:
-            Passed to ``TyphonPanel`` constructor
+        methods: list, optional
+            List of methods to add to the :attr:`.method_panel`
         """
-        # Examine and store device for later reference
-        ty_panel = cls(clean_name(device, strip_parent=False), **kwargs)
-        ty_panel.device = device
-        ty_panel.device_description = ty_panel.device.describe()
+        super().add_device(device)
+        # Reset title
+        if not title:
+            title = clean_name(device, strip_parent=False)
+        self.title = title
         # Create read and configuration panels
         for attr in device.read_attrs:
             signal = getattr(device, attr)
             if not isinstance(signal, Device):
-                ty_panel.read_panel.add_signal(signal, clean_attr(attr))
+                self.read_panel.add_signal(signal, clean_attr(attr))
         for attr in device.configuration_attrs:
             signal = getattr(device, attr)
             if not isinstance(signal, Device):
-                ty_panel.config_panel.add_signal(signal, clean_attr(attr))
+                self.config_panel.add_signal(signal, clean_attr(attr))
         # Catch the rest of the signals add to misc panel below misc_button
         for attr in device.component_names:
             if attr not in (device.read_attrs
                             + device.configuration_attrs):
                 signal = getattr(device, attr)
                 if not isinstance(signal, Device):
-                    ty_panel.misc_panel.add_signal(signal, clean_attr(attr))
+                    self.misc_panel.add_signal(signal, clean_attr(attr))
         # Add our methods to the panel
         methods = methods or list()
         for method in methods:
-                ty_panel.method_panel.add_method(method)
-        return ty_panel
+                self.method_panel.add_method(method)
