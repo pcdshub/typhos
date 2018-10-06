@@ -38,6 +38,7 @@ Related Projects
    :hidden:
 
    basic_usage.rst
+   tools.rst
    connections.rst
    python_methods.rst
 
