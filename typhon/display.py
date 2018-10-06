@@ -17,12 +17,12 @@ from qtpy.QtCore import Slot, Qt, QModelIndex
 from .device import TyphonPanel
 from .utils import ui_dir, clean_name
 from .widgets import TyphonSidebarItem
-from .tools import TyphonTimePlot, TyphonLogDisplay
+from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonTool
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonDisplay(QWidget):
+class TyphonDisplay(TyphonTool):
     """
     Generalized Typhon display
 
