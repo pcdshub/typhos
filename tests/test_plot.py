@@ -18,7 +18,7 @@ from qtpy.QtGui import QColor
 # Module #
 ##########
 from typhon import register_signal
-from typhon.plot import ChannelDisplay, TyphonTimePlot, DeviceTimePlot
+from typhon.tools.plot import ChannelDisplay, TyphonTimePlot, DeviceTimePlot
 
 @pytest.fixture(scope='session')
 def sim_signal():
@@ -78,7 +78,7 @@ def test_curve_creation_button(sim_signal):
     assert len(ttp.ui.timeplot.curves) == 1
 
 def test_device_plot(motor):
-    dtp = DeviceTimePlot(motor)
+    dtp = TyphonTimePlot.from_device(motor)
     # Add the hint
     assert len(dtp.ui.timeplot.curves) == 1
     # Added all the signals

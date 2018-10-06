@@ -9,7 +9,6 @@ import os.path
 ############
 from ophyd import Device
 from pydm.widgets.drawing import PyDMDrawingImage
-from pydm.widgets.logdisplay import PyDMLogDisplay
 from qtpy import uic
 from qtpy.QtCore import Slot, Qt, QModelIndex
 from qtpy.QtWidgets import QScrollArea, QWidget
@@ -21,8 +20,7 @@ from .func import FunctionPanel
 from .signal import SignalPanel
 from .utils import ui_dir, clean_attr, clean_name
 from .widgets import TyphonSidebarItem
-from .plot import DeviceTimePlot
-
+from .tools import TyphonTimePlot, TyphonLogDisplay
 
 logger = logging.getLogger(__name__)
 
@@ -363,7 +361,6 @@ class DeviceDisplay(TyphonDisplay):
         for method in methods:
                 self.method_panel.add_method(method)
         # Add the plot tool
-        self.add_tool('Plotting Tool', DeviceTimePlot(device))
+        self.add_tool('Plotting Tool', TyphonTimePlot.from_device(device))
         # Add a LogWidget to our toolset
-        self.add_tool('Device Log', PyDMLogDisplay(logname=device.log.name,
-                                                   level=logging.INFO))
+        self.add_tool('Device Log', TyphonLogDisplay.from_device(device))
