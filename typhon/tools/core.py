@@ -17,8 +17,8 @@ class TyphonTool(QWidget):
         self.devices.append(device)
 
     @classmethod
-    def from_device(cls, device, parent=None):
+    def from_device(cls, device, parent=None, **kwargs):
         """Create a new instance of the tool for a Device"""
-        instance = cls(parent=parent)
+        instance = cls(parent=parent, **kwargs)
         instance.add_device(device)
         return instance
