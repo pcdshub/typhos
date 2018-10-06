@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.2.0+48.g12096ba documentation</title>
+  <title>typhon.display &mdash; Typhon 0.2.1+20.g5aa81ba documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.0+48.g12096ba
+                0.2.1+20.g5aa81ba
               </div>
             
           
@@ -83,6 +83,7 @@
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 </ul>
@@ -165,7 +166,6 @@
 <span class="c1">############</span>
 <span class="kn">from</span> <span class="nn">ophyd</span> <span class="k">import</span> <span class="n">Device</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets.drawing</span> <span class="k">import</span> <span class="n">PyDMDrawingImage</span>
-<span class="kn">from</span> <span class="nn">pydm.widgets.logdisplay</span> <span class="k">import</span> <span class="n">PyDMLogDisplay</span>
 <span class="kn">from</span> <span class="nn">qtpy</span> <span class="k">import</span> <span class="n">uic</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QModelIndex</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QScrollArea</span><span class="p">,</span> <span class="n">QWidget</span>
@@ -177,8 +177,7 @@
 <span class="kn">from</span> <span class="nn">.signal</span> <span class="k">import</span> <span class="n">SignalPanel</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_name</span>
 <span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonSidebarItem</span>
-<span class="kn">from</span> <span class="nn">.plot</span> <span class="k">import</span> <span class="n">DeviceTimePlot</span>
-
+<span class="kn">from</span> <span class="nn">.tools</span> <span class="k">import</span> <span class="n">TyphonTimePlot</span><span class="p">,</span> <span class="n">TyphonLogDisplay</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -519,10 +518,9 @@
         <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
         <span class="c1"># Add the plot tool</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="s1">&#39;Plotting Tool&#39;</span><span class="p">,</span> <span class="n">DeviceTimePlot</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="s1">&#39;Plotting Tool&#39;</span><span class="p">,</span> <span class="n">TyphonTimePlot</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
         <span class="c1"># Add a LogWidget to our toolset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="s1">&#39;Device Log&#39;</span><span class="p">,</span> <span class="n">PyDMLogDisplay</span><span class="p">(</span><span class="n">logname</span><span class="o">=</span><span class="n">device</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                                   <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="s1">&#39;Device Log&#39;</span><span class="p">,</span> <span class="n">TyphonLogDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">device</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
@@ -557,7 +555,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.0+48.g12096ba',
+            VERSION:'0.2.1+20.g5aa81ba',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -568,6 +566,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

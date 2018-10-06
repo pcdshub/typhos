@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Typhon 0.2.0+48.g12096ba documentation</title>
+  <title>Index &mdash; Typhon 0.2.1+20.g5aa81ba documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.0+48.g12096ba
+                0.2.1+20.g5aa81ba
               </div>
             
           
@@ -84,6 +84,7 @@
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
 </ul>
@@ -160,7 +161,6 @@
 <div class="genindex-jumpbox">
  <a href="#_"><strong>_</strong></a>
  | <a href="#A"><strong>A</strong></a>
- | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
@@ -175,14 +175,14 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay.__init__">__init__() (typhon.func.FunctionDisplay method)</a>
+      <li><a href="generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel.__init__">__init__() (typhon.func.FunctionPanel method)</a>
 
       <ul>
-        <li><a href="generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel.__init__">(typhon.func.FunctionPanel method)</a>
-</li>
         <li><a href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel.__init__">(typhon.signal.SignalPanel method)</a>
 </li>
-        <li><a href="generated/typhon.widgets.TogglePanel.html#typhon.widgets.TogglePanel.__init__">(typhon.widgets.TogglePanel method)</a>
+        <li><a href="generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay.__init__">(typhon.tools.TyphonLogDisplay method)</a>
+</li>
+        <li><a href="generated/typhon.tools.TyphonTimePlot.html#typhon.tools.TyphonTimePlot.__init__">(typhon.tools.TyphonTimePlot method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -191,7 +191,7 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay.accepted_types">accepted_types (typhon.func.FunctionDisplay attribute)</a>
+      <li><a href="tools.html#typhon.tools.TyphonTool.add_device">add_device() (typhon.tools.TyphonTool method)</a>
 </li>
       <li><a href="display.html#typhon.TyphonDisplay.add_image">add_image() (typhon.TyphonDisplay method)</a>
 </li>
@@ -210,14 +210,6 @@
   </ul></td>
 </tr></table>
 
-<h2 id="C">C</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/typhon.widgets.TogglePanel.html#typhon.widgets.TogglePanel.contents">contents (typhon.widgets.TogglePanel attribute)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -229,7 +221,7 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/typhon.func.FunctionDisplay.html#typhon.func.FunctionDisplay">FunctionDisplay (class in typhon.func)</a>
+      <li><a href="tools.html#typhon.tools.TyphonTool.from_device">from_device() (typhon.tools.TyphonTool class method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -307,11 +299,15 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="generated/typhon.widgets.TogglePanel.html#typhon.widgets.TogglePanel">TogglePanel (class in typhon.widgets)</a>
+      <li><a href="display.html#typhon.TyphonDisplay">TyphonDisplay (class in typhon)</a>
+</li>
+      <li><a href="generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay">TyphonLogDisplay (class in typhon.tools)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="display.html#typhon.TyphonDisplay">TyphonDisplay (class in typhon)</a>
+      <li><a href="generated/typhon.tools.TyphonTimePlot.html#typhon.tools.TyphonTimePlot">TyphonTimePlot (class in typhon.tools)</a>
+</li>
+      <li><a href="tools.html#typhon.tools.TyphonTool">TyphonTool (class in typhon.tools)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -350,7 +346,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.0+48.g12096ba',
+            VERSION:'0.2.1+20.g5aa81ba',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -361,6 +357,7 @@
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
