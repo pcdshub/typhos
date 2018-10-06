@@ -4,7 +4,7 @@ from .conftest import show_widget
 
 
 @show_widget
-def test_display(device):
+def test_device_panel(device):
     device.name ='test'
     panel = TyphonPanel.from_device(device, methods=[device.insert,
                                                      device.remove])
@@ -25,7 +25,7 @@ def test_display(device):
 
 
 @show_widget
-def test_display_with_images(test_images):
+def test_device_with_images(test_images):
     (lenna, python) = test_images
     # Create a display with our image
     panel = TyphonPanel(name="Image Test", image=lenna)
