@@ -97,6 +97,9 @@ class TyphonLineEdit(PyDMLineEdit):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.showUnits = True
+        self.setMinimumHeight(30)
+        self.setMaximumHeight(30)
+        self.setMinimumWidth(60)
 
     def sizeHint(self):
         return QSize(100, 30)
@@ -110,6 +113,9 @@ class TyphonLabel(PyDMLabel):
         super().__init__(*args, **kwargs)
         self.setAlignment(Qt.AlignCenter)
         self.showUnits = True
+        self.setMinimumHeight(30)
+        self.setMaximumHeight(30)
+        self.setMinimumWidth(60)
 
     def sizeHint(self):
         return QSize(100, 30)
