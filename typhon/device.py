@@ -90,7 +90,7 @@ class TyphonPanel(TyphonTool):
             self.ui.main_layout.insertWidget(2, self.image_widget,
                                              0, Qt.AlignCenter)
 
-    def add_device(self, device, title=None, methods=None):
+    def add_device(self, device, methods=None):
         """
         Add a Device and signals to the TyphonPanel
 
@@ -98,18 +98,10 @@ class TyphonPanel(TyphonTool):
         ----------
         device: ophyd.Device
 
-        title: str, optional
-            Reset the title. By default this will overwrite the previous
-            title with a cleaned version of the device's name
-
         methods: list, optional
             List of methods to add to the :attr:`.method_panel`
         """
         super().add_device(device)
-        # Reset title
-        if not title:
-            title = clean_name(device, strip_parent=False)
-        self.title = title
         # Create read and configuration panels
         for attr in device.read_attrs:
             signal = getattr(device, attr)
@@ -130,3 +122,26 @@ class TyphonPanel(TyphonTool):
         methods = methods or list()
         for method in methods:
                 self.method_panel.add_method(method)
+
+    @classmethod
+    def from_device(cls, device, methods=None, **kwargs):
+        """
+        Create a new TyphonPanel from a Device
+
+        Loads the signals in to the appropriate positions and sets the title to
+        a cleaned version of the device name
+
+        Parameters
+        ----------
+        device: ophyd.Device
+
+        methods: list
+            List of methods to add to the :attr:`.method_panel`
+
+        kwargs:
+            Passed TyphonPanel constructor
+        """
+        panel = cls(name=clean_name(device, strip_parent=False),
+                    **kwargs)
+        panel.add_device(device, methods=methods)
+        return panel
