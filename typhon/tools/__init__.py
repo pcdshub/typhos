@@ -2,3 +2,4 @@
 __all__ = ['TyphonTimePlot']
 
 from .plot import TyphonTimePlot
+from .log import TyphonLogDisplay
