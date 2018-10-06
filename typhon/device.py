@@ -124,7 +124,7 @@ class TyphonPanel(TyphonTool):
                 self.method_panel.add_method(method)
 
     @classmethod
-    def from_device(cls, device, methods=None, **kwargs):
+    def from_device(cls, device, methods=None, name=None, **kwargs):
         """
         Create a new TyphonPanel from a Device
 
@@ -141,7 +141,8 @@ class TyphonPanel(TyphonTool):
         kwargs:
             Passed TyphonPanel constructor
         """
-        panel = cls(name=clean_name(device, strip_parent=False),
-                    **kwargs)
+        if not name:
+            name = clean_name(device, strip_parent=False)
+        panel = cls(name=name, **kwargs)
         panel.add_device(device, methods=methods)
         return panel
