@@ -69,7 +69,6 @@ script:
     if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD ]]; then
       # Create HTML documentation  
       pushd docs
-      sphinx-autogen -o source/generated source/*.rst
       make html
       popd
       #Publish docs.
