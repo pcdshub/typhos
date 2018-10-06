@@ -74,12 +74,6 @@ class TyphonDisplay(QWidget):
         self.ui.subwindow.hide()
         self.ui.tool_sidebar.hide()
         self.ui.component_sidebar.hide()
-    @property
-    def methods(self):
-        """
-        Methods contained within :attr:`.method_panel`
-        """
-        return self.method_panel.methods
 
     def add_subdisplay(self, name, display, list_widget):
         """
@@ -145,59 +139,6 @@ class TyphonDisplay(QWidget):
             Widget to be added to ``.ui.subdisplay``
         """
         self.add_subdisplay(name, tool, self.ui.tool_list)
-
-    def add_tab(self, name, widget):
-        """
-        Add a widget to the main signal tab
-
-        Use this rather than directly setting ``signal_tab.addTab`` to ensure
-        that the tab has the proper stretch to avoid distorting the size of the
-        widget you are adding.
-
-        Parameters
-        ----------
-        name : str
-            Name that will be displayed on tab
-
-        widget : QWidget
-            Widget to be contained within the new tab
-        """
-        qw = QScrollArea(self)
-        qw.setWidget(widget)
-        qw.setAlignment(Qt.AlignHCenter)
-        qw.setWidgetResizable(True)
-        self.ui.signal_tab.addTab(qw, name)
-
-    def add_image(self, path, subdevice=None):
-        """
-        Set the image of the PyDMDrawingImage
-
-        Setting this twice will overwrite the first image given.
-
-        Parameters
-        ----------
-        path : str
-            Absolute or relative path to image
-
-        subdevice: ophyd.Device
-            Ophyd object that has been previously added with
-            :meth:`.add_subdevice`
-        """
-        # Find the nested widget for this specific device
-        if subdevice:
-            widget = self.get_subdisplay(subdevice)
-            return widget.add_image(path, subdevice=None)
-        # Set existing image file
-        logger.debug("Adding an image file %s ...", path)
-        if self.image_widget:
-            self.image_widget.filename = path
-        else:
-            logger.debug("Creating a new PyDMDrawingImage")
-            self.image_widget = PyDMDrawingImage(filename=path,
-                                                 parent=self)
-            self.image_widget.setMaximumSize(350, 350)
-            self.ui.main_layout.insertWidget(2, self.image_widget,
-                                             0, Qt.AlignCenter)
 
     def _item_from_sidebar(self, name):
         """
