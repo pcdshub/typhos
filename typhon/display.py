@@ -8,17 +8,14 @@ import os.path
 # External #
 ############
 from ophyd import Device
-from pydm.widgets.drawing import PyDMDrawingImage
 from qtpy import uic
 from qtpy.QtCore import Slot, Qt, QModelIndex
-from qtpy.QtWidgets import QScrollArea, QWidget
 
 ###########
 # Package #
 ###########
-from .func import FunctionPanel
-from .signal import SignalPanel
-from .utils import ui_dir, clean_attr, clean_name
+from .device import TyphonPanel
+from .utils import ui_dir, clean_name
 from .widgets import TyphonSidebarItem
 from .tools import TyphonTimePlot, TyphonLogDisplay
 
@@ -54,28 +51,17 @@ class TyphonDisplay(QWidget):
 
     parent : QWidget, optional
     """
-    def __init__(self, name, image=None, parent=None):
+    default_tools = {'Log': TyphonLogDisplay,
+                     'StripTool': TyphonTimePlot}
+
+    def __init__(self, parent=None):
         # Instantiate Widget
         super().__init__(parent=parent)
-        self.subdisplays = dict()
         # Instantiate UI
         self.ui = uic.loadUi(os.path.join(ui_dir, 'base.ui'), self)
-        # Set Label Names
-        self.ui.name_label.setText(name)
-        # Create Panels
-        self.method_panel = FunctionPanel(parent=self)
-        self.read_panel = SignalPanel(parent=self)
-        self.config_panel = SignalPanel(parent=self)
-        self.misc_panel = SignalPanel(parent=self)
-        # Add all the panels
-        self.ui.main_layout.insertWidget(2, self.read_panel,
-                                         0, Qt.AlignHCenter)
-        self.ui.main_layout.insertWidget(3, self.method_panel,
-                                         0, Qt.AlignHCenter)
-        # Create tabs
-        self.ui.signal_tab.clear()
-        self.add_tab('Configuration', self.config_panel)
-        self.add_tab('Miscellaneous', self.misc_panel)
+        self.device_panel = TyphonPanel()
+        self.widget_layout.insertWidget(1, self.device_panel)
+        self.subdisplays = dict()
         # Connect signals to slots
         self.ui.hide_button.clicked.connect(self.hide_subdisplays)
         self.ui.tool_list.clicked.connect(self.show_subdisplay)
@@ -88,12 +74,6 @@ class TyphonDisplay(QWidget):
         self.ui.subwindow.hide()
         self.ui.tool_sidebar.hide()
         self.ui.component_sidebar.hide()
-        self.method_panel.hide()
-        # Create PyDMDrawingImage
-        self.image_widget = None
-        if image:
-            self.add_image(image)
-
     @property
     def methods(self):
         """
@@ -142,19 +122,15 @@ class TyphonDisplay(QWidget):
         ----------
         device : ophyd.Device
 
-        methods : list of callables, optional
-
-        image: str, optional
-            Path to image to display for device
+        kwargs:
+            Passed to :class:`.TyphonPanel` constructor
         """
         logger.debug("Creating subdisplay for %s", device.name)
-        dd = DeviceDisplay(device, **kwargs)
-        # Hide the toolbar from children
-        dd.ui.sidebar.hide()
-        # Do not duplicate the margins around the display
-        dd.ui.widget_layout.setContentsMargins(0, 0, 0, 0)
-        self.add_subdisplay(clean_name(device),
-                            dd, self.ui.component_list)
+        # Remove parent from name for title
+        if not name:
+            name = clean_name(device)
+        dd = TyphonPanel.from_device(device, name=name, **kwargs)
+        self.add_subdisplay(name, dd, self.component_list)
 
     def add_tool(self, name, tool):
         """
