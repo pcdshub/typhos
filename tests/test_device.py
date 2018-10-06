@@ -5,7 +5,10 @@ from .conftest import show_widget
 
 @show_widget
 def test_display(device):
-    panel = TyphonPanel.from_device(device)
+    device.name ='test'
+    panel = TyphonPanel.from_device(device, methods=[device.insert,
+                                                     device.remove])
+    assert panel.title.lower() == 'test'
     # We have all our signals
     shown_read_sigs = list(panel.read_panel.signals.keys())
     assert all([clean_attr(sig) in shown_read_sigs
@@ -13,6 +16,11 @@ def test_display(device):
     shown_cfg_sigs = list(panel.config_panel.signals.keys())
     assert all([clean_attr(sig) in shown_cfg_sigs
                 for sig in device.configuration_attrs])
+    # The method panel is visible
+    assert not panel.method_panel.isHidden()
+    # Assert we have all our specified functions
+    assert 'insert' in panel.method_panel.methods
+    assert 'remove' in panel.method_panel.methods
     return panel
 
 
