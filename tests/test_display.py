@@ -5,6 +5,7 @@
 ############
 # External #
 ############
+from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QWidget
 
 ###########
@@ -17,37 +18,23 @@ from .conftest import show_widget
 
 @show_widget
 def test_display(device):
+    device.name = 'test'
     display = DeviceDisplay(device)
-    # We have all our signals
-    shown_read_sigs = list(display.read_panel.signals.keys())
-    assert all([clean_attr(sig) in shown_read_sigs
-                for sig in device.read_attrs])
-    shown_cfg_sigs = list(display.config_panel.signals.keys())
-    assert all([clean_attr(sig) in shown_cfg_sigs
-                for sig in device.configuration_attrs])
-    # We have all our subdevices
-    sub_devices = [getattr(disp, 'device', None)
-                   for disp in display.ui.subdisplay.children()]
-    assert all([getattr(device, dev) in sub_devices
-                for dev in device._sub_devices])
+    assert display.device_panel.title == device.name
+    assert device in display.device_panel.devices
+    # Grab all component displays 
+    child_displays = [display.component_list.item(i).data(Qt.UserRole)
+                      for i in range(display.component_list.count())]
+    assert len(child_displays) == len(device._sub_devices)
+    # Default tools are loaded
+    assert len(display.tools) == 2
+    assert len(display.tools[0].devices) == 1
     # No children
     childless = DeviceDisplay(device, children=False)
-    sub_display = [disp
-                   for disp in childless.ui.subdisplay.children()
-                   if isinstance(disp, DeviceDisplay)]
-    assert len(sub_display) == 0
-    return display
-
-
-@show_widget
-def test_display_with_funcs(device):
-    display = DeviceDisplay(device, methods=[device.insert,
-                                             device.remove])
-    # The method panel is visible
-    assert not display.method_panel.isHidden()
-    # Assert we have all our specified functions
-    assert 'insert' in display.methods
-    assert 'remove' in display.methods
+    # Grab all component displays 
+    child_displays = [childless.component_list.item(i).data(Qt.UserRole)
+                      for i in range(childless.component_list.count())]
+    assert len(child_displays) == 0
     return display
 
 
@@ -57,10 +44,10 @@ def test_subdisplay(qapp, device):
     display = DeviceDisplay(device)
     display.show_subdisplay(device.x)
     assert not display.ui.subwindow.isHidden()
-    assert display.ui.subdisplay.currentWidget().device == device.x
+    assert device.x in display.ui.subdisplay.currentWidget().devices
     # Set display by name
     display.show_subdisplay(clean_name(device.y))
-    assert display.ui.subdisplay.currentWidget().device == device.y
+    assert device.y in display.ui.subdisplay.currentWidget().devices
     # Add a tool
     w = QWidget()
     # Clear other tools
