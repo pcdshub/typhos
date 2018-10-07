@@ -216,66 +216,62 @@ class TyphonDisplay(TyphonTool):
         self.ui.tool_list.clearSelection()
 
 
-class DeviceDisplay(TyphonDisplay):
-    """
-    Display an Ophyd Device
+    def add_device(self, device, children=True, methods=None, image=None):
+        """
+        Add a device to the :attr:`.device_panel` and tools
 
-    Using the panels created by the inherited :class:`.TyphonDisplay` the
-    sub-devices and signals are added to the appropriate places in the widget.
-    The display introspects the ``read_attrs``, ``configuration_attrs``,
-    ``component_names`` and ``_sub_devices`` to find the signal names and
-    heirarchy.
+        Parameters
+        ----------
+        device: ophyd.Device
 
-    Parameters
-    ----------
-    device : ophyd.Device
-        Main ophyd device to display
-
-    methods : list of callables, optional
-        List of callables to pass to :meth:`.FunctionPanel.add_method`
-
-    image : str, optional
-        Path to image to add to display
-
-    children: str, optional
-        Choice to include child Device components
-
-    parent : QWidget, optional
-    """
-    def __init__(self, device, methods=None, image=None,
-                 children=True, parent=None):
-        super().__init__(clean_name(device, strip_parent=False),
-                         image=image, parent=parent)
-        # Examine and store device for later reference
-        self.device = device
-        self.device_description = self.device.describe()
+        methods: list, optional
+            Methods to add to the device
+        """
+        super().add_device(device)
+        # Add the device to the main panel
+        self.device_panel.add_device(device, methods=methods)
+        self.device_panel.add_image(image)
+        # Add a device to all the tool displays
+        for tool in self.tools:
+            try:
+                tool.add_device(device)
+            except Exception as exc:
+                logger.exception("Unable to add %s to tool %s",
+                                 device.name, type(tool))
         # Handle child devices
         if children:
-            for dev_name in self.device._sub_devices:
-                self.add_subdevice(getattr(self.device, dev_name))
+            for dev_name in device._sub_devices:
+                self.add_subdevice(getattr(device, dev_name))
 
-        # Create read and configuration panels
-        for attr in self.device.read_attrs:
-            signal = getattr(self.device, attr)
-            if not isinstance(signal, Device):
-                self.read_panel.add_signal(signal, clean_attr(attr))
-        for attr in self.device.configuration_attrs:
-            signal = getattr(self.device, attr)
-            if not isinstance(signal, Device):
-                self.config_panel.add_signal(signal, clean_attr(attr))
-        # Catch the rest of the signals add to misc panel below misc_button
-        for attr in self.device.component_names:
-            if attr not in (self.device.read_attrs
-                            + self.device.configuration_attrs
-                            + self.device._sub_devices):
-                signal = getattr(self.device, attr)
-                if not isinstance(signal, Device):
-                    self.misc_panel.add_signal(signal, clean_attr(attr))
-        # Add our methods to the panel
-        methods = methods or list()
-        for method in methods:
-                self.method_panel.add_method(method)
-        # Add the plot tool
-        self.add_tool('Plotting Tool', TyphonTimePlot.from_device(device))
-        # Add a LogWidget to our toolset
-        self.add_tool('Device Log', TyphonLogDisplay.from_device(device))
+    @classmethod
+    def from_device(cls, device, parent=None,
+                    tools={'Log': TyphonLogDisplay,
+                           'StripTool': TyphonTimePlot},
+                    **kwargs):
+        """
+        Create a new TyphonDisplay from an ophyd.Device
+
+        Parameters
+        ----------
+        device: ophyd.Device
+
+        children: bool, optional
+            Choice to include child Device components
+
+        parent: QWidgets
+
+        kwargs:
+            Passed to :meth:`.add_device`
+        """
+        display = cls(parent=parent)
+        for name, tool in tools.items():
+            try:
+                display.add_tool(name, tool())
+            except Exception:
+                logger.exception("Unable to load %s", type(tool))
+        display.add_device(device, **kwargs)
+        display.device_panel.title = clean_name(device, strip_parent=False)
+        return display
+
+
+DeviceDisplay = TyphonDisplay.from_device
