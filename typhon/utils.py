@@ -131,14 +131,14 @@ def random_color():
 
 
 class TyphonBase(QWidget):
-    """Base widget for all Typhon widgets for devices"""
+    """Base widget for all Typhon widgets that interface with devices"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.devices = list()
 
     def add_device(self, device):
         """
-        Add a new device to the tool
+        Add a new device to the widget
 
         Parameters
         ----------
@@ -150,13 +150,13 @@ class TyphonBase(QWidget):
     @classmethod
     def from_device(cls, device, parent=None, **kwargs):
         """
-        Create a new instance of the tool for a Device
+        Create a new instance of the widget for a Device
 
         Shortcut for:
 
         .. code::
 
-            tool = TyphonTool()
+            tool = TyphonBase(parent=parent)
             tool.add_device(device)
 
         Parameters
