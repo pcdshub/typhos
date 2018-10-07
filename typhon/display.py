@@ -108,7 +108,7 @@ class TyphonDisplay(TyphonTool):
         if sidebar.isHidden():
             sidebar.show()
 
-    def add_subdevice(self, device, **kwargs):
+    def add_subdevice(self, device, name=None, **kwargs):
         """
         Add a subdevice to the `component_widget` stack
 
