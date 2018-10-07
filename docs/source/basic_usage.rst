@@ -1,10 +1,36 @@
-===========
-Basic Usage
-===========
-An overview of the basic use cases of Typhon
+============
+How it Works
+============
+Typhon has three major building blocks that combine into the final display seen
+by the operator:
 
-Display Creation
-================
+* **TyphonSuite** : The overall view for a Typhon window. It allows the
+  operator to view all of the loaded components and tools.
+* **TyphonDisplay** : This is the widget created for a standard
+  ``ophyd.Device``. Signals are organized based on their ``Kind`` and
+  description.
+* **typhon.tools** : These are widgets that interface with external
+  applications. While you may have other GUIs for these systems,
+  ``typhon.tools`` are built especially to handle the handshaking between all
+  the information stored on your device and the tool you are interfacing with.
+  This saves your operator clicks and ensures consistency in use. 
+
+All three of the widgets listed above share a similar API for creation.
+Instantiating the object by itself handles loading the container widgets and
+placing them in the correct place, but these do not accept ``ophyd.Device``
+arguments. The reason for this is to ensure that we can use all of the
+``typhon`` screens as templates, and regardless or not of whether you have an
+``ophyd.Device`` you can always populate the screens by hand. If you do in fact
+have an ``ophyd.Device`` every class has an ``add_device`` method and
+alternatively and be constructed using the ``from_device`` classmethod.
+
+
+.. autoclass:: typhon.utils.TyphonBase
+   :members:
+
+
+Interpreting a Device
+=====================
 Typhon interprets the internal structure of the ``ophyd.Device`` to create the
 `PyDM` user interface, so the most intuitive way to configure the created
 display is to include things in the device itself. This also has the advantage
@@ -49,19 +75,17 @@ widget
 
 .. code:: python
  
-   import pydm
+   from qtpy.QtWidgets import QApplication
 
    from typhon import TyphonSuite
 
-   app = pydm.PyDMApplication()
+   app = QApplication()
 
    dg1_m1 = EpicsMotor('MFX:DG1:MMS:01', name="DG1 M1")
 
    typhon_suite = TyphonSuite.from_device(dg1_m1)
 
    typhon_suite.show()
-
-   app.exec_()
 
 Typhon also watches for trees of devices, for instance, if we wanted to
 represent a stack of three EPICS motors as a single object.
