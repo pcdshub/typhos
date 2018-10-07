@@ -51,15 +51,15 @@ widget
  
    import pydm
 
-   from typhon import DeviceDisplay
+   from typhon import TyphonSuite
 
    app = pydm.PyDMApplication()
 
    dg1_m1 = EpicsMotor('MFX:DG1:MMS:01', name="DG1 M1")
 
-   typhon_display = DeviceDisplay(dg1_m1)
+   typhon_suite = TyphonSuite.from_device(dg1_m1)
 
-   typhon_display.show()
+   typhon_suite.show()
 
    app.exec_()
 
@@ -99,6 +99,3 @@ configured with :func:`typhon.use_stylesheet`. The operator can elect whether to
 the "light" or "dark" stylesheets by using the optional ``dark`` keyword. This
 method also handles setting the "Fusion" ``QStyle`` which helps make the
 interface have an operating system independent look and feel.
-
-Making Modifications
-====================
