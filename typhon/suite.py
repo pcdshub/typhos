@@ -248,7 +248,7 @@ class TyphonSuite(TyphonBase):
         parent: QWidgets
 
         kwargs:
-            Passed to :meth:`.add_device`
+            Passed to :meth:`TyphonSuite.add_device`
         """
         display = cls(parent=parent)
         for name, tool in tools.items():
