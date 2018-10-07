@@ -40,6 +40,44 @@ All `-tag` channels have `-dev` counterparts for bleeding edge installations.
 Both `requirements.txt` and optional `dev-requirements.txt` are kept up to date
 as well for those who prefer installation via `pip`
 
+## Getting Started
+Creating your first ``typhon`` panel for an``ophyd.Device`` only takes two
+lines:
+
+```python
+
+from typhon import TyphonSuite
+
+suite = TyphonSuite.from_device(my_device)
+```
+
+## Available Widgets
+Typhon has three major building blocks that combine into the final display seen
+by the operator:
+
+* ``TyphonSuite``: The overall view for a Typhon window. It allows the
+operator to view all of the loaded components and tools
+
+* ``TyphonDisplay``: This is the widget created for a standard
+``ophyd.Device``. Signals are organized based on their
+``Kind`` and description.
+
+* ``typhon.tools``: These are widgets that interface with external
+applications. While you may have other GUIs for these systems,
+``typhon.tools`` are built especially to handle the handshaking between all the
+information stored on your device and the tool you are interfacing with. This
+saves your operator clicks and ensures consistency in use. 
+
+### Initialization Pattern
+All three of the widgets listed above share a similar API for creation.
+Instantiating the object by itself handles loading the container widgets and
+placing them in the correct place, but these do not accept ``ophyd.Device``
+arguments. The reason for this is to ensure that we can use all of the
+``typhon`` screens as templates, and regardless or not of whether you have an
+``ophyd.Device`` you can always populate the screens by hand. If you do in fact
+have an ``ophyd.Device`` every class has an ``add_device`` method and
+alternatively and be constructed using the ``from_device`` classmethod.
+ 
 ## Related Projects
 [**PyDM**](https://github.com/slaclab/pydm) - PyQT Display Manager for EPICS information
 
