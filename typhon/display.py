@@ -51,8 +51,6 @@ class TyphonDisplay(TyphonTool):
 
     parent : QWidget, optional
     """
-    default_tools = {'Log': TyphonLogDisplay,
-                     'StripTool': TyphonTimePlot}
 
     def __init__(self, parent=None):
         # Instantiate Widget
