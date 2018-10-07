@@ -215,6 +215,11 @@ class TyphonDisplay(TyphonTool):
         self.ui.component_list.clearSelection()
         self.ui.tool_list.clearSelection()
 
+    @property
+    def tools(self):
+        """Tools loaded into the DeviceDisplay"""
+        return [self.tool_list.item(i).data(Qt.UserRole)
+                for i in range(self.tool_list.count())]
 
     def add_device(self, device, children=True, methods=None, image=None):
         """
