@@ -15,14 +15,14 @@ from qtpy.QtCore import Slot, Qt, QModelIndex
 # Package #
 ###########
 from .device import TyphonPanel
-from .utils import ui_dir, clean_name
+from .utils import ui_dir, clean_name, TyphonBase
 from .widgets import TyphonSidebarItem
-from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonTool
+from .tools import TyphonTimePlot, TyphonLogDisplay
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonDisplay(TyphonTool):
+class TyphonDisplay(TyphonBase):
     """
     Generalized Typhon display
 

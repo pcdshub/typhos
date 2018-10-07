@@ -3,10 +3,10 @@ import logging
 from pydm.widgets.logdisplay import PyDMLogDisplay
 from qtpy.QtWidgets import QVBoxLayout
 
-from .core import TyphonTool
+from ..utils import TyphonBase
 
 
-class TyphonLogDisplay(TyphonTool):
+class TyphonLogDisplay(TyphonBase):
     """Typhon Logging Display"""
     def __init__(self, level=logging.INFO, parent=None):
         super().__init__(parent=parent)

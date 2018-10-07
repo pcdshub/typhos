@@ -9,13 +9,12 @@ from qtpy.QtCore import Qt
 
 from .func import FunctionPanel
 from .signal import SignalPanel
-from .utils import ui_dir, clean_attr, clean_name
-from .tools import TyphonTool
+from .utils import ui_dir, clean_attr, clean_name, TyphonBase
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonPanel(TyphonTool):
+class TyphonPanel(TyphonBase):
     """
     Main Panel display for a signal Ophyd Device
 

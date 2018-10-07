@@ -22,9 +22,8 @@ from qtpy.QtWidgets import QApplication, QWidget
 ##########
 # Module #
 ##########
-from .core import TyphonTool
 from ..utils import (ui_dir, channel_from_signal, clean_attr, random_color,
-                     clean_name)
+                     clean_name, TyphonBase)
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +47,7 @@ class ChannelDisplay(QWidget):
         self.ui.color.brush = QBrush(color, Qt.SolidPattern)
 
 
-class TyphonTimePlot(TyphonTool):
+class TyphonTimePlot(TyphonBase):
     """
     Generalized widget for plotting Ophyd signals
 
