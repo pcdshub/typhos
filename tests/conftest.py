@@ -8,9 +8,11 @@ from functools import wraps
 ############
 # External #
 ############
-import pytest
+import numpy as np
 import ophyd.sim
-from ophyd import Signal
+from ophyd import Device, Component as C, FormattedComponent as FC
+from ophyd.sim import SynAxis, Signal, SynPeriodicSignal, SignalRO
+import pytest
 from pydm import PyDMApplication
 
 ###########
@@ -83,7 +85,6 @@ def motor():
     return ophyd.sim.motor
 
 
-
 class RichSignal(Signal):
 
     def describe(self):
@@ -108,3 +109,67 @@ class DeadSignal(Signal):
 
     def describe(self, *args, **kwargs):
         raise TimeoutError("Timeout on describe")
+
+
+class ConfiguredSynAxis(SynAxis):
+    velocity = C(Signal, value=100)
+    acceleration = C(Signal, value=10)
+    resolution = C(Signal, value=5)
+    _default_configuration_attrs = ['velocity', 'acceleration']
+
+
+class RandomSignal(SynPeriodicSignal):
+    """
+    Signal that randomly updates a random integer
+    """
+    def __init__(self,*args, **kwargs):
+        super().__init__(func=lambda: np.random.uniform(0, 100),
+                         period=10, period_jitter=4, **kwargs)
+
+
+class MockDevice(Device):
+    # Device signals
+    readback = C(RandomSignal)
+    noise = C(RandomSignal)
+    transmorgifier = C(SignalRO, value=4)
+    setpoint = C(Signal, value=0)
+    velocity = C(Signal, value=1)
+    flux = C(RandomSignal)
+    modified_flux = C(RandomSignal)
+    capacitance = C(RandomSignal)
+    acceleration = C(Signal, value=3)
+    limit = C(Signal, value=4)
+    inductance = C(RandomSignal)
+    transformed_inductance = C(SignalRO, value=3)
+    core_temperature = C(RandomSignal)
+    resolution = C(Signal, value=5)
+    duplicator = C(Signal, value=6)
+
+    # Component Motors
+    x = FC(ConfiguredSynAxis, name='X Axis')
+    y = FC(ConfiguredSynAxis, name='Y Axis')
+    z = FC(ConfiguredSynAxis, name='Z Axis')
+
+    # Default Signal Sorting
+    _default_read_attrs = ['readback', 'setpoint', 'transmorgifier',
+                           'noise', 'inductance']
+    _default_configuration_attrs = ['flux', 'modified_flux', 'capacitance',
+                                    'velocity', 'acceleration']
+
+    def insert(self, width: float=2.0, height: float=2.0,
+               fast_mode: bool=False):
+        """Fake insert function to display"""
+        pass
+
+    def remove(self, height: float,  fast_mode: bool=False):
+        """Fake remove function to display"""
+        pass
+
+    @property
+    def hints(self):
+        return {'fields': [self.name+'_readback']}
+
+
+@pytest.fixture(scope='function')
+def device():
+    return MockDevice('Tst:This', name='Simulated Device')

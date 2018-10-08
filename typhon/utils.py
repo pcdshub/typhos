@@ -4,6 +4,7 @@ Utility functions for typhon
 ############
 # Standard #
 ############
+import logging
 import os.path
 import random
 
@@ -14,12 +15,13 @@ import ophyd
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from ophyd.sim import SignalRO
 from qtpy.QtGui import QColor
-from qtpy.QtWidgets import QApplication, QStyleFactory
+from qtpy.QtWidgets import QApplication, QStyleFactory, QWidget
 
 #############
 #  Package  #
 #############
 
+logger = logging.getLogger(__name__)
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
 
 
@@ -126,3 +128,43 @@ def random_color():
     return QColor(random.randint(0, 255),
                   random.randint(0, 255),
                   random.randint(0, 255))
+
+
+class TyphonBase(QWidget):
+    """Base widget for all Typhon widgets that interface with devices"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.devices = list()
+
+    def add_device(self, device):
+        """
+        Add a new device to the widget
+
+        Parameters
+        ----------
+        device : ophyd.Device
+        """
+        logger.debug("Adding device %s ...", device.name)
+        self.devices.append(device)
+
+    @classmethod
+    def from_device(cls, device, parent=None, **kwargs):
+        """
+        Create a new instance of the widget for a Device
+
+        Shortcut for:
+
+        .. code::
+
+            tool = TyphonBase(parent=parent)
+            tool.add_device(device)
+
+        Parameters
+        ----------
+        device: ophyd.Device
+
+        parent: QWidget
+        """
+        instance = cls(parent=parent, **kwargs)
+        instance.add_device(device)
+        return instance
