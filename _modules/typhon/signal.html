@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.2.1+20.g5aa81ba documentation</title>
+  <title>typhon.signal &mdash; Typhon 0.2.1+49.g28ffb98 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+20.g5aa81ba
+                0.2.1+49.g28ffb98
               </div>
             
           
@@ -82,7 +82,7 @@
             
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
@@ -165,8 +165,7 @@
 <span class="c1"># External #</span>
 <span class="c1">############</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="k">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">QSize</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">)</span>
 
 <span class="c1">#############</span>
 <span class="c1">#  Package  #</span>
@@ -232,7 +231,7 @@
     <span class="k">return</span> <span class="n">widget</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">chan</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SignalPanel"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel">[docs]</a><span class="k">class</span> <span class="nc">SignalPanel</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalPanel"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel">[docs]</a><span class="k">class</span> <span class="nc">SignalPanel</span><span class="p">(</span><span class="n">QGridLayout</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base panel display for EPICS signals</span>
 
@@ -240,30 +239,20 @@
 <span class="sd">    ----------</span>
 <span class="sd">    signals : OrderedDict, optional</span>
 <span class="sd">        Signals to include in the panel</span>
-
-<span class="sd">    parent : QWidget, optional</span>
 <span class="sd">        Parent of panel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="SignalPanel.__init__"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+<div class="viewcode-block" id="SignalPanel.__init__"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="c1"># Title is no longer supported</span>
         <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The &#39;title&#39; option for SignalPanel is deprecated. &quot;</span>
                  <span class="s2">&quot;It will be removed in future releases.&quot;</span><span class="p">)</span>
         <span class="c1"># Store signal information</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="c1"># Create panel layout</span>
-        <span class="n">lay</span> <span class="o">=</span> <span class="n">QGridLayout</span><span class="p">()</span>
-        <span class="n">lay</span><span class="o">.</span><span class="n">setSizeConstraint</span><span class="p">(</span><span class="n">QGridLayout</span><span class="o">.</span><span class="n">SetFixedSize</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">lay</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
         <span class="c1"># Add supplied signals</span>
         <span class="k">if</span> <span class="n">signals</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">signals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">375</span><span class="p">,</span> <span class="mi">375</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -326,7 +315,7 @@
 
     <span class="k">def</span> <span class="nf">_add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Create label</span>
-        <span class="n">label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
         <span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="c1"># Create signal display</span>
         <span class="n">val_display</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
@@ -341,8 +330,8 @@
             <span class="n">val_display</span><span class="o">.</span><span class="n">setStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Add displays to panel</span>
         <span class="n">loc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">val_display</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">val_display</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Store signal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">read</span><span class="p">,</span> <span class="n">write</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loc</span></div>
@@ -380,7 +369,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.1+20.g5aa81ba',
+            VERSION:'0.2.1+49.g28ffb98',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

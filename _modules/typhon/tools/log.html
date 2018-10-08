@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.tools.log &mdash; Typhon 0.2.1+20.g5aa81ba documentation</title>
+  <title>typhon.tools.log &mdash; Typhon 0.2.1+49.g28ffb98 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+20.g5aa81ba
+                0.2.1+49.g28ffb98
               </div>
             
           
@@ -82,7 +82,7 @@
             
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../python_methods.html">Including Python Code</a></li>
@@ -160,10 +160,10 @@
 <span class="kn">from</span> <span class="nn">pydm.widgets.logdisplay</span> <span class="k">import</span> <span class="n">PyDMLogDisplay</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QVBoxLayout</span>
 
-<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">TyphonTool</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">TyphonBase</span>
 
 
-<div class="viewcode-block" id="TyphonLogDisplay"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphonLogDisplay</span><span class="p">(</span><span class="n">TyphonTool</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonLogDisplay"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphonLogDisplay</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Typhon Logging Display&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TyphonLogDisplay.__init__"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
@@ -216,7 +216,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.2.1+20.g5aa81ba',
+            VERSION:'0.2.1+49.g28ffb98',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

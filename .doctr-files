@@ -5,9 +5,10 @@
 ./_modules/typhon/func.html
 ./_modules/typhon/plugins/core.html
 ./_modules/typhon/signal.html
-./_modules/typhon/tools/core.html
+./_modules/typhon/suite.html
 ./_modules/typhon/tools/log.html
 ./_modules/typhon/tools/plot.html
+./_modules/typhon/utils.html
 ./_sources/basic_usage.rst.txt
 ./_sources/connections.rst.txt
 ./_sources/display.rst.txt

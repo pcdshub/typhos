@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.2.1+20.g5aa81ba documentation</title>
+  <title>Display Types &mdash; Typhon 0.2.1+49.g28ffb98 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+20.g5aa81ba
+                0.2.1+49.g28ffb98
               </div>
             
           
@@ -84,7 +84,7 @@
             
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
@@ -92,8 +92,8 @@
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Display Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#typhonsuite">TyphonSuite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhondisplay">TyphonDisplay</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#devicedisplay">DeviceDisplay</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
@@ -165,57 +165,39 @@
   <div class="section" id="display-types">
 <h1>Display Types<a class="headerlink" href="#display-types" title="Permalink to this headline">¶</a></h1>
 <p>Typhon has two major widgets that users are expected to interface with. The
-first is the <a class="reference internal" href="#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDisplay</span></code></a>. This is the barebones implementation. No
-signals, or widgets are automatically populated in the screen. In fact, by
-default most of the widgets will be hidden. You can then manually add signals
-to the panels and plots, the panels will only show themselves when you add PVs.</p>
-<p>For a more automated approach, the <a class="reference internal" href="#typhon.DeviceDisplay" title="typhon.DeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code></a> will take your ophyd
-Device and populate PVs and components into the appropriate locations</p>
-<div class="section" id="typhondisplay">
-<h2>TyphonDisplay<a class="headerlink" href="#typhondisplay" title="Permalink to this headline">¶</a></h2>
+first is the <a class="reference internal" href="#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDisplay</span></code></a>, which shows device information, and
+<a class="reference internal" href="#typhon.TyphonSuite" title="typhon.TyphonSuite"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonSuite</span></code></a> which contains multiple devices and tools. This is the
+barebones implementation. No signals, or widgets are automatically populated in
+the screen. In fact, by default most of the widgets will be hidden. You can
+then manually add signals to the panels and plots, the panels will only show
+themselves when you add PVs.</p>
+<div class="section" id="typhonsuite">
+<h2>TyphonSuite<a class="headerlink" href="#typhonsuite" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="typhon.TyphonDisplay">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonDisplay</code><span class="sig-paren">(</span><em>name</em>, <em>image=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generalized Typhon display</p>
-<p>This widget lays out all of the architecture for a general Typhon display.
-The structure matches an ophyd Device, but for this specific instantation,
-one is not required to be given. There are four main panels available;
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">read_panel</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">config_panel</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code>. These
-each provide a quick way to organize signals and methods by their
-importance to an operator. Because each panel can be hidden interactively,
-the screen works as both an expert and novice entry point for users. By
-default, widgets are hidden until contents are added. For instance, if you
-do not add any methods to the main panel it will not be visible.</p>
-<p>This device is the bare bones implementation in the event that someone
-might want to collect a random group of signals and devices together to
-create a screen. A more automated display generator is available  in the
-<a class="reference internal" href="#typhon.DeviceDisplay" title="typhon.DeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code></a></p>
+<dt id="typhon.TyphonSuite">
+<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonSuite</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete Typhon Window</p>
+<p>This contains all the neccesities to load tools and devices into a Typhon
+window.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Title displayed on the widget</li>
-<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to an image file to include in the display.</li>
-<li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="typhon.TyphonDisplay.add_image">
-<code class="descname">add_image</code><span class="sig-paren">(</span><em>path</em>, <em>subdevice=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the image of the PyDMDrawingImage</p>
-<p>Setting this twice will overwrite the first image given.</p>
+<dt id="typhon.TyphonSuite.add_device">
+<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em>, <em>children=True</em>, <em>methods=None</em>, <em>image=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a device to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">device_panel</span></code> and tools</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Absolute or relative path to image</li>
-<li><strong>subdevice</strong> (<em>ophyd.Device</em>) – Ophyd object that has been previously added with
-<a class="reference internal" href="#typhon.TyphonDisplay.add_subdevice" title="typhon.TyphonDisplay.add_subdevice"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_subdevice()</span></code></a></li>
+<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, </em><em>optional</em>) – Methods to add to the device</li>
 </ul>
 </td>
 </tr>
@@ -224,8 +206,8 @@ create a screen. A more automated display generator is available  in the
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonDisplay.add_subdevice">
-<code class="descname">add_subdevice</code><span class="sig-paren">(</span><em>device</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_subdevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_subdevice" title="Permalink to this definition">¶</a></dt>
+<dt id="typhon.TyphonSuite.add_subdevice">
+<code class="descname">add_subdevice</code><span class="sig-paren">(</span><em>device</em>, <em>name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_subdevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_subdevice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a subdevice to the <cite>component_widget</cite> stack</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -233,8 +215,7 @@ create a screen. A more automated display generator is available  in the
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>methods</strong> (<em>list of callables</em><em>, </em><em>optional</em>) – </li>
-<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to image to display for device</li>
+<li><strong>kwargs</strong> – Passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonDevice.from_device()</span></code></li>
 </ul>
 </td>
 </tr>
@@ -243,8 +224,8 @@ create a screen. A more automated display generator is available  in the
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonDisplay.add_subdisplay">
-<code class="descname">add_subdisplay</code><span class="sig-paren">(</span><em>name</em>, <em>display</em>, <em>list_widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_subdisplay" title="Permalink to this definition">¶</a></dt>
+<dt id="typhon.TyphonSuite.add_subdisplay">
+<code class="descname">add_subdisplay</code><span class="sig-paren">(</span><em>name</em>, <em>display</em>, <em>list_widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a widget to one of the button layouts</p>
 <p>This add a display for a subcomponent and a QPushButton that
 will bring the display to the foreground. Users can either specify
@@ -267,29 +248,8 @@ QPushButton is created</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonDisplay.add_tab">
-<code class="descname">add_tab</code><span class="sig-paren">(</span><em>name</em>, <em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_tab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_tab" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a widget to the main signal tab</p>
-<p>Use this rather than directly setting <code class="docutils literal notranslate"><span class="pre">signal_tab.addTab</span></code> to ensure
-that the tab has the proper stretch to avoid distorting the size of the
-widget you are adding.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name that will be displayed on tab</li>
-<li><strong>widget</strong> (<em>QWidget</em>) – Widget to be contained within the new tab</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="typhon.TyphonDisplay.add_tool">
-<code class="descname">add_tool</code><span class="sig-paren">(</span><em>name</em>, <em>tool</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_tool" title="Permalink to this definition">¶</a></dt>
+<dt id="typhon.TyphonSuite.add_tool">
+<code class="descname">add_tool</code><span class="sig-paren">(</span><em>name</em>, <em>tool</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_tool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a widget to the toolbar</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -305,9 +265,29 @@ widget you are adding.</p>
 </table>
 </dd></dl>
 
+<dl class="classmethod">
+<dt id="typhon.TyphonSuite.from_device">
+<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em>, <em>tools={'Log': &lt;class 'typhon.tools.log.TyphonLogDisplay'&gt;</em>, <em>'StripTool': &lt;class 'typhon.tools.plot.TyphonTimePlot'&gt;}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.from_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new TyphonDisplay from an ophyd.Device</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>children</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Choice to include child Device components</li>
+<li><strong>parent</strong> (<em>QWidgets</em>) – </li>
+<li><strong>kwargs</strong> – Passed to <a class="reference internal" href="#typhon.TyphonSuite.add_device" title="typhon.TyphonSuite.add_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonSuite.add_device()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
-<dt id="typhon.TyphonDisplay.get_subdisplay">
-<code class="descname">get_subdisplay</code><span class="sig-paren">(</span><em>display</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.get_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.get_subdisplay" title="Permalink to this definition">¶</a></dt>
+<dt id="typhon.TyphonSuite.get_subdisplay">
+<code class="descname">get_subdisplay</code><span class="sig-paren">(</span><em>display</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.get_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.get_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a subdisplay by name</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -331,20 +311,14 @@ itself</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonDisplay.hide_subdisplays">
-<code class="descname">hide_subdisplays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.hide_subdisplays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.hide_subdisplays" title="Permalink to this definition">¶</a></dt>
+<dt id="typhon.TyphonSuite.hide_subdisplays">
+<code class="descname">hide_subdisplays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.hide_subdisplays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.hide_subdisplays" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hide the component widget and set all buttons unchecked</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="typhon.TyphonDisplay.methods">
-<code class="descname">methods</code><a class="headerlink" href="#typhon.TyphonDisplay.methods" title="Permalink to this definition">¶</a></dt>
-<dd><p>Methods contained within <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></p>
-</dd></dl>
-
 <dl class="method">
-<dt id="typhon.TyphonDisplay.show_subdisplay">
-<code class="descname">show_subdisplay</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.show_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.show_subdisplay" title="Permalink to this definition">¶</a></dt>
+<dt id="typhon.TyphonSuite.show_subdisplay">
+<code class="descname">show_subdisplay</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.show_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.show_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show subdevice display of the QStackedWidget</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -356,31 +330,129 @@ itself</td>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="typhon.TyphonSuite.tools">
+<code class="descname">tools</code><a class="headerlink" href="#typhon.TyphonSuite.tools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tools loaded into the DeviceDisplay</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
-<div class="section" id="devicedisplay">
-<h2>DeviceDisplay<a class="headerlink" href="#devicedisplay" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="typhondisplay">
+<h2>TyphonDisplay<a class="headerlink" href="#typhondisplay" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="typhon.DeviceDisplay">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">DeviceDisplay</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>image=None</em>, <em>children=True</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#DeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.DeviceDisplay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typhon.display.TyphonDisplay</span></code></p>
-<p>Display an Ophyd Device</p>
-<p>Using the panels created by the inherited <a class="reference internal" href="#typhon.TyphonDisplay" title="typhon.TyphonDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDisplay</span></code></a> the
-sub-devices and signals are added to the appropriate places in the widget.
-The display introspects the <code class="docutils literal notranslate"><span class="pre">read_attrs</span></code>, <code class="docutils literal notranslate"><span class="pre">configuration_attrs</span></code>,
-<code class="docutils literal notranslate"><span class="pre">component_names</span></code> and <code class="docutils literal notranslate"><span class="pre">_sub_devices</span></code> to find the signal names and
-heirarchy.</p>
+<dt id="typhon.TyphonDisplay">
+<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonDisplay</code><span class="sig-paren">(</span><em>name=None</em>, <em>image=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main Panel display for a signal Ophyd Device</p>
+<p>This widget lays out all of the architecture for a single Ophyd display.
+The structure matches an ophyd Device, but for this specific instantation,
+one is not required to be given. There are four main panels available;
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">read_panel</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">config_panel</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code>. These
+each provide a quick way to organize signals and methods by their
+importance to an operator. Because each panel can be hidden interactively,
+the screen works as both an expert and novice entry point for users. By
+default, widgets are hidden until contents are added. For instance, if you
+do not add any methods to the main panel it will not be visible.</p>
+<p>This contains the widgets for all of the root devices signals, any methods
+you would like to display, and an optional image. As with <code class="docutils literal notranslate"><span class="pre">typhon</span></code>
+convention, the base initialization sets up the widgets and the
+<code class="docutils literal notranslate"><span class="pre">.from_device</span></code> class method will automatically populate them.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<em>ophyd.Device</em>) – Main ophyd device to display</li>
-<li><strong>methods</strong> (<em>list of callables</em><em>, </em><em>optional</em>) – List of callables to pass to <code class="xref py py-meth docutils literal notranslate"><span class="pre">FunctionPanel.add_method()</span></code></li>
-<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to image to add to display</li>
-<li><strong>children</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Choice to include child Device components</li>
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Name to displayed at the top of the panel</li>
+<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to image file to displayed at the header</li>
 <li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="typhon.TyphonDisplay.add_device">
+<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a Device and signals to the TyphonDisplay</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, </em><em>optional</em>) – List of methods to add to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.add_image">
+<code class="descname">add_image</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the image of the PyDMDrawingImage</p>
+<p>Setting this twice will overwrite the first image given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Absolute or relative path to image</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="typhon.TyphonDisplay.from_device">
+<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.from_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new TyphonDisplay from a Device</p>
+<p>Loads the signals in to the appropriate positions and sets the title to
+a cleaned version of the device name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of methods to add to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></li>
+<li><strong>kwargs</strong> – Passed TyphonDisplay constructor</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="typhon.TyphonDisplay.methods">
+<code class="descname">methods</code><a class="headerlink" href="#typhon.TyphonDisplay.methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods contained within <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="typhon.TyphonDisplay.title">
+<code class="descname">title</code><a class="headerlink" href="#typhon.TyphonDisplay.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Title at the top of panel</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.DeviceDisplay">
+<code class="descclassname">typhon.</code><code class="descname">DeviceDisplay</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#typhon.DeviceDisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new TyphonDisplay from a Device</p>
+<p>Loads the signals in to the appropriate positions and sets the title to
+a cleaned version of the device name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of methods to add to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></li>
+<li><strong>kwargs</strong> – Passed TyphonDisplay constructor</li>
 </ul>
 </td>
 </tr>
@@ -433,7 +505,7 @@ heirarchy.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.1+20.g5aa81ba',
+            VERSION:'0.2.1+49.g28ffb98',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
