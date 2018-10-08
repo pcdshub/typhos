@@ -17,7 +17,7 @@ from qtpy.QtCore import Slot, Qt, QModelIndex
 from .display import TyphonDisplay
 from .utils import ui_dir, clean_name, TyphonBase
 from .widgets import TyphonSidebarItem
-from .tools import TyphonTimePlot, TyphonLogDisplay
+from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonConsole
 
 logger = logging.getLogger(__name__)
 
@@ -233,7 +233,8 @@ class TyphonSuite(TyphonBase):
     @classmethod
     def from_device(cls, device, parent=None,
                     tools={'Log': TyphonLogDisplay,
-                           'StripTool': TyphonTimePlot},
+                           'StripTool': TyphonTimePlot,
+                           'Console': TyphonConsole},
                     **kwargs):
         """
         Create a new TyphonDisplay from an ophyd.Device
