@@ -217,7 +217,8 @@ class TyphonSuite(TyphonBase):
         super().add_device(device)
         # Add the device to the main panel
         self.device_panel.add_device(device, methods=methods)
-        self.device_panel.add_image(image)
+        if image:
+            self.device_panel.add_image(image)
         # Add a device to all the tool displays
         for tool in self.tools:
             try:
