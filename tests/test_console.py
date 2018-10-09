@@ -11,6 +11,8 @@ from .conftest import show_widget
 def test_base_console():
     tc = TyphonConsole()
     assert tc.kernel_manager.is_alive()
+    tc.shutdown()
+    assert not tc.kernel_manager.is_alive()
 
 
 @show_widget
