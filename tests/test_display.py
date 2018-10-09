@@ -25,12 +25,14 @@ def test_device_display(device):
 
 
 @show_widget
-def test_display_with_images(test_images):
+def test_display_with_images(device, test_images):
     (lenna, python) = test_images
     # Create a display with our image
     panel = TyphonDisplay(name="Image Test", image=lenna)
     assert panel.image_widget.filename == lenna
     # Add our python image
     panel.add_image(python)
+    assert panel.image_widget.filename == python
+    panel = TyphonDisplay.from_device(device, image=python)
     assert panel.image_widget.filename == python
     return panel
