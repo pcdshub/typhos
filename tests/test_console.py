@@ -1,6 +1,8 @@
 import types
+
 import happi
 from happi.loader import from_container
+import pytest
 from typhon.tools import TyphonConsole
 
 from .conftest import show_widget
@@ -12,6 +14,7 @@ def test_base_console():
 
 
 @show_widget
+@pytest.mark.timeout(60)
 def test_add_device(qapp):
     # Create a device and attach metadata
     md = happi.Device(name='Test This', prefix='Tst:This:1', beamline='TST',
