@@ -26,6 +26,7 @@ Tool Classes
 .. autosummary::
    :toctree: generated
 
+   TyphonConsole
    TyphonLogDisplay 
    TyphonTimePlot
 

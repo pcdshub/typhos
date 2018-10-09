@@ -13,7 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 class TyphonConsole(RichJupyterWidget, TyphonBase):
-    """IPython widget for Typhon Display"""
+    """
+    IPython Widget for Typhon Display
+
+    This widget handles starting a ``JupyterKernel`` and connecting an IPython
+    console in which the user can type Python commands. It is important to note
+    that the kernel in which commands are executed is a completely separate
+    process. This protects the user against locking themselves out of the GUI,
+    but makes it difficult to pass the Device.
+
+    To get around this caveat, this widget uses ``happi`` to pass the Device
+    between the processes. This is not a strict requirement, but if ``happi``
+    is not installed, users will need to create a custom ``add_device`` method
+    if they want their devices loaded in both the GUI and console.
+    """
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         # Create a Kernel
@@ -36,6 +49,7 @@ class TyphonConsole(RichJupyterWidget, TyphonBase):
         return default
 
     def shutdown(self):
+        """Shutdown the Jupyter Kernel"""
         logger.debug("Stopping Jupyter Client")
         self.kernel_client.stop_channels()
         self.kernel_manager.shutdown_kernel()
