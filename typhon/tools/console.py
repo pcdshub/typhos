@@ -2,6 +2,7 @@ import hashlib
 import logging
 import os
 import tempfile
+import threading
 from time import localtime
 
 from qtpy.QtWidgets import QApplication
@@ -44,6 +45,9 @@ class TyphonConsole(RichJupyterWidget, TyphonBase):
         # Styling
         self.syntax_style = 'monokai'
         self.set_default_style(colors='Linux')
+        # Ensure cleanup
+        app = QApplication.instance()
+        app.aboutToQuit.connect(self.shutdown)
 
     def sizeHint(self):
         default = super().sizeHint()
@@ -52,9 +56,11 @@ class TyphonConsole(RichJupyterWidget, TyphonBase):
 
     def shutdown(self):
         """Shutdown the Jupyter Kernel"""
-        if self.kernel_manager.is_alive():
+        if self.kernel_client.channels_running:
             logger.debug("Stopping Jupyter Client")
-            self.kernel_client.stop_channels()
+            # Stop channels in the background
+            t = threading.Thread(target=self.kernel_client.stop_channels)
+            t.start()
             self.kernel_manager.shutdown_kernel()
         else:
             logger.debug("Kernel is already shutdown.")
