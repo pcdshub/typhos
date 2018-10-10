@@ -13,6 +13,7 @@ def test_base_console():
     assert tc.kernel_manager.is_alive()
     tc.shutdown()
     assert not tc.kernel_manager.is_alive()
+    tc.shutdown()
 
 
 @show_widget
