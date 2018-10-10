@@ -52,9 +52,12 @@ class TyphonConsole(RichJupyterWidget, TyphonBase):
 
     def shutdown(self):
         """Shutdown the Jupyter Kernel"""
-        logger.debug("Stopping Jupyter Client")
-        self.kernel_client.stop_channels()
-        self.kernel_manager.shutdown_kernel()
+        if self.kernel_manager.is_alive():
+            logger.debug("Stopping Jupyter Client")
+            self.kernel_client.stop_channels()
+            self.kernel_manager.shutdown_kernel()
+        else:
+            logger.debug("Kernel is already shutdown.")
 
 
 try:
