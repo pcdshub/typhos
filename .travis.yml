@@ -87,3 +87,7 @@ after_success:
       export ANACONDA_API_TOKEN=$CONDA_UPLOAD_TOKEN_DEV
       anaconda upload bld-dir/linux-64/*.tar.bz2
     fi
+
+after_failure:
+  - cat logs/run_tests_log.txt
+  - cat logs/run_tests_log.txt.1
