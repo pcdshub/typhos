@@ -4,6 +4,7 @@ import os
 import tempfile
 from time import localtime
 
+from qtpy.QtWidgets import QApplication
 from qtconsole.rich_jupyter_widget import RichJupyterWidget
 from qtconsole.manager import QtKernelManager
 
@@ -38,7 +39,8 @@ class TyphonConsole(RichJupyterWidget, TyphonBase):
         self.kernel_manager = kernel_manager
         self.kernel_client = kernel_client
         # Ensure we shutdown the kernel
-        self.exit_requested.connect(self.shutdown)
+        app = QApplication.instance()
+        app.aboutToQuit.connect(self.shutdown)
         # Styling
         self.syntax_style = 'monokai'
         self.set_default_style(colors='Linux')
