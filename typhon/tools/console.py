@@ -100,7 +100,7 @@ try:
 
 except ImportError:
     logger.info("Unable to import ``happi``. Devices will not be added "
-                "to the ``TyphonConsole`` unless ``TyphoConsole.add_device`` "
+                "to the ``TyphonConsole`` unless ``TyphonConsole.add_device`` "
                 "is implemented.")
 
     # Dummy pass-through function
