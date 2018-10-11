@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How it Works &mdash; Typhon 0.2.1+49.g28ffb98 documentation</title>
+  <title>Basic Usage &mdash; Typhon 0.2.1+20.g5aa81ba documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+49.g28ffb98
+                0.2.1+20.g5aa81ba
               </div>
             
           
@@ -84,9 +84,10 @@
             
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">How it Works</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#interpreting-a-device">Interpreting a Device</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Basic Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#display-creation">Display Creation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-stylesheet">Using the StyleSheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#making-modifications">Making Modifications</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
@@ -143,7 +144,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>How it Works</li>
+      <li>Basic Usage</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -162,75 +163,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="how-it-works">
-<h1>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h1>
-<p>Typhon has three major building blocks that combine into the final display seen
-by the operator:</p>
-<ul class="simple">
-<li><strong>TyphonSuite</strong> : The overall view for a Typhon window. It allows the
-operator to view all of the loaded components and tools.</li>
-<li><strong>TyphonDisplay</strong> : This is the widget created for a standard
-<code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code>. Signals are organized based on their <code class="docutils literal notranslate"><span class="pre">Kind</span></code> and
-description.</li>
-<li><strong>typhon.tools</strong> : These are widgets that interface with external
-applications. While you may have other GUIs for these systems,
-<code class="docutils literal notranslate"><span class="pre">typhon.tools</span></code> are built especially to handle the handshaking between all
-the information stored on your device and the tool you are interfacing with.
-This saves your operator clicks and ensures consistency in use.</li>
-</ul>
-<p>All three of the widgets listed above share a similar API for creation.
-Instantiating the object by itself handles loading the container widgets and
-placing them in the correct place, but these do not accept <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code>
-arguments. The reason for this is to ensure that we can use all of the
-<code class="docutils literal notranslate"><span class="pre">typhon</span></code> screens as templates, and regardless or not of whether you have an
-<code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> you can always populate the screens by hand. If you do in fact
-have an <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> every class has an <code class="docutils literal notranslate"><span class="pre">add_device</span></code> method and
-alternatively and be constructed using the <code class="docutils literal notranslate"><span class="pre">from_device</span></code> classmethod.</p>
-<dl class="class">
-<dt id="typhon.utils.TyphonBase">
-<em class="property">class </em><code class="descclassname">typhon.utils.</code><code class="descname">TyphonBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base widget for all Typhon widgets that interface with devices</p>
-<dl class="method">
-<dt id="typhon.utils.TyphonBase.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase.add_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new device to the widget</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device</strong> (<em>ophyd.Device</em>) – </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="typhon.utils.TyphonBase.from_device">
-<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase.from_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new instance of the widget for a Device</p>
-<p>Shortcut for:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphonBase</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>parent</strong> (<em>QWidget</em>) – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<div class="section" id="interpreting-a-device">
-<h2>Interpreting a Device<a class="headerlink" href="#interpreting-a-device" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="basic-usage">
+<h1>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h1>
+<p>An overview of the basic use cases of Typhon</p>
+<div class="section" id="display-creation">
+<h2>Display Creation<a class="headerlink" href="#display-creation" title="Permalink to this headline">¶</a></h2>
 <p>Typhon interprets the internal structure of the <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> to create the
 <cite>PyDM</cite> user interface, so the most intuitive way to configure the created
 display is to include things in the device itself. This also has the advantage
@@ -277,24 +214,26 @@ operator will want to control and which ones are purely meant to be read back.
 We also have these signals grouped by their importance to operation, each with
 a terse human legible description of what the PV represents.</p>
 <p>Typhon takes advantage of this to generate a concise PyDM user display. The
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> uses the signal groups; <code class="docutils literal notranslate"><span class="pre">read_attrs</span></code>,
+<a class="reference internal" href="display.html#typhon.DeviceDisplay" title="typhon.DeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code></a> uses the signal groups; <code class="docutils literal notranslate"><span class="pre">read_attrs</span></code>,
 <code class="docutils literal notranslate"><span class="pre">configuration_attrs</span></code> and <code class="docutils literal notranslate"><span class="pre">hints</span></code> to generate plots and widgets based on
 the type and class of EPICSSignals. In order to best select the widget types,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> attempts to connect to all of the PVs listed. If this
+<a class="reference internal" href="display.html#typhon.DeviceDisplay" title="typhon.DeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code></a> attempts to connect to all of the PVs listed. If this
 is not possible, there are ways to manually configure which widget will be
 used. Simply invoke your device and then create your <code class="docutils literal notranslate"><span class="pre">PyDMApplication</span></code> and
 widget</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pydm</span>
 
-<span class="kn">from</span> <span class="nn">typhon</span> <span class="k">import</span> <span class="n">TyphonSuite</span>
+<span class="kn">from</span> <span class="nn">typhon</span> <span class="k">import</span> <span class="n">DeviceDisplay</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">()</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">pydm</span><span class="o">.</span><span class="n">PyDMApplication</span><span class="p">()</span>
 
 <span class="n">dg1_m1</span> <span class="o">=</span> <span class="n">EpicsMotor</span><span class="p">(</span><span class="s1">&#39;MFX:DG1:MMS:01&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;DG1 M1&quot;</span><span class="p">)</span>
 
-<span class="n">typhon_suite</span> <span class="o">=</span> <span class="n">TyphonSuite</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">dg1_m1</span><span class="p">)</span>
+<span class="n">typhon_display</span> <span class="o">=</span> <span class="n">DeviceDisplay</span><span class="p">(</span><span class="n">dg1_m1</span><span class="p">)</span>
 
-<span class="n">typhon_suite</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">typhon_display</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Typhon also watches for trees of devices, for instance, if we wanted to
@@ -331,6 +270,9 @@ configured with <code class="xref py py-func docutils literal notranslate"><span
 the “light” or “dark” stylesheets by using the optional <code class="docutils literal notranslate"><span class="pre">dark</span></code> keyword. This
 method also handles setting the “Fusion” <code class="docutils literal notranslate"><span class="pre">QStyle</span></code> which helps make the
 interface have an operating system independent look and feel.</p>
+</div>
+<div class="section" id="making-modifications">
+<h2>Making Modifications<a class="headerlink" href="#making-modifications" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -376,7 +318,7 @@ interface have an operating system independent look and feel.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.1+49.g28ffb98',
+            VERSION:'0.2.1+20.g5aa81ba',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

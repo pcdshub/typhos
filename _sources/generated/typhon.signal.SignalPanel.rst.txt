@@ -14,119 +14,311 @@ typhon.signal.SignalPanel
    .. autosummary::
    
       ~SignalPanel.__init__
-      ~SignalPanel.activate
-      ~SignalPanel.addChildLayout
-      ~SignalPanel.addChildWidget
-      ~SignalPanel.addItem
-      ~SignalPanel.addLayout
-      ~SignalPanel.addWidget
+      ~SignalPanel.acceptDrops
+      ~SignalPanel.accessibleDescription
+      ~SignalPanel.accessibleName
+      ~SignalPanel.actionEvent
+      ~SignalPanel.actions
+      ~SignalPanel.activateWindow
+      ~SignalPanel.addAction
+      ~SignalPanel.addActions
       ~SignalPanel.add_pv
       ~SignalPanel.add_signal
-      ~SignalPanel.alignment
-      ~SignalPanel.alignmentRect
+      ~SignalPanel.adjustSize
+      ~SignalPanel.autoFillBackground
+      ~SignalPanel.backgroundRole
+      ~SignalPanel.baseSize
       ~SignalPanel.blockSignals
-      ~SignalPanel.cellRect
+      ~SignalPanel.changeEvent
+      ~SignalPanel.childAt
       ~SignalPanel.childEvent
       ~SignalPanel.children
-      ~SignalPanel.closestAcceptableSize
-      ~SignalPanel.columnCount
-      ~SignalPanel.columnMinimumWidth
-      ~SignalPanel.columnStretch
+      ~SignalPanel.childrenRect
+      ~SignalPanel.childrenRegion
+      ~SignalPanel.clearFocus
+      ~SignalPanel.clearMask
+      ~SignalPanel.close
+      ~SignalPanel.closeEvent
+      ~SignalPanel.colorCount
       ~SignalPanel.connectNotify
       ~SignalPanel.contentsMargins
       ~SignalPanel.contentsRect
-      ~SignalPanel.controlTypes
-      ~SignalPanel.count
+      ~SignalPanel.contextMenuEvent
+      ~SignalPanel.contextMenuPolicy
+      ~SignalPanel.create
+      ~SignalPanel.createWindowContainer
+      ~SignalPanel.cursor
       ~SignalPanel.customEvent
       ~SignalPanel.deleteLater
+      ~SignalPanel.depth
+      ~SignalPanel.destroy
+      ~SignalPanel.devType
+      ~SignalPanel.devicePixelRatio
+      ~SignalPanel.devicePixelRatioF
+      ~SignalPanel.devicePixelRatioFScale
       ~SignalPanel.disconnect
       ~SignalPanel.disconnectNotify
+      ~SignalPanel.dragEnterEvent
+      ~SignalPanel.dragLeaveEvent
+      ~SignalPanel.dragMoveEvent
+      ~SignalPanel.dropEvent
       ~SignalPanel.dumpObjectInfo
       ~SignalPanel.dumpObjectTree
       ~SignalPanel.dynamicPropertyNames
+      ~SignalPanel.effectiveWinId
+      ~SignalPanel.ensurePolished
+      ~SignalPanel.enterEvent
       ~SignalPanel.event
       ~SignalPanel.eventFilter
-      ~SignalPanel.expandingDirections
+      ~SignalPanel.find
       ~SignalPanel.findChild
       ~SignalPanel.findChildren
+      ~SignalPanel.focusInEvent
+      ~SignalPanel.focusNextChild
+      ~SignalPanel.focusNextPrevChild
+      ~SignalPanel.focusOutEvent
+      ~SignalPanel.focusPolicy
+      ~SignalPanel.focusPreviousChild
+      ~SignalPanel.focusProxy
+      ~SignalPanel.focusWidget
+      ~SignalPanel.font
+      ~SignalPanel.fontInfo
+      ~SignalPanel.fontMetrics
+      ~SignalPanel.foregroundRole
+      ~SignalPanel.frameGeometry
+      ~SignalPanel.frameSize
       ~SignalPanel.geometry
       ~SignalPanel.getContentsMargins
-      ~SignalPanel.getItemPosition
+      ~SignalPanel.grab
+      ~SignalPanel.grabGesture
+      ~SignalPanel.grabKeyboard
+      ~SignalPanel.grabMouse
+      ~SignalPanel.grabShortcut
+      ~SignalPanel.graphicsEffect
+      ~SignalPanel.graphicsProxyWidget
+      ~SignalPanel.hasFocus
       ~SignalPanel.hasHeightForWidth
+      ~SignalPanel.hasMouseTracking
+      ~SignalPanel.hasTabletTracking
+      ~SignalPanel.height
       ~SignalPanel.heightForWidth
-      ~SignalPanel.horizontalSpacing
-      ~SignalPanel.indexOf
+      ~SignalPanel.heightMM
+      ~SignalPanel.hide
+      ~SignalPanel.hideEvent
       ~SignalPanel.inherits
+      ~SignalPanel.initPainter
+      ~SignalPanel.inputMethodEvent
+      ~SignalPanel.inputMethodHints
+      ~SignalPanel.inputMethodQuery
+      ~SignalPanel.insertAction
+      ~SignalPanel.insertActions
       ~SignalPanel.installEventFilter
-      ~SignalPanel.invalidate
-      ~SignalPanel.isEmpty
+      ~SignalPanel.isActiveWindow
+      ~SignalPanel.isAncestorOf
       ~SignalPanel.isEnabled
+      ~SignalPanel.isEnabledTo
+      ~SignalPanel.isFullScreen
+      ~SignalPanel.isHidden
+      ~SignalPanel.isLeftToRight
+      ~SignalPanel.isMaximized
+      ~SignalPanel.isMinimized
+      ~SignalPanel.isModal
+      ~SignalPanel.isRightToLeft
       ~SignalPanel.isSignalConnected
+      ~SignalPanel.isVisible
+      ~SignalPanel.isVisibleTo
       ~SignalPanel.isWidgetType
+      ~SignalPanel.isWindow
+      ~SignalPanel.isWindowModified
       ~SignalPanel.isWindowType
-      ~SignalPanel.itemAt
-      ~SignalPanel.itemAtPosition
+      ~SignalPanel.keyPressEvent
+      ~SignalPanel.keyReleaseEvent
+      ~SignalPanel.keyboardGrabber
       ~SignalPanel.killTimer
       ~SignalPanel.layout
+      ~SignalPanel.layoutDirection
+      ~SignalPanel.leaveEvent
+      ~SignalPanel.locale
+      ~SignalPanel.logicalDpiX
+      ~SignalPanel.logicalDpiY
+      ~SignalPanel.lower
+      ~SignalPanel.mapFrom
+      ~SignalPanel.mapFromGlobal
+      ~SignalPanel.mapFromParent
+      ~SignalPanel.mapTo
+      ~SignalPanel.mapToGlobal
+      ~SignalPanel.mapToParent
+      ~SignalPanel.mask
+      ~SignalPanel.maximumHeight
       ~SignalPanel.maximumSize
-      ~SignalPanel.menuBar
+      ~SignalPanel.maximumWidth
       ~SignalPanel.metaObject
-      ~SignalPanel.minimumHeightForWidth
+      ~SignalPanel.metric
+      ~SignalPanel.minimumHeight
       ~SignalPanel.minimumSize
+      ~SignalPanel.minimumSizeHint
+      ~SignalPanel.minimumWidth
+      ~SignalPanel.mouseDoubleClickEvent
+      ~SignalPanel.mouseGrabber
+      ~SignalPanel.mouseMoveEvent
+      ~SignalPanel.mousePressEvent
+      ~SignalPanel.mouseReleaseEvent
+      ~SignalPanel.move
+      ~SignalPanel.moveEvent
       ~SignalPanel.moveToThread
+      ~SignalPanel.nativeEvent
+      ~SignalPanel.nativeParentWidget
+      ~SignalPanel.nextInFocusChain
+      ~SignalPanel.normalGeometry
       ~SignalPanel.objectName
-      ~SignalPanel.originCorner
+      ~SignalPanel.overrideWindowFlags
+      ~SignalPanel.overrideWindowState
+      ~SignalPanel.paintEngine
+      ~SignalPanel.paintEvent
+      ~SignalPanel.paintingActive
+      ~SignalPanel.palette
       ~SignalPanel.parent
       ~SignalPanel.parentWidget
+      ~SignalPanel.physicalDpiX
+      ~SignalPanel.physicalDpiY
+      ~SignalPanel.pos
+      ~SignalPanel.previousInFocusChain
       ~SignalPanel.property
       ~SignalPanel.pyqtConfigure
+      ~SignalPanel.raise_
       ~SignalPanel.receivers
+      ~SignalPanel.rect
+      ~SignalPanel.releaseKeyboard
+      ~SignalPanel.releaseMouse
+      ~SignalPanel.releaseShortcut
+      ~SignalPanel.removeAction
       ~SignalPanel.removeEventFilter
-      ~SignalPanel.removeItem
-      ~SignalPanel.removeWidget
-      ~SignalPanel.replaceWidget
-      ~SignalPanel.rowCount
-      ~SignalPanel.rowMinimumHeight
-      ~SignalPanel.rowStretch
+      ~SignalPanel.render
+      ~SignalPanel.repaint
+      ~SignalPanel.resize
+      ~SignalPanel.resizeEvent
+      ~SignalPanel.restoreGeometry
+      ~SignalPanel.saveGeometry
+      ~SignalPanel.scroll
       ~SignalPanel.sender
       ~SignalPanel.senderSignalIndex
-      ~SignalPanel.setAlignment
-      ~SignalPanel.setColumnMinimumWidth
-      ~SignalPanel.setColumnStretch
+      ~SignalPanel.setAcceptDrops
+      ~SignalPanel.setAccessibleDescription
+      ~SignalPanel.setAccessibleName
+      ~SignalPanel.setAttribute
+      ~SignalPanel.setAutoFillBackground
+      ~SignalPanel.setBackgroundRole
+      ~SignalPanel.setBaseSize
       ~SignalPanel.setContentsMargins
-      ~SignalPanel.setDefaultPositioning
+      ~SignalPanel.setContextMenuPolicy
+      ~SignalPanel.setCursor
+      ~SignalPanel.setDisabled
       ~SignalPanel.setEnabled
+      ~SignalPanel.setFixedHeight
+      ~SignalPanel.setFixedSize
+      ~SignalPanel.setFixedWidth
+      ~SignalPanel.setFocus
+      ~SignalPanel.setFocusPolicy
+      ~SignalPanel.setFocusProxy
+      ~SignalPanel.setFont
+      ~SignalPanel.setForegroundRole
       ~SignalPanel.setGeometry
-      ~SignalPanel.setHorizontalSpacing
-      ~SignalPanel.setMargin
-      ~SignalPanel.setMenuBar
+      ~SignalPanel.setGraphicsEffect
+      ~SignalPanel.setHidden
+      ~SignalPanel.setInputMethodHints
+      ~SignalPanel.setLayout
+      ~SignalPanel.setLayoutDirection
+      ~SignalPanel.setLocale
+      ~SignalPanel.setMask
+      ~SignalPanel.setMaximumHeight
+      ~SignalPanel.setMaximumSize
+      ~SignalPanel.setMaximumWidth
+      ~SignalPanel.setMinimumHeight
+      ~SignalPanel.setMinimumSize
+      ~SignalPanel.setMinimumWidth
+      ~SignalPanel.setMouseTracking
       ~SignalPanel.setObjectName
-      ~SignalPanel.setOriginCorner
+      ~SignalPanel.setPalette
       ~SignalPanel.setParent
       ~SignalPanel.setProperty
-      ~SignalPanel.setRowMinimumHeight
-      ~SignalPanel.setRowStretch
-      ~SignalPanel.setSizeConstraint
-      ~SignalPanel.setSpacing
-      ~SignalPanel.setVerticalSpacing
+      ~SignalPanel.setShortcutAutoRepeat
+      ~SignalPanel.setShortcutEnabled
+      ~SignalPanel.setSizeIncrement
+      ~SignalPanel.setSizePolicy
+      ~SignalPanel.setStatusTip
+      ~SignalPanel.setStyle
+      ~SignalPanel.setStyleSheet
+      ~SignalPanel.setTabOrder
+      ~SignalPanel.setTabletTracking
+      ~SignalPanel.setToolTip
+      ~SignalPanel.setToolTipDuration
+      ~SignalPanel.setUpdatesEnabled
+      ~SignalPanel.setVisible
+      ~SignalPanel.setWhatsThis
+      ~SignalPanel.setWindowFilePath
+      ~SignalPanel.setWindowFlag
+      ~SignalPanel.setWindowFlags
+      ~SignalPanel.setWindowIcon
+      ~SignalPanel.setWindowIconText
+      ~SignalPanel.setWindowModality
+      ~SignalPanel.setWindowModified
+      ~SignalPanel.setWindowOpacity
+      ~SignalPanel.setWindowRole
+      ~SignalPanel.setWindowState
+      ~SignalPanel.setWindowTitle
+      ~SignalPanel.sharedPainter
+      ~SignalPanel.show
+      ~SignalPanel.showEvent
+      ~SignalPanel.showFullScreen
+      ~SignalPanel.showMaximized
+      ~SignalPanel.showMinimized
+      ~SignalPanel.showNormal
       ~SignalPanel.signalsBlocked
-      ~SignalPanel.sizeConstraint
+      ~SignalPanel.size
       ~SignalPanel.sizeHint
-      ~SignalPanel.spacerItem
-      ~SignalPanel.spacing
+      ~SignalPanel.sizeIncrement
+      ~SignalPanel.sizePolicy
+      ~SignalPanel.stackUnder
       ~SignalPanel.startTimer
-      ~SignalPanel.takeAt
+      ~SignalPanel.statusTip
+      ~SignalPanel.style
+      ~SignalPanel.styleSheet
+      ~SignalPanel.tabletEvent
+      ~SignalPanel.testAttribute
       ~SignalPanel.thread
       ~SignalPanel.timerEvent
-      ~SignalPanel.totalHeightForWidth
-      ~SignalPanel.totalMaximumSize
-      ~SignalPanel.totalMinimumSize
-      ~SignalPanel.totalSizeHint
+      ~SignalPanel.toolTip
+      ~SignalPanel.toolTipDuration
       ~SignalPanel.tr
+      ~SignalPanel.underMouse
+      ~SignalPanel.ungrabGesture
+      ~SignalPanel.unsetCursor
+      ~SignalPanel.unsetLayoutDirection
+      ~SignalPanel.unsetLocale
       ~SignalPanel.update
-      ~SignalPanel.verticalSpacing
-      ~SignalPanel.widget
-      ~SignalPanel.widgetEvent
+      ~SignalPanel.updateGeometry
+      ~SignalPanel.updateMicroFocus
+      ~SignalPanel.updatesEnabled
+      ~SignalPanel.visibleRegion
+      ~SignalPanel.whatsThis
+      ~SignalPanel.wheelEvent
+      ~SignalPanel.width
+      ~SignalPanel.widthMM
+      ~SignalPanel.winId
+      ~SignalPanel.window
+      ~SignalPanel.windowFilePath
+      ~SignalPanel.windowFlags
+      ~SignalPanel.windowHandle
+      ~SignalPanel.windowIcon
+      ~SignalPanel.windowIconText
+      ~SignalPanel.windowModality
+      ~SignalPanel.windowOpacity
+      ~SignalPanel.windowRole
+      ~SignalPanel.windowState
+      ~SignalPanel.windowTitle
+      ~SignalPanel.windowType
+      ~SignalPanel.x
+      ~SignalPanel.y
    
    
 
@@ -136,14 +328,27 @@ typhon.signal.SignalPanel
 
    .. autosummary::
    
-      ~SignalPanel.SetDefaultConstraint
-      ~SignalPanel.SetFixedSize
-      ~SignalPanel.SetMaximumSize
-      ~SignalPanel.SetMinAndMaxSize
-      ~SignalPanel.SetMinimumSize
-      ~SignalPanel.SetNoConstraint
+      ~SignalPanel.DrawChildren
+      ~SignalPanel.DrawWindowBackground
+      ~SignalPanel.IgnoreMask
+      ~SignalPanel.PdmDepth
+      ~SignalPanel.PdmDevicePixelRatio
+      ~SignalPanel.PdmDevicePixelRatioScaled
+      ~SignalPanel.PdmDpiX
+      ~SignalPanel.PdmDpiY
+      ~SignalPanel.PdmHeight
+      ~SignalPanel.PdmHeightMM
+      ~SignalPanel.PdmNumColors
+      ~SignalPanel.PdmPhysicalDpiX
+      ~SignalPanel.PdmPhysicalDpiY
+      ~SignalPanel.PdmWidth
+      ~SignalPanel.PdmWidthMM
+      ~SignalPanel.customContextMenuRequested
       ~SignalPanel.destroyed
       ~SignalPanel.objectNameChanged
       ~SignalPanel.staticMetaObject
+      ~SignalPanel.windowIconChanged
+      ~SignalPanel.windowIconTextChanged
+      ~SignalPanel.windowTitleChanged
    
    
