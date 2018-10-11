@@ -54,13 +54,14 @@ before_script:
   - sleep 1
 
 script:
-  - coverage run run_tests.py --timeout 15 
+  - coverage run run_tests.py --disable-warnings 
   - coverage report -m
+    #- coverage report -m
   - flake8 typhon
   # Test again but with installed version
   - mkdir notest
   - mv typhon/*.* notest
-  - python run_tests.py
+  - python run_tests.py --disable-warnings
   - mv notest/* typhon
   - rmdir notest
   # Build docs
@@ -87,3 +88,7 @@ after_success:
       export ANACONDA_API_TOKEN=$CONDA_UPLOAD_TOKEN_DEV
       anaconda upload bld-dir/linux-64/*.tar.bz2
     fi
+
+after_failure:
+  - cat logs/run_tests_log.txt
+  - cat logs/run_tests_log.txt.1

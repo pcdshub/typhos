@@ -27,7 +27,7 @@ def test_suite(device):
                       for i in range(suite.component_list.count())]
     assert len(child_displays) == len(device._sub_devices)
     # Default tools are loaded
-    assert len(suite.tools) == 2
+    assert len(suite.tools) == 3
     assert len(suite.tools[0].devices) == 1
     # No children
     childless = TyphonSuite.from_device(device, children=False)

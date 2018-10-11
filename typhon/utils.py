@@ -4,6 +4,7 @@ Utility functions for typhon
 ############
 # Standard #
 ############
+import re
 import logging
 import os.path
 import random
@@ -168,3 +169,21 @@ class TyphonBase(QWidget):
         instance = cls(parent=parent, **kwargs)
         instance.add_device(device)
         return instance
+
+
+def make_identifier(name):
+    """Make a Python string into a valid Python identifier"""
+    # That was easy
+    if name.isidentifier():
+        return name
+    # Lowercase
+    name = name.lower()
+    # Leading / following whitespace
+    name = name.strip()
+    # Intermediate whitespace should be underscores
+    name = re.sub('[\\s\\t\\n]+', '_', name)
+    # Remove invalid characters
+    name = re.sub('[^0-9a-zA-Z_]', '', name)
+    # Remove leading characters until we find a letter or an underscore
+    name = re.sub('^[^a-zA-Z_]+', '', name)
+    return name
