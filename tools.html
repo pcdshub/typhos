@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Supported Tools &mdash; Typhon 0.2.1+20.g5aa81ba documentation</title>
+  <title>Supported Tools &mdash; Typhon 0.2.1+70.g96cfb99 documentation</title>
   
 
   
@@ -28,8 +28,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="typhon.tools.TyphonLogDisplay" href="generated/typhon.tools.TyphonLogDisplay.html" />
-    <link rel="prev" title="Basic Usage" href="basic_usage.html" /> 
+    <link rel="next" title="typhon.tools.TyphonConsole" href="generated/typhon.tools.TyphonConsole.html" />
+    <link rel="prev" title="How it Works" href="basic_usage.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+20.g5aa81ba
+                0.2.1+70.g96cfb99
               </div>
             
           
@@ -84,10 +84,10 @@
             
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Supported Tools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tool-classes">Tool Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhon.tools.TyphonConsole.html">typhon.tools.TyphonConsole</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/typhon.tools.TyphonLogDisplay.html">typhon.tools.TyphonLogDisplay</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/typhon.tools.TyphonTimePlot.html">typhon.tools.TyphonTimePlot</a></li>
 </ul>
@@ -170,64 +170,18 @@
 <h1>Supported Tools<a class="headerlink" href="#supported-tools" title="Permalink to this headline">¶</a></h1>
 <p>In experimental environments there are a variety of external tools and
 applications that are critical to day to day operation. Typhon hopes to
-integrate many of these services into the <a class="reference internal" href="display.html#typhon.DeviceDisplay" title="typhon.DeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code></a> for ease of
+integrate many of these services into the <code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> for ease of
 operation. This approach has two advantages; the first is that getting to
 helpful tools requires fewer clicks and therefore less time, secondly, if we
 assume that the context in which they want to use the external tool includes
 this device, we can pre-populate many of the fields for them.</p>
-<div class="section" id="basic-usage">
-<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>All of the tools in <code class="docutils literal notranslate"><span class="pre">typhon</span></code> follow a basic pattern. Each one can be
 instantiated as a standalone widget with no <code class="docutils literal notranslate"><span class="pre">ophyd</span></code> or <code class="docutils literal notranslate"><span class="pre">Device</span></code> required. The
 intention is that these tools could be used in a separate application where the
 underlying information is in a different form. However, in order to make these
 objects easier to interface with <code class="docutils literal notranslate"><span class="pre">ophyd</span></code> objects the methods
-<a class="reference internal" href="#typhon.tools.TyphonTool.from_device" title="typhon.tools.TyphonTool.from_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonTool.from_device()</span></code></a> and <a class="reference internal" href="#typhon.tools.TyphonTool.add_device" title="typhon.tools.TyphonTool.add_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonTool.add_device()</span></code></a> are
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonTool.from_device()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonTool.add_device()</span></code> are
 available. These automatically populate fields according to device structures.</p>
-<dl class="class">
-<dt id="typhon.tools.TyphonTool">
-<em class="property">class </em><code class="descclassname">typhon.tools.</code><code class="descname">TyphonTool</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/tools/core.html#TyphonTool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.tools.TyphonTool" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base widget for all Typhon Tool creation</p>
-<dl class="method">
-<dt id="typhon.tools.TyphonTool.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/tools/core.html#TyphonTool.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.tools.TyphonTool.add_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new device to the tool</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device</strong> (<em>ophyd.Device</em>) – </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt id="typhon.tools.TyphonTool.from_device">
-<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/tools/core.html#TyphonTool.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.tools.TyphonTool.from_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new instance of the tool for a Device</p>
-<p>Shortcut for:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphonTool</span><span class="p">()</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>parent</strong> (<em>QWidget</em>) – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="tool-classes">
 <h2>Tool Classes<a class="headerlink" href="#tool-classes" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="longtable docutils">
@@ -236,10 +190,13 @@ available. These automatically populate fields according to device structures.</
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay" title="typhon.tools.TyphonLogDisplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TyphonLogDisplay</span></code></a>([level,&nbsp;parent])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.tools.TyphonConsole.html#typhon.tools.TyphonConsole" title="typhon.tools.TyphonConsole"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TyphonConsole</span></code></a>([parent])</td>
+<td>IPython Widget for Typhon Display</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay" title="typhon.tools.TyphonLogDisplay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TyphonLogDisplay</span></code></a>([level,&nbsp;parent])</td>
 <td>Typhon Logging Display</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/typhon.tools.TyphonTimePlot.html#typhon.tools.TyphonTimePlot" title="typhon.tools.TyphonTimePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TyphonTimePlot</span></code></a>([parent])</td>
+<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.tools.TyphonTimePlot.html#typhon.tools.TyphonTimePlot" title="typhon.tools.TyphonTimePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TyphonTimePlot</span></code></a>([parent])</td>
 <td>Generalized widget for plotting Ophyd signals</td>
 </tr>
 </tbody>
@@ -255,10 +212,10 @@ available. These automatically populate fields according to device structures.</
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generated/typhon.tools.TyphonLogDisplay.html" class="btn btn-neutral float-right" title="typhon.tools.TyphonLogDisplay" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generated/typhon.tools.TyphonConsole.html" class="btn btn-neutral float-right" title="typhon.tools.TyphonConsole" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basic_usage.html" class="btn btn-neutral" title="Basic Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basic_usage.html" class="btn btn-neutral" title="How it Works" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -289,7 +246,7 @@ available. These automatically populate fields according to device structures.</
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2.1+20.g5aa81ba',
+            VERSION:'0.2.1+70.g96cfb99',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>typhon.tools.console &mdash; Typhon 0.2.1+70.g96cfb99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.1+70.g96cfb99
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_methods.html">Including Python Code</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhon Plugins</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Typhon</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>typhon.tools.console</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for typhon.tools.console</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">localtime</span>
+
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span>
+<span class="kn">from</span> <span class="nn">qtconsole.rich_jupyter_widget</span> <span class="k">import</span> <span class="n">RichJupyterWidget</span>
+<span class="kn">from</span> <span class="nn">qtconsole.manager</span> <span class="k">import</span> <span class="n">QtKernelManager</span>
+
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">TyphonBase</span><span class="p">,</span> <span class="n">make_identifier</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TyphonConsole"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonConsole.html#typhon.tools.TyphonConsole">[docs]</a><span class="k">class</span> <span class="nc">TyphonConsole</span><span class="p">(</span><span class="n">RichJupyterWidget</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    IPython Widget for Typhon Display</span>
+
+<span class="sd">    This widget handles starting a ``JupyterKernel`` and connecting an IPython</span>
+<span class="sd">    console in which the user can type Python commands. It is important to note</span>
+<span class="sd">    that the kernel in which commands are executed is a completely separate</span>
+<span class="sd">    process. This protects the user against locking themselves out of the GUI,</span>
+<span class="sd">    but makes it difficult to pass the Device.</span>
+
+<span class="sd">    To get around this caveat, this widget uses ``happi`` to pass the Device</span>
+<span class="sd">    between the processes. This is not a strict requirement, but if ``happi``</span>
+<span class="sd">    is not installed, users will need to create a custom ``add_device`` method</span>
+<span class="sd">    if they want their devices loaded in both the GUI and console.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TyphonConsole.__init__"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonConsole.html#typhon.tools.TyphonConsole.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Create a Kernel</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting Jupyter Kernel ...&quot;</span><span class="p">)</span>
+        <span class="n">kernel_manager</span> <span class="o">=</span> <span class="n">QtKernelManager</span><span class="p">(</span><span class="n">kernel_name</span><span class="o">=</span><span class="s1">&#39;python3&#39;</span><span class="p">)</span>
+        <span class="n">kernel_manager</span><span class="o">.</span><span class="n">start_kernel</span><span class="p">()</span>
+        <span class="n">kernel_client</span> <span class="o">=</span> <span class="n">kernel_manager</span><span class="o">.</span><span class="n">client</span><span class="p">()</span>
+        <span class="n">kernel_client</span><span class="o">.</span><span class="n">start_channels</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_manager</span> <span class="o">=</span> <span class="n">kernel_manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_client</span> <span class="o">=</span> <span class="n">kernel_client</span>
+        <span class="c1"># Ensure we shutdown the kernel</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">aboutToQuit</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">)</span>
+        <span class="c1"># Styling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">syntax_style</span> <span class="o">=</span> <span class="s1">&#39;monokai&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_default_style</span><span class="p">(</span><span class="n">colors</span><span class="o">=</span><span class="s1">&#39;Linux&#39;</span><span class="p">)</span>
+        <span class="c1"># Ensure cleanup</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">aboutToQuit</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">()</span>
+        <span class="n">default</span><span class="o">.</span><span class="n">setWidth</span><span class="p">(</span><span class="mi">600</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shutdown the Jupyter Kernel&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_client</span><span class="o">.</span><span class="n">channels_running</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Stopping Jupyter Client&quot;</span><span class="p">)</span>
+            <span class="c1"># Stop channels in the background</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_client</span><span class="o">.</span><span class="n">stop_channels</span><span class="p">)</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kernel_manager</span><span class="o">.</span><span class="n">shutdown_kernel</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Kernel is already shutdown.&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">happi</span>
+
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="c1"># Needs metadata</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Device </span><span class="si">%r</span><span class="s2"> has no stored metadata. &quot;</span>
+                         <span class="s2">&quot;Unable to load in TyphonConsole&quot;</span><span class="p">,</span>
+                         <span class="n">device</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Create a temporary file</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">localtime</span><span class="p">())</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">(),</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Dump the device in the tempfile</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="n">happi</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="c1"># Create a valid Python identifier</span>
+            <span class="n">python_name</span> <span class="o">=</span> <span class="n">make_identifier</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># Create the script to load the device</span>
+            <span class="n">load_script</span> <span class="o">=</span> <span class="p">(</span>
+                       <span class="n">f</span><span class="s1">&#39;import happi; &#39;</span>
+                       <span class="n">f</span><span class="s1">&#39;from happi.loader import from_container; &#39;</span>
+                       <span class="n">f</span><span class="s1">&#39;client = happi.Client(path=&quot;</span><span class="si">{name}</span><span class="s1">&quot;); &#39;</span>
+                       <span class="n">f</span><span class="s1">&#39;md = client.find_device(name=&quot;</span><span class="si">{device.md.name}</span><span class="s1">&quot;); &#39;</span>
+                       <span class="n">f</span><span class="s1">&#39;</span><span class="si">{python_name}</span><span class="s1"> = from_container(md)&#39;</span><span class="p">)</span>
+            <span class="c1"># Execute the script</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">kernel_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">load_script</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add device </span><span class="si">%r</span><span class="s2"> to TyphonConsole.&quot;</span><span class="p">,</span>
+                             <span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># Cleanup after ourselves</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># Set the TyphonConsole up to load devices</span>
+    <span class="n">TyphonConsole</span><span class="o">.</span><span class="n">add_device</span> <span class="o">=</span> <span class="n">add_device</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Unable to import ``happi``. Devices will not be added &quot;</span>
+                <span class="s2">&quot;to the ``TyphonConsole`` unless ``TyphonConsole.add_device`` &quot;</span>
+                <span class="s2">&quot;is implemented.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Dummy pass-through function</span>
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="n">TyphonConsole</span><span class="o">.</span><span class="n">add_device</span> <span class="o">=</span> <span class="n">add_device</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.2.1+70.g96cfb99',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

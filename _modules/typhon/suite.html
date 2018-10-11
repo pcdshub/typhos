@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>typhon.suite &mdash; Typhon 0.2.1+70.g96cfb99 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.1+70.g96cfb99
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhon Plugins</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhon</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>typhon.suite</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for typhon.suite</h1><div class="highlight"><pre>
+<span></span><span class="c1">############</span>
+<span class="c1"># Standard #</span>
+<span class="c1">############</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+
+<span class="c1">############</span>
+<span class="c1"># External #</span>
+<span class="c1">############</span>
+<span class="kn">from</span> <span class="nn">ophyd</span> <span class="k">import</span> <span class="n">Device</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="k">import</span> <span class="n">uic</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QModelIndex</span>
+
+<span class="c1">###########</span>
+<span class="c1"># Package #</span>
+<span class="c1">###########</span>
+<span class="kn">from</span> <span class="nn">.display</span> <span class="k">import</span> <span class="n">TyphonDisplay</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">TyphonBase</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonSidebarItem</span>
+<span class="kn">from</span> <span class="nn">.tools</span> <span class="k">import</span> <span class="n">TyphonTimePlot</span><span class="p">,</span> <span class="n">TyphonLogDisplay</span><span class="p">,</span> <span class="n">TyphonConsole</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TyphonSuite"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite">[docs]</a><span class="k">class</span> <span class="nc">TyphonSuite</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complete Typhon Window</span>
+
+<span class="sd">    This contains all the neccesities to load tools and devices into a Typhon</span>
+<span class="sd">    window.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : QWidget, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Instantiate Widget</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Instantiate UI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;base.ui&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_panel</span> <span class="o">=</span> <span class="n">TyphonDisplay</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_panel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subdisplays</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="c1"># Connect signals to slots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_subdisplays</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tool_list</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_subdisplay</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tool_list</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_list</span><span class="o">.</span><span class="n">clearSelection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_list</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_subdisplay</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_list</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tool_list</span><span class="o">.</span><span class="n">clearSelection</span><span class="p">)</span>
+        <span class="c1"># Hide widgets until objects are added to them</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subwindow</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tool_sidebar</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_sidebar</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TyphonSuite.add_subdisplay"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.add_subdisplay">[docs]</a>    <span class="k">def</span> <span class="nf">add_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span> <span class="n">list_widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a widget to one of the button layouts</span>
+
+<span class="sd">        This add a display for a subcomponent and a QPushButton that</span>
+<span class="sd">        will bring the display to the foreground. Users can either specify</span>
+<span class="sd">        their button or have one generate for them. Either way the button is</span>
+<span class="sd">        connected to the `pyqSlot` :meth:`.show_subdevice`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name to place on QPushButton</span>
+
+<span class="sd">        display : QWidget</span>
+<span class="sd">            QWidget to associate with button</span>
+
+<span class="sd">        button : QWidget, optional</span>
+<span class="sd">            QWidget with the PyQtSignal ``clicked``. If None, is given a</span>
+<span class="sd">            QPushButton is created</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create QListViewItem to store the display information</span>
+        <span class="n">list_item</span> <span class="o">=</span> <span class="n">TyphonSidebarItem</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">list_item</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">,</span> <span class="n">display</span><span class="p">)</span>
+        <span class="n">list_widget</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">list_item</span><span class="p">)</span>
+        <span class="c1"># Add our display to the component widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subdisplay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subdisplays</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">list_item</span>
+        <span class="c1"># Hide the parent widget if hidden</span>
+        <span class="n">sidebar</span> <span class="o">=</span> <span class="n">list_widget</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sidebar</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
+            <span class="n">sidebar</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TyphonSuite.add_subdevice"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.add_subdevice">[docs]</a>    <span class="k">def</span> <span class="nf">add_subdevice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a subdevice to the `component_widget` stack</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.Device</span>
+
+<span class="sd">        kwargs:</span>
+<span class="sd">            Passed to :meth:`.TyphonDevice.from_device`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating subdisplay for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Remove parent from name for title</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">dd</span> <span class="o">=</span> <span class="n">TyphonDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_subdisplay</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dd</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphonSuite.add_tool"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.add_tool">[docs]</a>    <span class="k">def</span> <span class="nf">add_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a widget to the toolbar</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name :str</span>
+<span class="sd">            Name of tool to be displayed in sidebar</span>
+
+<span class="sd">        tool: QWidget</span>
+<span class="sd">            Widget to be added to ``.ui.subdisplay``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_subdisplay</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tool_list</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_item_from_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a child display based on the name given</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name: str</span>
+<span class="sd">            Name of display</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Gather QListWidgetItem</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">list_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subdisplays</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Display </span><span class="si">{}</span><span class="s2"> has not been added to the &quot;</span>
+                             <span class="s2">&quot;DeviceDisplay yet&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">exc</span>
+        <span class="k">return</span> <span class="n">list_item</span>
+
+<div class="viewcode-block" id="TyphonSuite.get_subdisplay"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.get_subdisplay">[docs]</a>    <span class="k">def</span> <span class="nf">get_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a subdisplay by name</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        display :str or Device</span>
+<span class="sd">            Name of subdisplay. This will be the text shown on the sidebar. For</span>
+<span class="sd">            component devices screens you can pass in the component device</span>
+<span class="sd">            itself</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        widget : QWidget</span>
+<span class="sd">            Widget that is a member of the :attr:`.ui.subdisplay`</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code:: python</span>
+
+<span class="sd">            my_display.get_subdisplay(my_device.x)</span>
+<span class="sd">            my_displyay.get_subsdisplay(&#39;My Tool&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get the cleaned Device name if passed a Device</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
+            <span class="n">display</span> <span class="o">=</span> <span class="n">clean_name</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_from_sidebar</span><span class="p">(</span><span class="n">display</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphonSuite.show_subdisplay"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.show_subdisplay">[docs]</a>    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="nd">@Slot</span><span class="p">(</span><span class="n">QModelIndex</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">show_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show subdevice display of the QStackedWidget</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str, Device or QModelIndex</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Grab the relevant display</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QModelIndex</span><span class="p">):</span>
+            <span class="n">display</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">display</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="c1"># Show our subdisplay if previously hidden</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subwindow</span><span class="o">.</span><span class="n">isHidden</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subwindow</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="c1"># Set the current display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subdisplay</span><span class="o">.</span><span class="n">setCurrentWidget</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subdisplay</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="n">display</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TyphonSuite.hide_subdisplays"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.hide_subdisplays">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">hide_subdisplays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hide the component widget and set all buttons unchecked</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Hide the main display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">subwindow</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">component_list</span><span class="o">.</span><span class="n">clearSelection</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tool_list</span><span class="o">.</span><span class="n">clearSelection</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tools loaded into the DeviceDisplay&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_list</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tool_list</span><span class="o">.</span><span class="n">count</span><span class="p">())]</span>
+
+<div class="viewcode-block" id="TyphonSuite.add_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a device to the :attr:`.device_panel` and tools</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device: ophyd.Device</span>
+
+<span class="sd">        methods: list, optional</span>
+<span class="sd">            Methods to add to the device</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Add the device to the main panel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_panel</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device_panel</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="c1"># Add a device to all the tool displays</span>
+        <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%s</span><span class="s2"> to tool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                                 <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">tool</span><span class="p">))</span>
+        <span class="c1"># Handle child devices</span>
+        <span class="k">if</span> <span class="n">children</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">dev_name</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">_sub_devices</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_subdevice</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">dev_name</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TyphonSuite.from_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.from_device">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">tools</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Log&#39;</span><span class="p">:</span> <span class="n">TyphonLogDisplay</span><span class="p">,</span>
+                           <span class="s1">&#39;StripTool&#39;</span><span class="p">:</span> <span class="n">TyphonTimePlot</span><span class="p">,</span>
+                           <span class="s1">&#39;Console&#39;</span><span class="p">:</span> <span class="n">TyphonConsole</span><span class="p">},</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new TyphonDisplay from an ophyd.Device</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device: ophyd.Device</span>
+
+<span class="sd">        children: bool, optional</span>
+<span class="sd">            Choice to include child Device components</span>
+
+<span class="sd">        parent: QWidgets</span>
+
+<span class="sd">        kwargs:</span>
+<span class="sd">            Passed to :meth:`TyphonSuite.add_device`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">display</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">display</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to load </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">tool</span><span class="p">))</span>
+        <span class="n">display</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">display</span><span class="o">.</span><span class="n">device_panel</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">display</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.2.1+70.g96cfb99',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
