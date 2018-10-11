@@ -16,8 +16,8 @@ from typhon.func import FunctionPanel, FunctionDisplay
 kwargs = dict()
 
 
-@pytest.fixture(scope='module')
-def func_display():
+@pytest.fixture(scope='function')
+def func_display(qtbot):
     # Create mock function
     def foo(first, second: float=3.14, hide: bool=True, third=False):
         kwargs.update({"first": first, "second": second,
@@ -25,11 +25,12 @@ def func_display():
     # Create display
     func_dis = FunctionDisplay(foo, annotations={'first': int},
                                hide_params=['hide'])
+    qtbot.addWidget(func_dis)
     return func_dis
 
 
 @show_widget
-def test_func_display_creation(func_display):
+def test_func_display_creation(func_display, qtbot):
     # Check we made the proper number of control widgets
     assert len(func_display.param_controls) == 3
     # Check our hidden parameter is not available
@@ -70,7 +71,7 @@ def test_func_exceptions(func_display):
 
 
 @show_widget
-def test_func_panel():
+def test_func_panel(qtbot):
     # Mock functions
     def foo(a: int, b: bool=False, c: bool=True):
         pass
@@ -79,6 +80,7 @@ def test_func_panel():
         pass
     # Create Panel
     fp = FunctionPanel([foo, foobar])
+    qtbot.addWidget(fp)
     # Check that all our methods made it in
     assert 'foo' in fp.methods
     assert 'foobar' in fp.methods

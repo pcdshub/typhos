@@ -25,11 +25,12 @@ class WritableWidget(QWidget, PyDMWritableWidget):
 
 
 
-def test_signal_connection(qapp):
+def test_signal_connection(qapp, qtbot):
     # Create a signal and attach our listener
     sig = Signal(name='my_signal', value=1)
     register_signal(sig)
     widget = WritableWidget()
+    qtbot.addWidget(widget)
     listener = widget.channels()[0]
     sig_conn = SignalConnection(listener, 'my_signal')
     sig_conn.add_listener(listener)
@@ -59,8 +60,9 @@ def test_signal_connection(qapp):
     assert sig.get() == 3
 
 
-def test_metadata(qapp):
+def test_metadata(qapp, qtbot):
     widget = WritableWidget()
+    qtbot.addWidget(widget)
     listener = widget.channels()[0]
     # Create a signal and attach our listener
     sig = RichSignal(name='md_signal', value=1)
@@ -73,8 +75,9 @@ def test_metadata(qapp):
     assert widget._prec == 2
 
 
-def test_disconnection(qapp):
+def test_disconnection(qapp, qtbot):
     widget = WritableWidget()
+    qtbot.addWidget(widget)
     listener = widget.channels()[0]
     listener.address = 'sig://invalid'
     plugin = SignalPlugin()

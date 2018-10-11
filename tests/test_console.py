@@ -8,8 +8,9 @@ from typhon.tools import TyphonConsole
 from .conftest import show_widget
 
 
-def test_base_console():
+def test_base_console(qtbot):
     tc = TyphonConsole()
+    qtbot.addWidget(tc)
     assert tc.kernel_manager.is_alive()
     tc.shutdown()
     assert not tc.kernel_manager.is_alive()
@@ -18,7 +19,7 @@ def test_base_console():
 
 @show_widget
 @pytest.mark.timeout(30)
-def test_add_device(qapp):
+def test_add_device(qapp, qtbot):
     # Create a device and attach metadata
     md = happi.Device(name='Test This', prefix='Tst:This:1', beamline='TST',
                       device_class='types.SimpleNamespace', args=list(),
@@ -26,6 +27,7 @@ def test_add_device(qapp):
     device = from_container(md)
     # Add the device to the Console
     tc = TyphonConsole.from_device(device)
+    qtbot.addWidget(tc)
     # Check that we created the object in the shell
     tc.kernel_client.execute('print(test_this.here)', silent=False)
     while md.kwargs['here'] not in tc._control.toPlainText():
