@@ -92,7 +92,7 @@ def clean_name(device, strip_parent=True):
     return clean_attr(name)
 
 
-def use_stylesheet(dark=False):
+def use_stylesheet(dark=False, widget=None):
     """
     Use the Typhon stylesheet
 
@@ -116,12 +116,13 @@ def use_stylesheet(dark=False):
         # Load the stylesheet from the file
         with open(style_path, 'r') as handle:
             style = handle.read()
-    # Find application
-    app = QApplication.instance()
-    # Set Fusion style
-    app.setStyle(QStyleFactory.create('Fusion'))
+    if widget is None:
+        widget = QApplication.instance()
+    # We can set Fusion style if it is an application
+    if isinstance(widget, QApplication):
+        widget.setStyle(QStyleFactory.create('Fusion'))
     # Set Stylesheet
-    app.setStyleSheet(style)
+    widget.setStyleSheet(style)
 
 
 def random_color():

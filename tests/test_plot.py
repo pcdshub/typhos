@@ -28,17 +28,19 @@ def sim_signal():
     return sim_sig
 
 
-def test_channeldisplay():
+def test_channeldisplay(qtbot):
     disp = ChannelDisplay('Test Channel', QColor(Qt.white))
+    qtbot.addWidget(disp)
     assert disp.ui.name.text() == 'Test Channel'
     assert disp.ui.color.brush.color() == QColor(Qt.white)
 
 
-def test_add_signal(sim_signal):
+def test_add_signal(qtbot,sim_signal):
     # Create Signals
     epics_sig = EpicsSignal('Tst:This')
     # Create empty plot
     ttp = TyphonTimePlot()
+    qtbot.addWidget(ttp)
     # Add to list of available signals
     ttp.add_available_signal(epics_sig, 'Epics Signal')
     assert ttp.ui.signal_combo.itemText(0) == 'Epics Signal'
@@ -48,8 +50,9 @@ def test_add_signal(sim_signal):
     assert ttp.ui.signal_combo.itemData(1) == 'sig://tst_this_2'
 
 
-def test_curve_methods(sim_signal):
+def test_curve_methods(qtbot, sim_signal):
     ttp = TyphonTimePlot()
+    qtbot.addWidget(ttp)
     orig_color = ttp.ui.color.brush
     ttp.add_curve('sig://' + sim_signal.name, name=sim_signal.name)
     # Check that our signal is stored in the mapping
@@ -69,16 +72,18 @@ def test_curve_methods(sim_signal):
     assert ttp.ui.live_channels.layout().count() == 1  # 1 is a spacer
     assert len(ttp.ui.timeplot.curves) == 0
 
-def test_curve_creation_button(sim_signal):
+def test_curve_creation_button(qtbot, sim_signal):
     ttp = TyphonTimePlot()
+    qtbot.addWidget(ttp)
     ttp.add_available_signal(sim_signal, 'Sim Signal')
     ttp.creation_requested()
     # Check that our signal is stored in the mapping
     assert 'Sim Signal' in ttp.channel_map
     assert len(ttp.ui.timeplot.curves) == 1
 
-def test_device_plot(motor):
+def test_device_plot(motor, qtbot):
     dtp = TyphonTimePlot.from_device(motor)
+    qtbot.addWidget(dtp)
     # Add the hint
     assert len(dtp.ui.timeplot.curves) == 1
     # Added all the signals

@@ -4,10 +4,11 @@ from .conftest import show_widget
 
 
 @show_widget
-def test_device_display(device):
+def test_device_display(device, qtbot):
     device.name ='test'
     panel = TyphonDisplay.from_device(device, methods=[device.insert,
                                                      device.remove])
+    qtbot.addWidget(panel)
     assert panel.title.lower() == 'test'
     # We have all our signals
     shown_read_sigs = list(panel.read_panel.signals.keys())
@@ -25,10 +26,11 @@ def test_device_display(device):
 
 
 @show_widget
-def test_display_with_images(device, test_images):
+def test_display_with_images(device, qtbot, test_images):
     (lenna, python) = test_images
     # Create a display with our image
     panel = TyphonDisplay(name="Image Test", image=lenna)
+    qtbot.addWidget(panel)
     assert panel.image_widget.filename == lenna
     # Add our python image
     panel.add_image(python)
