@@ -1,7 +1,7 @@
-from ophyd import Device, Component as Cpt
 from qtpy.QtWidgets import QWidget
+from ophyd import Device, Component as Cpt, Kind
 
-from typhon.utils import use_stylesheet, clean_name, grab_hints
+from typhon.utils import use_stylesheet, clean_name, grab_hints, grab_kind
 
 
 class NestedDevice(Device):
@@ -33,3 +33,13 @@ def test_stylesheet(qtbot):
     qtbot.addWidget(widget)
     use_stylesheet(widget=widget)
     use_stylesheet(widget=widget, dark=True)
+
+
+def test_grab_kind(motor):
+    assert len(grab_kind(motor, 'hinted')) == len(motor.hints['fields'])
+    assert len(grab_kind(motor, 'normal')) == len(motor.read_attrs)
+    assert len(grab_kind(motor, Kind.config)) == len(motor.configuration_attrs)
+    omitted = (len(motor.component_names)
+               - len(motor.read_attrs)
+               - len(motor.configuration_attrs))
+    assert len(grab_kind(motor, 'omitted')) == omitted
