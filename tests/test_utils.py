@@ -1,4 +1,5 @@
 from ophyd import Device, Component as Cpt
+from qtpy.QtWidgets import QWidget
 
 from typhon.utils import use_stylesheet, clean_name, grab_hints
 
@@ -27,6 +28,8 @@ def test_grab_hints(motor):
                 for field in motor.hints['fields']])
 
 
-def test_stylesheet():
-    use_stylesheet()
-    use_stylesheet(dark=True)
+def test_stylesheet(qtbot):
+    widget = QWidget()
+    qtbot.addWidget(widget)
+    use_stylesheet(widget=widget)
+    use_stylesheet(widget=widget, dark=True)
