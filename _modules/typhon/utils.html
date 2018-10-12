@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.utils &mdash; Typhon 0.2.1+70.g96cfb99 documentation</title>
+  <title>typhon.utils &mdash; Typhon 0.2.1+76.g00a3935 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+70.g96cfb99
+                0.2.1+76.g00a3935
               </div>
             
           
@@ -249,7 +249,7 @@
     <span class="k">return</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">use_stylesheet</span><span class="p">(</span><span class="n">dark</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">use_stylesheet</span><span class="p">(</span><span class="n">dark</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use the Typhon stylesheet</span>
 
@@ -273,12 +273,13 @@
         <span class="c1"># Load the stylesheet from the file</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">style_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
             <span class="n">style</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="c1"># Find application</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
-    <span class="c1"># Set Fusion style</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">QStyleFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Fusion&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+    <span class="c1"># We can set Fusion style if it is an application</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">):</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">QStyleFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Fusion&#39;</span><span class="p">))</span>
     <span class="c1"># Set Stylesheet</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">random_color</span><span class="p">():</span>
@@ -378,7 +379,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.2.1+70.g96cfb99',
+            VERSION:'0.2.1+76.g00a3935',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
