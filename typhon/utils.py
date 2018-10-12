@@ -5,7 +5,6 @@ Utility functions for typhon
 # Standard #
 ############
 import re
-from functools import partial
 import logging
 import os.path
 import random
