@@ -75,7 +75,7 @@ def test_metadata(qapp, qtbot):
     assert widget._prec == 2
 
 
-def test_disconnection(qapp, qtbot):
+def test_disconnection(qtbot):
     widget = WritableWidget()
     qtbot.addWidget(widget)
     listener = widget.channels()[0]

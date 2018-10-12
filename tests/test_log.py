@@ -5,7 +5,7 @@ from ophyd import Device
 from typhon.tools import TyphonLogDisplay
 
 
-def test_log_display(qapp, qtbot):
+def test_log_display(qtbot):
     dev = Device(name='test')
     log_tool = TyphonLogDisplay.from_device(dev)
     qtbot.addWidget(log_tool)
