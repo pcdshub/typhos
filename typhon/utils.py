@@ -8,11 +8,12 @@ import re
 import logging
 import os.path
 import random
+import warnings
 
 ############
 # External #
 ############
-import ophyd
+from ophyd import Kind, Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from ophyd.sim import SignalRO
 from qtpy.QtGui import QColor
@@ -47,10 +48,31 @@ def is_signal_ro(signal):
     return isinstance(signal, (SignalRO, EpicsSignalRO))
 
 
+def grab_kind(device, kind):
+    """Grab all signals of a specific Kind from a Device"""
+    # Accept actual Kind or string value
+    if not isinstance(kind, Kind):
+        kind = Kind[kind]
+    # Find the right attribute store
+    kind_attr = {Kind.hinted: device.read_attrs,
+                 Kind.normal: device.read_attrs,
+                 Kind.config: device.configuration_attrs,
+                 Kind.omitted: [attr for attr in device.component_names
+                                if attr not in device.read_attrs +
+                                device.configuration_attrs]}[kind]
+    # Return that kind filtered for devices
+    signals = []
+    for attr in kind_attr:
+        cpt = getattr(device, attr)
+        if cpt.kind >= kind and not isinstance(cpt, Device):
+            signals.append((attr, cpt))
+    return signals
+
+
 def grab_hints(device):
-    """Grab the hints of an ophyd Device"""
-    return [getattr(device, cpt) for cpt in device.read_attrs
-            if getattr(device, cpt).kind == ophyd.Kind.hinted]
+    """Grab all the hinted signals from a Device"""
+    warnings.warn("This will be deprecated. Use ``grab_kind``.")
+    return [cpt[1] for cpt in grab_kind(device, kind=Kind.hinted)]
 
 
 def channel_name(pv, protocol='ca'):
@@ -83,7 +105,7 @@ def clean_name(device, strip_parent=True):
     """
     name = device.name
     if strip_parent and device.parent:
-        if isinstance(strip_parent, ophyd.Device):
+        if isinstance(strip_parent, Device):
             parent_name = strip_parent.name
         else:
             parent_name = device.parent.name

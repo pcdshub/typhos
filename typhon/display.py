@@ -2,14 +2,13 @@ import logging
 import os.path
 from warnings import warn
 
-from ophyd import Device
 from pydm.widgets.drawing import PyDMDrawingImage
 from qtpy import uic
 from qtpy.QtCore import Qt
 
 from .func import FunctionPanel
 from .signal import SignalPanel
-from .utils import ui_dir, clean_attr, clean_name, TyphonBase
+from .utils import ui_dir, clean_attr, clean_name, TyphonBase, grab_kind
 
 logger = logging.getLogger(__name__)
 
@@ -119,21 +118,12 @@ class TyphonDisplay(TyphonBase):
         """
         super().add_device(device)
         # Create read and configuration panels
-        for attr in device.read_attrs:
-            signal = getattr(device, attr)
-            if not isinstance(signal, Device):
-                self.read_panel.add_signal(signal, clean_attr(attr))
-        for attr in device.configuration_attrs:
-            signal = getattr(device, attr)
-            if not isinstance(signal, Device):
-                self.config_panel.add_signal(signal, clean_attr(attr))
-        # Catch the rest of the signals add to misc panel below misc_button
-        for attr in device.component_names:
-            if attr not in (device.read_attrs
-                            + device.configuration_attrs):
-                signal = getattr(device, attr)
-                if not isinstance(signal, Device):
-                    self.misc_panel.add_signal(signal, clean_attr(attr))
+        for attr, signal in grab_kind(device, 'normal'):
+            self.read_panel.add_signal(signal, clean_attr(attr))
+        for attr, signal in grab_kind(device, 'config'):
+            self.config_panel.add_signal(signal, clean_attr(attr))
+        for attr, signal in grab_kind(device, 'omitted'):
+            self.misc_panel.add_signal(signal, clean_attr(attr))
         # Add our methods to the panel
         methods = methods or list()
         for method in methods:
