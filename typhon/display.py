@@ -2,7 +2,6 @@ import logging
 import os.path
 from warnings import warn
 
-from ophyd import Device
 from pydm.widgets.drawing import PyDMDrawingImage
 from qtpy import uic
 from qtpy.QtCore import Qt
