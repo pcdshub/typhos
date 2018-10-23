@@ -1,6 +1,7 @@
 import logging
 
-from happi import Client, from_container
+from happi import Client
+from happi.loader import from_container
 from happi.errors import SearchError
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
 from pydm.widgets.channel import PyDMChannel
