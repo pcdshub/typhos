@@ -5,7 +5,7 @@ from happi.loader import from_container
 from happi.errors import SearchError
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
 from pydm.widgets.channel import PyDMChannel
-from qtpy.QtCore import Signal, Slot
+from qtpy.QtCore import Signal, Slot, QObject
 
 _client = None
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ def register_client(client):
     _client = client
 
 
-class HappiChannel(PyDMChannel):
+class HappiChannel(PyDMChannel, QObject):
     """
     PyDMChannel to transport Device Information
 
@@ -29,6 +29,7 @@ class HappiChannel(PyDMChannel):
     """
     def __init__(self, *, tx_slot, **kwargs):
         super().__init__(**kwargs)
+        QObject.__init__(self)
         self._tx_slot = tx_slot
         self._last_md = None
 
