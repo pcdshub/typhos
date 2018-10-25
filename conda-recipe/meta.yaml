@@ -16,8 +16,10 @@ requirements:
       - python
       - numpy
       - ophyd >=1.2.0
+      - pyqtgraph
       - pydm >=1.2.0
       - qdarkstyle
+      - qtawesome
       - qtconsole
       - qtpy
 
