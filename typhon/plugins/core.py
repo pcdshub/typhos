@@ -85,6 +85,7 @@ class SignalConnection(PyDMConnection):
             # Cast into the correct type
             if self.signal_type is not np.ndarray:
                 new_val = self.signal_type(new_val)
+            logger.debug("Putting value %r to %r", new_val, self.address)
             self.signal.put(new_val)
         except Exception as exc:
             logger.exception("Unable to put %r to %s", new_val, self.address)
@@ -116,6 +117,7 @@ class SignalConnection(PyDMConnection):
         performed in PyDMConnection
         """
         # Perform the default connection setup
+        logger.debug("Adding %r ...", channel)
         super().add_listener(channel)
         # Report as no-alarm state
         self.new_severity_signal.emit(0)
@@ -162,6 +164,7 @@ class SignalConnection(PyDMConnection):
         This removes the `send_new_value` connections from the channel in
         addition to the default disconnection performed in PyDMConnection
         """
+        logger.debug("Removing %r ...", channel)
         # Disconnect put_value from outgoing channel
         if channel.value_signal is not None:
             for _typ in self.supported_types:

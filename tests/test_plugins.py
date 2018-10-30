@@ -31,9 +31,13 @@ def test_signal_connection(qapp, qtbot):
     register_signal(sig)
     widget = WritableWidget()
     qtbot.addWidget(widget)
+    widget.channel = 'sig://my_signal'
     listener = widget.channels()[0]
-    sig_conn = SignalConnection(listener, 'my_signal')
-    sig_conn.add_listener(listener)
+    # If PyDMChannel can not connect, we need to connect it ourselves
+    # In PyDM > 1.5.0 this will not be neccesary as the widget will be
+    # connected after we set the channel name
+    if not hasattr(listener, 'connect'):
+        qapp.establish_widget_connections(widget)
     # Check that our widget receives the initial value
     qapp.processEvents()
     assert widget._write_access
@@ -49,7 +53,12 @@ def test_signal_connection(qapp, qtbot):
     # Try changing types
     qapp.processEvents()
     qapp.processEvents()  # Must be called twice. Multiple rounds of signals
-    sig_conn.remove_listener(listener)
+    # In PyDM > 1.5.0 we will not need the application to disconnect the
+    # widget, but until then we have to check for the attribute
+    if hasattr(listener, 'disconnect'):
+        listener.disconnect()
+    else:
+        qapp.close_widget_connections(widget)
     # Check that our signal is disconnected completely and maintains the same
     # value as the signal updates in the background
     sig.put(3)
@@ -63,6 +72,7 @@ def test_signal_connection(qapp, qtbot):
 def test_metadata(qapp, qtbot):
     widget = WritableWidget()
     qtbot.addWidget(widget)
+    widget.channel = 'sig://md_signal'
     listener = widget.channels()[0]
     # Create a signal and attach our listener
     sig = RichSignal(name='md_signal', value=1)
@@ -78,8 +88,8 @@ def test_metadata(qapp, qtbot):
 def test_disconnection(qtbot):
     widget = WritableWidget()
     qtbot.addWidget(widget)
+    widget.channel = 'sig://invalid'
     listener = widget.channels()[0]
-    listener.address = 'sig://invalid'
     plugin = SignalPlugin()
     # Non-existant signal doesn't raise an error
     plugin.add_connection(listener)
