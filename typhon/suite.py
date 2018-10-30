@@ -3,7 +3,7 @@
 ############
 from functools import partial
 import logging
-import os.path
+import warnings
 
 ############
 # External #
@@ -116,8 +116,10 @@ class TyphonSuite(TyphonBase):
             QWidget with the PyQtSignal ``clicked``. If None, is given a
             QPushButton is created
         """
+        warnings.warn("This method is deprecated. Use TyphonSuite.add_device "
+                      "or TyphonSuite.add_tool instead.")
         # Create QListViewItem to store the display information
-        list_item = TyphonSidebarItem(name)
+        list_item = QListWidgetItem(name)
         list_item.setData(Qt.UserRole, display)
         list_widget.addItem(list_item)
 
