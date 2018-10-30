@@ -18,7 +18,7 @@ from .conftest import show_widget, RichSignal, DeadSignal
 
 @show_widget
 @using_fake_epics_pv
-def test_panel_creation(qtbot):
+def test_panel_creation():
     panel = SignalPanel(signals={
                     # Signal is its own write
                     'Standard': EpicsSignal('Tst:Pv'),
@@ -30,7 +30,6 @@ def test_panel_creation(qtbot):
                     # Simulated Signal
                     'Simulated': SynSignal(name='simul'),
                     'SimulatedRO': SynSignalRO(name='simul_ro')})
-    qtbot.addWidget(panel)
     assert len(panel.signals) == 5
     # Check read-only channels do not have write widgets
     panel.layout().itemAtPosition(2, 1).layout().count() == 1
@@ -44,9 +43,8 @@ def test_panel_creation(qtbot):
 
 @show_widget
 @using_fake_epics_pv
-def test_panel_add_enum(qtbot):
+def test_panel_add_enum():
     panel = SignalPanel()
-    qtbot.addWidget(panel)
     # Create an enum pv
     epics_sig = EpicsSignal("Tst:Enum")
     epics_sig._write_pv.enum_strs = ('A', 'B')
@@ -68,18 +66,16 @@ def test_panel_add_enum(qtbot):
     return panel
 
 
-def test_add_dead_signal(qtbot):
+def test_add_dead_signal():
     panel = SignalPanel()
-    qtbot.addWidget(panel)
     dead_sig = DeadSignal(name='ded')
     panel.add_signal(dead_sig, 'Dead Signal')
     assert 'Dead Signal' in panel.signals
 
 
 @using_fake_epics_pv
-def test_add_pv(qtbot):
+def test_add_pv():
     panel = SignalPanel()
-    qtbot.addWidget(panel)
     panel.add_pv('Tst:A', 'Read Only')
     assert 'Read Only' in panel.signals
     assert panel.layout().itemAtPosition(0, 1).count() == 1
