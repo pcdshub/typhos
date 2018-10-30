@@ -165,13 +165,13 @@ class TyphonSuite(TyphonBase):
 
     def get_subdisplay(self, display):
         """
-        Get a subdisplay by name
+        Get a subdisplay by name or device
 
         Parameters
         ----------
         display :str or Device
             Name of subdisplay. This will be the text shown on the sidebar. For
-            component devices screens you can pass in the component device
+            devices screens you can pass in the device itself
             itself
 
         Returns
@@ -203,8 +203,8 @@ class TyphonSuite(TyphonBase):
         raise ValueError("Unable to find subdisplay %r", display)
 
     @Slot(str)
-    @Slot(QModelIndex)
-    def show_subdisplay(self, item):
+    @Slot(object)
+    def show_subdisplay(self, widget):
         """
         Show subdevice display of the QStackedWidget
 
@@ -212,27 +212,58 @@ class TyphonSuite(TyphonBase):
         ----------
         name : str, Device or QModelIndex
         """
+        # Setup the dock
+        dock = SubDisplay(self)
         # Grab the relevant display
-        if isinstance(item, QModelIndex):
-            display = item.data(Qt.UserRole)
+        if isinstance(widget, SidebarParameter):
+            for item in widget.items:
+                item._mark_shown()
+            # Make sure we react if the dock is closed outside of our menu
+            dock.closing.connect(partial(self.hide_subdisplay,
+                                         widget))
+            widget = widget.value()
+        elif not isinstance(widget, QWidget):
+            widget = self.get_subdisplay(widget)
+        # Add the widget to the dock
+        dock.setWidget(widget)
+        # Add to layout
+        self.layout().addWidget(dock)
+
+    @Slot()
+    @Slot(object)
+    def hide_subdisplay(self, widget):
+        """
+        Hide a visible subdisplay
+
+        Parameters
+        ----------
+        widget: SidebarParameter or Subdisplay
+            If you give a SidebarParameter, we will find the corresponding
+            widget and hide it. If the widget provided to us is inside a
+            DockWidget we will close that, otherwise the widget is just hidden
+        """
+        # If we have a parameter grab the widget
+        if isinstance(widget, SidebarParameter):
+            for item in widget.items:
+                item._mark_hidden()
+            widget = widget.value()
+        elif not isinstance(widget, QWidget):
+            widget = self.get_subdisplay(widget)
+        # Make sure the actual widget is hidden
+        if isinstance(widget.parent(), QDockWidget):
+            widget.parent().close()
         else:
-            display = self.get_subdisplay(item)
-        # Show our subdisplay if previously hidden
-        if self.ui.subwindow.isHidden():
-            self.ui.subwindow.show()
-        # Set the current display
-        self.ui.subdisplay.setCurrentWidget(display)
-        self.ui.subdisplay.setFixedWidth(display.sizeHint().width())
+            widget.hide()
 
     @Slot()
     def hide_subdisplays(self):
         """
         Hide the component widget and set all buttons unchecked
         """
-        # Hide the main display
-        self.ui.subwindow.hide()
-        self.ui.component_list.clearSelection()
-        self.ui.tool_list.clearSelection()
+        # Grab children from devices
+        device_params = flatten_tree(self._device_group)
+        for param in device_params[1:] + self._tool_group.childs:
+            self.hide_subdisplay(param)
 
     @property
     def tools(self):
