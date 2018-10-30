@@ -7,19 +7,63 @@ import os.path
 ############
 # External #
 ############
+from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from ophyd import Device
-from qtpy import uic
-from qtpy.QtCore import Slot, Qt, QModelIndex
+from qtpy.QtCore import Signal, Slot, Qt
+from qtpy.QtWidgets import QDockWidget, QListWidgetItem, QHBoxLayout, QWidget
 
 ###########
 # Package #
 ###########
 from .display import TyphonDisplay
-from .utils import ui_dir, clean_name, TyphonBase
-from .widgets import TyphonSidebarItem
+from .utils import clean_name, TyphonBase, flatten_tree
+from .widgets import TyphonSidebarItem, SubDisplay
 from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonConsole
 
 logger = logging.getLogger(__name__)
+
+
+class SidebarParameter(ptypes.Parameter):
+    """
+    Parameter to hold information for the sidebar
+    """
+    itemClass = TyphonSidebarItem
+    sigOpen = Signal(object)
+    sigHide = Signal(object)
+    sigEmbed = Signal(object)
+
+    def __init__(self, embeddable=None, **opts):
+        super().__init__(**opts)
+        self.embeddable = embeddable
+
+
+class DeviceParameter(SidebarParameter):
+    """Parameter to hold information Ophyd Device"""
+    itemClass = TyphonSidebarItem
+
+    def __init__(self, device, subdevices=True, **opts):
+        # Set options for parameter
+        opts['name'] = clean_name(device, strip_parent=device.root)
+        self.device = device
+        opts['expanded'] = False
+        # Grab children from the given device
+        children = list()
+        if subdevices:
+            for child in device._sub_devices:
+                subdevice = getattr(device, child)
+                # If that device has children, make sure they are also
+                # displayed further in the tree
+                if subdevice._sub_devices:
+                    children.append(DeviceParameter(subdevice))
+                # Otherwise just make a regular parameter out of it
+                else:
+                    child_name = clean_name(subdevice,
+                                            strip_parent=subdevice.root)
+                    child_display = TyphonDisplay.from_device(subdevice)
+                    children.append(SidebarParameter(value=child_display,
+                                                     name=child_name))
+        opts['children'] = children
+        super().__init__(value=TyphonDisplay.from_device(device), **opts)
 
 
 class TyphonSuite(TyphonBase):
