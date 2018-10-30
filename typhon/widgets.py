@@ -6,10 +6,12 @@ import logging
 ############
 # External #
 ############
-from qtpy.QtCore import QSize, Qt, Slot
-from qtpy.QtWidgets import (QListWidgetItem, QPushButton, QVBoxLayout,
-                            QWidget)
+import qtawesome as qta
+from qtpy.QtCore import QSize, Qt, Signal, Slot
+from qtpy.QtWidgets import (QAction, QPushButton, QVBoxLayout, QWidget,
+                            QToolBar, QDockWidget)
 from pydm.widgets import PyDMLabel, PyDMEnumComboBox, PyDMLineEdit
+from pyqtgraph.parametertree import parameterTypes as ptypes
 
 ###########
 # Package #
@@ -121,10 +123,71 @@ class TyphonLabel(PyDMLabel):
         return QSize(100, 30)
 
 
-class TyphonSidebarItem(QListWidgetItem):
+class TyphonSidebarItem(ptypes.ParameterItem):
     """
-    QListWidgetItem to display in DeviceDisplay sidebar
+    Class to display a Device or Tool in the sidebar
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setTextAlignment(Qt.AlignCenter)
+    def __init__(self, param, depth):
+        super().__init__(param, depth)
+        # Configure a QToolbar
+        self.toolbar = QToolBar()
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.toolbar.setIconSize(QSize(15, 15))
+        # Setup the action to open the widget
+        self.open_action = QAction(qta.icon('fa.square',
+                                            color='green'),
+                                   'Open', self.toolbar)
+        self.open_action.triggered.connect(self.open_requested)
+        # Setup the action to embed the widget
+        self.embed_action = QAction(qta.icon('fa.th-large',
+                                             color='yellow'),
+                                    'Embed', self.toolbar)
+        self.embed_action.triggered.connect(self.embed_requested)
+        # Setup the action to hide the widget
+        self.hide_action = QAction(qta.icon('fa.times-circle',
+                                            color='red'),
+                                   'Close', self.toolbar)
+        self.hide_action.triggered.connect(self.hide_requested)
+        self.hide_action.setEnabled(False)
+        # Add actions to toolbars
+        self.toolbar.addAction(self.open_action)
+        self.toolbar.addAction(self.hide_action)
+        if self.param.embeddable:
+            self.toolbar.insertAction(self.hide_action,
+                                      self.embed_action)
+
+    @Slot()
+    def open_requested(self):
+        """Request to open display for sidebar item"""
+        self.param.sigOpen.emit(self)
+        self._mark_shown()
+
+    @Slot()
+    def embed_requested(self):
+        """Request to open embedded display for sidebar item"""
+        self.param.sigEmbed.emit(self)
+        self._mark_shown()
+
+    @Slot()
+    def hide_requested(self):
+        """Request to hide display for sidebar item"""
+        self.param.sigHide.emit(self)
+        self._mark_hidden()
+
+    def _mark_shown(self):
+        self.open_action.setEnabled(False)
+        self.embed_action.setEnabled(False)
+        self.hide_action.setEnabled(True)
+
+    def _mark_hidden(self):
+        self.open_action.setEnabled(True)
+        self.embed_action.setEnabled(True)
+        self.hide_action.setEnabled(False)
+
+    def treeWidgetChanged(self):
+        """Update the widget when add to a QTreeWidget"""
+        super().treeWidgetChanged()
+        tree = self.treeWidget()
+        if tree is None:
+            return
+        tree.setItemWidget(self, 1, self.toolbar)
