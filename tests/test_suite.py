@@ -5,14 +5,14 @@
 ############
 # External #
 ############
-from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QWidget
+from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
+from qtpy.QtWidgets import QDockWidget
 
 ###########
 # Package #
 ###########
-from typhon.utils import clean_attr, clean_name
-from typhon import TyphonSuite
+from typhon.utils import clean_name
+from typhon.suite import TyphonSuite, DeviceParameter
 from .conftest import show_widget
 
 
@@ -64,3 +64,20 @@ def test_suite_subdisplay(device):
     assert suite.ui.tool_list.selectedIndexes() == []
     assert suite.ui.tool_list.selectedIndexes() == []
     return suite
+
+
+@show_widget
+def test_device_parameter_tree(qtbot, motor, device):
+    tree = ParameterTree(showHeader=False)
+    devices = ptypes.GroupParameter(name='Devices')
+    tree.addParameters(devices)
+    qtbot.addWidget(tree)
+    # Device with no subdevices
+    motor_param = DeviceParameter(motor, embeddable=False)
+    assert len(motor_param.childs) == 0
+    devices.addChild(motor_param)
+    # Device with subdevices
+    dev_param = DeviceParameter(device, emeddable=True)
+    assert len(dev_param.childs) == len(device._sub_devices)
+    devices.addChild(dev_param)
+    return tree
