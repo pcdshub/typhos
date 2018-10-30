@@ -67,7 +67,7 @@ class HappiConnection(PyDMConnection):
     def remove_listener(self, channel):
         """Remove a channel from the database connection"""
         super().remove_listener(channel)
-        self.tx_slot.disconnect(channel.tx_slot)
+        self.tx.disconnect(channel.tx_slot)
 
 
 class HappiPlugin(PyDMPlugin):
