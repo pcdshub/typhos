@@ -156,20 +156,17 @@ class TyphonSidebarItem(ptypes.ParameterItem):
             self.toolbar.insertAction(self.hide_action,
                                       self.embed_action)
 
-    @Slot()
-    def open_requested(self):
+    def open_requested(self, triggered):
         """Request to open display for sidebar item"""
         self.param.sigOpen.emit(self)
         self._mark_shown()
 
-    @Slot()
-    def embed_requested(self):
+    def embed_requested(self, triggered):
         """Request to open embedded display for sidebar item"""
         self.param.sigEmbed.emit(self)
         self._mark_shown()
 
-    @Slot()
-    def hide_requested(self):
+    def hide_requested(self, triggered):
         """Request to hide display for sidebar item"""
         self.param.sigHide.emit(self)
         self._mark_hidden()
