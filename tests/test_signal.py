@@ -68,7 +68,7 @@ def test_panel_add_enum():
 
 def test_add_dead_signal():
     panel = SignalPanel()
-    dead_sig = DeadSignal(name='ded')
+    dead_sig = DeadSignal(name='ded', value=0)
     panel.add_signal(dead_sig, 'Dead Signal')
     assert 'Dead Signal' in panel.signals
 
