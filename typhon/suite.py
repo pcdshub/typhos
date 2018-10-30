@@ -139,14 +139,12 @@ class TyphonSuite(TyphonBase):
         device : ophyd.Device
 
         kwargs:
-            Passed to :meth:`.TyphonDevice.from_device`
+            Passed to :meth:`.TyphonSuite.add_device`
         """
+        warnings.warn("This method is deprecated. "
+                      "Use `TyphonSuite.add_device`")
         logger.debug("Creating subdisplay for %s", device.name)
-        # Remove parent from name for title
-        if not name:
-            name = clean_name(device)
-        dd = TyphonDisplay.from_device(device, name=name, **kwargs)
-        self.add_subdisplay(name, dd, self.component_list)
+        self.add_device(device, **kwargs)
 
     def add_tool(self, name, tool):
         """
