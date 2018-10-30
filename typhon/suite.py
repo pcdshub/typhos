@@ -1,6 +1,7 @@
 ############
 # Standard #
 ############
+from functools import partial
 import logging
 import os.path
 
@@ -119,13 +120,13 @@ class TyphonSuite(TyphonBase):
         list_item = TyphonSidebarItem(name)
         list_item.setData(Qt.UserRole, display)
         list_widget.addItem(list_item)
-        # Add our display to the component widget
-        self.ui.subdisplay.addWidget(display)
-        self.subdisplays[name] = list_item
-        # Hide the parent widget if hidden
-        sidebar = list_widget.parent()
-        if sidebar.isHidden():
-            sidebar.show()
+
+    def _add_to_sidebar(self, param):
+        """Add a SidebarParameter to the correct slots"""
+        param.sigOpen.connect(partial(self.show_subdisplay,
+                                      param))
+        param.sigHide.connect(partial(self.hide_subdisplay,
+                                      param))
 
     def add_subdevice(self, device, name=None, **kwargs):
         """
@@ -157,24 +158,10 @@ class TyphonSuite(TyphonBase):
         tool: QWidget
             Widget to be added to ``.ui.subdisplay``
         """
-        self.add_subdisplay(name, tool, self.ui.tool_list)
-
-    def _item_from_sidebar(self, name):
-        """
-        Get a child display based on the name given
-
-        Parameters
-        ----------
-        name: str
-            Name of display
-        """
-        # Gather QListWidgetItem
-        try:
-            list_item = self.subdisplays[name]
-        except KeyError as exc:
-            raise ValueError("Display {} has not been added to the "
-                             "DeviceDisplay yet".format(name)) from exc
-        return list_item
+        tool_param = SidebarParameter(value=tool, name=name)
+        self._tool_group.addChild(tool_param)
+        self._add_to_sidebar(tool_param)
+        return tool_param
 
     def get_subdisplay(self, display):
         """
@@ -250,8 +237,7 @@ class TyphonSuite(TyphonBase):
     @property
     def tools(self):
         """Tools loaded into the DeviceDisplay"""
-        return [self.tool_list.item(i).data(Qt.UserRole)
-                for i in range(self.tool_list.count())]
+        return [param.value() for param in self._tool_group.childs]
 
     def add_device(self, device, children=True, methods=None, image=None):
         """
@@ -264,11 +250,20 @@ class TyphonSuite(TyphonBase):
         methods: list, optional
             Methods to add to the device
         """
+        methods = methods or list()
         super().add_device(device)
-        # Add the device to the main panel
-        self.device_panel.add_device(device, methods=methods)
+        # Create DeviceParameter
+        dev_param = DeviceParameter(device, subdevices=children)
+        for method in methods:
+            dev_param.value.add_method(method)
         if image:
-            self.device_panel.add_image(image)
+            dev_param.value.add_image(image)
+        # Attach signals
+        all_params = [dev_param] + dev_param.childs
+        for param in all_params:
+            self._add_to_sidebar(param)
+        # Add to tree
+        self._device_group.addChild(dev_param)
         # Add a device to all the tool displays
         for tool in self.tools:
             try:
@@ -276,10 +271,7 @@ class TyphonSuite(TyphonBase):
             except Exception as exc:
                 logger.exception("Unable to add %s to tool %s",
                                  device.name, type(tool))
-        # Handle child devices
-        if children:
-            for dev_name in device._sub_devices:
-                self.add_subdevice(getattr(device, dev_name))
+        return dev_param
 
     @classmethod
     def from_device(cls, device, parent=None,
