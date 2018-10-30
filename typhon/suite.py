@@ -77,27 +77,22 @@ class TyphonSuite(TyphonBase):
     ----------
     parent : QWidget, optional
     """
-
     def __init__(self, parent=None):
-        # Instantiate Widget
         super().__init__(parent=parent)
-        # Instantiate UI
-        self.ui = uic.loadUi(os.path.join(ui_dir, 'base.ui'), self)
-        self.device_panel = TyphonDisplay()
-        self.widget_layout.insertWidget(1, self.device_panel)
-        self.subdisplays = dict()
-        # Connect signals to slots
-        self.ui.hide_button.clicked.connect(self.hide_subdisplays)
-        self.ui.tool_list.clicked.connect(self.show_subdisplay)
-        self.ui.tool_list.clicked.connect(
-                self.ui.component_list.clearSelection)
-        self.ui.component_list.clicked.connect(self.show_subdisplay)
-        self.ui.component_list.clicked.connect(
-                self.ui.tool_list.clearSelection)
-        # Hide widgets until objects are added to them
-        self.ui.subwindow.hide()
-        self.ui.tool_sidebar.hide()
-        self.ui.component_sidebar.hide()
+        # Setup parameter tree
+        self._tree = ParameterTree(parent=self, showHeader=False)
+        self._tree.setAlternatingRowColors(False)
+        # Create device group
+        self._device_group = ptypes.GroupParameter(name='Devices')
+        self._tree.addParameters(self._device_group)
+        # Create tool group
+        self._tool_group = ptypes.GroupParameter(name='Tools')
+        self._tree.addParameters(self._tool_group)
+        # Setup layout
+        self._layout = QHBoxLayout()
+        self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+        self._layout.addWidget(self._tree)
+        self.setLayout(self._layout)
 
     def add_subdisplay(self, name, display, list_widget):
         """
@@ -202,12 +197,23 @@ class TyphonSuite(TyphonBase):
         .. code:: python
 
             my_display.get_subdisplay(my_device.x)
-            my_displyay.get_subsdisplay('My Tool')
+            my_display.get_subdisplay('My Tool')
         """
         # Get the cleaned Device name if passed a Device
         if isinstance(display, Device):
-            display = clean_name(display)
-        return self._item_from_sidebar(display).data(Qt.UserRole)
+            tree = flatten_tree(self._device_group)
+            for param in tree:
+                if display in getattr(param.value(), 'devices', []):
+                    return param.value()
+        # Otherwise we could be looking for either a tool or device
+        else:
+            tree = (flatten_tree(self._device_group)
+                    + flatten_tree(self._tool_group))
+            for param in tree:
+                if param.name() == display:
+                    return param.value()
+        # If we got here we can't find the subdisplay
+        raise ValueError("Unable to find subdisplay %r", display)
 
     @Slot(str)
     @Slot(QModelIndex)
@@ -302,6 +308,6 @@ class TyphonSuite(TyphonBase):
                 display.add_tool(name, tool())
             except Exception:
                 logger.exception("Unable to load %s", type(tool))
-        display.add_device(device, **kwargs)
-        display.device_panel.title = clean_name(device, strip_parent=False)
+        param = display.add_device(device, **kwargs)
+        display.show_subdisplay(param)
         return display
