@@ -53,7 +53,12 @@ def test_signal_connection(qapp, qtbot):
     # Try changing types
     qapp.processEvents()
     qapp.processEvents()  # Must be called twice. Multiple rounds of signals
-    qapp.close_widget_connections(widget)
+    # In PyDM > 1.5.0 we will not need the application to disconnect the
+    # widget, but until then we have to check for the attribute
+    if hasattr(listener, 'disconnect'):
+        listener.disconnect()
+    else:
+        qapp.close_widget_connections(widget)
     # Check that our signal is disconnected completely and maintains the same
     # value as the signal updates in the background
     sig.put(3)
