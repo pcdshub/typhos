@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.plugins.core &mdash; Typhon 0.2.1+82.geb5cb78 documentation</title>
+  <title>typhon.plugins.core &mdash; Typhon 0.2.1+90.g53e567d documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+82.geb5cb78
+                0.2.1+90.g53e567d
               </div>
             
           
@@ -242,6 +242,7 @@
             <span class="c1"># Cast into the correct type</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
                 <span class="n">new_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Putting value </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to put </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span></div>
@@ -273,6 +274,7 @@
 <span class="sd">        performed in PyDMConnection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Perform the default connection setup</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
         <span class="c1"># Report as no-alarm state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">new_severity_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -319,6 +321,7 @@
 <span class="sd">        This removes the `send_new_value` connections from the channel in</span>
 <span class="sd">        addition to the default disconnection performed in PyDMConnection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
         <span class="c1"># Disconnect put_value from outgoing channel</span>
         <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">_typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_types</span><span class="p">:</span>
@@ -363,7 +366,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017, SLAC National Accelerator Laboratory.
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory
 
     </p>
   </div>
@@ -382,21 +385,14 @@
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'0.2.1+82.geb5cb78',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
