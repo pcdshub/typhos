@@ -11,9 +11,9 @@ from .conftest import show_widget
 def test_base_console(qtbot):
     tc = TyphonConsole()
     qtbot.addWidget(tc)
-    assert tc.kernel_manager.is_alive()
+    assert tc.kernel.kernel_manager.is_alive()
     tc.shutdown()
-    assert not tc.kernel_manager.is_alive()
+    assert not tc.kernel.kernel_manager.is_alive()
     tc.shutdown()
 
 
@@ -29,8 +29,8 @@ def test_add_device(qapp, qtbot):
     tc = TyphonConsole.from_device(device)
     qtbot.addWidget(tc)
     # Check that we created the object in the shell
-    tc.kernel_client.execute('print(test_this.here)', silent=False)
-    while md.kwargs['here'] not in tc._control.toPlainText():
+    tc.kernel.kernel_client.execute('print(test_this.here)', silent=False)
+    while md.kwargs['here'] not in tc.kernel._control.toPlainText():
         qapp.processEvents()
     # Smoke test not happi Device
     tc.add_device(types.SimpleNamespace(hi=3))
