@@ -14,6 +14,7 @@ requirements:
 
     run:
       - python
+      - happi
       - numpy
       - ophyd >=1.2.0
       - pydm >=1.2.0

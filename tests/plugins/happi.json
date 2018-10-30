@@ -1,0 +1,23 @@
+{
+    "Tst:This": {
+        "_id": "Tst:This",
+        "active": true,
+        "args": [],
+        "beamline": "TST",
+        "creation": "Mon Oct 22 09:08:55 2018",
+        "device_class": "types.SimpleNamespace",
+        "kwargs": {
+            "name": "{{name}}"
+        },
+        "last_edit": "Mon Oct 22 09:10:11 2018",
+        "macros": null,
+        "name": "test_device",
+        "parent": null,
+        "prefix": "Tst:This",
+        "screen": null,
+        "stand": null,
+        "system": null,
+        "type": "Device",
+        "z": -1.0
+    }
+}
