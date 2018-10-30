@@ -32,7 +32,10 @@ def test_connection(client):
     hp.add_connection(hc2)
     assert mock2.called
     mock.assert_called_once()
-
+    # Disconnect
+    hp.remove_connection(hc)
+    hp.remove_connection(hc2)
+    assert hp.connections == {}
 
 def test_bad_address_smoke(client):
     hp = HappiPlugin()
