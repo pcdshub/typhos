@@ -33,8 +33,6 @@ def test_signal_connection(qapp, qtbot):
     qtbot.addWidget(widget)
     widget.channel = 'sig://my_signal'
     listener = widget.channels()[0]
-    sig_conn = SignalConnection(listener, 'my_signal')
-    sig_conn.add_listener(listener)
     # Check that our widget receives the initial value
     qapp.processEvents()
     assert widget._write_access
@@ -50,7 +48,7 @@ def test_signal_connection(qapp, qtbot):
     # Try changing types
     qapp.processEvents()
     qapp.processEvents()  # Must be called twice. Multiple rounds of signals
-    sig_conn.remove_listener(listener)
+    listener.disconnect()
     # Check that our signal is disconnected completely and maintains the same
     # value as the signal updates in the background
     sig.put(3)
