@@ -33,6 +33,11 @@ def test_signal_connection(qapp, qtbot):
     qtbot.addWidget(widget)
     widget.channel = 'sig://my_signal'
     listener = widget.channels()[0]
+    # If PyDMChannel can not connect, we need to connect it ourselves
+    # In PyDM > 1.5.0 this will not be neccesary as the widget will be
+    # connected after we set the channel name
+    if not hasattr(listener, 'connect'):
+        qapp.establish_widget_connections(widget)
     # Check that our widget receives the initial value
     qapp.processEvents()
     assert widget._write_access
@@ -48,7 +53,7 @@ def test_signal_connection(qapp, qtbot):
     # Try changing types
     qapp.processEvents()
     qapp.processEvents()  # Must be called twice. Multiple rounds of signals
-    listener.disconnect()
+    qapp.close_widget_connections(widget)
     # Check that our signal is disconnected completely and maintains the same
     # value as the signal updates in the background
     sig.put(3)
