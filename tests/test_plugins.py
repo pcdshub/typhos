@@ -31,6 +31,7 @@ def test_signal_connection(qapp, qtbot):
     register_signal(sig)
     widget = WritableWidget()
     qtbot.addWidget(widget)
+    widget.channel = 'sig://my_signal'
     listener = widget.channels()[0]
     sig_conn = SignalConnection(listener, 'my_signal')
     sig_conn.add_listener(listener)
@@ -63,6 +64,7 @@ def test_signal_connection(qapp, qtbot):
 def test_metadata(qapp, qtbot):
     widget = WritableWidget()
     qtbot.addWidget(widget)
+    widget.channel = 'sig://md_signal'
     listener = widget.channels()[0]
     # Create a signal and attach our listener
     sig = RichSignal(name='md_signal', value=1)
@@ -78,8 +80,8 @@ def test_metadata(qapp, qtbot):
 def test_disconnection(qtbot):
     widget = WritableWidget()
     qtbot.addWidget(widget)
+    widget.channel = 'sig://invalid'
     listener = widget.channels()[0]
-    listener.address = 'sig://invalid'
     plugin = SignalPlugin()
     # Non-existant signal doesn't raise an error
     plugin.add_connection(listener)
