@@ -191,3 +191,12 @@ class TyphonSidebarItem(ptypes.ParameterItem):
         if tree is None:
             return
         tree.setItemWidget(self, 1, self.toolbar)
+
+
+class SubDisplay(QDockWidget):
+    """QDockWidget modified to emit a signal when closed"""
+    closing = Signal()
+
+    def closeEvent(self, evt):
+        self.closing.emit()
+        super().closeEvent(evt)
