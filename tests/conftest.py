@@ -8,6 +8,7 @@ from functools import wraps
 ############
 # External #
 ############
+from happi import Client
 import numpy as np
 import ophyd.sim
 from ophyd import Device, Component as C, FormattedComponent as FC
@@ -19,6 +20,8 @@ from pydm import PyDMApplication
 # Package #
 ###########
 import typhon
+from typhon.plugins.happi import register_client
+
 
 logger = logging.getLogger(__name__)
 
@@ -173,3 +176,11 @@ class MockDevice(Device):
 @pytest.fixture(scope='function')
 def device():
     return MockDevice('Tst:This', name='Simulated Device')
+
+
+@pytest.fixture(scope='session')
+def client():
+    client = Client(path=os.path.join(os.path.dirname(__file__),
+                                      'happi.json'))
+    register_client(client)
+    return client
