@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.2.1+101.g522d545 documentation</title>
+  <title>Display Types &mdash; Typhon 0.2.1+118.ge1fe32a documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+101.g522d545
+                0.2.1+118.ge1fe32a
               </div>
             
           
@@ -215,7 +215,7 @@ window.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>kwargs</strong> – Passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonDevice.from_device()</span></code></li>
+<li><strong>kwargs</strong> – Passed to <a class="reference internal" href="#typhon.TyphonSuite.add_device" title="typhon.TyphonSuite.add_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonSuite.add_device()</span></code></a></li>
 </ul>
 </td>
 </tr>
@@ -288,13 +288,13 @@ QPushButton is created</li>
 <dl class="method">
 <dt id="typhon.TyphonSuite.get_subdisplay">
 <code class="descname">get_subdisplay</code><span class="sig-paren">(</span><em>display</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.get_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.get_subdisplay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a subdisplay by name</p>
+<dd><p>Get a subdisplay by name or device</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>display</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>Device</em>) – Name of subdisplay. This will be the text shown on the sidebar. For
-component devices screens you can pass in the component device
+devices screens you can pass in the device itself
 itself</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>widget</strong> – Widget that is a member of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">ui.subdisplay</span></code></td>
@@ -305,9 +305,25 @@ itself</td>
 </table>
 <p class="rubric">Example</p>
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_display</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="n">my_device</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-<span class="n">my_displyay</span><span class="o">.</span><span class="n">get_subsdisplay</span><span class="p">(</span><span class="s1">&#39;My Tool&#39;</span><span class="p">)</span>
+<span class="n">my_display</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="s1">&#39;My Tool&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonSuite.hide_subdisplay">
+<code class="descname">hide_subdisplay</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.hide_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.hide_subdisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hide a visible subdisplay</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>widget</strong> (<em>SidebarParameter</em><em> or </em><em>Subdisplay</em>) – If you give a SidebarParameter, we will find the corresponding
+widget and hide it. If the widget provided to us is inside a
+DockWidget we will close that, otherwise the widget is just hidden</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -318,7 +334,7 @@ itself</td>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.show_subdisplay">
-<code class="descname">show_subdisplay</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.show_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.show_subdisplay" title="Permalink to this definition">¶</a></dt>
+<code class="descname">show_subdisplay</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.show_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.show_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show subdevice display of the QStackedWidget</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

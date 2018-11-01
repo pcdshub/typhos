@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.tools.TyphonConsole &mdash; Typhon 0.2.1+101.g522d545 documentation</title>
+  <title>typhon.tools.TyphonConsole &mdash; Typhon 0.2.1+118.ge1fe32a documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+101.g522d545
+                0.2.1+118.ge1fe32a
               </div>
             
           
@@ -186,7 +186,7 @@ if they want their devices loaded in both the GUI and console.</p>
 <dl class="method">
 <dt id="typhon.tools.TyphonConsole.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/typhon/tools/console.html#TyphonConsole.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.tools.TyphonConsole.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a RichJupyterWidget.</p>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
@@ -197,7 +197,7 @@ if they want their devices loaded in both the GUI and console.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#typhon.tools.TyphonConsole.__init__" title="typhon.tools.TyphonConsole.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([parent])</td>
-<td>Create a RichJupyterWidget.</td>
+<td>Initialize self.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">acceptDrops</span></code>(self)</td>
 <td></td>
@@ -226,14 +226,8 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_device</span></code>(device)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_traits</span></code>(**traits)</td>
-<td>Dynamically add trait attributes to the HasTraits instance.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">adjustSize</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">adjustSize</span></code>(self)</td>
 <td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">append_stream</span></code>(text)</td>
-<td>Appends text to the output stream.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">autoFillBackground</span></code>(self)</td>
 <td></td>
@@ -247,20 +241,8 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">blockSignals</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">can_copy</span></code>()</td>
-<td>Returns whether text can be copied to the clipboard.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">can_cut</span></code>()</td>
-<td>Returns whether text can be cut to the clipboard.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">can_paste</span></code>()</td>
-<td>Returns whether text can be pasted from the clipboard.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">changeEvent</span></code>(self,&nbsp;QEvent)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">changeEvent</span></code>(self,&nbsp;QEvent)</td>
 <td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_font_size</span></code>(delta)</td>
-<td>Change the font size by the specified amount (in points).</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">childAt</span></code>(self,&nbsp;QPoint)</td>
 <td>childAt(self, int, int) -&gt; QWidget</td>
@@ -277,77 +259,35 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">childrenRegion</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_config_rst_doc</span></code>()</td>
-<td>Generate rST documentation for this class’ config options.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_config_section</span></code>()</td>
-<td>Get the config class config section</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_get_help</span></code>([inst])</td>
-<td>Get the help string for this class in ReST format.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_get_trait_help</span></code>(trait[,&nbsp;inst])</td>
-<td>Get the help string for a single trait.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_own_trait_events</span></code>(name)</td>
-<td>Get a dict of all event handlers defined on this class, not a parent.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_own_traits</span></code>(**metadata)</td>
-<td>Get a dict of all the traitlets defined on this class, not a parent.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_print_help</span></code>([inst])</td>
-<td>Get the help string for a single trait and print it.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_trait_names</span></code>(**metadata)</td>
-<td>Get a list of all the names of this class’ traits.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_traits</span></code>(**metadata)</td>
-<td>Get a <code class="docutils literal notranslate"><span class="pre">dict</span></code> of all the traits of this class.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear</span></code>([keep_input])</td>
-<td>Clear the console.</td>
-</tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">clearFocus</span></code>(self)</td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">clearMask</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_output</span></code>()</td>
-<td>Clears the current line of output.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">close</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">closeEvent</span></code>(self,&nbsp;QCloseEvent)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">closeEvent</span></code>(self,&nbsp;QCloseEvent)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">colorCount</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">colorCount</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">connectNotify</span></code>(self,&nbsp;QMetaMethod)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">connectNotify</span></code>(self,&nbsp;QMetaMethod)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">contentsMargins</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">contentsMargins</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">contentsRect</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">contentsRect</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextMenuEvent</span></code>(self,&nbsp;QContextMenuEvent)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextMenuEvent</span></code>(self,&nbsp;QContextMenuEvent)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextMenuPolicy</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextMenuPolicy</span></code>(self)</td>
 <td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code>()</td>
-<td>Copy the currently selected text to the clipboard, removing prompts.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_anchor</span></code>(anchor)</td>
-<td>Copy anchor text to the clipboard</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_raw</span></code>()</td>
-<td>Copy the currently selected text to the clipboard without attempting to remove prompts or otherwise alter the text.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">create</span></code>(self,&nbsp;window,&nbsp;initializeWindow,&nbsp;…)</td>
 <td></td>
@@ -361,38 +301,32 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">customEvent</span></code>(self,&nbsp;QEvent)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">cut</span></code>()</td>
-<td>Copy the currently selected text to the clipboard and delete it if it’s inside the input buffer.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">deleteLater</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">deleteLater</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">depth</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">depth</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">destroy</span></code>(self,&nbsp;destroyWindow,&nbsp;destroySubWindows)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">destroy</span></code>(self,&nbsp;destroyWindow,&nbsp;destroySubWindows)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">devType</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">devType</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">devicePixelRatio</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">devicePixelRatio</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">devicePixelRatioF</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">devicePixelRatioF</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">devicePixelRatioFScale</span></code>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">devicePixelRatioFScale</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnect</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnect</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnectNotify</span></code>(self,&nbsp;QMetaMethod)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnectNotify</span></code>(self,&nbsp;QMetaMethod)</td>
 <td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_execute</span></code>(source,&nbsp;complete,&nbsp;indent)</td>
-<td>Reimplemented to the store history.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">dragEnterEvent</span></code>(self,&nbsp;QDragEnterEvent)</td>
 <td></td>
@@ -427,14 +361,8 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">event</span></code>(self,&nbsp;QEvent)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">eventFilter</span></code>(obj,&nbsp;event)</td>
-<td>Reimplemented to ensure a console-like behavior in the underlying text widgets.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute</span></code>([source,&nbsp;hidden,&nbsp;interactive])</td>
-<td>Executes source or the input buffer, possibly prompting for more input.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">export_html</span></code>()</td>
-<td>Shows a dialog to export HTML/XML in various formats.</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">eventFilter</span></code>(self,&nbsp;QObject,&nbsp;QEvent)</td>
+<td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">find</span></code>(sip.voidptr)</td>
 <td></td>
@@ -445,31 +373,31 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">findChildren</span></code>(self,&nbsp;type,&nbsp;name,&nbsp;options,&nbsp;…)</td>
 <td>findChildren(self, Tuple, name: str = ‘’, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject] findChildren(self, type, QRegExp, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject] findChildren(self, Tuple, QRegExp, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject] findChildren(self, type, QRegularExpression, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject] findChildren(self, Tuple, QRegularExpression, options: Union[Qt.FindChildOptions, Qt.FindChildOption] = Qt.FindChildrenRecursively) -&gt; List[QObject]</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush_clearoutput</span></code>()</td>
-<td>If a clearoutput is pending, execute it.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusInEvent</span></code>(self,&nbsp;QFocusEvent)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusInEvent</span></code>(self,&nbsp;QFocusEvent)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusNextChild</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusNextChild</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusNextPrevChild</span></code>(self,&nbsp;bool)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusNextPrevChild</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusOutEvent</span></code>(self,&nbsp;QFocusEvent)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusOutEvent</span></code>(self,&nbsp;QFocusEvent)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusPolicy</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusPolicy</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusPreviousChild</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusPreviousChild</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusProxy</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusProxy</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusWidget</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">focusWidget</span></code>(self)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">font</span></code>(self)</td>
 <td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">fontInfo</span></code>(self)</td>
@@ -490,50 +418,44 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_device</span></code>(device[,&nbsp;parent])</td>
 <td>Create a new instance of the widget for a Device</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_here</span></code>(msg)</td>
-<td>Return whether a message is from this session</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">geometry</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">geometry</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">getContentsMargins</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">getContentsMargins</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab</span></code>(self,&nbsp;rectangle)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grab</span></code>(self,&nbsp;rectangle)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabGesture</span></code>(self,&nbsp;Qt.GestureType,&nbsp;flags,&nbsp;…)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabGesture</span></code>(self,&nbsp;Qt.GestureType,&nbsp;flags,&nbsp;…)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabKeyboard</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabKeyboard</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabMouse</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabMouse</span></code>(self)</td>
 <td>grabMouse(self, Union[QCursor, Qt.CursorShape])</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabShortcut</span></code>(self,&nbsp;Union[QKeySequence,&nbsp;…)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grabShortcut</span></code>(self,&nbsp;Union[QKeySequence,&nbsp;…)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">graphicsEffect</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">graphicsEffect</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">graphicsProxyWidget</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">graphicsProxyWidget</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hasFocus</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hasFocus</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hasHeightForWidth</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hasHeightForWidth</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hasMouseTracking</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hasMouseTracking</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hasTabletTracking</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hasTabletTracking</span></code>(self)</td>
 <td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_trait</span></code>(name)</td>
-<td>Returns True if the object has a trait with the specified name.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">height</span></code>(self)</td>
 <td></td>
@@ -550,47 +472,29 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hideEvent</span></code>(self,&nbsp;QHideEvent)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">history_next</span></code>([substring,&nbsp;as_prefix])</td>
-<td>If possible, set the input buffer to a subsequent history item.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">history_previous</span></code>([substring,&nbsp;as_prefix])</td>
-<td>If possible, set the input buffer to a previous history item.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">history_tail</span></code>([n])</td>
-<td>Get the local history list.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">hold_trait_notifications</span></code>()</td>
-<td>Context manager for bundling trait change notifications and cross validation.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">include_output</span></code>(msg)</td>
-<td>Return whether we should include a given output message</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">inherits</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">inherits</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">initPainter</span></code>(self,&nbsp;QPainter)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">initPainter</span></code>(self,&nbsp;QPainter)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputMethodEvent</span></code>(self,&nbsp;QInputMethodEvent)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputMethodEvent</span></code>(self,&nbsp;QInputMethodEvent)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputMethodHints</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputMethodHints</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputMethodQuery</span></code>(self,&nbsp;Qt.InputMethodQuery)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputMethodQuery</span></code>(self,&nbsp;Qt.InputMethodQuery)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">insertAction</span></code>(self,&nbsp;QAction,&nbsp;QAction)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">insertAction</span></code>(self,&nbsp;QAction,&nbsp;QAction)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">insertActions</span></code>(self,&nbsp;QAction,&nbsp;Iterable[QAction])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">insertActions</span></code>(self,&nbsp;QAction,&nbsp;Iterable[QAction])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">installEventFilter</span></code>(self,&nbsp;QObject)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">installEventFilter</span></code>(self,&nbsp;QObject)</td>
 <td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">interrupt_kernel</span></code>()</td>
-<td>Attempts to interrupt the running kernel.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">isActiveWindow</span></code>(self)</td>
 <td></td>
@@ -763,20 +667,8 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalGeometry</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">notify_change</span></code>(change)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">objectName</span></code>(self)</td>
 <td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">objectName</span></code>(self)</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">observe</span></code>(handler[,&nbsp;names,&nbsp;type])</td>
-<td>Setup a handler to be called when a trait changes.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_trait_change</span></code>([handler,&nbsp;name,&nbsp;remove])</td>
-<td>DEPRECATED: Setup a handler to be called when a trait changes.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_anchor</span></code>(anchor)</td>
-<td>Open selected anchor in the default webbrowser</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">overrideWindowFlags</span></code>(self,&nbsp;…)</td>
 <td></td>
@@ -796,11 +688,11 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">palette</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">parentWidget</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">paste</span></code>([mode])</td>
-<td>Paste the contents of the clipboard into the input region.</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">parentWidget</span></code>(self)</td>
+<td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">physicalDpiX</span></code>(self)</td>
 <td></td>
@@ -813,12 +705,6 @@ if they want their devices loaded in both the GUI and console.</p>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">previousInFocusChain</span></code>(self)</td>
 <td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_</span></code>([printer])</td>
-<td>Print the contents of the ConsoleWidget to the specified QPrinter.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">prompt_to_top</span></code>()</td>
-<td>Moves the prompt to the top of the viewport.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">property</span></code>(self,&nbsp;str)</td>
 <td></td>
@@ -835,50 +721,32 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">rect</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">redo</span></code>()</td>
-<td>Redo the last operation.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">releaseKeyboard</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">releaseKeyboard</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">releaseMouse</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">releaseMouse</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">releaseShortcut</span></code>(self,&nbsp;int)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">releaseShortcut</span></code>(self,&nbsp;int)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">removeAction</span></code>(self,&nbsp;QAction)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">removeAction</span></code>(self,&nbsp;QAction)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">removeEventFilter</span></code>(self,&nbsp;QObject)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">removeEventFilter</span></code>(self,&nbsp;QObject)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code>(self,&nbsp;QPaintDevice,&nbsp;targetOffset,&nbsp;…)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code>(self,&nbsp;QPaintDevice,&nbsp;targetOffset,&nbsp;…)</td>
 <td>render(self, QPainter, targetOffset: QPoint = QPoint(), sourceRegion: QRegion = QRegion(), flags: Union[QWidget.RenderFlags, QWidget.RenderFlag] = QWidget.RenderFlags(QWidget.DrawWindowBackground|QWidget.DrawChildren))</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">repaint</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">repaint</span></code>(self)</td>
 <td>repaint(self, int, int, int, int) repaint(self, QRect) repaint(self, QRegion)</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">request_interrupt_kernel</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">request_restart_kernel</span></code>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code>([clear])</td>
-<td>Resets the widget to its initial state if <code class="docutils literal notranslate"><span class="pre">clear</span></code> parameter is True, otherwise prints a visual indication of the fact that the kernel restarted, but does not clear the traces from previous usage of the kernel before it was restarted.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_font</span></code>()</td>
-<td>Sets the font to the default fixed-width font for this platform.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize</span></code>(self,&nbsp;QSize)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">resize</span></code>(self,&nbsp;QSize)</td>
 <td>resize(self, int, int)</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">resizeEvent</span></code>(self,&nbsp;QResizeEvent)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">resizeEvent</span></code>(self,&nbsp;QResizeEvent)</td>
 <td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">restart_kernel</span></code>(message[,&nbsp;now])</td>
-<td>Attempts to restart the running kernel.</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">restoreGeometry</span></code>(self,&nbsp;Union[QByteArray,&nbsp;…)</td>
 <td></td>
@@ -889,221 +757,203 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">scroll</span></code>(self,&nbsp;int,&nbsp;int)</td>
 <td>scroll(self, int, int, QRect)</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">section_names</span></code>()</td>
-<td>return section names as a list</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_all_smart</span></code>()</td>
-<td>Select current cell, or, if already selected, the whole document.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_document</span></code>()</td>
-<td>Selects all the text in the buffer.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">sender</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">sender</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">senderSignalIndex</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">senderSignalIndex</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAcceptDrops</span></code>(self,&nbsp;bool)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAcceptDrops</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAccessibleDescription</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAccessibleDescription</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAccessibleName</span></code>(self,&nbsp;str)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAccessibleName</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAttribute</span></code>(self,&nbsp;Qt.WidgetAttribute,&nbsp;on)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAttribute</span></code>(self,&nbsp;Qt.WidgetAttribute,&nbsp;on)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAutoFillBackground</span></code>(self,&nbsp;bool)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setAutoFillBackground</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setBackgroundRole</span></code>(self,&nbsp;QPalette.ColorRole)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setBackgroundRole</span></code>(self,&nbsp;QPalette.ColorRole)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setBaseSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setBaseSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
 <td>setBaseSize(self, QSize)</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setContentsMargins</span></code>(self,&nbsp;int,&nbsp;int,&nbsp;int,&nbsp;int)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setContentsMargins</span></code>(self,&nbsp;int,&nbsp;int,&nbsp;int,&nbsp;int)</td>
 <td>setContentsMargins(self, QMargins)</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setContextMenuPolicy</span></code>(self,&nbsp;Qt.ContextMenuPolicy)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setContextMenuPolicy</span></code>(self,&nbsp;Qt.ContextMenuPolicy)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setCursor</span></code>(self,&nbsp;Union[QCursor,&nbsp;Qt.CursorShape])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setCursor</span></code>(self,&nbsp;Union[QCursor,&nbsp;Qt.CursorShape])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setDisabled</span></code>(self,&nbsp;bool)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setDisabled</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setEnabled</span></code>(self,&nbsp;bool)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setEnabled</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFixedHeight</span></code>(self,&nbsp;int)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFixedHeight</span></code>(self,&nbsp;int)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFixedSize</span></code>(self,&nbsp;QSize)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFixedSize</span></code>(self,&nbsp;QSize)</td>
 <td>setFixedSize(self, int, int)</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFixedWidth</span></code>(self,&nbsp;int)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFixedWidth</span></code>(self,&nbsp;int)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocus</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocus</span></code>(self)</td>
 <td>setFocus(self, Qt.FocusReason)</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocusPolicy</span></code>(self,&nbsp;Qt.FocusPolicy)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocusPolicy</span></code>(self,&nbsp;Qt.FocusPolicy)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocusProxy</span></code>(self,&nbsp;QWidget)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFocusProxy</span></code>(self,&nbsp;QWidget)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFont</span></code>(self,&nbsp;QFont)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setFont</span></code>(self,&nbsp;QFont)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setForegroundRole</span></code>(self,&nbsp;QPalette.ColorRole)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setForegroundRole</span></code>(self,&nbsp;QPalette.ColorRole)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setGeometry</span></code>(self,&nbsp;QRect)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setGeometry</span></code>(self,&nbsp;QRect)</td>
 <td>setGeometry(self, int, int, int, int)</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setGraphicsEffect</span></code>(self,&nbsp;QGraphicsEffect)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setGraphicsEffect</span></code>(self,&nbsp;QGraphicsEffect)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setHidden</span></code>(self,&nbsp;bool)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setHidden</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setInputMethodHints</span></code>(self,&nbsp;…)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setInputMethodHints</span></code>(self,&nbsp;…)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setLayout</span></code>(self,&nbsp;QLayout)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setLayout</span></code>(self,&nbsp;QLayout)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setLayoutDirection</span></code>(self,&nbsp;Qt.LayoutDirection)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setLayoutDirection</span></code>(self,&nbsp;Qt.LayoutDirection)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setLocale</span></code>(self,&nbsp;QLocale)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setLocale</span></code>(self,&nbsp;QLocale)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMask</span></code>(self,&nbsp;QBitmap)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMask</span></code>(self,&nbsp;QBitmap)</td>
 <td>setMask(self, QRegion)</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMaximumHeight</span></code>(self,&nbsp;int)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMaximumHeight</span></code>(self,&nbsp;int)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMaximumSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMaximumSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
 <td>setMaximumSize(self, QSize)</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMaximumWidth</span></code>(self,&nbsp;int)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMaximumWidth</span></code>(self,&nbsp;int)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMinimumHeight</span></code>(self,&nbsp;int)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMinimumHeight</span></code>(self,&nbsp;int)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMinimumSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMinimumSize</span></code>(self,&nbsp;int,&nbsp;int)</td>
 <td>setMinimumSize(self, QSize)</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMinimumWidth</span></code>(self,&nbsp;int)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMinimumWidth</span></code>(self,&nbsp;int)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMouseTracking</span></code>(self,&nbsp;bool)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setMouseTracking</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setObjectName</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setObjectName</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setPalette</span></code>(self,&nbsp;QPalette)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setPalette</span></code>(self,&nbsp;QPalette)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setParent</span></code>(self,&nbsp;QWidget)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setParent</span></code>(self,&nbsp;QWidget)</td>
 <td>setParent(self, QWidget, Union[Qt.WindowFlags, Qt.WindowType])</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setProperty</span></code>(self,&nbsp;str,&nbsp;Any)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setProperty</span></code>(self,&nbsp;str,&nbsp;Any)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setShortcutAutoRepeat</span></code>(self,&nbsp;int,&nbsp;enabled)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setShortcutAutoRepeat</span></code>(self,&nbsp;int,&nbsp;enabled)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setShortcutEnabled</span></code>(self,&nbsp;int,&nbsp;enabled)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setShortcutEnabled</span></code>(self,&nbsp;int,&nbsp;enabled)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setSizeIncrement</span></code>(self,&nbsp;int,&nbsp;int)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setSizeIncrement</span></code>(self,&nbsp;int,&nbsp;int)</td>
 <td>setSizeIncrement(self, QSize)</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setSizePolicy</span></code>(self,&nbsp;QSizePolicy)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setSizePolicy</span></code>(self,&nbsp;QSizePolicy)</td>
 <td>setSizePolicy(self, QSizePolicy.Policy, QSizePolicy.Policy)</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setStatusTip</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setStatusTip</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setStyle</span></code>(self,&nbsp;QStyle)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setStyle</span></code>(self,&nbsp;QStyle)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setStyleSheet</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setStyleSheet</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setTabOrder</span></code>(QWidget,&nbsp;QWidget)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setTabOrder</span></code>(QWidget,&nbsp;QWidget)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setTabletTracking</span></code>(self,&nbsp;bool)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setTabletTracking</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setToolTip</span></code>(self,&nbsp;str)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setToolTip</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setToolTipDuration</span></code>(self,&nbsp;int)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setToolTipDuration</span></code>(self,&nbsp;int)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setUpdatesEnabled</span></code>(self,&nbsp;bool)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setUpdatesEnabled</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setVisible</span></code>(self,&nbsp;bool)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setVisible</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWhatsThis</span></code>(self,&nbsp;str)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWhatsThis</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowFilePath</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowFilePath</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowFlag</span></code>(self,&nbsp;Qt.WindowType,&nbsp;on)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowFlag</span></code>(self,&nbsp;Qt.WindowType,&nbsp;on)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowFlags</span></code>(self,&nbsp;Union[Qt.WindowFlags,&nbsp;…)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowFlags</span></code>(self,&nbsp;Union[Qt.WindowFlags,&nbsp;…)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowIcon</span></code>(self,&nbsp;QIcon)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowIcon</span></code>(self,&nbsp;QIcon)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowIconText</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowIconText</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowModality</span></code>(self,&nbsp;Qt.WindowModality)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowModality</span></code>(self,&nbsp;Qt.WindowModality)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowModified</span></code>(self,&nbsp;bool)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowModified</span></code>(self,&nbsp;bool)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowOpacity</span></code>(self,&nbsp;float)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowOpacity</span></code>(self,&nbsp;float)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowRole</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowRole</span></code>(self,&nbsp;str)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowState</span></code>(self,&nbsp;Union[Qt.WindowStates,&nbsp;…)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowState</span></code>(self,&nbsp;Union[Qt.WindowStates,&nbsp;…)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowTitle</span></code>(self,&nbsp;str)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setWindowTitle</span></code>(self,&nbsp;str)</td>
 <td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_style</span></code>([colors])</td>
-<td>Sets the widget style to the class defaults.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_trait</span></code>(name,&nbsp;value)</td>
-<td>Forcibly sets trait attribute, including read-only attributes.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_instance</span></code>(*args,&nbsp;**kwargs)</td>
-<td>This is called <strong>before</strong> self.__init__ is called.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">sharedPainter</span></code>(self)</td>
 <td></td>
@@ -1135,8 +985,8 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">sizeHint</span></code>()</td>
-<td>Reimplemented to suggest a size that is 80 characters wide and 25 lines high.</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">sizeHint</span></code>(self)</td>
+<td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">sizeIncrement</span></code>(self)</td>
 <td></td>
@@ -1180,53 +1030,29 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">tr</span></code>(self,&nbsp;str,&nbsp;disambiguation,&nbsp;n)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">trait_events</span></code>([name])</td>
-<td>Get a <code class="docutils literal notranslate"><span class="pre">dict</span></code> of all the event handlers of this class.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">trait_metadata</span></code>(traitname,&nbsp;key[,&nbsp;default])</td>
-<td>Get metadata values for trait by key.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">trait_names</span></code>(**metadata)</td>
-<td>Get a list of all the names of this class’ traits.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">traits</span></code>(**metadata)</td>
-<td>Get a <code class="docutils literal notranslate"><span class="pre">dict</span></code> of all the traits of this class.</td>
-</tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">underMouse</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">undo</span></code>()</td>
-<td>Undo the last operation.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">ungrabGesture</span></code>(self,&nbsp;Qt.GestureType)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">ungrabGesture</span></code>(self,&nbsp;Qt.GestureType)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">unobserve</span></code>(handler[,&nbsp;names,&nbsp;type])</td>
-<td>Remove a trait change handler.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">unobserve_all</span></code>([name])</td>
-<td>Remove trait change handlers of any type for the specified name.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsetCursor</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsetCursor</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsetLayoutDirection</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsetLayoutDirection</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsetLocale</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">unsetLocale</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>(self)</td>
 <td>update(self, QRect) update(self, QRegion) update(self, int, int, int, int)</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">updateGeometry</span></code>(self)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">updateGeometry</span></code>(self)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">updateMicroFocus</span></code>(self)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">updateMicroFocus</span></code>(self)</td>
 <td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config</span></code>(config)</td>
-<td>Update config and load the new values</td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">updatesEnabled</span></code>(self)</td>
 <td></td>
@@ -1345,184 +1171,16 @@ if they want their devices loaded in both the GUI and console.</p>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">PdmWidthMM</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">ansi_codes</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">banner</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">buffer_size</span></code></td>
-<td>An int trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">clear_on_kernel_restart</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">config</span></code></td>
-<td>A trait whose value must be an instance of a specified class.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">confirm_restart</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">console_height</span></code></td>
-<td>An int trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">console_width</span></code></td>
-<td>An int trait.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy_available</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">cross_validation_lock</span></code></td>
-<td>A contextmanager for running a block with our cross validation lock set to True.</td>
-</tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">customContextMenuRequested</span></code></td>
 <td>customContextMenuRequested(self, QPoint) [signal]</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_control</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_edit</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_edit_requested</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_interrupt</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_interrupt_requested</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_page_control</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_page_requested</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_restart</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_restart_kernel_died</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_restart_requested</span></code></td>
-<td></td>
 </tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">destroyed</span></code></td>
 <td>destroyed(self, QObject = None) [signal]</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">editor</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">editor_line</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_calltips</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_on_complete_input</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">executed</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">executing</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">exit_requested</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">font</span></code></td>
-<td>The base font being used by the ConsoleWidget.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">font_changed</span></code></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">font_family</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">font_size</span></code></td>
-<td>An int trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">gui_completion</span></code></td>
-<td>An enum whose value must be in a given sequence.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">history_lock</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">in_prompt</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">include_other_output</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_buffer</span></code></td>
-<td>The text that the user has entered entered at the current prompt.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_sep</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">kernel_banner</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">kernel_client</span></code></td>
-<td>Returns the current kernel client.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">kernel_manager</span></code></td>
-<td>The kernel manager, if any</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">kind</span></code></td>
-<td>An enum whose value must be in a given sequence.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">lexer</span></code></td>
-<td>A trait which allows any value.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">lexer_class</span></code></td>
-<td>A string holding a valid dotted object name in Python, such as A.b3._c</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></td>
-<td>A trait whose value must be an instance of a specified class.</td>
-</tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">objectNameChanged</span></code></td>
 <td>objectNameChanged(self, str) [signal]</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">other_output_prefix</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">out_prompt</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_sep</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_sep2</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">override_shortcuts</span></code></td>
-<td>A boolean (True, False) trait.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">paging</span></code></td>
-<td>An enum whose value must be in a given sequence.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent</span></code></td>
-<td>A trait whose value must be an instance of a specified class.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">redo_available</span></code></td>
-<td></td>
-</tr>
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">style_sheet</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">syntax_style</span></code></td>
-<td>A trait for unicode strings.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">tab_width</span></code></td>
-<td>The width (in terms of space characters) for tab characters.</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">undo_available</span></code></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">windowIconChanged</span></code></td>

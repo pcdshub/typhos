@@ -23,36 +23,19 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.addAction
       ~TyphonConsole.addActions
       ~TyphonConsole.add_device
-      ~TyphonConsole.add_traits
       ~TyphonConsole.adjustSize
-      ~TyphonConsole.append_stream
       ~TyphonConsole.autoFillBackground
       ~TyphonConsole.backgroundRole
       ~TyphonConsole.baseSize
       ~TyphonConsole.blockSignals
-      ~TyphonConsole.can_copy
-      ~TyphonConsole.can_cut
-      ~TyphonConsole.can_paste
       ~TyphonConsole.changeEvent
-      ~TyphonConsole.change_font_size
       ~TyphonConsole.childAt
       ~TyphonConsole.childEvent
       ~TyphonConsole.children
       ~TyphonConsole.childrenRect
       ~TyphonConsole.childrenRegion
-      ~TyphonConsole.class_config_rst_doc
-      ~TyphonConsole.class_config_section
-      ~TyphonConsole.class_get_help
-      ~TyphonConsole.class_get_trait_help
-      ~TyphonConsole.class_own_trait_events
-      ~TyphonConsole.class_own_traits
-      ~TyphonConsole.class_print_help
-      ~TyphonConsole.class_trait_names
-      ~TyphonConsole.class_traits
-      ~TyphonConsole.clear
       ~TyphonConsole.clearFocus
       ~TyphonConsole.clearMask
-      ~TyphonConsole.clear_output
       ~TyphonConsole.close
       ~TyphonConsole.closeEvent
       ~TyphonConsole.colorCount
@@ -61,14 +44,10 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.contentsRect
       ~TyphonConsole.contextMenuEvent
       ~TyphonConsole.contextMenuPolicy
-      ~TyphonConsole.copy
-      ~TyphonConsole.copy_anchor
-      ~TyphonConsole.copy_raw
       ~TyphonConsole.create
       ~TyphonConsole.createWindowContainer
       ~TyphonConsole.cursor
       ~TyphonConsole.customEvent
-      ~TyphonConsole.cut
       ~TyphonConsole.deleteLater
       ~TyphonConsole.depth
       ~TyphonConsole.destroy
@@ -78,7 +57,6 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.devicePixelRatioFScale
       ~TyphonConsole.disconnect
       ~TyphonConsole.disconnectNotify
-      ~TyphonConsole.do_execute
       ~TyphonConsole.dragEnterEvent
       ~TyphonConsole.dragLeaveEvent
       ~TyphonConsole.dragMoveEvent
@@ -91,12 +69,9 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.enterEvent
       ~TyphonConsole.event
       ~TyphonConsole.eventFilter
-      ~TyphonConsole.execute
-      ~TyphonConsole.export_html
       ~TyphonConsole.find
       ~TyphonConsole.findChild
       ~TyphonConsole.findChildren
-      ~TyphonConsole.flush_clearoutput
       ~TyphonConsole.focusInEvent
       ~TyphonConsole.focusNextChild
       ~TyphonConsole.focusNextPrevChild
@@ -105,13 +80,13 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.focusPreviousChild
       ~TyphonConsole.focusProxy
       ~TyphonConsole.focusWidget
+      ~TyphonConsole.font
       ~TyphonConsole.fontInfo
       ~TyphonConsole.fontMetrics
       ~TyphonConsole.foregroundRole
       ~TyphonConsole.frameGeometry
       ~TyphonConsole.frameSize
       ~TyphonConsole.from_device
-      ~TyphonConsole.from_here
       ~TyphonConsole.geometry
       ~TyphonConsole.getContentsMargins
       ~TyphonConsole.grab
@@ -125,17 +100,11 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.hasHeightForWidth
       ~TyphonConsole.hasMouseTracking
       ~TyphonConsole.hasTabletTracking
-      ~TyphonConsole.has_trait
       ~TyphonConsole.height
       ~TyphonConsole.heightForWidth
       ~TyphonConsole.heightMM
       ~TyphonConsole.hide
       ~TyphonConsole.hideEvent
-      ~TyphonConsole.history_next
-      ~TyphonConsole.history_previous
-      ~TyphonConsole.history_tail
-      ~TyphonConsole.hold_trait_notifications
-      ~TyphonConsole.include_output
       ~TyphonConsole.inherits
       ~TyphonConsole.initPainter
       ~TyphonConsole.inputMethodEvent
@@ -144,7 +113,6 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.insertAction
       ~TyphonConsole.insertActions
       ~TyphonConsole.installEventFilter
-      ~TyphonConsole.interrupt_kernel
       ~TyphonConsole.isActiveWindow
       ~TyphonConsole.isAncestorOf
       ~TyphonConsole.isEnabled
@@ -202,31 +170,24 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.nativeParentWidget
       ~TyphonConsole.nextInFocusChain
       ~TyphonConsole.normalGeometry
-      ~TyphonConsole.notify_change
       ~TyphonConsole.objectName
-      ~TyphonConsole.observe
-      ~TyphonConsole.on_trait_change
-      ~TyphonConsole.open_anchor
       ~TyphonConsole.overrideWindowFlags
       ~TyphonConsole.overrideWindowState
       ~TyphonConsole.paintEngine
       ~TyphonConsole.paintEvent
       ~TyphonConsole.paintingActive
       ~TyphonConsole.palette
+      ~TyphonConsole.parent
       ~TyphonConsole.parentWidget
-      ~TyphonConsole.paste
       ~TyphonConsole.physicalDpiX
       ~TyphonConsole.physicalDpiY
       ~TyphonConsole.pos
       ~TyphonConsole.previousInFocusChain
-      ~TyphonConsole.print_
-      ~TyphonConsole.prompt_to_top
       ~TyphonConsole.property
       ~TyphonConsole.pyqtConfigure
       ~TyphonConsole.raise_
       ~TyphonConsole.receivers
       ~TyphonConsole.rect
-      ~TyphonConsole.redo
       ~TyphonConsole.releaseKeyboard
       ~TyphonConsole.releaseMouse
       ~TyphonConsole.releaseShortcut
@@ -234,19 +195,11 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.removeEventFilter
       ~TyphonConsole.render
       ~TyphonConsole.repaint
-      ~TyphonConsole.request_interrupt_kernel
-      ~TyphonConsole.request_restart_kernel
-      ~TyphonConsole.reset
-      ~TyphonConsole.reset_font
       ~TyphonConsole.resize
       ~TyphonConsole.resizeEvent
-      ~TyphonConsole.restart_kernel
       ~TyphonConsole.restoreGeometry
       ~TyphonConsole.saveGeometry
       ~TyphonConsole.scroll
-      ~TyphonConsole.section_names
-      ~TyphonConsole.select_all_smart
-      ~TyphonConsole.select_document
       ~TyphonConsole.sender
       ~TyphonConsole.senderSignalIndex
       ~TyphonConsole.setAcceptDrops
@@ -313,9 +266,6 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.setWindowRole
       ~TyphonConsole.setWindowState
       ~TyphonConsole.setWindowTitle
-      ~TyphonConsole.set_default_style
-      ~TyphonConsole.set_trait
-      ~TyphonConsole.setup_instance
       ~TyphonConsole.sharedPainter
       ~TyphonConsole.show
       ~TyphonConsole.showEvent
@@ -341,22 +291,14 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.toolTip
       ~TyphonConsole.toolTipDuration
       ~TyphonConsole.tr
-      ~TyphonConsole.trait_events
-      ~TyphonConsole.trait_metadata
-      ~TyphonConsole.trait_names
-      ~TyphonConsole.traits
       ~TyphonConsole.underMouse
-      ~TyphonConsole.undo
       ~TyphonConsole.ungrabGesture
-      ~TyphonConsole.unobserve
-      ~TyphonConsole.unobserve_all
       ~TyphonConsole.unsetCursor
       ~TyphonConsole.unsetLayoutDirection
       ~TyphonConsole.unsetLocale
       ~TyphonConsole.update
       ~TyphonConsole.updateGeometry
       ~TyphonConsole.updateMicroFocus
-      ~TyphonConsole.update_config
       ~TyphonConsole.updatesEnabled
       ~TyphonConsole.visibleRegion
       ~TyphonConsole.whatsThis
@@ -402,66 +344,10 @@ typhon.tools.TyphonConsole
       ~TyphonConsole.PdmPhysicalDpiY
       ~TyphonConsole.PdmWidth
       ~TyphonConsole.PdmWidthMM
-      ~TyphonConsole.ansi_codes
-      ~TyphonConsole.banner
-      ~TyphonConsole.buffer_size
-      ~TyphonConsole.clear_on_kernel_restart
-      ~TyphonConsole.config
-      ~TyphonConsole.confirm_restart
-      ~TyphonConsole.console_height
-      ~TyphonConsole.console_width
-      ~TyphonConsole.copy_available
-      ~TyphonConsole.cross_validation_lock
       ~TyphonConsole.customContextMenuRequested
-      ~TyphonConsole.custom_control
-      ~TyphonConsole.custom_edit
-      ~TyphonConsole.custom_edit_requested
-      ~TyphonConsole.custom_interrupt
-      ~TyphonConsole.custom_interrupt_requested
-      ~TyphonConsole.custom_page_control
-      ~TyphonConsole.custom_page_requested
-      ~TyphonConsole.custom_restart
-      ~TyphonConsole.custom_restart_kernel_died
-      ~TyphonConsole.custom_restart_requested
       ~TyphonConsole.destroyed
-      ~TyphonConsole.editor
-      ~TyphonConsole.editor_line
-      ~TyphonConsole.enable_calltips
-      ~TyphonConsole.execute_on_complete_input
-      ~TyphonConsole.executed
-      ~TyphonConsole.executing
-      ~TyphonConsole.exit_requested
-      ~TyphonConsole.font
-      ~TyphonConsole.font_changed
-      ~TyphonConsole.font_family
-      ~TyphonConsole.font_size
-      ~TyphonConsole.gui_completion
-      ~TyphonConsole.history_lock
-      ~TyphonConsole.in_prompt
-      ~TyphonConsole.include_other_output
-      ~TyphonConsole.input_buffer
-      ~TyphonConsole.input_sep
-      ~TyphonConsole.kernel_banner
-      ~TyphonConsole.kernel_client
-      ~TyphonConsole.kernel_manager
-      ~TyphonConsole.kind
-      ~TyphonConsole.lexer
-      ~TyphonConsole.lexer_class
-      ~TyphonConsole.log
       ~TyphonConsole.objectNameChanged
-      ~TyphonConsole.other_output_prefix
-      ~TyphonConsole.out_prompt
-      ~TyphonConsole.output_sep
-      ~TyphonConsole.output_sep2
-      ~TyphonConsole.override_shortcuts
-      ~TyphonConsole.paging
-      ~TyphonConsole.parent
-      ~TyphonConsole.redo_available
       ~TyphonConsole.staticMetaObject
-      ~TyphonConsole.style_sheet
-      ~TyphonConsole.syntax_style
-      ~TyphonConsole.tab_width
-      ~TyphonConsole.undo_available
       ~TyphonConsole.windowIconChanged
       ~TyphonConsole.windowIconTextChanged
       ~TyphonConsole.windowTitleChanged
