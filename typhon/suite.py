@@ -1,25 +1,70 @@
 ############
 # Standard #
 ############
+from functools import partial
 import logging
-import os.path
+import warnings
 
 ############
 # External #
 ############
+from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from ophyd import Device
-from qtpy import uic
-from qtpy.QtCore import Slot, Qt, QModelIndex
+from qtpy.QtCore import Signal, Slot, Qt
+from qtpy.QtWidgets import QDockWidget, QListWidgetItem, QHBoxLayout, QWidget
 
 ###########
 # Package #
 ###########
 from .display import TyphonDisplay
-from .utils import ui_dir, clean_name, TyphonBase
-from .widgets import TyphonSidebarItem
+from .utils import clean_name, TyphonBase, flatten_tree
+from .widgets import TyphonSidebarItem, SubDisplay
 from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonConsole
 
 logger = logging.getLogger(__name__)
+
+
+class SidebarParameter(ptypes.Parameter):
+    """
+    Parameter to hold information for the sidebar
+    """
+    itemClass = TyphonSidebarItem
+    sigOpen = Signal(object)
+    sigHide = Signal(object)
+    sigEmbed = Signal(object)
+
+    def __init__(self, embeddable=None, **opts):
+        super().__init__(**opts)
+        self.embeddable = embeddable
+
+
+class DeviceParameter(SidebarParameter):
+    """Parameter to hold information Ophyd Device"""
+    itemClass = TyphonSidebarItem
+
+    def __init__(self, device, subdevices=True, **opts):
+        # Set options for parameter
+        opts['name'] = clean_name(device, strip_parent=device.root)
+        self.device = device
+        opts['expanded'] = False
+        # Grab children from the given device
+        children = list()
+        if subdevices:
+            for child in device._sub_devices:
+                subdevice = getattr(device, child)
+                # If that device has children, make sure they are also
+                # displayed further in the tree
+                if subdevice._sub_devices:
+                    children.append(DeviceParameter(subdevice))
+                # Otherwise just make a regular parameter out of it
+                else:
+                    child_name = clean_name(subdevice,
+                                            strip_parent=subdevice.root)
+                    child_display = TyphonDisplay.from_device(subdevice)
+                    children.append(SidebarParameter(value=child_display,
+                                                     name=child_name))
+        opts['children'] = children
+        super().__init__(value=TyphonDisplay.from_device(device), **opts)
 
 
 class TyphonSuite(TyphonBase):
@@ -33,27 +78,22 @@ class TyphonSuite(TyphonBase):
     ----------
     parent : QWidget, optional
     """
-
     def __init__(self, parent=None):
-        # Instantiate Widget
         super().__init__(parent=parent)
-        # Instantiate UI
-        self.ui = uic.loadUi(os.path.join(ui_dir, 'base.ui'), self)
-        self.device_panel = TyphonDisplay()
-        self.widget_layout.insertWidget(1, self.device_panel)
-        self.subdisplays = dict()
-        # Connect signals to slots
-        self.ui.hide_button.clicked.connect(self.hide_subdisplays)
-        self.ui.tool_list.clicked.connect(self.show_subdisplay)
-        self.ui.tool_list.clicked.connect(
-                self.ui.component_list.clearSelection)
-        self.ui.component_list.clicked.connect(self.show_subdisplay)
-        self.ui.component_list.clicked.connect(
-                self.ui.tool_list.clearSelection)
-        # Hide widgets until objects are added to them
-        self.ui.subwindow.hide()
-        self.ui.tool_sidebar.hide()
-        self.ui.component_sidebar.hide()
+        # Setup parameter tree
+        self._tree = ParameterTree(parent=self, showHeader=False)
+        self._tree.setAlternatingRowColors(False)
+        # Create device group
+        self._device_group = ptypes.GroupParameter(name='Devices')
+        self._tree.addParameters(self._device_group)
+        # Create tool group
+        self._tool_group = ptypes.GroupParameter(name='Tools')
+        self._tree.addParameters(self._tool_group)
+        # Setup layout
+        self._layout = QHBoxLayout()
+        self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
+        self._layout.addWidget(self._tree)
+        self.setLayout(self._layout)
 
     def add_subdisplay(self, name, display, list_widget):
         """
@@ -76,17 +116,19 @@ class TyphonSuite(TyphonBase):
             QWidget with the PyQtSignal ``clicked``. If None, is given a
             QPushButton is created
         """
+        warnings.warn("This method is deprecated. Use TyphonSuite.add_device "
+                      "or TyphonSuite.add_tool instead.")
         # Create QListViewItem to store the display information
-        list_item = TyphonSidebarItem(name)
+        list_item = QListWidgetItem(name)
         list_item.setData(Qt.UserRole, display)
         list_widget.addItem(list_item)
-        # Add our display to the component widget
-        self.ui.subdisplay.addWidget(display)
-        self.subdisplays[name] = list_item
-        # Hide the parent widget if hidden
-        sidebar = list_widget.parent()
-        if sidebar.isHidden():
-            sidebar.show()
+
+    def _add_to_sidebar(self, param):
+        """Add a SidebarParameter to the correct slots"""
+        param.sigOpen.connect(partial(self.show_subdisplay,
+                                      param))
+        param.sigHide.connect(partial(self.hide_subdisplay,
+                                      param))
 
     def add_subdevice(self, device, name=None, **kwargs):
         """
@@ -97,14 +139,12 @@ class TyphonSuite(TyphonBase):
         device : ophyd.Device
 
         kwargs:
-            Passed to :meth:`.TyphonDevice.from_device`
+            Passed to :meth:`.TyphonSuite.add_device`
         """
+        warnings.warn("This method is deprecated. "
+                      "Use `TyphonSuite.add_device`")
         logger.debug("Creating subdisplay for %s", device.name)
-        # Remove parent from name for title
-        if not name:
-            name = clean_name(device)
-        dd = TyphonDisplay.from_device(device, name=name, **kwargs)
-        self.add_subdisplay(name, dd, self.component_list)
+        self.add_device(device, **kwargs)
 
     def add_tool(self, name, tool):
         """
@@ -118,34 +158,20 @@ class TyphonSuite(TyphonBase):
         tool: QWidget
             Widget to be added to ``.ui.subdisplay``
         """
-        self.add_subdisplay(name, tool, self.ui.tool_list)
-
-    def _item_from_sidebar(self, name):
-        """
-        Get a child display based on the name given
-
-        Parameters
-        ----------
-        name: str
-            Name of display
-        """
-        # Gather QListWidgetItem
-        try:
-            list_item = self.subdisplays[name]
-        except KeyError as exc:
-            raise ValueError("Display {} has not been added to the "
-                             "DeviceDisplay yet".format(name)) from exc
-        return list_item
+        tool_param = SidebarParameter(value=tool, name=name)
+        self._tool_group.addChild(tool_param)
+        self._add_to_sidebar(tool_param)
+        return tool_param
 
     def get_subdisplay(self, display):
         """
-        Get a subdisplay by name
+        Get a subdisplay by name or device
 
         Parameters
         ----------
         display :str or Device
             Name of subdisplay. This will be the text shown on the sidebar. For
-            component devices screens you can pass in the component device
+            devices screens you can pass in the device itself
             itself
 
         Returns
@@ -158,16 +184,27 @@ class TyphonSuite(TyphonBase):
         .. code:: python
 
             my_display.get_subdisplay(my_device.x)
-            my_displyay.get_subsdisplay('My Tool')
+            my_display.get_subdisplay('My Tool')
         """
         # Get the cleaned Device name if passed a Device
         if isinstance(display, Device):
-            display = clean_name(display)
-        return self._item_from_sidebar(display).data(Qt.UserRole)
+            tree = flatten_tree(self._device_group)
+            for param in tree:
+                if display in getattr(param.value(), 'devices', []):
+                    return param.value()
+        # Otherwise we could be looking for either a tool or device
+        else:
+            tree = (flatten_tree(self._device_group)
+                    + flatten_tree(self._tool_group))
+            for param in tree:
+                if param.name() == display:
+                    return param.value()
+        # If we got here we can't find the subdisplay
+        raise ValueError("Unable to find subdisplay %r", display)
 
     @Slot(str)
-    @Slot(QModelIndex)
-    def show_subdisplay(self, item):
+    @Slot(object)
+    def show_subdisplay(self, widget):
         """
         Show subdevice display of the QStackedWidget
 
@@ -175,33 +212,63 @@ class TyphonSuite(TyphonBase):
         ----------
         name : str, Device or QModelIndex
         """
+        # Setup the dock
+        dock = SubDisplay(self)
         # Grab the relevant display
-        if isinstance(item, QModelIndex):
-            display = item.data(Qt.UserRole)
+        if isinstance(widget, SidebarParameter):
+            for item in widget.items:
+                item._mark_shown()
+            # Make sure we react if the dock is closed outside of our menu
+            dock.closing.connect(partial(self.hide_subdisplay,
+                                         widget))
+            widget = widget.value()
+        elif not isinstance(widget, QWidget):
+            widget = self.get_subdisplay(widget)
+        # Add the widget to the dock
+        dock.setWidget(widget)
+        # Add to layout
+        self.layout().addWidget(dock)
+
+    @Slot()
+    @Slot(object)
+    def hide_subdisplay(self, widget):
+        """
+        Hide a visible subdisplay
+
+        Parameters
+        ----------
+        widget: SidebarParameter or Subdisplay
+            If you give a SidebarParameter, we will find the corresponding
+            widget and hide it. If the widget provided to us is inside a
+            DockWidget we will close that, otherwise the widget is just hidden
+        """
+        # If we have a parameter grab the widget
+        if isinstance(widget, SidebarParameter):
+            for item in widget.items:
+                item._mark_hidden()
+            widget = widget.value()
+        elif not isinstance(widget, QWidget):
+            widget = self.get_subdisplay(widget)
+        # Make sure the actual widget is hidden
+        if isinstance(widget.parent(), QDockWidget):
+            widget.parent().close()
         else:
-            display = self.get_subdisplay(item)
-        # Show our subdisplay if previously hidden
-        if self.ui.subwindow.isHidden():
-            self.ui.subwindow.show()
-        # Set the current display
-        self.ui.subdisplay.setCurrentWidget(display)
-        self.ui.subdisplay.setFixedWidth(display.sizeHint().width())
+            widget.hide()
 
     @Slot()
     def hide_subdisplays(self):
         """
         Hide the component widget and set all buttons unchecked
         """
-        # Hide the main display
-        self.ui.subwindow.hide()
-        self.ui.component_list.clearSelection()
-        self.ui.tool_list.clearSelection()
+        # Grab children from devices
+        device_params = flatten_tree(self._device_group)
+        for param in device_params[1:] + self._tool_group.childs:
+            self.hide_subdisplay(param)
 
     @property
     def tools(self):
         """Tools loaded into the DeviceDisplay"""
-        return [self.tool_list.item(i).data(Qt.UserRole)
-                for i in range(self.tool_list.count())]
+        return [param.value() for param in self._tool_group.childs]
 
     def add_device(self, device, children=True, methods=None, image=None):
         """
@@ -214,11 +281,20 @@ class TyphonSuite(TyphonBase):
         methods: list, optional
             Methods to add to the device
         """
+        methods = methods or list()
         super().add_device(device)
-        # Add the device to the main panel
-        self.device_panel.add_device(device, methods=methods)
+        # Create DeviceParameter
+        dev_param = DeviceParameter(device, subdevices=children)
+        for method in methods:
+            dev_param.value.add_method(method)
         if image:
-            self.device_panel.add_image(image)
+            dev_param.value.add_image(image)
+        # Attach signals
+        all_params = [dev_param] + dev_param.childs
+        for param in all_params:
+            self._add_to_sidebar(param)
+        # Add to tree
+        self._device_group.addChild(dev_param)
         # Add a device to all the tool displays
         for tool in self.tools:
             try:
@@ -226,10 +302,7 @@ class TyphonSuite(TyphonBase):
             except Exception as exc:
                 logger.exception("Unable to add %s to tool %s",
                                  device.name, type(tool))
-        # Handle child devices
-        if children:
-            for dev_name in device._sub_devices:
-                self.add_subdevice(getattr(device, dev_name))
+        return dev_param
 
     @classmethod
     def from_device(cls, device, parent=None,
@@ -258,6 +331,6 @@ class TyphonSuite(TyphonBase):
                 display.add_tool(name, tool())
             except Exception:
                 logger.exception("Unable to load %s", type(tool))
-        display.add_device(device, **kwargs)
-        display.device_panel.title = clean_name(device, strip_parent=False)
+        param = display.add_device(device, **kwargs)
+        display.show_subdisplay(param)
         return display

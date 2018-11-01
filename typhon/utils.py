@@ -210,3 +210,11 @@ def make_identifier(name):
     # Remove leading characters until we find a letter or an underscore
     name = re.sub('^[^a-zA-Z_]+', '', name)
     return name
+
+
+def flatten_tree(param):
+    """Flatten a tree of parameters"""
+    tree = [param]
+    for child in param.childs:
+        tree.extend(flatten_tree(child))
+    return tree
