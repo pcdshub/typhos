@@ -1,4 +1,27 @@
 {
+    "Syn:Motor": {
+        "_id": "Syn:Motor",
+        "active": true,
+        "args": [],
+        "beamline": "TST",
+        "creation": "Thu Nov  1 13:39:20 2018",
+        "device_class": "ophyd.sim.SynAxis",
+        "documentation": null,
+        "kwargs": {
+            "name": "{{name}}"
+        },
+        "last_edit": "Thu Nov  1 13:39:20 2018",
+        "lightpath": false,
+        "macros": null,
+        "name": "test_motor",
+        "parent": null,
+        "prefix": "Syn:Motor",
+        "screen": null,
+        "stand": null,
+        "system": null,
+        "type": "Device",
+        "z": -1.0
+    },
     "Tst:This": {
         "_id": "Tst:This",
         "active": true,
