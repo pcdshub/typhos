@@ -74,14 +74,11 @@ class HappiPlugin(PyDMPlugin):
     protocol = 'happi'
     connection_class = HappiConnection
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # If we haven't made a Client by the time we register the Plugin. Try
+    def add_connection(self, channel):
+        # If we haven't made a Client by the time we need the Plugin. Try
         # and load one from configuration file
         if not _client:
             register_client(Client.from_config())
-
-    def add_connection(self, channel):
         try:
             super().add_connection(channel)
         except SearchError:
