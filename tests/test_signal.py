@@ -5,6 +5,7 @@
 ############
 # External #
 ############
+from ophyd import Kind
 from ophyd.signal import Signal, EpicsSignal, EpicsSignalRO
 from ophyd.sim import SynSignal, SynSignalRO
 from ophyd.tests.conftest import using_fake_epics_pv
@@ -13,7 +14,7 @@ from pydm.widgets import PyDMEnumComboBox
 ###########
 # Package #
 ###########
-from typhon.signal import SignalPanel
+from typhon.signal import SignalPanel, TyphonPanel
 from .conftest import show_widget, RichSignal, DeadSignal
 
 @using_fake_epics_pv
@@ -79,3 +80,28 @@ def test_add_pv():
     assert panel.layout().itemAtPosition(0, 1).count() == 1
     panel.add_pv('Tst:A', "Write", write_pv='Tst:B')
     assert panel.layout().itemAtPosition(1, 1).count() == 2
+
+
+@show_widget
+def test_typhon_panel(client):
+    panel = TyphonPanel()
+    # Setting Kind without device doesn't explode
+    panel.minimumKind = Kind.config
+    panel.minimumKind = Kind.omitted
+    # Add a device channel
+    panel.channel = 'happi://test_motor'
+    # Check we have our device
+    assert len(panel.devices) == 1
+    device = panel.devices[0]
+    num_hints = len(device.hints['fields'])
+    num_read = len(device.read_attrs)
+    # Check we got all our signals
+    assert len(panel.layout().signals) == len(device.component_names)
+    panel.minimumKind = Kind.hinted
+    assert len(panel.layout().signals) == num_hints
+    panel.minimumKind = Kind.normal
+    panel.maximumKind = Kind.normal
+    assert len(panel.layout().signals) == num_read - num_hints
+    panel.maximumKind = Kind.hinted
+    assert len(panel.layout().signals) == num_read
+    return panel
