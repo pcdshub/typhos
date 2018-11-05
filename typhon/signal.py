@@ -151,6 +151,12 @@ class SignalPanel(QGridLayout):
             sig = EpicsSignalRO(read_pv, name=name)
         return self.add_signal(sig, name)
 
+    def clear(self):
+        """Clear the SignalPanel"""
+        logger.debug("Clearing layout %r ...", self)
+        clear_layout(self)
+        self.signals.clear()
+
     def _add_row(self, read, name, write=None):
         # Create label
         label = QLabel()
