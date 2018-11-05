@@ -2,7 +2,6 @@
 # Standard #
 ############
 import logging
-from warnings import warn
 
 ############
 # External #
@@ -84,12 +83,8 @@ class SignalPanel(QGridLayout):
         Signals to include in the panel
         Parent of panel
     """
-    def __init__(self, title=None, signals=None):
+    def __init__(self, signals=None):
         super().__init__()
-        # Title is no longer supported
-        if title:
-            warn("The 'title' option for SignalPanel is deprecated. "
-                 "It will be removed in future releases.")
         # Store signal information
         self.signals = dict()
         # Add supplied signals
