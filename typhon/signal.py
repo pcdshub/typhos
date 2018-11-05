@@ -6,15 +6,19 @@ import logging
 ############
 # External #
 ############
+from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
+from qtpy.QtCore import Property, Q_ENUMS
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
+from pydm.widgets.base import PyDMWidget
 
 #############
 #  Package  #
 #############
-from .utils import channel_name, is_signal_ro
+from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
+                    is_signal_ro, TyphonBase)
 from .widgets import TyphonLineEdit, TyphonComboBox, TyphonLabel
-from .plugins import register_signal
+from .plugins import register_signal, HappiChannel
 
 logger = logging.getLogger(__name__)
 
@@ -179,3 +183,103 @@ class SignalPanel(QGridLayout):
         # Store signal
         self.signals[name] = (read, write)
         return loc
+
+
+class TyphonPanel(TyphonBase, PyDMWidget):
+    """
+    Panel of Signals for Device
+    """
+    Q_ENUMS(Kind)
+    kind_order = [Kind.omitted, Kind.config, Kind.normal, Kind.hinted]
+
+    def __init__(self, parent=None, init_channel=None):
+        super().__init__(parent=parent)
+        # Create a SignalPanel layout to be modified later
+        self.setLayout(SignalPanel())
+        # Add default Kind values
+        self._min_kind = Kind.omitted
+        self._max_kind = Kind.hinted
+
+    @Property(Kind)
+    def minimumKind(self):
+        """Lowest Kind signal to display"""
+        return self._min_kind
+
+    @minimumKind.setter
+    def minimumKind(self, value):
+        # If we have a new value store it
+        if value != self._min_kind:
+            # Store it internally
+            self._min_kind = value
+            # Remodify the layout for the new Kind
+            self._set_layout()
+
+    @Property(Kind)
+    def maximumKind(self):
+        """Highest Kind signal to display"""
+        return self._max_kind
+
+    @maximumKind.setter
+    def maximumKind(self, value):
+        # If we have a new value store it
+        if value != self._max_kind:
+            # Store it internally
+            self._max_kind = value
+            # Remodify the layout for the new Kind
+            self._set_layout()
+
+    @Property(str)
+    def channel(self):
+        """The channel address to use for this widget"""
+        if self._channel:
+            return str(self._channel)
+        return None
+
+    @channel.setter
+    def channel(self, value):
+        if self._channel != value:
+            # Remove old connection
+            for channel in self._channels:
+                channel.disconnect()
+            self._channels.clear()
+            # Load new channel
+            self._channel = str(value)
+            channel = HappiChannel(address=self._channel,
+                                   tx_slot=self._tx)
+            self._channels.append(channel)
+            # Connect the channel to the HappiPlugin
+            channel.connect()
+
+    def add_device(self, device):
+        """Add a device to the widget"""
+        # Only allow a single device
+        self.devices.clear()
+        # Add the new device
+        super().add_device(device)
+        # Configure the layout for the new device
+        self._set_layout()
+
+    @classmethod
+    def _order_of_kind(cls, kind):
+        return cls.kind_order.index(kind)
+
+    def _set_layout(self):
+        """Set the layout based on the current device and kind"""
+        # We can't set a layout if we don't have any devices
+        if not self.devices:
+            return
+        # Clear our layout
+        self.layout().clear()
+        # Minimum Kind / Maximum Kind
+        min_val = self._order_of_kind(self._min_kind)
+        max_val = self._order_of_kind(self._max_kind)
+        # Assemble list of signals based on min and max Kind. Reversed to show
+        # the higher priorty Kind first
+        for kind in reversed(self.kind_order):
+            for (attr, signal) in grab_kind(self.devices[0], kind.name):
+                if min_val <= self._order_of_kind(signal.kind) <= max_val:
+                    self.layout().add_signal(signal, clean_attr(attr))
+
+    def _tx(self, value):
+        """Receive new device information"""
+        self.add_device(value['obj'])
