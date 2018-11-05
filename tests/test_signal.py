@@ -16,7 +16,6 @@ from pydm.widgets import PyDMEnumComboBox
 from typhon.signal import SignalPanel
 from .conftest import show_widget, RichSignal, DeadSignal
 
-@show_widget
 @using_fake_epics_pv
 def test_panel_creation():
     panel = SignalPanel(signals={
@@ -41,7 +40,6 @@ def test_panel_creation():
     return panel
 
 
-@show_widget
 @using_fake_epics_pv
 def test_panel_add_enum():
     panel = SignalPanel()
