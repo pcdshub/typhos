@@ -8,7 +8,7 @@ import logging
 ############
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
-from qtpy.QtCore import Property, Q_ENUMS
+from qtpy.QtCore import Property, Q_ENUMS, QSize
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 from pydm.widgets.base import PyDMWidget
 
@@ -277,8 +277,12 @@ class TyphonPanel(TyphonBase, PyDMWidget):
         # the higher priorty Kind first
         for kind in reversed(self.kind_order):
             for (attr, signal) in grab_kind(self.devices[0], kind.name):
-                if min_val <= self._order_of_kind(signal.kind) <= max_val:
-                    self.layout().add_signal(signal, clean_attr(attr))
+                label = clean_attr(attr)
+                in_layout = label in self.layout().signals
+                is_kind = (min_val <= self._order_of_kind(signal.kind)
+                           <= max_val)
+                if is_kind and not in_layout:
+                    self.layout().add_signal(signal, label)
 
     def _tx(self, value):
         """Receive new device information"""
