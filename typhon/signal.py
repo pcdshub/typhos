@@ -234,16 +234,19 @@ class TyphonPanel(TyphonBase, PyDMWidget):
     def channel(self, value):
         if self._channel != value:
             # Remove old connection
-            for channel in self._channels:
-                channel.disconnect()
-            self._channels.clear()
+            if self._channels:
+                self._channels.clear()
+                for channel in self._channels:
+                    if hasattr(channel, 'disconnect'):
+                        channel.disconnect()
             # Load new channel
             self._channel = str(value)
             channel = HappiChannel(address=self._channel,
                                    tx_slot=self._tx)
-            self._channels.append(channel)
+            self._channels = [channel]
             # Connect the channel to the HappiPlugin
-            channel.connect()
+            if hasattr(channel, 'connect'):
+                channel.connect()
 
     def add_device(self, device):
         """Add a device to the widget"""

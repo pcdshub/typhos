@@ -83,13 +83,14 @@ def test_add_pv():
 
 
 @show_widget
-def test_typhon_panel(client):
+def test_typhon_panel(qapp, client):
     panel = TyphonPanel()
     # Setting Kind without device doesn't explode
     panel.showConfig = False
     panel.showConfig = True
     # Add a device channel
     panel.channel = 'happi://test_motor'
+    qapp.establish_widget_connections(panel)
     # Check we have our device
     assert len(panel.devices) == 1
     device = panel.devices[0]
