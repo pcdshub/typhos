@@ -1,6 +1,7 @@
 ############
 # Standard #
 ############
+from functools import partial
 import logging
 
 ############
@@ -8,7 +9,7 @@ import logging
 ############
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
-from qtpy.QtCore import Property, Q_ENUMS, QSize
+from qtpy.QtCore import Property, QSize
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 from pydm.widgets.base import PyDMWidget
 
@@ -189,44 +190,38 @@ class TyphonPanel(TyphonBase, PyDMWidget):
     """
     Panel of Signals for Device
     """
-    Q_ENUMS(Kind)
-    kind_order = [Kind.omitted, Kind.config, Kind.normal, Kind.hinted]
 
     def __init__(self, parent=None, init_channel=None):
         super().__init__(parent=parent)
         # Create a SignalPanel layout to be modified later
         self.setLayout(SignalPanel())
         # Add default Kind values
-        self._min_kind = Kind.omitted
-        self._max_kind = Kind.hinted
+        self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
 
-    @Property(Kind)
-    def minimumKind(self):
-        """Lowest Kind signal to display"""
-        return self._min_kind
+    def _get_kind(self, kind):
+        return self._kinds[kind]
 
-    @minimumKind.setter
-    def minimumKind(self, value):
+    def _set_kind(self, value, kind):
         # If we have a new value store it
-        if value != self._min_kind:
+        if value != self._kinds[kind]:
             # Store it internally
-            self._min_kind = value
+            self._kinds[kind] = value
             # Remodify the layout for the new Kind
             self._set_layout()
 
-    @Property(Kind)
-    def maximumKind(self):
-        """Highest Kind signal to display"""
-        return self._max_kind
-
-    @maximumKind.setter
-    def maximumKind(self, value):
-        # If we have a new value store it
-        if value != self._max_kind:
-            # Store it internally
-            self._max_kind = value
-            # Remodify the layout for the new Kind
-            self._set_layout()
+    # Kind Configuration pyqtProperty
+    showHints = Property(bool,
+                         partial(_get_kind, kind='hinted'),
+                         partial(_set_kind, kind='hinted'))
+    showNormal = Property(bool,
+                          partial(_get_kind, kind='normal'),
+                          partial(_set_kind, kind='normal'))
+    showConfig = Property(bool,
+                          partial(_get_kind, kind='config'),
+                          partial(_set_kind, kind='config'))
+    showOmitted = Property(bool,
+                           partial(_get_kind, kind='omitted'),
+                           partial(_set_kind, kind='omitted'))
 
     @Property(str)
     def channel(self):
@@ -259,10 +254,6 @@ class TyphonPanel(TyphonBase, PyDMWidget):
         # Configure the layout for the new device
         self._set_layout()
 
-    @classmethod
-    def _order_of_kind(cls, kind):
-        return cls.kind_order.index(kind)
-
     def _set_layout(self):
         """Set the layout based on the current device and kind"""
         # We can't set a layout if we don't have any devices
@@ -270,19 +261,16 @@ class TyphonPanel(TyphonBase, PyDMWidget):
             return
         # Clear our layout
         self.layout().clear()
-        # Minimum Kind / Maximum Kind
-        min_val = self._order_of_kind(self._min_kind)
-        max_val = self._order_of_kind(self._max_kind)
-        # Assemble list of signals based on min and max Kind. Reversed to show
-        # the higher priorty Kind first
-        for kind in reversed(self.kind_order):
-            for (attr, signal) in grab_kind(self.devices[0], kind.name):
-                label = clean_attr(attr)
-                in_layout = label in self.layout().signals
-                is_kind = (min_val <= self._order_of_kind(signal.kind)
-                           <= max_val)
-                if is_kind and not in_layout:
-                    self.layout().add_signal(signal, label)
+        shown_kind = [kind for kind in Kind if self._kinds[kind.name]]
+        # Iterate through kinds
+        for kind in (Kind.hinted, Kind.normal, Kind.config, Kind.omitted):
+            if kind in shown_kind:
+                for (attr, signal) in grab_kind(self.devices[0], kind.name):
+                    label = clean_attr(attr)
+                    in_layout = label in self.layout().signals
+                    # Check twice for Kind as signal might have multiple kinds
+                    if signal.kind in shown_kind and not in_layout:
+                        self.layout().add_signal(signal, label)
 
     def sizeHint(self):
         """Default SizeHint"""

@@ -86,8 +86,8 @@ def test_add_pv():
 def test_typhon_panel(client):
     panel = TyphonPanel()
     # Setting Kind without device doesn't explode
-    panel.minimumKind = Kind.config
-    panel.minimumKind = Kind.omitted
+    panel.showConfig = False
+    panel.showConfig = True
     # Add a device channel
     panel.channel = 'happi://test_motor'
     # Check we have our device
@@ -97,11 +97,14 @@ def test_typhon_panel(client):
     num_read = len(device.read_attrs)
     # Check we got all our signals
     assert len(panel.layout().signals) == len(device.component_names)
-    panel.minimumKind = Kind.hinted
+    panel.showOmitted = False
+    panel.showConfig = False
+    panel.showNormal = False
+    panel.showHints = True
     assert len(panel.layout().signals) == num_hints
-    panel.minimumKind = Kind.normal
-    panel.maximumKind = Kind.normal
+    panel.showNormal = True
+    panel.showHints = False
     assert len(panel.layout().signals) == num_read - num_hints
-    panel.maximumKind = Kind.hinted
+    panel.showHints = True
     assert len(panel.layout().signals) == num_read
     return panel
