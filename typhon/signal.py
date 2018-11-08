@@ -284,6 +284,10 @@ class TyphonPanel(TyphonBase, PyDMWidget):
                 if is_kind and not in_layout:
                     self.layout().add_signal(signal, label)
 
+    def sizeHint(self):
+        """Default SizeHint"""
+        return QSize(240, 140)
+
     def _tx(self, value):
         """Receive new device information"""
         self.add_device(value['obj'])
