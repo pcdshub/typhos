@@ -265,12 +265,18 @@ class TyphonPanel(TyphonBase, PyDMWidget):
         # Iterate through kinds
         for kind in (Kind.hinted, Kind.normal, Kind.config, Kind.omitted):
             if kind in shown_kind:
-                for (attr, signal) in grab_kind(self.devices[0], kind.name):
-                    label = clean_attr(attr)
-                    in_layout = label in self.layout().signals
-                    # Check twice for Kind as signal might have multiple kinds
-                    if signal.kind in shown_kind and not in_layout:
-                        self.layout().add_signal(signal, label)
+                try:
+                    for (attr, signal) in grab_kind(self.devices[0],
+                                                    kind.name):
+                        label = clean_attr(attr)
+                        in_layout = label in self.layout().signals
+                        # Check twice for Kind as signal might have multiple
+                        # kinds
+                        if signal.kind in shown_kind and not in_layout:
+                            self.layout().add_signal(signal, label)
+                except Exception:
+                    logger.exception("Unable to add %s signals from %r",
+                                     kind.name, self.devices[0])
 
     def sizeHint(self):
         """Default SizeHint"""
