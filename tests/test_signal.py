@@ -89,6 +89,9 @@ def test_typhon_panel(qapp, client):
     panel.showConfig = False
     panel.showConfig = True
     # Add a device channel
+    panel.channel = 'happi://test_device'
+    assert panel.channel == 'happi://test_device'
+    # Reset channel and no smoke comes out
     panel.channel = 'happi://test_motor'
     qapp.establish_widget_connections(panel)
     # Check we have our device
