@@ -63,7 +63,7 @@ def signal_widget(signal, read_only=False):
         # Grab a description of the widget to see the correct widget type
         try:
             desc = signal.describe()[signal.name]
-        except Exception as exc:
+        except Exception:
             logger.error("Unable to connect to %r during widget creation",
                          signal.name)
             desc = {}

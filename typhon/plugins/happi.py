@@ -84,5 +84,5 @@ class HappiPlugin(PyDMPlugin):
         except SearchError:
             logger.error("Unable to find device for %r in happi database.",
                          channel)
-        except Exception as exc:
+        except Exception:
             logger.exception("Unable to load %r from happi", channel.address)

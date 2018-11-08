@@ -299,7 +299,7 @@ class TyphonSuite(TyphonBase):
         for tool in self.tools:
             try:
                 tool.add_device(device)
-            except Exception as exc:
+            except Exception:
                 logger.exception("Unable to add %s to tool %s",
                                  device.name, type(tool))
         return dev_param

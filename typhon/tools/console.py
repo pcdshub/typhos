@@ -100,7 +100,7 @@ try:
                        f'{python_name} = from_container(md)')
             # Execute the script
             obj.kernel.kernel_client.execute(load_script, silent=True)
-        except Exception as exc:
+        except Exception:
             logger.exception("Unable to add device %r to TyphonConsole.",
                              device.md.name)
             # Cleanup after ourselves

@@ -143,7 +143,7 @@ class ParamLineEdit(ParamWidget):
         try:
             val = self._type(self.param_edit.text())
         # If not possible, capture the exception and report `np.nan`
-        except ValueError as exc:
+        except ValueError:
             logger.exception("Could not convert text to %r",
                              self._type.__name__)
             val = np.nan
@@ -317,7 +317,7 @@ class FunctionDisplay(QGroupBox):
         try:
             # Execute our function
             func()
-        except Exception as exc:
+        except Exception:
             logger.exception("Exception while executing function")
         else:
             logger.info("Operation Complete")
