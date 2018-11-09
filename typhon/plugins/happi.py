@@ -58,6 +58,7 @@ class HappiConnection(PyDMConnection):
         super().add_listener(channel)
         # Connect our channel to the signal
         self.tx.connect(channel.tx_slot)
+        logger.debug("Loading %r from happi Client", channel)
         # Load the device from the Client
         md = _client.find_device(name=self.address)
         obj = from_container(md)
