@@ -9,7 +9,7 @@ import logging
 ############
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
-from qtpy.QtCore import Property, QSize
+from qtpy.QtCore import Property, Q_ENUMS, QSize
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 from pydm.widgets.base import PyDMWidget
 
@@ -186,10 +186,21 @@ class SignalPanel(QGridLayout):
         return loc
 
 
+class SignalOrder:
+    """Option to sort signals"""
+    byKind = 0
+    byName = 1
+
+
 class TyphonPanel(TyphonBase, PyDMWidget):
     """
     Panel of Signals for Device
     """
+    Q_ENUMS(SignalOrder)  # Necessary for display in Designer
+    SignalOrder = SignalOrder  # For convenience
+    # From top of page to bottom
+    kind_order = (Kind.hinted, Kind.normal,
+                  Kind.config, Kind.omitted)
 
     def __init__(self, parent=None, init_channel=None):
         super().__init__(parent=parent)
@@ -197,6 +208,7 @@ class TyphonPanel(TyphonBase, PyDMWidget):
         self.setLayout(SignalPanel())
         # Add default Kind values
         self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
+        self._signal_order = SignalOrder.byKind
 
     def _get_kind(self, kind):
         return self._kinds[kind]
@@ -248,6 +260,17 @@ class TyphonPanel(TyphonBase, PyDMWidget):
             if hasattr(channel, 'connect'):
                 channel.connect()
 
+    @Property(SignalOrder)
+    def sortBy(self):
+        """Order signals will be placed in layout"""
+        return self._signal_order
+
+    @sortBy.setter
+    def sortBy(self, value):
+        if value != self._signal_order:
+            self._signal_order = value
+            self._set_layout()
+
     def add_device(self, device):
         """Add a device to the widget"""
         # Only allow a single device
@@ -266,20 +289,38 @@ class TyphonPanel(TyphonBase, PyDMWidget):
         self.layout().clear()
         shown_kind = [kind for kind in Kind if self._kinds[kind.name]]
         # Iterate through kinds
-        for kind in (Kind.hinted, Kind.normal, Kind.config, Kind.omitted):
+        signals = list()
+        for kind in Kind:
             if kind in shown_kind:
                 try:
                     for (attr, signal) in grab_kind(self.devices[0],
                                                     kind.name):
                         label = clean_attr(attr)
-                        in_layout = label in self.layout().signals
                         # Check twice for Kind as signal might have multiple
                         # kinds
-                        if signal.kind in shown_kind and not in_layout:
-                            self.layout().add_signal(signal, label)
+                        if signal.kind in shown_kind:
+                            signals.append((label, signal))
                 except Exception:
                     logger.exception("Unable to add %s signals from %r",
                                      kind.name, self.devices[0])
+        # Pick our sorting function
+        if self._signal_order == SignalOrder.byKind:
+
+            # Sort by kind
+            def sorter(x):
+                return self.kind_order.index(x[1].kind)
+
+        elif self._signal_order == SignalOrder.byName:
+
+            # Sort by name
+            def sorter(x):
+                return x[0]
+        else:
+            logger.exception("Unknown sorting type %r", self.sortBy)
+            return
+        # Add to layout
+        for (label, signal) in sorted(set(signals), key=sorter):
+            self.layout().add_signal(signal, label)
 
     def sizeHint(self):
         """Default SizeHint"""
