@@ -196,6 +196,13 @@ class TyphonPanel(TyphonBase, PyDMWidget):
     """
     Panel of Signals for Device
     """
+    # Unused properties that we don't want visible in designer
+    alarmSensitiveBorder = Property(bool, designable=False)
+    alarmSensitiveContent = Property(bool, designable=False)
+    precisionFromPV = Property(bool, designable=False)
+    precision = Property(int, designable=False)
+    showUnits = Property(bool, designable=False)
+
     Q_ENUMS(SignalOrder)  # Necessary for display in Designer
     SignalOrder = SignalOrder  # For convenience
     # From top of page to bottom
