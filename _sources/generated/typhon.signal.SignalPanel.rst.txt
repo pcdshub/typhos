@@ -28,6 +28,7 @@ typhon.signal.SignalPanel
       ~SignalPanel.cellRect
       ~SignalPanel.childEvent
       ~SignalPanel.children
+      ~SignalPanel.clear
       ~SignalPanel.closestAcceptableSize
       ~SignalPanel.columnCount
       ~SignalPanel.columnMinimumWidth

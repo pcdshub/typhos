@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.suite &mdash; Typhon 0.2.1+118.ge1fe32a documentation</title>
+  <title>typhon.suite &mdash; Typhon 0.2.1+142.gd3b20d6 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+118.ge1fe32a
+                0.2.1+142.gd3b20d6
               </div>
             
           
@@ -456,7 +456,7 @@
         <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%s</span><span class="s2"> to tool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                                  <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">tool</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">dev_param</span></div>

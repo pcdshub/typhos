@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.2.1+118.ge1fe32a documentation</title>
+  <title>typhon.signal &mdash; Typhon 0.2.1+142.gd3b20d6 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+118.ge1fe32a
+                0.2.1+142.gd3b20d6
               </div>
             
           
@@ -158,21 +158,25 @@
 <span></span><span class="c1">############</span>
 <span class="c1"># Standard #</span>
 <span class="c1">############</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
 
 <span class="c1">############</span>
 <span class="c1"># External #</span>
 <span class="c1">############</span>
+<span class="kn">from</span> <span class="nn">ophyd</span> <span class="k">import</span> <span class="n">Kind</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="k">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">QSize</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.base</span> <span class="k">import</span> <span class="n">PyDMWidget</span>
 
 <span class="c1">#############</span>
 <span class="c1">#  Package  #</span>
 <span class="c1">#############</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">channel_name</span><span class="p">,</span> <span class="n">is_signal_ro</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">clear_layout</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">grab_kind</span><span class="p">,</span>
+                    <span class="n">is_signal_ro</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonLineEdit</span><span class="p">,</span> <span class="n">TyphonComboBox</span><span class="p">,</span> <span class="n">TyphonLabel</span>
-<span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
+<span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span><span class="p">,</span> <span class="n">HappiChannel</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -216,7 +220,7 @@
         <span class="c1"># Grab a description of the widget to see the correct widget type</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">desc</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span>
                          <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">desc</span> <span class="o">=</span> <span class="p">{}</span>
@@ -241,12 +245,8 @@
 <span class="sd">        Signals to include in the panel</span>
 <span class="sd">        Parent of panel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="SignalPanel.__init__"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalPanel.__init__"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="c1"># Title is no longer supported</span>
-        <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The &#39;title&#39; option for SignalPanel is deprecated. &quot;</span>
-                 <span class="s2">&quot;It will be removed in future releases.&quot;</span><span class="p">)</span>
         <span class="c1"># Store signal information</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="c1"># Add supplied signals</span>
@@ -313,6 +313,12 @@
             <span class="n">sig</span> <span class="o">=</span> <span class="n">EpicsSignalRO</span><span class="p">(</span><span class="n">read_pv</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clear the SignalPanel&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing layout </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
     <span class="k">def</span> <span class="nf">_add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Create label</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
@@ -335,6 +341,158 @@
         <span class="c1"># Store signal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">read</span><span class="p">,</span> <span class="n">write</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loc</span></div>
+
+
+<span class="k">class</span> <span class="nc">SignalOrder</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Option to sort signals&quot;&quot;&quot;</span>
+    <span class="n">byKind</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">byName</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="k">class</span> <span class="nc">TyphonPanel</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">PyDMWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Panel of Signals for Device</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Unused properties that we don&#39;t want visible in designer</span>
+    <span class="n">alarmSensitiveBorder</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">alarmSensitiveContent</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">precisionFromPV</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">showUnits</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">SignalOrder</span><span class="p">)</span>  <span class="c1"># Necessary for display in Designer</span>
+    <span class="n">SignalOrder</span> <span class="o">=</span> <span class="n">SignalOrder</span>  <span class="c1"># For convenience</span>
+    <span class="c1"># From top of page to bottom</span>
+    <span class="n">kind_order</span> <span class="o">=</span> <span class="p">(</span><span class="n">Kind</span><span class="o">.</span><span class="n">hinted</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
+                  <span class="n">Kind</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">omitted</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Create a SignalPanel layout to be modified later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">SignalPanel</span><span class="p">())</span>
+        <span class="c1"># Add default Kind values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">([</span><span class="n">kind</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">Kind</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span> <span class="o">=</span> <span class="n">SignalOrder</span><span class="o">.</span><span class="n">byKind</span>
+
+    <span class="k">def</span> <span class="nf">_get_kind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_set_kind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+        <span class="c1"># If we have a new value store it</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]:</span>
+            <span class="c1"># Store it internally</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c1"># Remodify the layout for the new Kind</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_layout</span><span class="p">()</span>
+
+    <span class="c1"># Kind Configuration pyqtProperty</span>
+    <span class="n">showHints</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
+                         <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;hinted&#39;</span><span class="p">),</span>
+                         <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;hinted&#39;</span><span class="p">))</span>
+    <span class="n">showNormal</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
+                          <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">),</span>
+                          <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">))</span>
+    <span class="n">showConfig</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
+                          <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;config&#39;</span><span class="p">),</span>
+                          <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;config&#39;</span><span class="p">))</span>
+    <span class="n">showOmitted</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
+                           <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;omitted&#39;</span><span class="p">),</span>
+                           <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;omitted&#39;</span><span class="p">))</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The channel address to use for this widget&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@channel</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
+            <span class="c1"># Remove old connection</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;disconnect&#39;</span><span class="p">):</span>
+                        <span class="n">channel</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="c1"># Load new channel</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">HappiChannel</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">,</span>
+                                   <span class="n">tx_slot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+            <span class="c1"># Connect the channel to the HappiPlugin</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">):</span>
+                <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="n">SignalOrder</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">sortBy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Order signals will be placed in layout&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span>
+
+    <span class="nd">@sortBy</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">sortBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_layout</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a device to the widget&quot;&quot;&quot;</span>
+        <span class="c1"># Only allow a single device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># Add the new device</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Configure the layout for the new device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_layout</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the layout based on the current device and kind&quot;&quot;&quot;</span>
+        <span class="c1"># We can&#39;t set a layout if we don&#39;t have any devices</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="c1"># Clear our layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">shown_kind</span> <span class="o">=</span> <span class="p">[</span><span class="n">kind</span> <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">Kind</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">]]</span>
+        <span class="c1"># Iterate through kinds</span>
+        <span class="n">signals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">Kind</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">shown_kind</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span> <span class="ow">in</span> <span class="n">grab_kind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                    <span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                        <span class="n">label</span> <span class="o">=</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+                        <span class="c1"># Check twice for Kind as signal might have multiple</span>
+                        <span class="c1"># kinds</span>
+                        <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="n">shown_kind</span><span class="p">:</span>
+                            <span class="n">signals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">signal</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%s</span><span class="s2"> signals from </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                                     <span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># Pick our sorting function</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span> <span class="o">==</span> <span class="n">SignalOrder</span><span class="o">.</span><span class="n">byKind</span><span class="p">:</span>
+
+            <span class="c1"># Sort by kind</span>
+            <span class="k">def</span> <span class="nf">sorter</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span> <span class="o">==</span> <span class="n">SignalOrder</span><span class="o">.</span><span class="n">byName</span><span class="p">:</span>
+
+            <span class="c1"># Sort by name</span>
+            <span class="k">def</span> <span class="nf">sorter</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unknown sorting type </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sortBy</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Add to layout</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">signals</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">sorter</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Default SizeHint&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">240</span><span class="p">,</span> <span class="mi">140</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Receive new device information&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">])</span>
 </pre></div>
 
            </div>

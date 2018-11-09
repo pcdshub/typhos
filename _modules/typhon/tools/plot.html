@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.tools.plot &mdash; Typhon 0.2.1+118.ge1fe32a documentation</title>
+  <title>typhon.tools.plot &mdash; Typhon 0.2.1+142.gd3b20d6 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+118.ge1fe32a
+                0.2.1+142.gd3b20d6
               </div>
             
           
@@ -350,7 +350,7 @@
                             <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">subdevice</span><span class="o">.</span><span class="n">hints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fields&#39;</span><span class="p">,</span> <span class="p">[]):</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">add_curve</span><span class="p">(</span><span class="n">channel_from_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">),</span>
                                                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%s</span><span class="s2"> to &quot;</span>
                                          <span class="s2">&quot;plot-able signals&quot;</span><span class="p">,</span>
                                          <span class="n">component</span><span class="p">)</span></div>
