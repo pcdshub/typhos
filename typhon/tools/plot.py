@@ -193,7 +193,7 @@ class TyphonTimePlot(TyphonBase):
                             if sig.name in subdevice.hints.get('fields', []):
                                 self.add_curve(channel_from_signal(sig),
                                                name=name)
-                    except Exception as exc:
+                    except Exception:
                         logger.exception("Unable to add %s to "
                                          "plot-able signals",
                                          component)

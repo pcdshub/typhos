@@ -1,19 +1,11 @@
-import os.path
 import types
 from unittest.mock import Mock
 
-from happi import Client, Device
+from happi import Device
 import pytest
 
-from typhon.plugins.happi import HappiPlugin, HappiChannel, register_client
+from typhon.plugins.happi import HappiPlugin, HappiChannel
 
-
-@pytest.fixture(scope='module')
-def client():
-    client = Client(path=os.path.join(os.path.dirname(__file__),
-                                      'happi.json'))
-    register_client(client)
-    return client
 
 
 def test_connection(client):

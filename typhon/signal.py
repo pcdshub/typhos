@@ -1,21 +1,25 @@
 ############
 # Standard #
 ############
+from functools import partial
 import logging
-from warnings import warn
 
 ############
 # External #
 ############
+from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
+from qtpy.QtCore import Property, Q_ENUMS, QSize
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
+from pydm.widgets.base import PyDMWidget
 
 #############
 #  Package  #
 #############
-from .utils import channel_name, is_signal_ro
+from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
+                    is_signal_ro, TyphonBase)
 from .widgets import TyphonLineEdit, TyphonComboBox, TyphonLabel
-from .plugins import register_signal
+from .plugins import register_signal, HappiChannel
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +63,7 @@ def signal_widget(signal, read_only=False):
         # Grab a description of the widget to see the correct widget type
         try:
             desc = signal.describe()[signal.name]
-        except Exception as exc:
+        except Exception:
             logger.error("Unable to connect to %r during widget creation",
                          signal.name)
             desc = {}
@@ -84,12 +88,8 @@ class SignalPanel(QGridLayout):
         Signals to include in the panel
         Parent of panel
     """
-    def __init__(self, title=None, signals=None):
+    def __init__(self, signals=None):
         super().__init__()
-        # Title is no longer supported
-        if title:
-            warn("The 'title' option for SignalPanel is deprecated. "
-                 "It will be removed in future releases.")
         # Store signal information
         self.signals = dict()
         # Add supplied signals
@@ -156,6 +156,12 @@ class SignalPanel(QGridLayout):
             sig = EpicsSignalRO(read_pv, name=name)
         return self.add_signal(sig, name)
 
+    def clear(self):
+        """Clear the SignalPanel"""
+        logger.debug("Clearing layout %r ...", self)
+        clear_layout(self)
+        self.signals.clear()
+
     def _add_row(self, read, name, write=None):
         # Create label
         label = QLabel()
@@ -178,3 +184,155 @@ class SignalPanel(QGridLayout):
         # Store signal
         self.signals[name] = (read, write)
         return loc
+
+
+class SignalOrder:
+    """Option to sort signals"""
+    byKind = 0
+    byName = 1
+
+
+class TyphonPanel(TyphonBase, PyDMWidget):
+    """
+    Panel of Signals for Device
+    """
+    # Unused properties that we don't want visible in designer
+    alarmSensitiveBorder = Property(bool, designable=False)
+    alarmSensitiveContent = Property(bool, designable=False)
+    precisionFromPV = Property(bool, designable=False)
+    precision = Property(int, designable=False)
+    showUnits = Property(bool, designable=False)
+
+    Q_ENUMS(SignalOrder)  # Necessary for display in Designer
+    SignalOrder = SignalOrder  # For convenience
+    # From top of page to bottom
+    kind_order = (Kind.hinted, Kind.normal,
+                  Kind.config, Kind.omitted)
+
+    def __init__(self, parent=None, init_channel=None):
+        super().__init__(parent=parent)
+        # Create a SignalPanel layout to be modified later
+        self.setLayout(SignalPanel())
+        # Add default Kind values
+        self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
+        self._signal_order = SignalOrder.byKind
+
+    def _get_kind(self, kind):
+        return self._kinds[kind]
+
+    def _set_kind(self, value, kind):
+        # If we have a new value store it
+        if value != self._kinds[kind]:
+            # Store it internally
+            self._kinds[kind] = value
+            # Remodify the layout for the new Kind
+            self._set_layout()
+
+    # Kind Configuration pyqtProperty
+    showHints = Property(bool,
+                         partial(_get_kind, kind='hinted'),
+                         partial(_set_kind, kind='hinted'))
+    showNormal = Property(bool,
+                          partial(_get_kind, kind='normal'),
+                          partial(_set_kind, kind='normal'))
+    showConfig = Property(bool,
+                          partial(_get_kind, kind='config'),
+                          partial(_set_kind, kind='config'))
+    showOmitted = Property(bool,
+                           partial(_get_kind, kind='omitted'),
+                           partial(_set_kind, kind='omitted'))
+
+    @Property(str)
+    def channel(self):
+        """The channel address to use for this widget"""
+        if self._channel:
+            return str(self._channel)
+        return None
+
+    @channel.setter
+    def channel(self, value):
+        if self._channel != value:
+            # Remove old connection
+            if self._channels:
+                self._channels.clear()
+                for channel in self._channels:
+                    if hasattr(channel, 'disconnect'):
+                        channel.disconnect()
+            # Load new channel
+            self._channel = str(value)
+            channel = HappiChannel(address=self._channel,
+                                   tx_slot=self._tx)
+            self._channels = [channel]
+            # Connect the channel to the HappiPlugin
+            if hasattr(channel, 'connect'):
+                channel.connect()
+
+    @Property(SignalOrder)
+    def sortBy(self):
+        """Order signals will be placed in layout"""
+        return self._signal_order
+
+    @sortBy.setter
+    def sortBy(self, value):
+        if value != self._signal_order:
+            self._signal_order = value
+            self._set_layout()
+
+    def add_device(self, device):
+        """Add a device to the widget"""
+        # Only allow a single device
+        self.devices.clear()
+        # Add the new device
+        super().add_device(device)
+        # Configure the layout for the new device
+        self._set_layout()
+
+    def _set_layout(self):
+        """Set the layout based on the current device and kind"""
+        # We can't set a layout if we don't have any devices
+        if not self.devices:
+            return
+        # Clear our layout
+        self.layout().clear()
+        shown_kind = [kind for kind in Kind if self._kinds[kind.name]]
+        # Iterate through kinds
+        signals = list()
+        for kind in Kind:
+            if kind in shown_kind:
+                try:
+                    for (attr, signal) in grab_kind(self.devices[0],
+                                                    kind.name):
+                        label = clean_attr(attr)
+                        # Check twice for Kind as signal might have multiple
+                        # kinds
+                        if signal.kind in shown_kind:
+                            signals.append((label, signal))
+                except Exception:
+                    logger.exception("Unable to add %s signals from %r",
+                                     kind.name, self.devices[0])
+        # Pick our sorting function
+        if self._signal_order == SignalOrder.byKind:
+
+            # Sort by kind
+            def sorter(x):
+                return self.kind_order.index(x[1].kind)
+
+        elif self._signal_order == SignalOrder.byName:
+
+            # Sort by name
+            def sorter(x):
+                return x[0]
+        else:
+            logger.exception("Unknown sorting type %r", self.sortBy)
+            return
+        # Add to layout
+        for (label, signal) in sorted(set(signals), key=sorter):
+            self.layout().add_signal(signal, label)
+
+    def sizeHint(self):
+        """Default SizeHint"""
+        return QSize(240, 140)
+
+    def _tx(self, value):
+        """Receive new device information"""
+        self.add_device(value['obj'])

@@ -87,7 +87,7 @@ class SignalConnection(PyDMConnection):
                 new_val = self.signal_type(new_val)
             logger.debug("Putting value %r to %r", new_val, self.address)
             self.signal.put(new_val)
-        except Exception as exc:
+        except Exception:
             logger.exception("Unable to put %r to %s", new_val, self.address)
 
     def send_new_value(self, value=None, **kwargs):

@@ -58,6 +58,7 @@ class HappiConnection(PyDMConnection):
         super().add_listener(channel)
         # Connect our channel to the signal
         self.tx.connect(channel.tx_slot)
+        logger.debug("Loading %r from happi Client", channel)
         # Load the device from the Client
         md = _client.find_device(name=self.address)
         obj = from_container(md)
@@ -74,18 +75,15 @@ class HappiPlugin(PyDMPlugin):
     protocol = 'happi'
     connection_class = HappiConnection
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # If we haven't made a Client by the time we register the Plugin. Try
+    def add_connection(self, channel):
+        # If we haven't made a Client by the time we need the Plugin. Try
         # and load one from configuration file
         if not _client:
             register_client(Client.from_config())
-
-    def add_connection(self, channel):
         try:
             super().add_connection(channel)
         except SearchError:
             logger.error("Unable to find device for %r in happi database.",
                          channel)
-        except Exception as exc:
+        except Exception:
             logger.exception("Unable to load %r from happi", channel.address)

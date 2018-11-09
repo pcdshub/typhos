@@ -5,6 +5,7 @@
 ############
 # External #
 ############
+from ophyd import Kind
 from ophyd.signal import Signal, EpicsSignal, EpicsSignalRO
 from ophyd.sim import SynSignal, SynSignalRO
 from ophyd.tests.conftest import using_fake_epics_pv
@@ -13,10 +14,9 @@ from pydm.widgets import PyDMEnumComboBox
 ###########
 # Package #
 ###########
-from typhon.signal import SignalPanel
+from typhon.signal import SignalPanel, TyphonPanel
 from .conftest import show_widget, RichSignal, DeadSignal
 
-@show_widget
 @using_fake_epics_pv
 def test_panel_creation():
     panel = SignalPanel(signals={
@@ -41,7 +41,6 @@ def test_panel_creation():
     return panel
 
 
-@show_widget
 @using_fake_epics_pv
 def test_panel_add_enum():
     panel = SignalPanel()
@@ -81,3 +80,52 @@ def test_add_pv():
     assert panel.layout().itemAtPosition(0, 1).count() == 1
     panel.add_pv('Tst:A', "Write", write_pv='Tst:B')
     assert panel.layout().itemAtPosition(1, 1).count() == 2
+
+
+@show_widget
+def test_typhon_panel(qapp, client):
+    panel = TyphonPanel()
+    # Setting Kind without device doesn't explode
+    panel.showConfig = False
+    panel.showConfig = True
+    # Add a device channel
+    panel.channel = 'happi://test_device'
+    assert panel.channel == 'happi://test_device'
+    # Reset channel and no smoke comes out
+    panel.channel = 'happi://test_motor'
+    qapp.establish_widget_connections(panel)
+    # Check we have our device
+    assert len(panel.devices) == 1
+    device = panel.devices[0]
+    num_hints = len(device.hints['fields'])
+    num_read = len(device.read_attrs)
+    # Check we got all our signals
+    assert len(panel.layout().signals) == len(device.component_names)
+    panel.showOmitted = False
+    panel.showConfig = False
+    panel.showNormal = False
+    panel.showHints = True
+    assert len(panel.layout().signals) == num_hints
+    panel.showNormal = True
+    panel.showHints = False
+    assert len(panel.layout().signals) == num_read - num_hints
+    panel.showHints = True
+    assert len(panel.layout().signals) == num_read
+    return panel
+
+
+@show_widget
+def test_typhon_panel_sorting(qapp, client):
+    panel = TyphonPanel()
+    # Sort by name
+    panel.sortBy = panel.SignalOrder.byName
+    panel.channel = 'happi://test_motor'
+    qapp.establish_widget_connections(panel)
+    sorted_names = sorted(panel.devices[0].component_names)
+    sig_layout = panel.layout().layout()
+    assert list(panel.layout().signals.keys()) == sorted_names
+    # Sort by kind
+    panel.sortBy = panel.SignalOrder.byKind
+    key_order = list(panel.layout().signals.keys())
+    assert key_order[0] == 'readback'
+    assert key_order[-1] == 'unused'

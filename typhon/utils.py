@@ -218,3 +218,13 @@ def flatten_tree(param):
     for child in param.childs:
         tree.extend(flatten_tree(child))
     return tree
+
+
+def clear_layout(layout):
+    """Clear a QLayout"""
+    while layout.count():
+        child = layout.takeAt(0)
+        if child.widget():
+            child.widget().deleteLater()
+        elif child.layout():
+            clear_layout(child.layout())
