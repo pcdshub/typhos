@@ -23,6 +23,7 @@ requirements:
       - qtawesome
       - qtconsole
       - qtpy
+      - timechart
 
 test:
     imports:
