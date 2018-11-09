@@ -53,7 +53,7 @@ class TyphonTimePlot(TyphonBase):
         # Add timechart
         self.timechart = TimeChartDisplay(show_pv_add_panel=False)
         self.layout().addWidget(self.timechart)
-        self.channel_map = dict()
+        self.channel_map = self.timechart.channel_map
 
     def add_available_signal(self, signal, name):
         """
@@ -98,7 +98,6 @@ class TyphonTimePlot(TyphonBase):
         logger.debug("Adding %s to plot ...", channel)
         self.timechart.add_y_channel(pv_name=channel, curve_name=name,
                                      color=color, **kwargs)
-        self.channel_map = {name: channel}
 
     @Slot()
     def remove_curve(self, name):
@@ -111,12 +110,8 @@ class TyphonTimePlot(TyphonBase):
             Name of the curve to remove. This should match the name given
             during the call of :meth:`.add_curve`
         """
-        if name in self.channel_map:
-            logger.debug("Removing %s from DeviceTimePlot ...", name)
-            self.timechart.remove_curve(self.channel_map[name])
-            self.channel_map.pop(name)
-        else:
-            logger.error("Curve %r was not found in DeviceTimePlot", name)
+        logger.debug("Removing %s from DeviceTimePlot ...", name)
+        self.timechart.remove_curve(name)
 
     @Slot()
     def creation_requested(self):

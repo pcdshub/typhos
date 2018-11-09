@@ -19,6 +19,8 @@ from qtpy.QtGui import QColor
 ##########
 from typhon import register_signal
 from typhon.tools.plot import TyphonTimePlot, DeviceTimePlot
+from typhon.utils import channel_from_signal
+
 
 @pytest.fixture(scope='session')
 def sim_signal():
@@ -47,14 +49,14 @@ def test_curve_methods(qtbot, sim_signal):
     qtbot.addWidget(ttp)
     ttp.add_curve('sig://' + sim_signal.name, name=sim_signal.name)
     # Check that our signal is stored in the mapping
-    assert sim_signal.name in ttp.channel_map
+    assert 'sig://' + sim_signal.name in ttp.channel_map
     # Check that our curve is live
     assert len(ttp.timechart.chart.curves) == 1
     # Try and add again
     ttp.add_curve('sig://' + sim_signal.name, name=sim_signal.name)
     # Check we didn't duplicate
     assert len(ttp.timechart.chart.curves) == 1
-    ttp.remove_curve(sim_signal.name)
+    ttp.remove_curve(channel_from_signal(sim_signal))
     assert len(ttp.timechart.chart.curves) == 0
 
 def test_curve_creation_button(qtbot, sim_signal):
@@ -63,7 +65,7 @@ def test_curve_creation_button(qtbot, sim_signal):
     ttp.add_available_signal(sim_signal, 'Sim Signal')
     ttp.creation_requested()
     # Check that our signal is stored in the mapping
-    assert 'Sim Signal' in ttp.channel_map
+    assert channel_from_signal(sim_signal) in ttp.channel_map
     assert len(ttp.timechart.chart.curves) == 1
 
 def test_device_plot(motor, qtbot):
