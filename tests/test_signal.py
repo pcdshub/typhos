@@ -112,3 +112,20 @@ def test_typhon_panel(qapp, client):
     panel.showHints = True
     assert len(panel.layout().signals) == num_read
     return panel
+
+
+@show_widget
+def test_typhon_panel_sorting(qapp, client):
+    panel = TyphonPanel()
+    # Sort by name
+    panel.sortBy = panel.SignalOrder.byName
+    panel.channel = 'happi://test_motor'
+    qapp.establish_widget_connections(panel)
+    sorted_names = sorted(panel.devices[0].component_names)
+    sig_layout = panel.layout().layout()
+    assert list(panel.layout().signals.keys()) == sorted_names
+    # Sort by kind
+    panel.sortBy = panel.SignalOrder.byKind
+    key_order = list(panel.layout().signals.keys())
+    assert key_order[0] == 'readback'
+    assert key_order[-1] == 'unused'
