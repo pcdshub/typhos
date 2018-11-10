@@ -96,7 +96,9 @@ class TyphonTimePlot(TyphonBase):
         if not color:
             color = random_color()
         logger.debug("Adding %s to plot ...", channel)
-        self.timechart.add_y_channel(pv_name=channel, curve_name=name,
+        # TODO: Until https://github.com/slaclab/timechart/pull/32 is in
+        # a release, the pv_name and curve_name need to be the same
+        self.timechart.add_y_channel(pv_name=channel, curve_name=channel,
                                      color=color, **kwargs)
 
     @Slot()
