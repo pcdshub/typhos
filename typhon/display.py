@@ -3,6 +3,7 @@ import os.path
 from warnings import warn
 
 from pydm.widgets.drawing import PyDMDrawingImage
+from pydm import Display
 from qtpy import uic
 from qtpy.QtCore import Qt
 
@@ -13,7 +14,7 @@ from .utils import ui_dir, clean_attr, clean_name, TyphonBase, grab_kind
 logger = logging.getLogger(__name__)
 
 
-class TyphonDisplay(TyphonBase):
+class TyphonDisplay(Display, TyphonBase):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -42,29 +43,15 @@ class TyphonDisplay(TyphonBase):
 
     parent: QWidget, optional
     """
-    def __init__(self, name=None, image=None, parent=None):
+    def __init__(self,  parent=None, **kwargs):
+        # Set this to None first so we don't render
+        self.template = None
+        self._macros = None
         super().__init__(parent=parent)
-        # Instantiate UI
-        self.ui = uic.loadUi(os.path.join(ui_dir, 'device.ui'), self)
-        # Set Label Names
-        if name:
-            self.title = name
-        # Create child panels
-        self.method_panel = FunctionPanel()
-        self.read_panel = SignalPanel()
-        self.config_panel = SignalPanel()
-        self.misc_panel = SignalPanel()
-        # Add to layout
-        self.read_widget.setLayout(self.read_panel)
-        self.config_widget.setLayout(self.config_panel)
-        self.misc_widget.setLayout(self.misc_panel)
-        self.main_layout.insertWidget(3, self.method_panel,
-                                      0, Qt.AlignHCenter)
-        self.method_panel.hide()
-        # Create PyDMDrawingImage
-        self.image_widget = None
-        if image:
-            self.add_image(image)
+
+    def ui_filepath(self):
+        """Path to template"""
+        return self.template
 
     @property
     def title(self):
@@ -105,6 +92,32 @@ class TyphonDisplay(TyphonBase):
             self.ui.main_layout.insertWidget(2, self.image_widget,
                                              0, Qt.AlignCenter)
 
+    def load_template(self, template, macros=None, **kwargs):
+        """
+        Load a new template
+
+        Parameters
+        ----------
+        template: str
+            Absolute path to template location
+
+        macros: dict, optional
+            Macro substitutions to be made in the file
+
+        kwargs:
+            Treated as additional macro substitutions
+        """
+        # Clear anything that exists in the current layout
+        if self.layout():
+            clear_layout(self.layout())
+        # Assemble our macros
+        macros = macros or dict()
+        macros.update(kwargs)
+        self._macros = macros  # Store for later in case we need to reload
+        # Set our template and load
+        self.template = template
+        self.load_ui(macros=macros)
+
     def add_device(self, device, methods=None):
         """
         Add a Device and signals to the TyphonDisplay
@@ -116,14 +129,16 @@ class TyphonDisplay(TyphonBase):
         methods: list, optional
             List of methods to add to the :attr:`.method_panel`
         """
+        # We only allow one device at a time
+        if self.devices:
+            self.devices.clear()
+            # We should reload the UI
+            self.load_ui(self.template, macros=self._macros)
+        # Add the device to the cache
         super().add_device(device)
-        # Create read and configuration panels
-        for attr, signal in grab_kind(device, 'normal'):
-            self.read_panel.add_signal(signal, clean_attr(attr))
-        for attr, signal in grab_kind(device, 'config'):
-            self.config_panel.add_signal(signal, clean_attr(attr))
-        for attr, signal in grab_kind(device, 'omitted'):
-            self.misc_panel.add_signal(signal, clean_attr(attr))
+        # Add device to all children widgets
+        for widget in self.findChildren(TyphonBase):
+            widget.add_device(device)
         # Add our methods to the panel
         methods = methods or list()
         for method in methods:
@@ -135,7 +150,7 @@ class TyphonDisplay(TyphonBase):
         self.signal_tab.add_tab(widget, name)
 
     @classmethod
-    def from_device(cls, device, methods=None, name=None, **kwargs):
+    def from_device(cls, device, template=None, methods=None, **kwargs):
         """
         Create a new TyphonDisplay from a Device
 
@@ -150,13 +165,17 @@ class TyphonDisplay(TyphonBase):
             List of methods to add to the :attr:`.method_panel`
 
         kwargs:
-            Passed TyphonDisplay constructor
+            Treated as macros
         """
-        if not name:
-            name = clean_name(device, strip_parent=False)
-        panel = cls(name=name, **kwargs)
-        panel.add_device(device, methods=methods)
-        return panel
+        # Use the provided template or the provided macros
+        template = template or os.path.join(ui_dir, 'device.ui')
+        # Ensure we at least past in the device name
+        if 'name' not in kwargs:
+            kwargs['name'] = device.name
+        display = cls()
+        display.load_template(template, **kwargs)
+        display.add_device(device, methods=methods)
+        return display
 
 
 DeviceDisplay = TyphonDisplay.from_device
