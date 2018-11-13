@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="main_layout" stretch="0,0,1,3">
+  <layout class="QVBoxLayout" name="main_layout" stretch="0,0,0,3">
    <property name="spacing">
     <number>10</number>
    </property>
@@ -49,7 +49,7 @@
       </font>
      </property>
      <property name="text">
-      <string>{name}</string>
+      <string>${name}</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -76,7 +76,22 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="read_widget" native="true"/>
+    <widget class="TyphonPanel" name="read_panel">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="whatsThis">
+      <string>
+    Panel of Signals for Device
+    </string>
+     </property>
+     <property name="showConfig" stdset="0">
+      <bool>false</bool>
+     </property>
+     <property name="showOmitted" stdset="0">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QTabWidget" name="signal_tab">
@@ -102,7 +117,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -155,9 +170,44 @@
             <x>0</x>
             <y>0</y>
             <width>373</width>
-            <height>215</height>
+            <height>232</height>
            </rect>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="topMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>2</number>
+           </property>
+           <item>
+            <widget class="TyphonPanel" name="config_panel">
+             <property name="toolTip">
+              <string/>
+             </property>
+             <property name="whatsThis">
+              <string>
+    Panel of Signals for Device
+    </string>
+             </property>
+             <property name="showHints" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="showNormal" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="showOmitted" stdset="0">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>
@@ -197,9 +247,44 @@
             <x>0</x>
             <y>0</y>
             <width>373</width>
-            <height>273</height>
+            <height>232</height>
            </rect>
           </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="leftMargin">
+            <number>2</number>
+           </property>
+           <property name="topMargin">
+            <number>2</number>
+           </property>
+           <property name="rightMargin">
+            <number>2</number>
+           </property>
+           <property name="bottomMargin">
+            <number>2</number>
+           </property>
+           <item>
+            <widget class="TyphonPanel" name="misc_panel">
+             <property name="toolTip">
+              <string/>
+             </property>
+             <property name="whatsThis">
+              <string>
+    Panel of Signals for Device
+    </string>
+             </property>
+             <property name="showHints" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="showNormal" stdset="0">
+              <bool>false</bool>
+             </property>
+             <property name="showConfig" stdset="0">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>
@@ -209,6 +294,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TyphonPanel</class>
+   <extends>QWidget</extends>
+   <header>typhon.signal</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
