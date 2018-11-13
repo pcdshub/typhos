@@ -4,59 +4,32 @@ Typhon Plotting Interface
 ############
 # Standard #
 ############
-import os.path
 import logging
-from functools import partial
 from warnings import warn
 
 ###############
 # Third Party #
 ###############
 from ophyd import Device
-
-from qtpy import uic
-from qtpy.QtCore import Qt, Slot
-from qtpy.QtGui import QBrush
-from qtpy.QtWidgets import QApplication, QWidget
-
+from timechart.displays.main_display import TimeChartDisplay
+from timechart.utilities.utils import random_color
+from qtpy.QtCore import Slot
+from qtpy.QtWidgets import (QComboBox, QPushButton, QLabel, QVBoxLayout,
+                            QHBoxLayout)
 ##########
 # Module #
 ##########
-from ..utils import (ui_dir, channel_from_signal, clean_attr, random_color,
-                     clean_name, TyphonBase)
+from ..utils import channel_from_signal, clean_attr, clean_name, TyphonBase
 
 logger = logging.getLogger(__name__)
-
-
-class ChannelDisplay(QWidget):
-    """
-    Display for a PyDM PlotCurveItem
-
-    Parameters
-    ----------
-    name : str
-        Alias of channel
-
-    color: QColor
-        Color of curve in plot
-    """
-    def __init__(self, name, color, parent=None):
-        super().__init__(parent=parent)
-        self.ui = uic.loadUi(os.path.join(ui_dir, 'plotitem.ui'), self)
-        self.ui.name.setText(name)
-        self.ui.color.brush = QBrush(color, Qt.SolidPattern)
 
 
 class TyphonTimePlot(TyphonBase):
     """
     Generalized widget for plotting Ophyd signals
 
-    This widget initializes a blank ``PyDMTimePlot`` with a small interface to
-    configure the plotted signals. The list of signals available to the
-    operator can be controlled via :meth:`.add_available_signal`. Shortcuts can
-    be added to the plot itself via :meth:`.add_curve` or the
-    :meth:`.creation_requested` ``Slot`` which takes the current status of
-    the requested combinations
+    This widget is a ``TimeChartDisplay`` wrapped with some convenient
+    functions for adding signals by their attribute name.
 
     Parameters
     ----------
@@ -64,12 +37,23 @@ class TyphonTimePlot(TyphonBase):
     """
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        # Load generated user interface file
-        self.ui = uic.loadUi(os.path.join(ui_dir, 'plot.ui'), self)
-        # Connect create button
-        self.create_button.clicked.connect(self.creation_requested)
-        # Data structure for name / ChannelDisplay mapping
-        self.channel_map = dict()
+        # Setup layout
+        self.setLayout(QVBoxLayout())
+        self.layout().setContentsMargins(2, 2, 2, 2)
+        # Make sure we can add signals
+        self.signal_combo = QComboBox()
+        self.signal_combo_label = QLabel('Available Signals: ')
+        self.signal_create = QPushButton('Connect')
+        self.signal_combo_layout = QHBoxLayout()
+        self.signal_combo_layout.addWidget(self.signal_combo_label, 0)
+        self.signal_combo_layout.addWidget(self.signal_combo, 1)
+        self.signal_combo_layout.addWidget(self.signal_create, 0)
+        self.signal_create.clicked.connect(self.creation_requested)
+        self.layout().addLayout(self.signal_combo_layout)
+        # Add timechart
+        self.timechart = TimeChartDisplay(show_pv_add_panel=False)
+        self.layout().addWidget(self.timechart)
+        self.channel_map = self.timechart.channel_map
 
     def add_available_signal(self, signal, name):
         """
@@ -85,9 +69,9 @@ class TyphonTimePlot(TyphonBase):
         name: str
             Alias for signal to display in QComboBox
         """
-        self.ui.signal_combo.addItem(name, channel_from_signal(signal))
+        self.signal_combo.addItem(name, channel_from_signal(signal))
 
-    def add_curve(self, channel, name=None, color=None):
+    def add_curve(self, channel, name=None, color=None, **kwargs):
         """
         Add a curve to the plot
 
@@ -103,32 +87,19 @@ class TyphonTimePlot(TyphonBase):
         color: QColor, optional
             Color to display line in plot. If None is given, a QColor will be
             chosen randomly
+
+        kwargs:
+            Passed to ``timechart.add_y_channel``
         """
         name = name or channel
-        # Do not allow duplicate channels
-        if name in self.channel_map:
-            logger.error("%r already has been added to the plot", name)
-            return
-        logger.debug("Adding %s to plot ...", channel)
         # Create a random color if None is supplied
         if not color:
             color = random_color()
-        # Add to plot
-        self.ui.timeplot.addYChannel(y_channel=channel, color=color,
-                                     name=name, lineStyle=Qt.SolidLine,
-                                     lineWidth=2, symbol=None)
-        # Add a display to the LiveChannel display
-        ch_display = ChannelDisplay(name, color)
-        self.ui.live_channels.layout().insertWidget(0, ch_display)
-        self.channel_map[name] = ch_display
-        # Connect the removal button to the slot
-        ch_display.remove_button.clicked.connect(partial(self.remove_curve,
-                                                         name))
-        # Establish connections for new instance
-        pydm_app = QApplication.instance()
-        pydm_app.establish_widget_connections(self)
-        # Select new random color
-        self.ui.color.brush = QBrush(random_color(), Qt.SolidPattern)
+        logger.debug("Adding %s to plot ...", channel)
+        # TODO: Until https://github.com/slaclab/timechart/pull/32 is in
+        # a release, the pv_name and curve_name need to be the same
+        self.timechart.add_y_channel(pv_name=channel, curve_name=channel,
+                                     color=color, **kwargs)
 
     @Slot()
     def remove_curve(self, name):
@@ -141,16 +112,8 @@ class TyphonTimePlot(TyphonBase):
             Name of the curve to remove. This should match the name given
             during the call of :meth:`.add_curve`
         """
-        if name in self.channel_map:
-            logger.debug("Removing %s from DeviceTimePlot ...", name)
-            self.ui.timeplot.removeCurveWithName(name)
-            # Remove ChannelDisplay
-            ch_display = self.channel_map.pop(name)
-            self.ui.live_channels.layout().removeWidget(ch_display)
-            # Destroy ChannelDisplay
-            ch_display.deleteLater()
-        else:
-            logger.error("Curve %r was not found in DeviceTimePlot", name)
+        logger.debug("Removing %s from DeviceTimePlot ...", name)
+        self.timechart.remove_curve(name)
 
     @Slot()
     def creation_requested(self):
@@ -161,11 +124,11 @@ class TyphonTimePlot(TyphonBase):
         call to :meth:`.add_curve`
         """
         # Find requested channel
-        name = self.ui.signal_combo.currentText()
-        idx = self.ui.signal_combo.currentIndex()
-        channel = self.ui.signal_combo.itemData(idx)
+        name = self.signal_combo.currentText()
+        idx = self.signal_combo.currentIndex()
+        channel = self.signal_combo.itemData(idx)
         # Add to the plot
-        self.add_curve(channel, name=name, color=self.ui.color.brush.color())
+        self.add_curve(channel, name=name)
 
     def add_device(self, device):
         """Add a device and it's component signals to the plot"""
