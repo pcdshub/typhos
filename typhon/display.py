@@ -1,15 +1,9 @@
 import logging
 import os.path
-from warnings import warn
 
-from pydm.widgets.drawing import PyDMDrawingImage
 from pydm import Display
-from qtpy import uic
-from qtpy.QtCore import Qt
 
-from .func import FunctionPanel
-from .signal import SignalPanel
-from .utils import ui_dir, clean_attr, clean_name, TyphonBase, grab_kind
+from .utils import ui_dir, TyphonBase, clear_layout
 
 logger = logging.getLogger(__name__)
 
@@ -52,45 +46,6 @@ class TyphonDisplay(Display, TyphonBase):
     def ui_filepath(self):
         """Path to template"""
         return self.template
-
-    @property
-    def title(self):
-        """Title at the top of panel"""
-        return self.name_label.text()
-
-    @title.setter
-    def title(self, text):
-        self.name_label.setText(text)
-
-    @property
-    def methods(self):
-        """
-        Methods contained within :attr:`.method_panel`
-        """
-        return self.method_panel.methods
-
-    def add_image(self, path):
-        """
-        Set the image of the PyDMDrawingImage
-
-        Setting this twice will overwrite the first image given.
-
-        Parameters
-        ----------
-        path : str
-            Absolute or relative path to image
-        """
-        # Set existing image file
-        logger.debug("Adding an image file %s ...", path)
-        if self.image_widget:
-            self.image_widget.filename = path
-        else:
-            logger.debug("Creating a new PyDMDrawingImage")
-            self.image_widget = PyDMDrawingImage(filename=path,
-                                                 parent=self)
-            self.image_widget.setMaximumSize(350, 350)
-            self.ui.main_layout.insertWidget(2, self.image_widget,
-                                             0, Qt.AlignCenter)
 
     def load_template(self, template, macros=None, **kwargs):
         """
@@ -139,15 +94,6 @@ class TyphonDisplay(Display, TyphonBase):
         # Add device to all children widgets
         for widget in self.findChildren(TyphonBase):
             widget.add_device(device)
-        # Add our methods to the panel
-        methods = methods or list()
-        for method in methods:
-                self.method_panel.add_method(method)
-
-    def add_tab(self, name, widget):
-        warn("This method will be deprecated in a future release",
-             category=DeprecationWarning)
-        self.signal_tab.add_tab(widget, name)
 
     @classmethod
     def from_device(cls, device, template=None, methods=None, **kwargs):
