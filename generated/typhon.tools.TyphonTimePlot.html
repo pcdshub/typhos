@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.tools.TyphonTimePlot &mdash; Typhon 0.2.1+142.gd3b20d6 documentation</title>
+  <title>typhon.tools.TyphonTimePlot &mdash; Typhon 0.2.1+149.gbd391ee documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+142.gd3b20d6
+                0.2.1+149.gbd391ee
               </div>
             
           
@@ -174,12 +174,8 @@
 <dt id="typhon.tools.TyphonTimePlot">
 <em class="property">class </em><code class="descclassname">typhon.tools.</code><code class="descname">TyphonTimePlot</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/typhon/tools/plot.html#TyphonTimePlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.tools.TyphonTimePlot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generalized widget for plotting Ophyd signals</p>
-<p>This widget initializes a blank <code class="docutils literal notranslate"><span class="pre">PyDMTimePlot</span></code> with a small interface to
-configure the plotted signals. The list of signals available to the
-operator can be controlled via <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_available_signal()</span></code>. Shortcuts can
-be added to the plot itself via <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_curve()</span></code> or the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">creation_requested()</span></code> <code class="docutils literal notranslate"><span class="pre">Slot</span></code> which takes the current status of
-the requested combinations</p>
+<p>This widget is a <code class="docutils literal notranslate"><span class="pre">TimeChartDisplay</span></code> wrapped with some convenient
+functions for adding signals by their attribute name.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

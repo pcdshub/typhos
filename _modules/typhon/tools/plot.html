@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.tools.plot &mdash; Typhon 0.2.1+142.gd3b20d6 documentation</title>
+  <title>typhon.tools.plot &mdash; Typhon 0.2.1+149.gbd391ee documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+142.gd3b20d6
+                0.2.1+149.gbd391ee
               </div>
             
           
@@ -161,59 +161,32 @@
 <span class="c1">############</span>
 <span class="c1"># Standard #</span>
 <span class="c1">############</span>
-<span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
 
 <span class="c1">###############</span>
 <span class="c1"># Third Party #</span>
 <span class="c1">###############</span>
 <span class="kn">from</span> <span class="nn">ophyd</span> <span class="k">import</span> <span class="n">Device</span>
-
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="k">import</span> <span class="n">uic</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="k">import</span> <span class="n">QBrush</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QWidget</span>
-
+<span class="kn">from</span> <span class="nn">timechart.displays.main_display</span> <span class="k">import</span> <span class="n">TimeChartDisplay</span>
+<span class="kn">from</span> <span class="nn">timechart.utilities.utils</span> <span class="k">import</span> <span class="n">random_color</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QComboBox</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span>
+                            <span class="n">QHBoxLayout</span><span class="p">)</span>
 <span class="c1">##########</span>
 <span class="c1"># Module #</span>
 <span class="c1">##########</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="n">channel_from_signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">random_color</span><span class="p">,</span>
-                     <span class="n">clean_name</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">channel_from_signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">TyphonBase</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">ChannelDisplay</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Display for a PyDM PlotCurveItem</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    name : str</span>
-<span class="sd">        Alias of channel</span>
-
-<span class="sd">    color: QColor</span>
-<span class="sd">        Color of curve in plot</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;plotitem.ui&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">brush</span> <span class="o">=</span> <span class="n">QBrush</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SolidPattern</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="TyphonTimePlot"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonTimePlot.html#typhon.tools.TyphonTimePlot">[docs]</a><span class="k">class</span> <span class="nc">TyphonTimePlot</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generalized widget for plotting Ophyd signals</span>
 
-<span class="sd">    This widget initializes a blank ``PyDMTimePlot`` with a small interface to</span>
-<span class="sd">    configure the plotted signals. The list of signals available to the</span>
-<span class="sd">    operator can be controlled via :meth:`.add_available_signal`. Shortcuts can</span>
-<span class="sd">    be added to the plot itself via :meth:`.add_curve` or the</span>
-<span class="sd">    :meth:`.creation_requested` ``Slot`` which takes the current status of</span>
-<span class="sd">    the requested combinations</span>
+<span class="sd">    This widget is a ``TimeChartDisplay`` wrapped with some convenient</span>
+<span class="sd">    functions for adding signals by their attribute name.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -221,12 +194,23 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TyphonTimePlot.__init__"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonTimePlot.html#typhon.tools.TyphonTimePlot.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-        <span class="c1"># Load generated user interface file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;plot.ui&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="c1"># Connect create button</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">create_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">creation_requested</span><span class="p">)</span>
-        <span class="c1"># Data structure for name / ChannelDisplay mapping</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span></div>
+        <span class="c1"># Setup layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># Make sure we can add signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;Available Signals: &#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_create</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Connect&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_label</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_create</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_create</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">creation_requested</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_layout</span><span class="p">)</span>
+        <span class="c1"># Add timechart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span> <span class="o">=</span> <span class="n">TimeChartDisplay</span><span class="p">(</span><span class="n">show_pv_add_panel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="o">.</span><span class="n">channel_map</span></div>
 
     <span class="k">def</span> <span class="nf">add_available_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -242,9 +226,9 @@
 <span class="sd">        name: str</span>
 <span class="sd">            Alias for signal to display in QComboBox</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">add_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a curve to the plot</span>
 
@@ -260,32 +244,19 @@
 <span class="sd">        color: QColor, optional</span>
 <span class="sd">            Color to display line in plot. If None is given, a QColor will be</span>
 <span class="sd">            chosen randomly</span>
+
+<span class="sd">        kwargs:</span>
+<span class="sd">            Passed to ``timechart.add_y_channel``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">channel</span>
-        <span class="c1"># Do not allow duplicate channels</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_map</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2"> already has been added to the plot&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%s</span><span class="s2"> to plot ...&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
         <span class="c1"># Create a random color if None is supplied</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">color</span><span class="p">:</span>
             <span class="n">color</span> <span class="o">=</span> <span class="n">random_color</span><span class="p">()</span>
-        <span class="c1"># Add to plot</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">timeplot</span><span class="o">.</span><span class="n">addYChannel</span><span class="p">(</span><span class="n">y_channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
-                                     <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">lineStyle</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">SolidLine</span><span class="p">,</span>
-                                     <span class="n">lineWidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-        <span class="c1"># Add a display to the LiveChannel display</span>
-        <span class="n">ch_display</span> <span class="o">=</span> <span class="n">ChannelDisplay</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">live_channels</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ch_display</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ch_display</span>
-        <span class="c1"># Connect the removal button to the slot</span>
-        <span class="n">ch_display</span><span class="o">.</span><span class="n">remove_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_curve</span><span class="p">,</span>
-                                                         <span class="n">name</span><span class="p">))</span>
-        <span class="c1"># Establish connections for new instance</span>
-        <span class="n">pydm_app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
-        <span class="n">pydm_app</span><span class="o">.</span><span class="n">establish_widget_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="c1"># Select new random color</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">brush</span> <span class="o">=</span> <span class="n">QBrush</span><span class="p">(</span><span class="n">random_color</span><span class="p">(),</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SolidPattern</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%s</span><span class="s2"> to plot ...&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="c1"># TODO: Until https://github.com/slaclab/timechart/pull/32 is in</span>
+        <span class="c1"># a release, the pv_name and curve_name need to be the same</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="o">.</span><span class="n">add_y_channel</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">curve_name</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                                     <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">remove_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -298,16 +269,8 @@
 <span class="sd">            Name of the curve to remove. This should match the name given</span>
 <span class="sd">            during the call of :meth:`.add_curve`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_map</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing </span><span class="si">%s</span><span class="s2"> from DeviceTimePlot ...&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">timeplot</span><span class="o">.</span><span class="n">removeCurveWithName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-            <span class="c1"># Remove ChannelDisplay</span>
-            <span class="n">ch_display</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_map</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">live_channels</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">removeWidget</span><span class="p">(</span><span class="n">ch_display</span><span class="p">)</span>
-            <span class="c1"># Destroy ChannelDisplay</span>
-            <span class="n">ch_display</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Curve </span><span class="si">%r</span><span class="s2"> was not found in DeviceTimePlot&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing </span><span class="si">%s</span><span class="s2"> from DeviceTimePlot ...&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="o">.</span><span class="n">remove_curve</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
     <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">creation_requested</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -318,11 +281,11 @@
 <span class="sd">        call to :meth:`.add_curve`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Find requested channel</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
-        <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">itemData</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">itemData</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
         <span class="c1"># Add to the plot</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_curve</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">brush</span><span class="o">.</span><span class="n">color</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_curve</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add a device and it&#39;s component signals to the plot&quot;&quot;&quot;</span>
