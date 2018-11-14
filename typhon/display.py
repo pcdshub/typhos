@@ -2,13 +2,14 @@ import logging
 import os.path
 
 from pydm import Display
+from qtpy.QtWidgets import QHBoxLayout
 
 from .utils import ui_dir, TyphonBase, clear_layout
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonDisplay(Display, TyphonBase):
+class TyphonDisplay(TyphonBase):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -37,17 +38,33 @@ class TyphonDisplay(Display, TyphonBase):
 
     parent: QWidget, optional
     """
+    default_template = os.path.join(ui_dir, 'device.ui')
+
     def __init__(self,  parent=None, **kwargs):
+        # Intialize background variable
+        self._template = None
+        self._last_macros = dict()
+        self._main_widget = None
         # Set this to None first so we don't render
-        self.template = None
-        self._macros = None
         super().__init__(parent=parent)
+        # Initialize blank UI
+        self.setLayout(QHBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.template = self.default_template
 
-    def ui_filepath(self):
-        """Path to template"""
-        return self.template
+    @Property(str)
+    def template(self):
+        """Absolute path to template"""
+        return self._template
 
-    def load_template(self, template, macros=None, **kwargs):
+    @template.setter
+    def template(self, value):
+        if value != self._template:
+            self._template = value
+            # Reload template with last known set of macros
+            self.load_template(macros=self._last_macros)
+
+    def load_template(self, macros=None):
         """
         Load a new template
 
@@ -58,22 +75,19 @@ class TyphonDisplay(Display, TyphonBase):
 
         macros: dict, optional
             Macro substitutions to be made in the file
-
-        kwargs:
-            Treated as additional macro substitutions
         """
         # Clear anything that exists in the current layout
-        if self.layout():
+        if self._main_widget:
+            logger.debug("Clearing existing layout ...")
             clear_layout(self.layout())
         # Assemble our macros
         macros = macros or dict()
-        macros.update(kwargs)
-        self._macros = macros  # Store for later in case we need to reload
-        # Set our template and load
-        self.template = template
-        self.load_ui(macros=macros)
+        self._last_macros = macros
+        self._main_widget = Display(ui_filename=self.template,
+                                    macros=macros)
+        self.layout().addWidget(self._main_widget)
 
-    def add_device(self, device, methods=None):
+    def add_device(self, device, macros=None):
         """
         Add a Device and signals to the TyphonDisplay
 
@@ -81,22 +95,28 @@ class TyphonDisplay(Display, TyphonBase):
         ----------
         device: ophyd.Device
 
-        methods: list, optional
-            List of methods to add to the :attr:`.method_panel`
+        macros: dict, optional
+            Set of macros to reload the template with. If not entered this will
+            just be the device name with key "name"
         """
         # We only allow one device at a time
         if self.devices:
+            logger.debug("Removing devices %r", self.devices)
             self.devices.clear()
-            # We should reload the UI
-            self.load_ui(self.template, macros=self._macros)
+        # Ensure we at least pass in the device name
+        macros = macros or dict()
+        if 'name' not in macros:
+            macros['name'] = device.name
+        # Reload template
+        self.load_template(macros=macros)
         # Add the device to the cache
         super().add_device(device)
         # Add device to all children widgets
-        for widget in self.findChildren(TyphonBase):
+        for widget in self._main_widget.findChildren(TyphonBase):
             widget.add_device(device)
 
     @classmethod
-    def from_device(cls, device, template=None, methods=None, **kwargs):
+    def from_device(cls, device, template=None, macros=None):
         """
         Create a new TyphonDisplay from a Device
 
@@ -107,20 +127,17 @@ class TyphonDisplay(Display, TyphonBase):
         ----------
         device: ophyd.Device
 
-        methods: list
-            List of methods to add to the :attr:`.method_panel`
-
-        kwargs:
-            Treated as macros
+        macros: dict, optional
+            Macro substitutions to be placed in template
         """
         # Use the provided template or the provided macros
         template = template or os.path.join(ui_dir, 'device.ui')
-        # Ensure we at least past in the device name
-        if 'name' not in kwargs:
-            kwargs['name'] = device.name
         display = cls()
-        display.load_template(template, **kwargs)
-        display.add_device(device, methods=methods)
+        # Reset the template if provided
+        if template:
+            display.template = template
+        # Add the device
+        display.add_device(device, macros=macros)
         return display
 
 
