@@ -2,14 +2,17 @@ import logging
 import os.path
 
 from pydm import Display
+from pydm.widgets.base import PyDMWidget
+from qtpy.QtCore import Property, Slot
 from qtpy.QtWidgets import QHBoxLayout
 
 from .utils import ui_dir, TyphonBase, clear_layout
+from .plugins import HappiChannel
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonDisplay(TyphonBase):
+class TyphonDisplay(TyphonBase, PyDMWidget):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -38,6 +41,13 @@ class TyphonDisplay(TyphonBase):
 
     parent: QWidget, optional
     """
+    # Unused properties that we don't want visible in designer
+    alarmSensitiveBorder = Property(bool, designable=False)
+    alarmSensitiveContent = Property(bool, designable=False)
+    precisionFromPV = Property(bool, designable=False)
+    precision = Property(int, designable=False)
+    showUnits = Property(bool, designable=False)
+
     default_template = os.path.join(ui_dir, 'device.ui')
 
     def __init__(self,  parent=None, **kwargs):
@@ -51,6 +61,31 @@ class TyphonDisplay(TyphonBase):
         self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.template = self.default_template
+
+    @Property(str)
+    def channel(self):
+        """The channel address to use for this widget"""
+        if self._channel:
+            return str(self._channel)
+        return None
+
+    @channel.setter
+    def channel(self, value):
+        if self._channel != value:
+            # Remove old connection
+            if self._channels:
+                self._channels.clear()
+                for channel in self._channels:
+                    if hasattr(channel, 'disconnect'):
+                        channel.disconnect()
+            # Load new channel
+            self._channel = str(value)
+            channel = HappiChannel(address=self._channel,
+                                   tx_slot=self._tx)
+            self._channels = [channel]
+            # Connect the channel to the HappiPlugin
+            if hasattr(channel, 'connect'):
+                channel.connect()
 
     @Property(str)
     def template(self):
@@ -139,6 +174,11 @@ class TyphonDisplay(TyphonBase):
         # Add the device
         display.add_device(device, macros=macros)
         return display
+
+    @Slot(object)
+    def _tx(self, value):
+        """Receive information from happi channel"""
+        self.add_device(value['obj'])
 
 
 DeviceDisplay = TyphonDisplay.from_device
