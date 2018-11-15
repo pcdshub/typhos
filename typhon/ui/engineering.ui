@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1070</width>
+    <height>196</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="main_layout" stretch="0,0,1">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
+    <number>5</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="name_label">
+     <property name="font">
+      <font>
+       <family>Sans Serif</family>
+       <pointsize>20</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>${name}</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="underline">
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="lineWidth">
+      <number>10</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="signal_layout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>2</number>
+     </property>
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
+     <item>
+      <widget class="TyphonPanel" name="read_panel">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="whatsThis">
+        <string>
+    Panel of Signals for Device
+    </string>
+       </property>
+       <property name="showConfig" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="showOmitted" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="sortBy" stdset="0">
+        <enum>TyphonPanel::byName</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="TyphonPanel" name="config_panel">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="whatsThis">
+        <string>
+    Panel of Signals for Device
+    </string>
+       </property>
+       <property name="showHints" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="showNormal" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="showOmitted" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="sortBy" stdset="0">
+        <enum>TyphonPanel::byName</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="TyphonPanel" name="misc_panel">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="whatsThis">
+        <string>
+    Panel of Signals for Device
+    </string>
+       </property>
+       <property name="showHints" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="showNormal" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="showConfig" stdset="0">
+        <bool>false</bool>
+       </property>
+       <property name="sortBy" stdset="0">
+        <enum>TyphonPanel::byName</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TyphonPanel</class>
+   <extends>QWidget</extends>
+   <header>typhon.signal</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
