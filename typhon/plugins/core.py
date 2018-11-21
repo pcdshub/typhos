@@ -117,7 +117,7 @@ class SignalConnection(PyDMConnection):
 
         if severity is not None:
             try:
-                self.new_severity_signal.emit.emit(severity)
+                self.new_severity_signal.emit(severity)
             except Exception:
                 logger.exception("Unable to update %r severity with value %r.",
                                  self.signal.name, severity)
