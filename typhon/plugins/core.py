@@ -58,10 +58,35 @@ class SignalConnection(PyDMConnection):
     """
     supported_types = [int, float, str, np.ndarray]
 
+    # Keys from Signal.describe() mapped to the Qt Signal
+    describe_key_to_signal = {
+        'units': 'unit_signal',
+        'precision': 'prec_signal',
+        'lower_ctrl_limit': 'lower_ctrl_limit_signal',
+        'upper_ctrl_limit': 'upper_ctrl_limit_signal',
+        'enum_strs': 'enum_strings_signal',
+    }
+
+    # Keys from ophyd metadata callbacks mapped to the Qt Signal
+    metadata_key_to_signal = {
+        'connected': 'connection_state_signal',
+        'write_access': 'write_access_signal',
+        # unused entries:
+        # - read_access
+    }
+
     def __init__(self, channel, address, protocol=None, parent=None):
         # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
         self.signal_type = None
+
+        self._key_to_signal = {
+            key: getattr(self, signal_attr)
+            for key, signal_attr in (
+                list(self.describe_key_to_signal.items()) +
+                list(self.metadata_key_to_signal.items()))
+        }
+
         # Collect our signal
         self.signal = signal_registry[address]
         # Subscribe to value updates from ophyd
@@ -129,35 +154,19 @@ class SignalConnection(PyDMConnection):
 
         if self.signal.connected:
             info = self.signal.describe()[self.signal.name]
-            # Shove in connected, read_access, write_access into the desc to
-            # make my generic loop simpler, thereby confusing everyone else
             info.update(**kwargs)
+            # info now includes both metadata from describe() and metadata from
+            # this specific callback.
         else:
             # We only have legitimate access to what's given in the metadata
-            # callback, as the signal isn't connected yet :(
+            # callback, as the signal is not yet connected
             info = kwargs
-
-        key_to_signal = {
-            # from describe:
-            'units': self.unit_signal,
-            'precision': self.prec_signal,
-            'lower_ctrl_limit': self.lower_ctrl_limit_signal,
-            'upper_ctrl_limit': self.upper_ctrl_limit_signal,
-            'enum_strs': self.enum_strings_signal,
-
-            # From kwargs:
-            'connected': self.connection_state_signal,
-            'write_access': self.write_access_signal,
-            # 'read_access' unused
-        }
 
         enum_strs = info.get('enum_strs', None)
         if enum_strs is not None:
             info['enum_strs'] = tuple(enum_strs)
 
-        print(self.signal.name, info)
-
-        for key, signal in key_to_signal.items():
+        for key, signal in self._key_to_signal.items():
             try:
                 value = info[key]
             except KeyError:
