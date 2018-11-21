@@ -192,7 +192,7 @@ class SignalOrder:
     byName = 1
 
 
-class TyphonPanel(TyphonBase, PyDMWidget):
+class TyphonPanel(TyphonBase, PyDMWidget, SignalOrder):
     """
     Panel of Signals for Device
     """
