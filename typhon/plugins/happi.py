@@ -63,7 +63,7 @@ class HappiConnection(PyDMConnection):
         md = _client.find_device(name=self.address)
         obj = from_container(md)
         # Send the device and metdata to all of our subscribers
-        self.tx.emit({'obj': obj, 'md': md})
+        self.tx.emit({'obj': obj, 'md': md.post()})
 
     def remove_listener(self, channel):
         """Remove a channel from the database connection"""
