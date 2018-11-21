@@ -52,6 +52,8 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION typhon --file dev-requirements.txt
   # Launch Conda environment
   - source activate test-environment
+  # temporarily install ophyd master
+  - pip install -U git+https://github.com/NSLS-II/ophyd.git
   # Setup some path environment variables for epics
   - export PATH=$PATH:$EPICS_BASE/bin/$EPICS_HOST_ARCH
   - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$EPICS_BASE/lib/$EPICS_HOST_ARCH"
