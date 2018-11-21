@@ -64,9 +64,12 @@ class SignalConnection(PyDMConnection):
         self.signal_type = None
         # Collect our signal
         self.signal = signal_registry[address]
-        # Subscribe to updates from Ophyd
+        # Subscribe to value updates from ophyd
         self._cid = self.signal.subscribe(self.send_new_value,
                                           event_type=self.signal.SUB_VALUE)
+        # Subscribe to metadata updates from ophyd
+        self._mid = self.signal.subscribe(self.send_metadata,
+                                          event_type=self.signal.SUB_META)
         # Add listener
         self.add_listener(channel)
 
@@ -118,6 +121,54 @@ class SignalConnection(PyDMConnection):
             except Exception:
                 logger.exception("Unable to update %r severity with value %r.",
                                  self.signal.name, severity)
+
+    def send_metadata(self, **kwargs):
+        """
+        Update the UI with new Signal metadata
+        """
+
+        if self.signal.connected:
+            info = self.signal.describe()[self.signal.name]
+            # Shove in connected, read_access, write_access into the desc to
+            # make my generic loop simpler, thereby confusing everyone else
+            info.update(**kwargs)
+        else:
+            # We only have legitimate access to what's given in the metadata
+            # callback, as the signal isn't connected yet :(
+            info = kwargs
+
+        key_to_signal = {
+            # from describe:
+            'units': self.unit_signal,
+            'precision': self.prec_signal,
+            'lower_ctrl_limit': self.lower_ctrl_limit_signal,
+            'upper_ctrl_limit': self.upper_ctrl_limit_signal,
+            'enum_strs': self.enum_strings_signal,
+
+            # From kwargs:
+            'connected': self.connection_state_signal,
+            'write_access': self.write_access_signal,
+            # 'read_access' unused
+        }
+
+        enum_strs = info.get('enum_strs', None)
+        if enum_strs is not None:
+            info['enum_strs'] = tuple(enum_strs)
+
+        print(self.signal.name, info)
+
+        for key, signal in key_to_signal.items():
+            try:
+                value = info[key]
+            except KeyError:
+                ...
+            else:
+                if value is not None:
+                    try:
+                        signal.emit(value)
+                    except Exception:
+                        logger.debug('Failed to emit %s %s=%s',
+                                     self.signal.name, key, value)
 
     def add_listener(self, channel):
         """
@@ -193,6 +244,7 @@ class SignalConnection(PyDMConnection):
     def close(self):
         """Unsubscribe from the Ophyd signal"""
         self.signal.unsubscribe(self._cid)
+        self.signal.unsubscribe(self._mid)
 
 
 class SignalPlugin(PyDMPlugin):

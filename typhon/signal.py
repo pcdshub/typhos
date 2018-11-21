@@ -44,18 +44,9 @@ def signal_widget(signal, read_only=False):
         PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
         be able to write back to the widget and if the signal has ``enum_strs``
     """
-    # Grab our channel name
-    # Still re-route EpicsSignal through the ca:// plugin
-    if isinstance(signal, EpicsSignalBase):
-        if read_only:
-            pv = signal._read_pv
-        else:
-            pv = signal._write_pv
-        chan = channel_name(pv.pvname)
-    else:
-        # Register signal with plugin
-        register_signal(signal)
-        chan = channel_name(signal.name, protocol='sig')
+    # Register signal with plugin
+    register_signal(signal)
+    chan = channel_name(signal.name, protocol='sig')
     # Check for enum_strs, if so create a QCombobox
     if read_only:
         logger.debug("Creating Label for %s", signal.name)
