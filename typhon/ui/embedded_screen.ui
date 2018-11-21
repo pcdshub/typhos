@@ -97,7 +97,7 @@
         </font>
        </property>
        <property name="text">
-        <string>{name}</string>
+        <string>${name}</string>
        </property>
        <property name="scaledContents">
         <bool>false</bool>
