@@ -145,6 +145,8 @@ class SignalConnection(PyDMConnection):
             val = signal_desc.get(field)
             # If so emit it to our listeners
             if val:
+                if isinstance(val, list):
+                    val = tuple(val)
                 signal.emit(val)
         # Report new value
         self.send_new_value(signal_val)
