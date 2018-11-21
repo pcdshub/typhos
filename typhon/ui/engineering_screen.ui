@@ -76,7 +76,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="signal_layout">
+    <layout class="QHBoxLayout" name="signal_layout" stretch="1,0,1,0,1">
      <property name="spacing">
       <number>2</number>
      </property>
@@ -93,73 +93,201 @@
       <number>2</number>
      </property>
      <item>
-      <widget class="TyphonPanel" name="read_panel">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="whatsThis">
-        <string>
+      <layout class="QVBoxLayout" name="read_layout" stretch="0,0,1">
+       <item>
+        <widget class="QLabel" name="read_label">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <underline>true</underline>
+          </font>
+         </property>
+         <property name="text">
+          <string>Normal</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="TyphonPanel" name="read_panel">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="whatsThis">
+          <string>
     Panel of Signals for Device
     </string>
+         </property>
+         <property name="showConfig" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="showOmitted" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="sortBy" stdset="0">
+          <enum>TyphonPanel::byName</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame">
+       <property name="frameShape">
+        <enum>QFrame::VLine</enum>
        </property>
-       <property name="showConfig" stdset="0">
-        <bool>false</bool>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
        </property>
-       <property name="showOmitted" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="sortBy" stdset="0">
-        <enum>TyphonPanel::byName</enum>
+       <property name="lineWidth">
+        <number>3</number>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="TyphonPanel" name="config_panel">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="whatsThis">
-        <string>
+      <layout class="QVBoxLayout" name="config_layout" stretch="0,0,1">
+       <item>
+        <widget class="QLabel" name="config_label">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <underline>true</underline>
+          </font>
+         </property>
+         <property name="text">
+          <string>Configuration</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="TyphonPanel" name="config_panel">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="whatsThis">
+          <string>
     Panel of Signals for Device
     </string>
+         </property>
+         <property name="showHints" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="showNormal" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="showOmitted" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="sortBy" stdset="0">
+          <enum>TyphonPanel::byName</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::VLine</enum>
        </property>
-       <property name="showHints" stdset="0">
-        <bool>false</bool>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
        </property>
-       <property name="showNormal" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="showOmitted" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="sortBy" stdset="0">
-        <enum>TyphonPanel::byName</enum>
+       <property name="lineWidth">
+        <number>3</number>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="TyphonPanel" name="misc_panel">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="whatsThis">
-        <string>
+      <layout class="QVBoxLayout" name="misc_layout" stretch="0,0,1">
+       <item>
+        <widget class="QLabel" name="misc_label">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <underline>true</underline>
+          </font>
+         </property>
+         <property name="text">
+          <string>Miscellaneous</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignTop">
+        <widget class="TyphonPanel" name="misc_panel">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="whatsThis">
+          <string>
     Panel of Signals for Device
     </string>
-       </property>
-       <property name="showHints" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="showNormal" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="showConfig" stdset="0">
-        <bool>false</bool>
-       </property>
-       <property name="sortBy" stdset="0">
-        <enum>TyphonPanel::byName</enum>
-       </property>
-      </widget>
+         </property>
+         <property name="showHints" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="showNormal" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="showConfig" stdset="0">
+          <bool>false</bool>
+         </property>
+         <property name="sortBy" stdset="0">
+          <enum>TyphonPanel::byName</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
