@@ -92,7 +92,7 @@ class SignalConnection(PyDMConnection):
             logger.exception("Unable to put %r to %s", new_val, self.address)
             raise_to_operator(exc)
 
-    def send_new_value(self, value=None, **kwargs):
+    def send_new_value(self, value=None, severity=None, **kwargs):
         """
         Update the UI with a new value from the Signal
         """
@@ -103,12 +103,21 @@ class SignalConnection(PyDMConnection):
             dtype = self.signal.describe()[self.signal.name]['dtype']
             # Only way this raises a KeyError is if ophyd is confused
             self.signal_type = _type_map[dtype][0]
+
         try:
-            value = self.signal_type(value)
+            if self.signal_type is not np.ndarray:
+                value = self.signal_type(value)
             self.new_value_signal[self.signal_type].emit(value)
         except Exception:
             logger.exception("Unable to update %r with value %r.",
                              self.signal.name, value)
+
+        if severity is not None:
+            try:
+                self.new_severity_signal.emit.emit(severity)
+            except Exception:
+                logger.exception("Unable to update %r severity with value %r.",
+                                 self.signal.name, severity)
 
     def add_listener(self, channel):
         """
