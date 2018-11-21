@@ -6,9 +6,9 @@
 # External #
 ############
 from ophyd import Kind
-from ophyd.signal import Signal, EpicsSignal, EpicsSignalRO
-from ophyd.sim import SynSignal, SynSignalRO
-from ophyd.tests.conftest import using_fake_epics_pv
+from ophyd.signal import Signal
+from ophyd.sim import (SynSignal, SynSignalRO, FakeEpicsSignal,
+                       FakeEpicsSignalRO)
 from pydm.widgets import PyDMEnumComboBox
 from qtpy.QtWidgets import QWidget
 ###########
@@ -17,16 +17,16 @@ from qtpy.QtWidgets import QWidget
 from typhon.signal import SignalPanel, TyphonSignalPanel
 from .conftest import show_widget, RichSignal, DeadSignal
 
-@using_fake_epics_pv
+
 def test_panel_creation(qtbot):
     panel = SignalPanel(signals={
                     # Signal is its own write
-                    'Standard': EpicsSignal('Tst:Pv'),
+                    'Standard': FakeEpicsSignal('Tst:Pv'),
                     # Signal has separate write/read
-                    'Read and Write': EpicsSignal('Tst:Read',
-                                                  write_pv='Tst:Write'),
+                    'Read and Write': FakeEpicsSignal('Tst:Read',
+                                                      write_pv='Tst:Write'),
                     # Signal is read-only
-                    'Read Only': EpicsSignalRO('Tst:Pv:RO'),
+                    'Read Only': FakeEpicsSignalRO('Tst:Pv:RO'),
                     # Simulated Signal
                     'Simulated': SynSignal(name='simul'),
                     'SimulatedRO': SynSignalRO(name='simul_ro')})
@@ -44,15 +44,14 @@ def test_panel_creation(qtbot):
     return panel
 
 
-@using_fake_epics_pv
 def test_panel_add_enum(qtbot):
     panel = SignalPanel()
     widget = QWidget()
     qtbot.addWidget(widget)
     widget.setLayout(panel)
     # Create an enum pv
-    epics_sig = EpicsSignal("Tst:Enum")
-    epics_sig._write_pv.enum_strs = ('A', 'B')
+    epics_sig = FakeEpicsSignal("Tst:Enum")
+    epics_sig.sim_set_enum_strs = ('A', 'B')
     # Create an enum signal
     syn_sig = RichSignal(name='Syn:Enum', value=1)
     # Add our signals to the panel
@@ -81,7 +80,6 @@ def test_add_dead_signal(qtbot):
     assert 'Dead Signal' in panel.signals
 
 
-@using_fake_epics_pv
 def test_add_pv(qtbot):
     panel = SignalPanel()
     widget = QWidget()
