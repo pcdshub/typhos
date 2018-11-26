@@ -17,7 +17,7 @@ def test_connection(client):
     assert mock.called
     tx = mock.call_args[0][0]
     assert isinstance(tx['obj'], types.SimpleNamespace)
-    assert isinstance(tx['md'], Device)
+    assert isinstance(tx['md'], dict)
     # Add another object and check that the connection does refire
     mock2 = Mock()
     hc2 = HappiChannel(address='happi://test_device', tx_slot=mock2)
