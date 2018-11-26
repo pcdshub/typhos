@@ -74,6 +74,7 @@ class TyphonDisplay(TyphonBase, PyDMWidget, TemplateTypes):
 
     def __init__(self,  parent=None, **kwargs):
         # Intialize background variable
+        self._channel = None
         self._use_template = ''
         self._use_default = False
         self._last_macros = dict()
@@ -120,7 +121,7 @@ class TyphonDisplay(TyphonBase, PyDMWidget, TemplateTypes):
             return self._use_template
         # Search in the last macros, maybe our device told us what to do
         template_key = self.TemplateEnum(self._template_type).name
-        if not self.use_defaults and self._last_macros.get(template_key, None):
+        if not self._use_default and self._last_macros.get(template_key, None):
             return self._last_macros[template_key]
         # Otherwise just use the default
         return self.default_templates[template_key]
