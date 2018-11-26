@@ -238,12 +238,10 @@ class TyphonDisplay(TyphonBase, PyDMWidget, TemplateTypes):
         macros: dict, optional
             Macro substitutions to be placed in template
         """
-        # Use the provided template or the provided macros
-        template = template or os.path.join(ui_dir, 'device.ui')
         display = cls()
         # Reset the template if provided
         if template:
-            display.template = template
+            display.use_template = template
         # Add the device
         display.add_device(device, macros=macros)
         return display
