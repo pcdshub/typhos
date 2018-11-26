@@ -1,9 +1,10 @@
+from enum import Enum
 import logging
 import os.path
 
 from pydm import Display
 from pydm.widgets.base import PyDMWidget
-from qtpy.QtCore import Property, Slot
+from qtpy.QtCore import Property, Slot, Q_ENUMS
 from qtpy.QtWidgets import QHBoxLayout
 
 from .utils import ui_dir, TyphonBase, clear_layout
@@ -12,7 +13,23 @@ from .plugins import HappiChannel
 logger = logging.getLogger(__name__)
 
 
-class TyphonDisplay(TyphonBase, PyDMWidget):
+class TemplateTypes:
+    """Types of Available Templates"""
+    embedded_screen = 0
+    detailed_screen = 1
+    engineering_screen = 2
+
+    @classmethod
+    def to_enum(cls):
+        # First let's remove the internals
+        entries = [(k, v) for k, v in cls.__dict__.items()
+                   if not k.startswith("__")
+                   and not callable(v)
+                   and not isinstance(v, staticmethod)]
+        return Enum('TemplateEnum', entries)
+
+
+class TyphonDisplay(TyphonBase, PyDMWidget, TemplateTypes):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -48,19 +65,27 @@ class TyphonDisplay(TyphonBase, PyDMWidget):
     precision = Property(int, designable=False)
     showUnits = Property(bool, designable=False)
 
-    default_template = os.path.join(ui_dir, 'device.ui')
+    # Template types and defaults
+    Q_ENUMS(TemplateTypes)
+    TemplateEnum = TemplateTypes.to_enum()  # For convenience
+    default_templates = dict((_typ.name, os.path.join(ui_dir,
+                                                      _typ.name + '.ui'))
+                             for _typ in TemplateEnum)
 
     def __init__(self,  parent=None, **kwargs):
         # Intialize background variable
-        self._template = None
+        self._use_template = ''
+        self._use_default = False
         self._last_macros = dict()
         self._main_widget = None
+        self._template_type = TemplateTypes.detailed_screen
         # Set this to None first so we don't render
         super().__init__(parent=parent)
         # Initialize blank UI
         self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
-        self.template = self.default_template
+        # Load template
+        self.load_template()
 
     @Property(str)
     def channel(self):
@@ -87,15 +112,53 @@ class TyphonDisplay(TyphonBase, PyDMWidget):
             if hasattr(channel, 'connect'):
                 channel.connect()
 
-    @Property(str)
-    def template(self):
-        """Absolute path to template"""
-        return self._template
+    @property
+    def current_template(self):
+        """Current template being rendered"""
+        # If a user forces a template we use it
+        if self._use_template:
+            return self._use_template
+        # Search in the last macros, maybe our device told us what to do
+        template_key = self.TemplateEnum(self._template_type).name
+        if not self.use_defaults and self._last_macros.get(template_key, None):
+            return self._last_macros[template_key]
+        # Otherwise just use the default
+        return self.default_templates[template_key]
 
-    @template.setter
-    def template(self, value):
-        if value != self._template:
-            self._template = value
+    @Property(TemplateTypes)
+    def template_type(self):
+        return self._template_type
+
+    @template_type.setter
+    def template_type(self, value):
+        # Store our new value
+        if self._template_type != value:
+            self._template_type = value
+            # Reload the template if it will affect the final product
+            if not self._use_template:
+                self.load_template(macros=self._last_macros)
+
+    @Property(str)
+    def use_template(self):
+        """Use this template regardless of any other setting"""
+        return self._use_template
+
+    @use_template.setter
+    def use_template(self, value):
+        if value != self._use_template:
+            self._use_template = value
+            # Reload template with last known set of macros
+            self.load_template(macros=self._last_macros)
+
+    @Property(bool)
+    def use_default_templates(self):
+        """Use the default Typhon template instead of a device specific"""
+        return self._use_default
+
+    @use_default_templates.setter
+    def use_default_templates(self, value):
+        if value != self._use_default:
+            self._use_default = value
             # Reload template with last known set of macros
             self.load_template(macros=self._last_macros)
 
@@ -118,7 +181,7 @@ class TyphonDisplay(TyphonBase, PyDMWidget):
         # Assemble our macros
         macros = macros or dict()
         self._last_macros = macros
-        self._main_widget = Display(ui_filename=self.template,
+        self._main_widget = Display(ui_filename=self.current_template,
                                     macros=macros)
         self.layout().addWidget(self._main_widget)
 
@@ -178,7 +241,7 @@ class TyphonDisplay(TyphonBase, PyDMWidget):
     @Slot(object)
     def _tx(self, value):
         """Receive information from happi channel"""
-        self.add_device(value['obj'])
+        self.add_device(value['obj'], macros=value['md'])
 
 
 DeviceDisplay = TyphonDisplay.from_device
