@@ -184,6 +184,10 @@ class TyphonDisplay(TyphonBase, PyDMWidget, TemplateTypes):
         self._main_widget = Display(ui_filename=self.current_template,
                                     macros=macros)
         self.layout().addWidget(self._main_widget)
+        # Add device to all children widgets
+        if self.devices:
+            for widget in self._main_widget.findChildren(TyphonBase):
+                widget.add_device(self.devices[0])
 
     def add_device(self, device, macros=None):
         """
@@ -194,24 +198,30 @@ class TyphonDisplay(TyphonBase, PyDMWidget, TemplateTypes):
         device: ophyd.Device
 
         macros: dict, optional
-            Set of macros to reload the template with. If not entered this will
-            just be the device name with key "name"
+            Set of macros to reload the template with. There are two fallback
+            options attempted if no information is passed in. First, if the
+            device has an ``md`` attribute after being loaded from a ``happi``
+            database, that information will be passed in as macros. Finally, if
+            no ``name`` field is passed in, we ensure the ``device.name`` is
+            entered as well.
         """
         # We only allow one device at a time
         if self.devices:
             logger.debug("Removing devices %r", self.devices)
             self.devices.clear()
+        # Add the device to the cache
+        super().add_device(device)
+        # Try and collect macros from device
+        if not macros:
+            if hasattr(device, 'md'):
+                macros = device.md.post()
+            else:
+                macros = dict()
         # Ensure we at least pass in the device name
-        macros = macros or dict()
         if 'name' not in macros:
             macros['name'] = device.name
         # Reload template
         self.load_template(macros=macros)
-        # Add the device to the cache
-        super().add_device(device)
-        # Add device to all children widgets
-        for widget in self._main_widget.findChildren(TyphonBase):
-            widget.add_device(device)
 
     @classmethod
     def from_device(cls, device, template=None, macros=None):
