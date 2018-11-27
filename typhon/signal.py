@@ -11,15 +11,16 @@ from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
 from qtpy.QtCore import Property, Q_ENUMS, QSize
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
-from pydm.widgets.base import PyDMWidget
 
 #############
 #  Package  #
 #############
 from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
                     is_signal_ro, TyphonBase)
-from .widgets import TyphonLineEdit, TyphonComboBox, TyphonLabel
-from .plugins import register_signal, HappiChannel
+from .widgets import (TyphonLineEdit, TyphonComboBox, TyphonLabel,
+                      TyphonDesignerMixin)
+from .plugins import register_signal
+
 
 logger = logging.getLogger(__name__)
 
@@ -192,17 +193,10 @@ class SignalOrder:
     byName = 1
 
 
-class TyphonPanel(TyphonBase, PyDMWidget, SignalOrder):
+class TyphonPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
     """
     Panel of Signals for Device
     """
-    # Unused properties that we don't want visible in designer
-    alarmSensitiveBorder = Property(bool, designable=False)
-    alarmSensitiveContent = Property(bool, designable=False)
-    precisionFromPV = Property(bool, designable=False)
-    precision = Property(int, designable=False)
-    showUnits = Property(bool, designable=False)
-
     Q_ENUMS(SignalOrder)  # Necessary for display in Designer
     SignalOrder = SignalOrder  # For convenience
     # From top of page to bottom
@@ -210,7 +204,7 @@ class TyphonPanel(TyphonBase, PyDMWidget, SignalOrder):
                   Kind.config, Kind.omitted)
 
     def __init__(self, parent=None, init_channel=None):
-        super().__init__(parent=parent)
+        super().__init__()
         # Create a SignalPanel layout to be modified later
         self.setLayout(SignalPanel())
         # Add default Kind values
@@ -241,31 +235,6 @@ class TyphonPanel(TyphonBase, PyDMWidget, SignalOrder):
     showOmitted = Property(bool,
                            partial(_get_kind, kind='omitted'),
                            partial(_set_kind, kind='omitted'))
-
-    @Property(str)
-    def channel(self):
-        """The channel address to use for this widget"""
-        if self._channel:
-            return str(self._channel)
-        return None
-
-    @channel.setter
-    def channel(self, value):
-        if self._channel != value:
-            # Remove old connection
-            if self._channels:
-                self._channels.clear()
-                for channel in self._channels:
-                    if hasattr(channel, 'disconnect'):
-                        channel.disconnect()
-            # Load new channel
-            self._channel = str(value)
-            channel = HappiChannel(address=self._channel,
-                                   tx_slot=self._tx)
-            self._channels = [channel]
-            # Connect the channel to the HappiPlugin
-            if hasattr(channel, 'connect'):
-                channel.connect()
 
     @Property(SignalOrder)
     def sortBy(self):

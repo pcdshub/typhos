@@ -7,15 +7,17 @@ import logging
 # External #
 ############
 import qtawesome as qta
-from qtpy.QtCore import QSize, Qt, Signal, Slot
+from qtpy.QtCore import Property, QSize, Qt, Signal, Slot
 from qtpy.QtWidgets import (QAction, QPushButton, QVBoxLayout, QWidget,
                             QToolBar, QDockWidget)
 from pydm.widgets import PyDMLabel, PyDMEnumComboBox, PyDMLineEdit
+from pydm.widgets.base import PyDMWidget
 from pyqtgraph.parametertree import parameterTypes as ptypes
 
 ###########
 # Package #
 ###########
+from .plugins import HappiChannel
 
 logger = logging.getLogger(__name__)
 
@@ -197,3 +199,37 @@ class SubDisplay(QDockWidget):
     def closeEvent(self, evt):
         self.closing.emit()
         super().closeEvent(evt)
+
+
+class TyphonDesignerMixin(PyDMWidget):
+    # Unused properties that we don't want visible in designer
+    alarmSensitiveBorder = Property(bool, designable=False)
+    alarmSensitiveContent = Property(bool, designable=False)
+    precisionFromPV = Property(bool, designable=False)
+    precision = Property(int, designable=False)
+    showUnits = Property(bool, designable=False)
+
+    @Property(str)
+    def channel(self):
+        """The channel address to use for this widget"""
+        if self._channel:
+            return str(self._channel)
+        return None
+
+    @channel.setter
+    def channel(self, value):
+        if self._channel != value:
+            # Remove old connection
+            if self._channels:
+                self._channels.clear()
+                for channel in self._channels:
+                    if hasattr(channel, 'disconnect'):
+                        channel.disconnect()
+            # Load new channel
+            self._channel = str(value)
+            channel = HappiChannel(address=self._channel,
+                                   tx_slot=self._tx)
+            self._channels = [channel]
+            # Connect the channel to the HappiPlugin
+            if hasattr(channel, 'connect'):
+                channel.connect()
