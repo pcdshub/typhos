@@ -204,7 +204,7 @@ class TyphonPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
                   Kind.config, Kind.omitted)
 
     def __init__(self, parent=None, init_channel=None):
-        super().__init__()
+        super().__init__(parent=parent)
         # Create a SignalPanel layout to be modified later
         self.setLayout(SignalPanel())
         # Add default Kind values
