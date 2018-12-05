@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.2.1+152.g698ba4e documentation</title>
+  <title>typhon.display &mdash; Typhon 0.2.1+179.g4c0696c documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+152.g698ba4e
+                0.2.1+179.g4c0696c
               </div>
             
           
@@ -155,22 +155,38 @@
            <div itemprop="articleBody">
             
   <h1>Source code for typhon.display</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
 
-<span class="kn">from</span> <span class="nn">pydm.widgets.drawing</span> <span class="k">import</span> <span class="n">PyDMDrawingImage</span>
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="k">import</span> <span class="n">uic</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">pydm</span> <span class="k">import</span> <span class="n">Display</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Q_ENUMS</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QHBoxLayout</span>
 
-<span class="kn">from</span> <span class="nn">.func</span> <span class="k">import</span> <span class="n">FunctionPanel</span>
-<span class="kn">from</span> <span class="nn">.signal</span> <span class="k">import</span> <span class="n">SignalPanel</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">,</span> <span class="n">grab_kind</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">,</span> <span class="n">clear_layout</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonDesignerMixin</span>
+
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TyphonDisplay"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphonDisplay</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TemplateTypes</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Types of Available Templates&quot;&quot;&quot;</span>
+    <span class="n">embedded_screen</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">detailed_screen</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">engineering_screen</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_enum</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="c1"># First let&#39;s remove the internals</span>
+        <span class="n">entries</span> <span class="o">=</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                   <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)</span>
+                   <span class="ow">and</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                   <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">staticmethod</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;TemplateEnum&#39;</span><span class="p">,</span> <span class="n">entries</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TyphonDisplay"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphonDisplay</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">TyphonDesignerMixin</span><span class="p">,</span> <span class="n">TemplateTypes</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main Panel display for a signal Ophyd Device</span>
 
@@ -199,70 +215,106 @@
 
 <span class="sd">    parent: QWidget, optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># Template types and defaults</span>
+    <span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">TemplateTypes</span><span class="p">)</span>
+    <span class="n">TemplateEnum</span> <span class="o">=</span> <span class="n">TemplateTypes</span><span class="o">.</span><span class="n">to_enum</span><span class="p">()</span>  <span class="c1"># For convenience</span>
+    <span class="n">default_templates</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">_typ</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span>
+                                                      <span class="n">_typ</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.ui&#39;</span><span class="p">))</span>
+                             <span class="k">for</span> <span class="n">_typ</span> <span class="ow">in</span> <span class="n">TemplateEnum</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Intialize background variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_default</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_template_type</span> <span class="o">=</span> <span class="n">TemplateTypes</span><span class="o">.</span><span class="n">detailed_screen</span>
+        <span class="c1"># Set this to None first so we don&#39;t render</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-        <span class="c1"># Instantiate UI</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;device.ui&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
-        <span class="c1"># Set Label Names</span>
-        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="c1"># Create child panels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span> <span class="o">=</span> <span class="n">FunctionPanel</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span> <span class="o">=</span> <span class="n">SignalPanel</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span> <span class="o">=</span> <span class="n">SignalPanel</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span> <span class="o">=</span> <span class="n">SignalPanel</span><span class="p">()</span>
-        <span class="c1"># Add to layout</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">misc_widget</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="p">,</span>
-                                      <span class="mi">0</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
-        <span class="c1"># Create PyDMDrawingImage</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="c1"># Initialize blank UI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QHBoxLayout</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Load template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Title at the top of panel&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">current_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Current template being rendered&quot;&quot;&quot;</span>
+        <span class="c1"># If a user forces a template we use it</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_template</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_template</span>
+        <span class="c1"># Search in the last macros, maybe our device told us what to do</span>
+        <span class="n">template_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TemplateEnum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_template_type</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_default</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">template_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">[</span><span class="n">template_key</span><span class="p">]</span>
+        <span class="c1"># Otherwise just use the default</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_templates</span><span class="p">[</span><span class="n">template_key</span><span class="p">]</span>
 
-    <span class="nd">@title</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="nd">@Property</span><span class="p">(</span><span class="n">TemplateTypes</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">template_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_template_type</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">methods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@template_type</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">template_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># Store our new value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_template_type</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_template_type</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c1"># Reload the template if it will affect the final product</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_template</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">)</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">use_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use this template regardless of any other setting&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_template</span>
+
+    <span class="nd">@use_template</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">use_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_template</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_template</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c1"># Reload template with last known set of macros</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">)</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">use_default_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use the default Typhon template instead of a device specific&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_default</span>
+
+    <span class="nd">@use_default_templates</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">use_default_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_default</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_default</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c1"># Reload template with last known set of macros</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TyphonDisplay.load_template"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.load_template">[docs]</a>    <span class="k">def</span> <span class="nf">load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Methods contained within :attr:`.method_panel`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="o">.</span><span class="n">methods</span>
-
-<div class="viewcode-block" id="TyphonDisplay.add_image"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_image">[docs]</a>    <span class="k">def</span> <span class="nf">add_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the image of the PyDMDrawingImage</span>
-
-<span class="sd">        Setting this twice will overwrite the first image given.</span>
+<span class="sd">        Load a new template</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        path : str</span>
-<span class="sd">            Absolute or relative path to image</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Set existing image file</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding an image file </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">path</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating a new PyDMDrawingImage&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span> <span class="o">=</span> <span class="n">PyDMDrawingImage</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-                                                 <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="o">.</span><span class="n">setMaximumSize</span><span class="p">(</span><span class="mi">350</span><span class="p">,</span> <span class="mi">350</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">main_layout</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_widget</span><span class="p">,</span>
-                                             <span class="mi">0</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span></div>
+<span class="sd">        template: str</span>
+<span class="sd">            Absolute path to template location</span>
 
-<div class="viewcode-block" id="TyphonDisplay.add_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="sd">        macros: dict, optional</span>
+<span class="sd">            Macro substitutions to be made in the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Clear anything that exists in the current layout</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing existing layout ...&quot;</span><span class="p">)</span>
+            <span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span>
+        <span class="c1"># Assemble our macros</span>
+        <span class="n">macros</span> <span class="o">=</span> <span class="n">macros</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span> <span class="o">=</span> <span class="n">macros</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span> <span class="o">=</span> <span class="n">Display</span><span class="p">(</span><span class="n">ui_filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">,</span>
+                                    <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="p">)</span>
+        <span class="c1"># Add device to all children widgets</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">):</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TyphonDisplay.add_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a Device and signals to the TyphonDisplay</span>
 
@@ -270,29 +322,34 @@
 <span class="sd">        ----------</span>
 <span class="sd">        device: ophyd.Device</span>
 
-<span class="sd">        methods: list, optional</span>
-<span class="sd">            List of methods to add to the :attr:`.method_panel`</span>
+<span class="sd">        macros: dict, optional</span>
+<span class="sd">            Set of macros to reload the template with. There are two fallback</span>
+<span class="sd">            options attempted if no information is passed in. First, if the</span>
+<span class="sd">            device has an ``md`` attribute after being loaded from a ``happi``</span>
+<span class="sd">            database, that information will be passed in as macros. Finally, if</span>
+<span class="sd">            no ``name`` field is passed in, we ensure the ``device.name`` is</span>
+<span class="sd">            entered as well.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># We only allow one device at a time</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing devices </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># Add the device to the cache</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="c1"># Create read and configuration panels</span>
-        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">signal</span> <span class="ow">in</span> <span class="n">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">read_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">signal</span> <span class="ow">in</span> <span class="n">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">config_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">signal</span> <span class="ow">in</span> <span class="n">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;omitted&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">misc_panel</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
-        <span class="c1"># Add our methods to the panel</span>
-        <span class="n">methods</span> <span class="o">=</span> <span class="n">methods</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">method_panel</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">add_tab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;This method will be deprecated in a future release&quot;</span><span class="p">,</span>
-             <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">signal_tab</span><span class="o">.</span><span class="n">add_tab</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Try and collect macros from device</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">macros</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">):</span>
+                <span class="n">macros</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">post</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">macros</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="c1"># Ensure we at least pass in the device name</span>
+        <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">macros</span><span class="p">:</span>
+            <span class="n">macros</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
+        <span class="c1"># Reload template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphonDisplay.from_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.from_device">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new TyphonDisplay from a Device</span>
 
@@ -303,17 +360,21 @@
 <span class="sd">        ----------</span>
 <span class="sd">        device: ophyd.Device</span>
 
-<span class="sd">        methods: list</span>
-<span class="sd">            List of methods to add to the :attr:`.method_panel`</span>
-
-<span class="sd">        kwargs:</span>
-<span class="sd">            Passed TyphonDisplay constructor</span>
+<span class="sd">        macros: dict, optional</span>
+<span class="sd">            Macro substitutions to be placed in template</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">panel</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">panel</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="n">methods</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">panel</span></div></div>
+        <span class="n">display</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="c1"># Reset the template if provided</span>
+        <span class="k">if</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">display</span><span class="o">.</span><span class="n">use_template</span> <span class="o">=</span> <span class="n">template</span>
+        <span class="c1"># Add the device</span>
+        <span class="n">display</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">display</span></div>
+
+    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Receive information from happi channel&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">],</span> <span class="n">macros</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;md&#39;</span><span class="p">])</span></div>
 
 
 <span class="n">DeviceDisplay</span> <span class="o">=</span> <span class="n">TyphonDisplay</span><span class="o">.</span><span class="n">from_device</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.2.1+152.g698ba4e documentation</title>
+  <title>typhon.signal &mdash; Typhon 0.2.1+179.g4c0696c documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+152.g698ba4e
+                0.2.1+179.g4c0696c
               </div>
             
           
@@ -168,15 +168,16 @@
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="k">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">QSize</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">pydm.widgets.base</span> <span class="k">import</span> <span class="n">PyDMWidget</span>
 
 <span class="c1">#############</span>
 <span class="c1">#  Package  #</span>
 <span class="c1">#############</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">clear_layout</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">grab_kind</span><span class="p">,</span>
                     <span class="n">is_signal_ro</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonLineEdit</span><span class="p">,</span> <span class="n">TyphonComboBox</span><span class="p">,</span> <span class="n">TyphonLabel</span>
-<span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span><span class="p">,</span> <span class="n">HappiChannel</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">TyphonLineEdit</span><span class="p">,</span> <span class="n">TyphonComboBox</span><span class="p">,</span> <span class="n">TyphonLabel</span><span class="p">,</span>
+                      <span class="n">TyphonDesignerMixin</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
+
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -349,17 +350,10 @@
     <span class="n">byName</span> <span class="o">=</span> <span class="mi">1</span>
 
 
-<span class="k">class</span> <span class="nc">TyphonPanel</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">PyDMWidget</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TyphonPanel</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">TyphonDesignerMixin</span><span class="p">,</span> <span class="n">SignalOrder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Panel of Signals for Device</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Unused properties that we don&#39;t want visible in designer</span>
-    <span class="n">alarmSensitiveBorder</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">alarmSensitiveContent</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">precisionFromPV</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">precision</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">showUnits</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
     <span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">SignalOrder</span><span class="p">)</span>  <span class="c1"># Necessary for display in Designer</span>
     <span class="n">SignalOrder</span> <span class="o">=</span> <span class="n">SignalOrder</span>  <span class="c1"># For convenience</span>
     <span class="c1"># From top of page to bottom</span>
@@ -398,31 +392,6 @@
     <span class="n">showOmitted</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
                            <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;omitted&#39;</span><span class="p">),</span>
                            <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;omitted&#39;</span><span class="p">))</span>
-
-    <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The channel address to use for this widget&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="nd">@channel</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
-            <span class="c1"># Remove old connection</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;disconnect&#39;</span><span class="p">):</span>
-                        <span class="n">channel</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
-            <span class="c1"># Load new channel</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="n">channel</span> <span class="o">=</span> <span class="n">HappiChannel</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">,</span>
-                                   <span class="n">tx_slot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">channel</span><span class="p">]</span>
-            <span class="c1"># Connect the channel to the HappiPlugin</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">):</span>
-                <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
     <span class="nd">@Property</span><span class="p">(</span><span class="n">SignalOrder</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">sortBy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.2.1+152.g698ba4e documentation</title>
+  <title>Display Types &mdash; Typhon 0.2.1+179.g4c0696c documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+152.g698ba4e
+                0.2.1+179.g4c0696c
               </div>
             
           
@@ -359,7 +359,7 @@ DockWidget we will close that, otherwise the widget is just hidden</td>
 <h2>TyphonDisplay<a class="headerlink" href="#typhondisplay" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="typhon.TyphonDisplay">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonDisplay</code><span class="sig-paren">(</span><em>name=None</em>, <em>image=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonDisplay</code><span class="sig-paren">(</span><em>parent=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main Panel display for a signal Ophyd Device</p>
 <p>This widget lays out all of the architecture for a single Ophyd display.
 The structure matches an ophyd Device, but for this specific instantation,
@@ -387,9 +387,15 @@ convention, the base initialization sets up the widgets and the
 </tr>
 </tbody>
 </table>
+<dl class="class">
+<dt id="typhon.TyphonDisplay.TemplateEnum">
+<em class="property">class </em><code class="descname">TemplateEnum</code><a class="headerlink" href="#typhon.TyphonDisplay.TemplateEnum" title="Permalink to this definition">¶</a></dt>
+<dd><p>An enumeration.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="typhon.TyphonDisplay.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em>, <em>macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a Device and signals to the TyphonDisplay</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -397,7 +403,12 @@ convention, the base initialization sets up the widgets and the
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, </em><em>optional</em>) – List of methods to add to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></li>
+<li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Set of macros to reload the template with. There are two fallback
+options attempted if no information is passed in. First, if the
+device has an <code class="docutils literal notranslate"><span class="pre">md</span></code> attribute after being loaded from a <code class="docutils literal notranslate"><span class="pre">happi</span></code>
+database, that information will be passed in as macros. Finally, if
+no <code class="docutils literal notranslate"><span class="pre">name</span></code> field is passed in, we ensure the <code class="docutils literal notranslate"><span class="pre">device.name</span></code> is
+entered as well.</li>
 </ul>
 </td>
 </tr>
@@ -405,24 +416,15 @@ convention, the base initialization sets up the widgets and the
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="typhon.TyphonDisplay.add_image">
-<code class="descname">add_image</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.add_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.add_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the image of the PyDMDrawingImage</p>
-<p>Setting this twice will overwrite the first image given.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Absolute or relative path to image</td>
-</tr>
-</tbody>
-</table>
+<dl class="attribute">
+<dt id="typhon.TyphonDisplay.current_template">
+<code class="descname">current_template</code><a class="headerlink" href="#typhon.TyphonDisplay.current_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Current template being rendered</p>
 </dd></dl>
 
 <dl class="classmethod">
 <dt id="typhon.TyphonDisplay.from_device">
-<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>methods=None</em>, <em>name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.from_device" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>template=None</em>, <em>macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.from_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new TyphonDisplay from a Device</p>
 <p>Loads the signals in to the appropriate positions and sets the title to
 a cleaned version of the device name</p>
@@ -432,8 +434,25 @@ a cleaned version of the device name</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of methods to add to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></li>
-<li><strong>kwargs</strong> – Passed TyphonDisplay constructor</li>
+<li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be placed in template</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.TyphonDisplay.load_template">
+<code class="descname">load_template</code><span class="sig-paren">(</span><em>macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.load_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.load_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a new template</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Absolute path to template location</li>
+<li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be made in the file</li>
 </ul>
 </td>
 </tr>
@@ -442,15 +461,15 @@ a cleaned version of the device name</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="typhon.TyphonDisplay.methods">
-<code class="descname">methods</code><a class="headerlink" href="#typhon.TyphonDisplay.methods" title="Permalink to this definition">¶</a></dt>
-<dd><p>Methods contained within <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></p>
+<dt id="typhon.TyphonDisplay.use_default_templates">
+<code class="descname">use_default_templates</code><a class="headerlink" href="#typhon.TyphonDisplay.use_default_templates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the default Typhon template instead of a device specific</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="typhon.TyphonDisplay.title">
-<code class="descname">title</code><a class="headerlink" href="#typhon.TyphonDisplay.title" title="Permalink to this definition">¶</a></dt>
-<dd><p>Title at the top of panel</p>
+<dt id="typhon.TyphonDisplay.use_template">
+<code class="descname">use_template</code><a class="headerlink" href="#typhon.TyphonDisplay.use_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this template regardless of any other setting</p>
 </dd></dl>
 
 </dd></dl>
@@ -467,8 +486,7 @@ a cleaned version of the device name</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – List of methods to add to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_panel</span></code></li>
-<li><strong>kwargs</strong> – Passed TyphonDisplay constructor</li>
+<li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be placed in template</li>
 </ul>
 </td>
 </tr>
