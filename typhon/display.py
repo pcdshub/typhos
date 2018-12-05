@@ -1,19 +1,35 @@
+from enum import Enum
 import logging
 import os.path
-from warnings import warn
 
-from pydm.widgets.drawing import PyDMDrawingImage
-from qtpy import uic
-from qtpy.QtCore import Qt
+from pydm import Display
+from qtpy.QtCore import Property, Slot, Q_ENUMS
+from qtpy.QtWidgets import QHBoxLayout
 
-from .func import FunctionPanel
-from .signal import SignalPanel
-from .utils import ui_dir, clean_attr, clean_name, TyphonBase, grab_kind
+from .utils import ui_dir, TyphonBase, clear_layout
+from .widgets import TyphonDesignerMixin
+
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonDisplay(TyphonBase):
+class TemplateTypes:
+    """Types of Available Templates"""
+    embedded_screen = 0
+    detailed_screen = 1
+    engineering_screen = 2
+
+    @classmethod
+    def to_enum(cls):
+        # First let's remove the internals
+        entries = [(k, v) for k, v in cls.__dict__.items()
+                   if not k.startswith("__")
+                   and not callable(v)
+                   and not isinstance(v, staticmethod)]
+        return Enum('TemplateEnum', entries)
+
+
+class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -42,70 +58,106 @@ class TyphonDisplay(TyphonBase):
 
     parent: QWidget, optional
     """
-    def __init__(self, name=None, image=None, parent=None):
+    # Template types and defaults
+    Q_ENUMS(TemplateTypes)
+    TemplateEnum = TemplateTypes.to_enum()  # For convenience
+    default_templates = dict((_typ.name, os.path.join(ui_dir,
+                                                      _typ.name + '.ui'))
+                             for _typ in TemplateEnum)
+
+    def __init__(self,  parent=None, **kwargs):
+        # Intialize background variable
+        self._use_template = ''
+        self._use_default = False
+        self._last_macros = dict()
+        self._main_widget = None
+        self._template_type = TemplateTypes.detailed_screen
+        # Set this to None first so we don't render
         super().__init__(parent=parent)
-        # Instantiate UI
-        self.ui = uic.loadUi(os.path.join(ui_dir, 'device.ui'), self)
-        # Set Label Names
-        if name:
-            self.title = name
-        # Create child panels
-        self.method_panel = FunctionPanel()
-        self.read_panel = SignalPanel()
-        self.config_panel = SignalPanel()
-        self.misc_panel = SignalPanel()
-        # Add to layout
-        self.read_widget.setLayout(self.read_panel)
-        self.config_widget.setLayout(self.config_panel)
-        self.misc_widget.setLayout(self.misc_panel)
-        self.main_layout.insertWidget(3, self.method_panel,
-                                      0, Qt.AlignHCenter)
-        self.method_panel.hide()
-        # Create PyDMDrawingImage
-        self.image_widget = None
-        if image:
-            self.add_image(image)
+        # Initialize blank UI
+        self.setLayout(QHBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        # Load template
+        self.load_template()
 
     @property
-    def title(self):
-        """Title at the top of panel"""
-        return self.name_label.text()
+    def current_template(self):
+        """Current template being rendered"""
+        # If a user forces a template we use it
+        if self._use_template:
+            return self._use_template
+        # Search in the last macros, maybe our device told us what to do
+        template_key = self.TemplateEnum(self._template_type).name
+        if not self._use_default and self._last_macros.get(template_key, None):
+            return self._last_macros[template_key]
+        # Otherwise just use the default
+        return self.default_templates[template_key]
 
-    @title.setter
-    def title(self, text):
-        self.name_label.setText(text)
+    @Property(TemplateTypes)
+    def template_type(self):
+        return self._template_type
 
-    @property
-    def methods(self):
+    @template_type.setter
+    def template_type(self, value):
+        # Store our new value
+        if self._template_type != value:
+            self._template_type = value
+            # Reload the template if it will affect the final product
+            if not self._use_template:
+                self.load_template(macros=self._last_macros)
+
+    @Property(str)
+    def use_template(self):
+        """Use this template regardless of any other setting"""
+        return self._use_template
+
+    @use_template.setter
+    def use_template(self, value):
+        if value != self._use_template:
+            self._use_template = value
+            # Reload template with last known set of macros
+            self.load_template(macros=self._last_macros)
+
+    @Property(bool)
+    def use_default_templates(self):
+        """Use the default Typhon template instead of a device specific"""
+        return self._use_default
+
+    @use_default_templates.setter
+    def use_default_templates(self, value):
+        if value != self._use_default:
+            self._use_default = value
+            # Reload template with last known set of macros
+            self.load_template(macros=self._last_macros)
+
+    def load_template(self, macros=None):
         """
-        Methods contained within :attr:`.method_panel`
-        """
-        return self.method_panel.methods
-
-    def add_image(self, path):
-        """
-        Set the image of the PyDMDrawingImage
-
-        Setting this twice will overwrite the first image given.
+        Load a new template
 
         Parameters
         ----------
-        path : str
-            Absolute or relative path to image
-        """
-        # Set existing image file
-        logger.debug("Adding an image file %s ...", path)
-        if self.image_widget:
-            self.image_widget.filename = path
-        else:
-            logger.debug("Creating a new PyDMDrawingImage")
-            self.image_widget = PyDMDrawingImage(filename=path,
-                                                 parent=self)
-            self.image_widget.setMaximumSize(350, 350)
-            self.ui.main_layout.insertWidget(2, self.image_widget,
-                                             0, Qt.AlignCenter)
+        template: str
+            Absolute path to template location
 
-    def add_device(self, device, methods=None):
+        macros: dict, optional
+            Macro substitutions to be made in the file
+        """
+        # Clear anything that exists in the current layout
+        if self._main_widget:
+            logger.debug("Clearing existing layout ...")
+            clear_layout(self.layout())
+        # Assemble our macros
+        macros = macros or dict()
+        self._last_macros = macros
+        self._main_widget = Display(ui_filename=self.current_template,
+                                    macros=macros)
+        self.layout().addWidget(self._main_widget)
+        # Add device to all children widgets
+        if self.devices:
+            for widget in self._main_widget.findChildren(TyphonBase):
+                widget.add_device(self.devices[0])
+
+    def add_device(self, device, macros=None):
         """
         Add a Device and signals to the TyphonDisplay
 
@@ -113,29 +165,34 @@ class TyphonDisplay(TyphonBase):
         ----------
         device: ophyd.Device
 
-        methods: list, optional
-            List of methods to add to the :attr:`.method_panel`
+        macros: dict, optional
+            Set of macros to reload the template with. There are two fallback
+            options attempted if no information is passed in. First, if the
+            device has an ``md`` attribute after being loaded from a ``happi``
+            database, that information will be passed in as macros. Finally, if
+            no ``name`` field is passed in, we ensure the ``device.name`` is
+            entered as well.
         """
+        # We only allow one device at a time
+        if self.devices:
+            logger.debug("Removing devices %r", self.devices)
+            self.devices.clear()
+        # Add the device to the cache
         super().add_device(device)
-        # Create read and configuration panels
-        for attr, signal in grab_kind(device, 'normal'):
-            self.read_panel.add_signal(signal, clean_attr(attr))
-        for attr, signal in grab_kind(device, 'config'):
-            self.config_panel.add_signal(signal, clean_attr(attr))
-        for attr, signal in grab_kind(device, 'omitted'):
-            self.misc_panel.add_signal(signal, clean_attr(attr))
-        # Add our methods to the panel
-        methods = methods or list()
-        for method in methods:
-                self.method_panel.add_method(method)
-
-    def add_tab(self, name, widget):
-        warn("This method will be deprecated in a future release",
-             category=DeprecationWarning)
-        self.signal_tab.add_tab(widget, name)
+        # Try and collect macros from device
+        if not macros:
+            if hasattr(device, 'md'):
+                macros = device.md.post()
+            else:
+                macros = dict()
+        # Ensure we at least pass in the device name
+        if 'name' not in macros:
+            macros['name'] = device.name
+        # Reload template
+        self.load_template(macros=macros)
 
     @classmethod
-    def from_device(cls, device, methods=None, name=None, **kwargs):
+    def from_device(cls, device, template=None, macros=None):
         """
         Create a new TyphonDisplay from a Device
 
@@ -146,17 +203,21 @@ class TyphonDisplay(TyphonBase):
         ----------
         device: ophyd.Device
 
-        methods: list
-            List of methods to add to the :attr:`.method_panel`
-
-        kwargs:
-            Passed TyphonDisplay constructor
+        macros: dict, optional
+            Macro substitutions to be placed in template
         """
-        if not name:
-            name = clean_name(device, strip_parent=False)
-        panel = cls(name=name, **kwargs)
-        panel.add_device(device, methods=methods)
-        return panel
+        display = cls()
+        # Reset the template if provided
+        if template:
+            display.use_template = template
+        # Add the device
+        display.add_device(device, macros=macros)
+        return display
+
+    @Slot(object)
+    def _tx(self, value):
+        """Receive information from happi channel"""
+        self.add_device(value['obj'], macros=value['md'])
 
 
 DeviceDisplay = TyphonDisplay.from_device

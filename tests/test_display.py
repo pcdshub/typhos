@@ -1,40 +1,64 @@
+import os.path
 from typhon import TyphonDisplay
 from typhon.utils import clean_attr
 from .conftest import show_widget
 
 
 @show_widget
-def test_device_display(device, qtbot):
-    device.name ='test'
-    panel = TyphonDisplay.from_device(device, methods=[device.insert,
-                                                     device.remove])
+def test_device_display(device, motor, qtbot):
+    panel = TyphonDisplay.from_device(motor)
+    panel_main = panel._main_widget
     qtbot.addWidget(panel)
-    assert panel.title.lower() == 'test'
     # We have all our signals
-    shown_read_sigs = list(panel.read_panel.signals.keys())
+    shown_read_sigs = list(panel_main.read_panel.layout().signals.keys())
+    assert all([clean_attr(sig) in shown_read_sigs
+                for sig in motor.read_attrs])
+    shown_cfg_sigs = list(panel_main.config_panel.layout().signals.keys())
+    assert all([clean_attr(sig) in shown_cfg_sigs
+                for sig in motor.configuration_attrs])
+    # Check that we can add multiple devices
+    device.name ='test'
+    panel.add_device(device)
+    panel_main = panel._main_widget
+    assert panel_main.ui.name_label.text() == 'test'
+    # We have all our signals
+    shown_read_sigs = list(panel_main.read_panel.layout().signals.keys())
     assert all([clean_attr(sig) in shown_read_sigs
                 for sig in device.read_attrs])
-    shown_cfg_sigs = list(panel.config_panel.signals.keys())
+    shown_cfg_sigs = list(panel_main.config_panel.layout().signals.keys())
     assert all([clean_attr(sig) in shown_cfg_sigs
                 for sig in device.configuration_attrs])
-    # The method panel is visible
-    assert not panel.method_panel.isHidden()
-    # Assert we have all our specified functions
-    assert 'insert' in panel.methods
-    assert 'remove' in panel.methods
     return panel
 
 
-@show_widget
-def test_display_with_images(device, qtbot, test_images):
-    (lenna, python) = test_images
-    # Create a display with our image
-    panel = TyphonDisplay(name="Image Test", image=lenna)
+def test_device_display_templates(motor, qtbot):
+    panel = TyphonDisplay()
     qtbot.addWidget(panel)
-    assert panel.image_widget.filename == lenna
-    # Add our python image
-    panel.add_image(python)
-    assert panel.image_widget.filename == python
-    panel = TyphonDisplay.from_device(device, image=python)
-    assert panel.image_widget.filename == python
-    return panel
+    # Add a generic motor
+    panel.add_device(motor)
+    assert panel.devices[0] == motor
+    assert panel.current_template == panel.default_templates['detailed_screen']
+    # Changing template type changes template
+    panel.template_type = panel.embedded_screen
+    assert panel.current_template == panel.default_templates['embedded_screen']
+    # Force a specific template
+    eng_ui = panel.default_templates['engineering_screen']
+    panel.use_template = eng_ui
+    assert panel.use_template == eng_ui
+    assert panel.current_template == eng_ui
+    # Check that if we pass in a template as macros we use the forced template
+    panel.load_template(macros={'embedded_screen': 'tst.ui'})
+    assert panel.current_template == eng_ui
+    panel.use_default_templates = True
+    assert panel.use_default_templates
+    panel.use_template = ''
+    panel.load_template(macros={'embedded_screen': 'tst.ui'})
+    assert panel.current_template == panel.default_templates['embedded_screen']
+
+
+def test_display_with_channel(client, qtbot):
+    panel = TyphonDisplay()
+    qtbot.addWidget(panel)
+    panel.channel = 'happi://test_motor'
+    assert panel.channel == 'happi://test_motor'
+    assert len(panel.devices) == 1
