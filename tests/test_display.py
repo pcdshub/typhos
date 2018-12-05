@@ -50,6 +50,7 @@ def test_device_display_templates(motor, qtbot):
     panel.load_template(macros={'embedded_screen': 'tst.ui'})
     assert panel.current_template == eng_ui
     panel.use_default_templates = True
+    assert panel.use_default_templates
     panel.use_template = ''
     panel.load_template(macros={'embedded_screen': 'tst.ui'})
     assert panel.current_template == panel.default_templates['embedded_screen']
