@@ -4,7 +4,7 @@ import os.path
 
 from pydm import Display
 from qtpy.QtCore import Property, Slot, Q_ENUMS
-from qtpy.QtWidgets import QHBoxLayout
+from qtpy.QtWidgets import QHBoxLayout, QWidget
 
 from .utils import ui_dir, TyphonBase, clear_layout
 from .widgets import TyphonDesignerMixin
@@ -131,13 +131,18 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
         # Assemble our macros
         macros = macros or dict()
         self._last_macros = macros
-        self._main_widget = Display(ui_filename=self.current_template,
-                                    macros=macros)
-        self.layout().addWidget(self._main_widget)
-        # Add device to all children widgets
-        if self.devices:
-            for widget in self._main_widget.findChildren(TyphonBase):
-                widget.add_device(self.devices[0])
+        try:
+            self._main_widget = Display(ui_filename=self.current_template,
+                                        macros=macros)
+            # Add device to all children widgets
+            if self.devices:
+                for widget in self._main_widget.findChildren(TyphonBase):
+                    widget.add_device(self.devices[0])
+        except FileNotFoundError:
+            logger.exception("Unable to load file %r", self.current_template)
+            self._main_widget = QWidget()
+        finally:
+            self.layout().addWidget(self._main_widget)
 
     def add_device(self, device, macros=None):
         """
