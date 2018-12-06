@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import partial
 import logging
 import os.path
 
@@ -70,6 +71,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
         self._use_default = False
         self._last_macros = dict()
         self._main_widget = None
+        self._templates = dict.fromkeys(self.default_templates, '')
         self._template_type = TemplateTypes.detailed_screen
         # Set this to None first so we don't render
         super().__init__(parent=parent)
@@ -84,10 +86,15 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
         """Current template being rendered"""
         # Search in the last macros, maybe our device told us what to do
         template_key = self.TemplateEnum(self._template_type).name
-        if not self._use_default and self._last_macros.get(template_key, None):
-            return self._last_macros[template_key]
-        # Otherwise just use the default
-        return self.default_templates[template_key]
+        provided_template = self._templates[template_key]
+        metadata_template = self._last_macros.get(template_key)
+        if self._use_default or (not provided_template and not
+                                 metadata_template):
+            return self.default_templates[template_key]
+        elif provided_template:
+            return provided_template
+        else:
+            return metadata_template
 
     @Property(TemplateTypes)
     def template_type(self):
@@ -190,16 +197,51 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
         ----------
         device: ophyd.Device
 
+        template :str, optional
+            Set the ``display_template``
         macros: dict, optional
             Macro substitutions to be placed in template
         """
         display = cls()
         # Reset the template if provided
         if template:
-            display.use_template = template
+            display.detailed_template = template
         # Add the device
         display.add_device(device, macros=macros)
         return display
+
+    def _get_template(self, tmp_typ):
+        template_key = self.TemplateEnum(tmp_typ).name
+        return self._templates.get(template_key)
+
+    def _set_template(self, value, tmp_typ):
+        if self._get_template(tmp_typ) != value:
+            template_key = self.TemplateEnum(tmp_typ).name
+            self._templates[template_key] = value
+            # If this will affect the current view, reload
+            if self.current_template == value:
+                self.load_template(macros=self._last_macros)
+
+    detailed_template = Property(
+                            str,
+                            partial(_get_template,
+                                    tmp_typ=TemplateTypes.detailed_screen),
+                            partial(_set_template,
+                                    tmp_typ=TemplateTypes.detailed_screen))
+
+    embedded_template = Property(
+                            str,
+                            partial(_get_template,
+                                    tmp_typ=TemplateTypes.embedded_screen),
+                            partial(_set_template,
+                                    tmp_typ=TemplateTypes.embedded_screen))
+
+    engineering_template = Property(
+                            str,
+                            partial(_get_template,
+                                    tmp_typ=TemplateTypes.engineering_screen),
+                            partial(_set_template,
+                                    tmp_typ=TemplateTypes.engineering_screen))
 
     @Slot(object)
     def _tx(self, value):
