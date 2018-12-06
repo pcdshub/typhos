@@ -1,6 +1,10 @@
+import os
+
 from qtpy.QtWidgets import QWidget
 from ophyd import Device, Component as Cpt, Kind
+import pytest
 
+import typhon
 from typhon.utils import use_stylesheet, clean_name, grab_hints, grab_kind
 
 
@@ -43,3 +47,13 @@ def test_grab_kind(motor):
                - len(motor.read_attrs)
                - len(motor.configuration_attrs))
     assert len(grab_kind(motor, 'omitted')) == omitted
+
+
+conda_prefix = os.getenv("CONDA_PREFIX")
+
+
+@pytest.mark.skipif(not (conda_prefix and
+                         typhon.__file__.startswith(conda_prefix)),
+                    reason='Package not installed via CONDA')
+def test_qtdesigner_env():
+    assert 'etc/typhon' in os.getenv('PYQTDESIGNERPATH', '')
