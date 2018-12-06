@@ -43,15 +43,17 @@ def test_device_display_templates(motor, qtbot):
     assert panel.current_template == panel.default_templates['embedded_screen']
     # Force a specific template
     eng_ui = panel.default_templates['engineering_screen']
-    panel.use_template = eng_ui
-    assert panel.use_template == eng_ui
+    panel.embedded_template = eng_ui
+    assert panel.embedded_template == eng_ui
     assert panel.current_template == eng_ui
     # Check that if we pass in a template as macros we use the forced template
     panel.load_template(macros={'embedded_screen': 'tst.ui'})
     assert panel.current_template == eng_ui
+    # But if we don't specify any template use macros
+    panel.embedded_template = ''
+    assert panel.current_template == 'tst.ui'
     panel.use_default_templates = True
     assert panel.use_default_templates
-    panel.use_template = ''
     panel.load_template(macros={'embedded_screen': 'tst.ui'})
     assert panel.current_template == panel.default_templates['embedded_screen']
 
