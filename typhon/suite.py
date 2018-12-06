@@ -270,7 +270,7 @@ class TyphonSuite(TyphonBase):
         """Tools loaded into the DeviceDisplay"""
         return [param.value() for param in self._tool_group.childs]
 
-    def add_device(self, device, children=True, methods=None, image=None):
+    def add_device(self, device, children=True):
         """
         Add a device to the :attr:`.device_panel` and tools
 
@@ -281,14 +281,9 @@ class TyphonSuite(TyphonBase):
         methods: list, optional
             Methods to add to the device
         """
-        methods = methods or list()
         super().add_device(device)
         # Create DeviceParameter
         dev_param = DeviceParameter(device, subdevices=children)
-        for method in methods:
-            dev_param.value.add_method(method)
-        if image:
-            dev_param.value.add_image(image)
         # Attach signals
         all_params = [dev_param] + dev_param.childs
         for param in all_params:
