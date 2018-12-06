@@ -67,7 +67,6 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
 
     def __init__(self,  parent=None, **kwargs):
         # Intialize background variable
-        self._use_template = ''
         self._use_default = False
         self._last_macros = dict()
         self._main_widget = None
@@ -83,9 +82,6 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
     @property
     def current_template(self):
         """Current template being rendered"""
-        # If a user forces a template we use it
-        if self._use_template:
-            return self._use_template
         # Search in the last macros, maybe our device told us what to do
         template_key = self.TemplateEnum(self._template_type).name
         if not self._use_default and self._last_macros.get(template_key, None):
@@ -102,20 +98,6 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
         # Store our new value
         if self._template_type != value:
             self._template_type = value
-            # Reload the template if it will affect the final product
-            if not self._use_template:
-                self.load_template(macros=self._last_macros)
-
-    @Property(str)
-    def use_template(self):
-        """Use this template regardless of any other setting"""
-        return self._use_template
-
-    @use_template.setter
-    def use_template(self, value):
-        if value != self._use_template:
-            self._use_template = value
-            # Reload template with last known set of macros
             self.load_template(macros=self._last_macros)
 
     @Property(bool)
