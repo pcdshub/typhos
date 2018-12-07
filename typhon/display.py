@@ -4,7 +4,7 @@ import os.path
 
 from pydm import Display
 from qtpy.QtCore import Property, Slot, Q_ENUMS
-from qtpy.QtWidgets import QHBoxLayout
+from qtpy.QtWidgets import QHBoxLayout, QWidget
 
 from .utils import ui_dir, TyphonBase, clear_layout
 from .widgets import TyphonDesignerMixin
@@ -13,7 +13,7 @@ from .widgets import TyphonDesignerMixin
 logger = logging.getLogger(__name__)
 
 
-class TemplateTypes:
+class DisplayTypes:
     """Types of Available Templates"""
     embedded_screen = 0
     detailed_screen = 1
@@ -29,7 +29,7 @@ class TemplateTypes:
         return Enum('TemplateEnum', entries)
 
 
-class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
+class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -59,19 +59,18 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
     parent: QWidget, optional
     """
     # Template types and defaults
-    Q_ENUMS(TemplateTypes)
-    TemplateEnum = TemplateTypes.to_enum()  # For convenience
-    default_templates = dict((_typ.name, os.path.join(ui_dir,
-                                                      _typ.name + '.ui'))
-                             for _typ in TemplateEnum)
+    Q_ENUMS(DisplayTypes)
+    TemplateEnum = DisplayTypes.to_enum()  # For convenience
 
     def __init__(self,  parent=None, **kwargs):
         # Intialize background variable
-        self._use_template = ''
-        self._use_default = False
+        self._forced_template = ''
         self._last_macros = dict()
         self._main_widget = None
-        self._template_type = TemplateTypes.detailed_screen
+        self._display_type = DisplayTypes.detailed_screen
+        self.templates = dict((_typ.name, os.path.join(ui_dir,
+                                                       _typ.name + '.ui'))
+                              for _typ in self.TemplateEnum)
         # Set this to None first so we don't render
         super().__init__(parent=parent)
         # Initialize blank UI
@@ -83,51 +82,21 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
     @property
     def current_template(self):
         """Current template being rendered"""
-        # If a user forces a template we use it
-        if self._use_template:
-            return self._use_template
+        if self._forced_template:
+            return self._forced_template
         # Search in the last macros, maybe our device told us what to do
-        template_key = self.TemplateEnum(self._template_type).name
-        if not self._use_default and self._last_macros.get(template_key, None):
-            return self._last_macros[template_key]
-        # Otherwise just use the default
-        return self.default_templates[template_key]
+        template_key = self.TemplateEnum(self._display_type).name
+        return self.templates[template_key]
 
-    @Property(TemplateTypes)
-    def template_type(self):
-        return self._template_type
+    @Property(DisplayTypes)
+    def display_type(self):
+        return self._display_type
 
-    @template_type.setter
-    def template_type(self, value):
+    @display_type.setter
+    def display_type(self, value):
         # Store our new value
-        if self._template_type != value:
-            self._template_type = value
-            # Reload the template if it will affect the final product
-            if not self._use_template:
-                self.load_template(macros=self._last_macros)
-
-    @Property(str)
-    def use_template(self):
-        """Use this template regardless of any other setting"""
-        return self._use_template
-
-    @use_template.setter
-    def use_template(self, value):
-        if value != self._use_template:
-            self._use_template = value
-            # Reload template with last known set of macros
-            self.load_template(macros=self._last_macros)
-
-    @Property(bool)
-    def use_default_templates(self):
-        """Use the default Typhon template instead of a device specific"""
-        return self._use_default
-
-    @use_default_templates.setter
-    def use_default_templates(self, value):
-        if value != self._use_default:
-            self._use_default = value
-            # Reload template with last known set of macros
+        if self._display_type != value:
+            self._display_type = value
             self.load_template(macros=self._last_macros)
 
     def load_template(self, macros=None):
@@ -148,14 +117,37 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
             clear_layout(self.layout())
         # Assemble our macros
         macros = macros or dict()
+        for display_type in self.templates:
+            value = macros.get(display_type)
+            if value:
+                logger.debug("Found new template %r for %r",
+                             value, display_type)
+                self.templates[display_type] = value
+        # Store macros
         self._last_macros = macros
-        self._main_widget = Display(ui_filename=self.current_template,
-                                    macros=macros)
-        self.layout().addWidget(self._main_widget)
-        # Add device to all children widgets
-        if self.devices:
-            for widget in self._main_widget.findChildren(TyphonBase):
-                widget.add_device(self.devices[0])
+        try:
+            self._main_widget = Display(ui_filename=self.current_template,
+                                        macros=macros)
+            # Add device to all children widgets
+            if self.devices:
+                for widget in self._main_widget.findChildren(TyphonBase):
+                    widget.add_device(self.devices[0])
+        except (FileNotFoundError, IsADirectoryError):
+            logger.exception("Unable to load file %r", self.current_template)
+            self._main_widget = QWidget()
+        finally:
+            self.layout().addWidget(self._main_widget)
+
+    @Property(str)
+    def force_template(self):
+        """Force a specific template"""
+        return self._forced_template
+
+    @force_template.setter
+    def force_template(self, value):
+        if value != self._forced_template:
+            self._forced_template = value
+            self.load_template()
 
     def add_device(self, device, macros=None):
         """
@@ -203,13 +195,15 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
         ----------
         device: ophyd.Device
 
+        template :str, optional
+            Set the ``display_template``
         macros: dict, optional
             Macro substitutions to be placed in template
         """
         display = cls()
         # Reset the template if provided
         if template:
-            display.use_template = template
+            display.force_template = template
         # Add the device
         display.add_device(device, macros=macros)
         return display

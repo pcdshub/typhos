@@ -1,7 +1,18 @@
 import os.path
+
+import pytest
+
 from typhon import TyphonDisplay
 from typhon.utils import clean_attr
+
 from .conftest import show_widget
+
+
+@pytest.fixture(scope='function')
+def display(qtbot):
+    display = TyphonDisplay()
+    qtbot.addWidget(display)
+    return display
 
 
 @show_widget
@@ -31,30 +42,38 @@ def test_device_display(device, motor, qtbot):
     return panel
 
 
-def test_device_display_templates(motor, qtbot):
-    panel = TyphonDisplay()
-    qtbot.addWidget(panel)
+def test_display_without_md(motor, display):
     # Add a generic motor
-    panel.add_device(motor)
-    assert panel.devices[0] == motor
-    assert panel.current_template == panel.default_templates['detailed_screen']
-    # Changing template type changes template
-    panel.template_type = panel.embedded_screen
-    assert panel.current_template == panel.default_templates['embedded_screen']
-    # Force a specific template
-    eng_ui = panel.default_templates['engineering_screen']
-    panel.use_template = eng_ui
-    assert panel.use_template == eng_ui
-    assert panel.current_template == eng_ui
-    # Check that if we pass in a template as macros we use the forced template
-    panel.load_template(macros={'embedded_screen': 'tst.ui'})
-    assert panel.current_template == eng_ui
-    panel.use_default_templates = True
-    assert panel.use_default_templates
-    panel.use_template = ''
-    panel.load_template(macros={'embedded_screen': 'tst.ui'})
-    assert panel.current_template == panel.default_templates['embedded_screen']
+    display.add_device(motor)
+    assert display.devices[0] == motor
+    assert display.current_template == display.templates['detailed_screen']
 
+
+def test_display_with_md(motor, display):
+    display.load_template(macros={'detailed_screen': 'tst.ui'})
+    assert display.current_template == 'tst.ui'
+    assert display.templates['detailed_screen'] == 'tst.ui'
+
+
+def test_display_type_change(display):
+    # Changing template type changes template
+    display.display_type = display.embedded_screen
+    assert display.current_template == display.templates['embedded_screen']
+
+
+def test_display_modified_templates(display, motor):
+    display.add_device(motor)
+    eng_ui = display.templates['engineering_screen']
+    display.templates['embedded_screen'] = eng_ui
+    display.display_type = display.embedded_screen
+    assert display.current_template == eng_ui
+
+
+def test_display_force_template(display):
+    # Check that we use the forced template
+    display.force_template = 'tst.ui'
+    assert display.force_template == 'tst.ui'
+    assert display.current_template == 'tst.ui'
 
 def test_display_with_channel(client, qtbot):
     panel = TyphonDisplay()
