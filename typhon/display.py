@@ -83,17 +83,11 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
     @property
     def current_template(self):
         """Current template being rendered"""
+        if self._forced_template:
+            return self._forced_template
         # Search in the last macros, maybe our device told us what to do
         template_key = self.TemplateEnum(self._template_type).name
-        provided_template = self._templates[template_key]
-        metadata_template = self._last_macros.get(template_key)
-        if self._use_default or (not provided_template and not
-                                 metadata_template):
-            return self.default_templates[template_key]
-        elif provided_template:
-            return provided_template
-        else:
-            return metadata_template
+        return self.templates[template_key]
 
     @Property(TemplateTypes)
     def template_type(self):
