@@ -62,17 +62,16 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
     # Template types and defaults
     Q_ENUMS(TemplateTypes)
     TemplateEnum = TemplateTypes.to_enum()  # For convenience
-    default_templates = dict((_typ.name, os.path.join(ui_dir,
-                                                      _typ.name + '.ui'))
-                             for _typ in TemplateEnum)
 
     def __init__(self,  parent=None, **kwargs):
         # Intialize background variable
         self._forced_template = ''
         self._last_macros = dict()
         self._main_widget = None
-        self._templates = dict.fromkeys(self.default_templates, '')
         self._template_type = TemplateTypes.detailed_screen
+        self.templates = dict((_typ.name, os.path.join(ui_dir,
+                                                      _typ.name + '.ui'))
+                              for _typ in self.TemplateEnum)
         # Set this to None first so we don't render
         super().__init__(parent=parent)
         # Initialize blank UI
@@ -125,6 +124,13 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
             clear_layout(self.layout())
         # Assemble our macros
         macros = macros or dict()
+        for template_type in self.templates:
+            value = macros.get(template_type)
+            if value:
+                logger.debug("Found new template %r for %r",
+                             value, template_type)
+                self.templates[template_type] = value
+        # Store macros
         self._last_macros = macros
         try:
             self._main_widget = Display(ui_filename=self.current_template,
