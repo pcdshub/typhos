@@ -107,18 +107,6 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
             self._template_type = value
             self.load_template(macros=self._last_macros)
 
-    @Property(bool)
-    def use_default_templates(self):
-        """Use the default Typhon template instead of a device specific"""
-        return self._use_default
-
-    @use_default_templates.setter
-    def use_default_templates(self, value):
-        if value != self._use_default:
-            self._use_default = value
-            # Reload template with last known set of macros
-            self.load_template(macros=self._last_macros)
-
     def load_template(self, macros=None):
         """
         Load a new template
@@ -205,43 +193,10 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
         display = cls()
         # Reset the template if provided
         if template:
-            display.detailed_template = template
+            display.force_template = template
         # Add the device
         display.add_device(device, macros=macros)
         return display
-
-    def _get_template(self, tmp_typ):
-        template_key = self.TemplateEnum(tmp_typ).name
-        return self._templates.get(template_key)
-
-    def _set_template(self, value, tmp_typ):
-        if self._get_template(tmp_typ) != value:
-            template_key = self.TemplateEnum(tmp_typ).name
-            self._templates[template_key] = value
-            # If this will affect the current view, reload
-            if self.current_template == value:
-                self.load_template(macros=self._last_macros)
-
-    detailed_template = Property(
-                            str,
-                            partial(_get_template,
-                                    tmp_typ=TemplateTypes.detailed_screen),
-                            partial(_set_template,
-                                    tmp_typ=TemplateTypes.detailed_screen))
-
-    embedded_template = Property(
-                            str,
-                            partial(_get_template,
-                                    tmp_typ=TemplateTypes.embedded_screen),
-                            partial(_set_template,
-                                    tmp_typ=TemplateTypes.embedded_screen))
-
-    engineering_template = Property(
-                            str,
-                            partial(_get_template,
-                                    tmp_typ=TemplateTypes.engineering_screen),
-                            partial(_set_template,
-                                    tmp_typ=TemplateTypes.engineering_screen))
 
     @Slot(object)
     def _tx(self, value):
