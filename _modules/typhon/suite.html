@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.suite &mdash; Typhon 0.2.1+179.g4c0696c documentation</title>
+  <title>typhon.suite &mdash; Typhon 0.2.1+201.ge8fbaa2 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+179.g4c0696c
+                0.2.1+201.ge8fbaa2
               </div>
             
           
@@ -427,7 +427,7 @@
         <span class="sd">&quot;&quot;&quot;Tools loaded into the DeviceDisplay&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool_group</span><span class="o">.</span><span class="n">childs</span><span class="p">]</span>
 
-<div class="viewcode-block" id="TyphonSuite.add_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonSuite.add_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a device to the :attr:`.device_panel` and tools</span>
 
@@ -438,14 +438,9 @@
 <span class="sd">        methods: list, optional</span>
 <span class="sd">            Methods to add to the device</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">methods</span> <span class="o">=</span> <span class="n">methods</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="c1"># Create DeviceParameter</span>
         <span class="n">dev_param</span> <span class="o">=</span> <span class="n">DeviceParameter</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">subdevices</span><span class="o">=</span><span class="n">children</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
-            <span class="n">dev_param</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
-            <span class="n">dev_param</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
         <span class="c1"># Attach signals</span>
         <span class="n">all_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">dev_param</span><span class="p">]</span> <span class="o">+</span> <span class="n">dev_param</span><span class="o">.</span><span class="n">childs</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">all_params</span><span class="p">:</span>

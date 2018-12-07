@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.2.1+179.g4c0696c documentation</title>
+  <title>Display Types &mdash; Typhon 0.2.1+201.ge8fbaa2 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+179.g4c0696c
+                0.2.1+201.ge8fbaa2
               </div>
             
           
@@ -189,7 +189,7 @@ window.</p>
 </table>
 <dl class="method">
 <dt id="typhon.TyphonSuite.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em>, <em>children=True</em>, <em>methods=None</em>, <em>image=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em>, <em>children=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a device to the <code class="xref py py-attr docutils literal notranslate"><span class="pre">device_panel</span></code> and tools</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -422,6 +422,12 @@ entered as well.</li>
 <dd><p>Current template being rendered</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="typhon.TyphonDisplay.force_template">
+<code class="descname">force_template</code><a class="headerlink" href="#typhon.TyphonDisplay.force_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force a specific template</p>
+</dd></dl>
+
 <dl class="classmethod">
 <dt id="typhon.TyphonDisplay.from_device">
 <em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>template=None</em>, <em>macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDisplay.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDisplay.from_device" title="Permalink to this definition">¶</a></dt>
@@ -434,6 +440,7 @@ a cleaned version of the device name</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Set the <code class="docutils literal notranslate"><span class="pre">display_template</span></code></li>
 <li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be placed in template</li>
 </ul>
 </td>
@@ -460,18 +467,6 @@ a cleaned version of the device name</p>
 </table>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="typhon.TyphonDisplay.use_default_templates">
-<code class="descname">use_default_templates</code><a class="headerlink" href="#typhon.TyphonDisplay.use_default_templates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use the default Typhon template instead of a device specific</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="typhon.TyphonDisplay.use_template">
-<code class="descname">use_template</code><a class="headerlink" href="#typhon.TyphonDisplay.use_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use this template regardless of any other setting</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="function">
@@ -486,6 +481,7 @@ a cleaned version of the device name</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Set the <code class="docutils literal notranslate"><span class="pre">display_template</span></code></li>
 <li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be placed in template</li>
 </ul>
 </td>
