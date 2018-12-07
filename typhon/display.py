@@ -68,7 +68,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
 
     def __init__(self,  parent=None, **kwargs):
         # Intialize background variable
-        self._use_default = False
+        self._forced_template = ''
         self._last_macros = dict()
         self._main_widget = None
         self._templates = dict.fromkeys(self.default_templates, '')
@@ -138,6 +138,17 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
             self._main_widget = QWidget()
         finally:
             self.layout().addWidget(self._main_widget)
+
+    @Property(str)
+    def force_template(self):
+        """Force a specific template"""
+        return self._forced_template
+
+    @force_template.setter
+    def force_template(self, value):
+        if value != self._forced_template:
+            self._forced_template = value
+            self.load_template()
 
     def add_device(self, device, macros=None):
         """
