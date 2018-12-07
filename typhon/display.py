@@ -1,5 +1,4 @@
 from enum import Enum
-from functools import partial
 import logging
 import os.path
 
@@ -70,7 +69,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         self._main_widget = None
         self._display_type = DisplayTypes.detailed_screen
         self.templates = dict((_typ.name, os.path.join(ui_dir,
-                                                      _typ.name + '.ui'))
+                                                       _typ.name + '.ui'))
                               for _typ in self.TemplateEnum)
         # Set this to None first so we don't render
         super().__init__(parent=parent)
