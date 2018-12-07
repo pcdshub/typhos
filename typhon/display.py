@@ -145,7 +145,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
             if self.devices:
                 for widget in self._main_widget.findChildren(TyphonBase):
                     widget.add_device(self.devices[0])
-        except FileNotFoundError:
+        except (FileNotFoundError, IsADirectoryError):
             logger.exception("Unable to load file %r", self.current_template)
             self._main_widget = QWidget()
         finally:
