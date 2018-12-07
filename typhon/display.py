@@ -14,7 +14,7 @@ from .widgets import TyphonDesignerMixin
 logger = logging.getLogger(__name__)
 
 
-class TemplateTypes:
+class DisplayTypes:
     """Types of Available Templates"""
     embedded_screen = 0
     detailed_screen = 1
@@ -30,7 +30,7 @@ class TemplateTypes:
         return Enum('TemplateEnum', entries)
 
 
-class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
+class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -60,15 +60,15 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
     parent: QWidget, optional
     """
     # Template types and defaults
-    Q_ENUMS(TemplateTypes)
-    TemplateEnum = TemplateTypes.to_enum()  # For convenience
+    Q_ENUMS(DisplayTypes)
+    TemplateEnum = DisplayTypes.to_enum()  # For convenience
 
     def __init__(self,  parent=None, **kwargs):
         # Intialize background variable
         self._forced_template = ''
         self._last_macros = dict()
         self._main_widget = None
-        self._template_type = TemplateTypes.detailed_screen
+        self._display_type = DisplayTypes.detailed_screen
         self.templates = dict((_typ.name, os.path.join(ui_dir,
                                                       _typ.name + '.ui'))
                               for _typ in self.TemplateEnum)
@@ -86,18 +86,18 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
         if self._forced_template:
             return self._forced_template
         # Search in the last macros, maybe our device told us what to do
-        template_key = self.TemplateEnum(self._template_type).name
+        template_key = self.TemplateEnum(self._display_type).name
         return self.templates[template_key]
 
-    @Property(TemplateTypes)
-    def template_type(self):
-        return self._template_type
+    @Property(DisplayTypes)
+    def display_type(self):
+        return self._display_type
 
-    @template_type.setter
-    def template_type(self, value):
+    @display_type.setter
+    def display_type(self, value):
         # Store our new value
-        if self._template_type != value:
-            self._template_type = value
+        if self._display_type != value:
+            self._display_type = value
             self.load_template(macros=self._last_macros)
 
     def load_template(self, macros=None):
@@ -118,12 +118,12 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, TemplateTypes):
             clear_layout(self.layout())
         # Assemble our macros
         macros = macros or dict()
-        for template_type in self.templates:
-            value = macros.get(template_type)
+        for display_type in self.templates:
+            value = macros.get(display_type)
             if value:
                 logger.debug("Found new template %r for %r",
-                             value, template_type)
-                self.templates[template_type] = value
+                             value, display_type)
+                self.templates[display_type] = value
         # Store macros
         self._last_macros = macros
         try:
