@@ -159,21 +159,15 @@ class TyphonSuite(TyphonBase):
             my_display.get_subdisplay(my_device.x)
             my_display.get_subdisplay('My Tool')
         """
-        # Get the cleaned Device name if passed a Device
-        if isinstance(display, Device):
-            tree = flatten_tree(self._device_group)
+        for group in self.top_level_groups:
+            tree = flatten_tree(group)
             for param in tree:
-                if display in getattr(param.value(), 'devices', []):
-                    return param.value()
-        # Otherwise we could be looking for either a tool or device
-        else:
-            tree = (flatten_tree(self._device_group)
-                    + flatten_tree(self._tool_group))
-            for param in tree:
-                if param.name() == display:
+                match = (display in getattr(param.value(), 'devices', [])
+                         or param.name()== display)
+                if match:
                     return param.value()
         # If we got here we can't find the subdisplay
-        raise ValueError("Unable to find subdisplay %r", display)
+        raise ValueError(f"Unable to find subdisplay {display}")
 
     @Slot(str)
     @Slot(object)
