@@ -3,15 +3,13 @@
 ############
 from functools import partial
 import logging
-import warnings
 
 ############
 # External #
 ############
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
-from ophyd import Device
 from qtpy.QtCore import Signal, Slot, Qt
-from qtpy.QtWidgets import QDockWidget, QListWidgetItem, QHBoxLayout, QWidget
+from qtpy.QtWidgets import QDockWidget, QHBoxLayout, QWidget
 
 ###########
 # Package #
@@ -114,7 +112,6 @@ class TyphonSuite(TyphonBase):
         parameter = SidebarParameter(value=display, name=name)
         return self._add_to_sidebar(parameter, category)
 
-
     @property
     def top_level_groups(self):
         """All top-level groups expressed as ``QGroupParameterItem`` objects"""
@@ -163,7 +160,7 @@ class TyphonSuite(TyphonBase):
             tree = flatten_tree(group)
             for param in tree:
                 match = (display in getattr(param.value(), 'devices', [])
-                         or param.name()== display)
+                         or param.name() == display)
                 if match:
                     return param.value()
         # If we got here we can't find the subdisplay
