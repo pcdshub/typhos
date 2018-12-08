@@ -122,14 +122,6 @@ class TyphonSuite(TyphonBase):
         list_item = QListWidgetItem(name)
         list_item.setData(Qt.UserRole, display)
         list_widget.addItem(list_item)
-
-    def _add_to_sidebar(self, param):
-        """Add a SidebarParameter to the correct slots"""
-        param.sigOpen.connect(partial(self.show_subdisplay,
-                                      param))
-        param.sigHide.connect(partial(self.hide_subdisplay,
-                                      param))
-
     def add_subdevice(self, device, name=None, **kwargs):
         """
         Add a subdevice to the `component_widget` stack
@@ -145,6 +137,12 @@ class TyphonSuite(TyphonBase):
                       "Use `TyphonSuite.add_device`")
         logger.debug("Creating subdisplay for %s", device.name)
         self.add_device(device, **kwargs)
+    @property
+    def top_level_groups(self):
+        """All top-level groups expressed as ``QGroupParameterItem`` objects"""
+        root = self._tree.invisibleRootItem()
+        return [root.child(idx).param
+                for idx in range(root.childCount())]
 
     def add_tool(self, name, tool):
         """
@@ -329,3 +327,27 @@ class TyphonSuite(TyphonBase):
         param = display.add_device(device, **kwargs)
         display.show_subdisplay(param)
         return display
+
+    def _add_to_sidebar(self, parameter, category=None):
+        # Create and add to the group. This behavior is optional if higher
+        # level functionalilty handles this behavior
+        if category:
+            # Create or grab our category
+            group_dict = dict((param.name(), param)
+                              for param in self.top_level_groups)
+            if category in group_dict:
+                group = group_dict[category]
+            else:
+                logger.debug("Creating new category %r ...", category)
+                group = ptypes.GroupParameter(name=category)
+                self._tree.addParameters(group)
+                self._tree.sortItems(0, Qt.AscendingOrder)
+            logger.debug("Adding %r to category %r ...",
+                         parameter.name(), group.name())
+            group.addChild(parameter)
+        logger.debug("Connecting parameter signals ...")
+        parameter.sigOpen.connect(partial(self.show_subdisplay,
+                                          parameter))
+        parameter.sigHide.connect(partial(self.hide_subdisplay,
+                                          parameter))
+        return parameter
