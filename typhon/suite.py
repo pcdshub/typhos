@@ -86,9 +86,6 @@ class TyphonSuite(TyphonBase):
         # Create device group
         self._device_group = ptypes.GroupParameter(name='Devices')
         self._tree.addParameters(self._device_group)
-        # Create tool group
-        self._tool_group = ptypes.GroupParameter(name='Tools')
-        self._tree.addParameters(self._tool_group)
         # Setup layout
         self._layout = QHBoxLayout()
         self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
@@ -140,10 +137,7 @@ class TyphonSuite(TyphonBase):
         tool: QWidget
             Widget to be added to ``.ui.subdisplay``
         """
-        tool_param = SidebarParameter(value=tool, name=name)
-        self._tool_group.addChild(tool_param)
-        self._add_to_sidebar(tool_param)
-        return tool_param
+        return self.add_subdisplay(name, tool, 'Tools')
 
     def get_subdisplay(self, display):
         """
