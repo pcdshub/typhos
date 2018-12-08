@@ -95,7 +95,7 @@ class TyphonSuite(TyphonBase):
         self._layout.addWidget(self._tree)
         self.setLayout(self._layout)
 
-    def add_subdisplay(self, name, display, list_widget):
+    def add_subdisplay(self, name, display, category):
         """
         Add a widget to one of the button layouts
 
@@ -116,12 +116,9 @@ class TyphonSuite(TyphonBase):
             QWidget with the PyQtSignal ``clicked``. If None, is given a
             QPushButton is created
         """
-        warnings.warn("This method is deprecated. Use TyphonSuite.add_device "
-                      "or TyphonSuite.add_tool instead.")
-        # Create QListViewItem to store the display information
-        list_item = QListWidgetItem(name)
-        list_item.setData(Qt.UserRole, display)
-        list_widget.addItem(list_item)
+        # Create our parameter
+        parameter = SidebarParameter(value=display, name=name)
+        return self._add_to_sidebar(parameter, category)
 
 
     @property
