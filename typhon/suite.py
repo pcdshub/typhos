@@ -122,21 +122,8 @@ class TyphonSuite(TyphonBase):
         list_item = QListWidgetItem(name)
         list_item.setData(Qt.UserRole, display)
         list_widget.addItem(list_item)
-    def add_subdevice(self, device, name=None, **kwargs):
-        """
-        Add a subdevice to the `component_widget` stack
 
-        Parameters
-        ----------
-        device : ophyd.Device
 
-        kwargs:
-            Passed to :meth:`.TyphonSuite.add_device`
-        """
-        warnings.warn("This method is deprecated. "
-                      "Use `TyphonSuite.add_device`")
-        logger.debug("Creating subdisplay for %s", device.name)
-        self.add_device(device, **kwargs)
     @property
     def top_level_groups(self):
         """All top-level groups expressed as ``QGroupParameterItem`` objects"""
