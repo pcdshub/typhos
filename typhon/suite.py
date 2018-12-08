@@ -83,9 +83,6 @@ class TyphonSuite(TyphonBase):
         # Setup parameter tree
         self._tree = ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
-        # Create device group
-        self._device_group = ptypes.GroupParameter(name='Devices')
-        self._tree.addParameters(self._device_group)
         # Setup layout
         self._layout = QHBoxLayout()
         self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
@@ -237,35 +234,33 @@ class TyphonSuite(TyphonBase):
         Hide the component widget and set all buttons unchecked
         """
         # Grab children from devices
-        device_params = flatten_tree(self._device_group)
-        for param in device_params[1:] + self._tool_group.childs:
-            self.hide_subdisplay(param)
+        for group in self.top_level_groups:
+            for param in flatten_tree(group)[1:]:
+                self.hide_subdisplay(param)
 
     @property
     def tools(self):
         """Tools loaded into the DeviceDisplay"""
-        return [param.value() for param in self._tool_group.childs]
+        for group in self.top_level_groups:
+            if group.name() == 'Tools':
+                return [param.value() for param in group.childs]
+        return []
 
-    def add_device(self, device, children=True):
+    def add_device(self, device, children=True, category='Devices'):
         """
         Add a device to the :attr:`.device_panel` and tools
 
         Parameters
         ----------
         device: ophyd.Device
-
-        methods: list, optional
-            Methods to add to the device
         """
         super().add_device(device)
-        # Create DeviceParameter
+        # Create DeviceParameter and add to top level category
         dev_param = DeviceParameter(device, subdevices=children)
-        # Attach signals
-        all_params = [dev_param] + dev_param.childs
-        for param in all_params:
-            self._add_to_sidebar(param)
-        # Add to tree
-        self._device_group.addChild(dev_param)
+        self._add_to_sidebar(dev_param, category)
+        # Grab children
+        for child in flatten_tree(dev_param)[1:]:
+            self._add_to_sidebar(child)
         # Add a device to all the tool displays
         for tool in self.tools:
             try:
