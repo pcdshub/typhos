@@ -89,24 +89,19 @@ class TyphonSuite(TyphonBase):
 
     def add_subdisplay(self, name, display, category):
         """
-        Add a widget to one of the button layouts
-
-        This add a display for a subcomponent and a QPushButton that
-        will bring the display to the foreground. Users can either specify
-        their button or have one generate for them. Either way the button is
-        connected to the `pyqSlot` :meth:`.show_subdevice`
+        Add an arbitrary widget to the tree of available widgets and tools
 
         Parameters
         ----------
         name : str
-            Name to place on QPushButton
+            Name to be displayed in the tree
 
         display : QWidget
-            QWidget to associate with button
+            QWidget to show in the dock when expanded.
 
-        button : QWidget, optional
-            QWidget with the PyQtSignal ``clicked``. If None, is given a
-            QPushButton is created
+        category : str
+            The top level group to place the controls under in the tree. If the
+            category does not exist, a new one will be made
         """
         # Create our parameter
         parameter = SidebarParameter(value=display, name=name)
@@ -123,6 +118,12 @@ class TyphonSuite(TyphonBase):
         """
         Add a widget to the toolbar
 
+        Shortcut for:
+
+        .. code:: python
+
+           suite.add_subdisplay(name, tool, category='Tools')
+
         Parameters
         ----------
         name :str
@@ -135,14 +136,12 @@ class TyphonSuite(TyphonBase):
 
     def get_subdisplay(self, display):
         """
-        Get a subdisplay by name or device
+        Get a subdisplay by name or contained device
 
         Parameters
         ----------
         display :str or Device
-            Name of subdisplay. This will be the text shown on the sidebar. For
-            devices screens you can pass in the device itself
-            itself
+            Name of screen or device
 
         Returns
         -------
@@ -153,8 +152,8 @@ class TyphonSuite(TyphonBase):
         -------
         .. code:: python
 
-            my_display.get_subdisplay(my_device.x)
-            my_display.get_subdisplay('My Tool')
+            suite.get_subdisplay(my_device.x)
+            suite.get_subdisplay('My Tool')
         """
         for group in self.top_level_groups:
             tree = flatten_tree(group)
@@ -170,11 +169,14 @@ class TyphonSuite(TyphonBase):
     @Slot(object)
     def show_subdisplay(self, widget):
         """
-        Show subdevice display of the QStackedWidget
+        Open a display in the dock system
 
         Parameters
         ----------
-        name : str, Device or QModelIndex
+        widget: QWidget, SidebarParameter or str
+            If given a ``SidebarParameter`` from the tree, the widget will be
+            shown and the sidebar item update. Otherwise, the information is
+            passed to :meth:`.get_subdisplay`
         """
         # Setup the dock
         dock = SubDisplay(self)
@@ -204,7 +206,7 @@ class TyphonSuite(TyphonBase):
         widget: SidebarParameter or Subdisplay
             If you give a SidebarParameter, we will find the corresponding
             widget and hide it. If the widget provided to us is inside a
-            DockWidget we will close that, otherwise the widget is just hidden
+            DockWidget we will close that, otherwise the widget is just hidden.
         """
         # If we have a parameter grab the widget
         if isinstance(widget, SidebarParameter):
@@ -222,7 +224,7 @@ class TyphonSuite(TyphonBase):
     @Slot()
     def hide_subdisplays(self):
         """
-        Hide the component widget and set all buttons unchecked
+        Hide all open displays
         """
         # Grab children from devices
         for group in self.top_level_groups:
@@ -239,11 +241,18 @@ class TyphonSuite(TyphonBase):
 
     def add_device(self, device, children=True, category='Devices'):
         """
-        Add a device to the :attr:`.device_panel` and tools
+        Add a device to the ``TyphonSuite``
 
         Parameters
         ----------
         device: ophyd.Device
+
+        children: bool, optional
+            Also add any ``subdevices`` of this device to the suite as well.
+
+        category: str, optional
+            Category of device. By default, all devices will just be added to
+            the "Devices" group
         """
         super().add_device(device)
         # Create DeviceParameter and add to top level category
@@ -279,6 +288,9 @@ class TyphonSuite(TyphonBase):
 
         parent: QWidgets
 
+        tools: dict, optional
+            Tools to load for the object. ``dict`` should be name, class pairs
+
         kwargs:
             Passed to :meth:`TyphonSuite.add_device`
         """
@@ -293,8 +305,7 @@ class TyphonSuite(TyphonBase):
         return display
 
     def _add_to_sidebar(self, parameter, category=None):
-        # Create and add to the group. This behavior is optional if higher
-        # level functionalilty handles this behavior
+        """Add an item to the sidebar, connecting neccesary signals"""
         if category:
             # Create or grab our category
             group_dict = dict((param.name(), param)
