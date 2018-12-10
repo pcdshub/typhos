@@ -103,6 +103,8 @@ class TyphonSuite(TyphonBase):
             The top level group to place the controls under in the tree. If the
             category does not exist, a new one will be made
         """
+        logger.debug("Adding widget %r with %r to %r ...",
+                     name, display, category)
         # Create our parameter
         parameter = SidebarParameter(value=display, name=name)
         self._add_to_sidebar(parameter, category)
@@ -191,6 +193,7 @@ class TyphonSuite(TyphonBase):
         elif not isinstance(widget, QWidget):
             widget = self.get_subdisplay(widget)
         # Add the widget to the dock
+        logger.debug("Showing widget %r ...", widget)
         dock.setWidget(widget)
         # Add to layout
         self.layout().addWidget(dock)
@@ -216,7 +219,9 @@ class TyphonSuite(TyphonBase):
         elif not isinstance(widget, QWidget):
             widget = self.get_subdisplay(widget)
         # Make sure the actual widget is hidden
+        logger.debug("Hiding widget %r ...", widget)
         if isinstance(widget.parent(), QDockWidget):
+            logger.debug("Closing dock ...")
             widget.parent().close()
         else:
             widget.hide()
