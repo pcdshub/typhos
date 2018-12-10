@@ -105,7 +105,7 @@ class TyphonSuite(TyphonBase):
         """
         # Create our parameter
         parameter = SidebarParameter(value=display, name=name)
-        return self._add_to_sidebar(parameter, category)
+        self._add_to_sidebar(parameter, category)
 
     @property
     def top_level_groups(self):
@@ -132,7 +132,7 @@ class TyphonSuite(TyphonBase):
         tool: QWidget
             Widget to be added to ``.ui.subdisplay``
         """
-        return self.add_subdisplay(name, tool, 'Tools')
+        self.add_subdisplay(name, tool, 'Tools')
 
     def get_subdisplay(self, display):
         """
@@ -268,7 +268,6 @@ class TyphonSuite(TyphonBase):
             except Exception:
                 logger.exception("Unable to add %s to tool %s",
                                  device.name, type(tool))
-        return dev_param
 
     @classmethod
     def from_device(cls, device, parent=None,
@@ -300,8 +299,8 @@ class TyphonSuite(TyphonBase):
                 display.add_tool(name, tool())
             except Exception:
                 logger.exception("Unable to load %s", type(tool))
-        param = display.add_device(device, **kwargs)
-        display.show_subdisplay(param)
+        display.add_device(device, **kwargs)
+        display.show_subdisplay(device)
         return display
 
     def _add_to_sidebar(self, parameter, category=None):
