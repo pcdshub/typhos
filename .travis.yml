@@ -17,14 +17,12 @@ matrix:
        env: PYDM_CHANNEL=pydm-dev
      - python: 3.7
        dist: xenial
-       sudo: true
        env:
            - PYDM_CHANNEL=pcds-tag
            - BUILD=1
   allow_failures:
      - python: 3.7
        dist: xenial
-       sudo: true
        env:
            - PYDM_CHANNEL=pcds-tag
            - BUILD=1
