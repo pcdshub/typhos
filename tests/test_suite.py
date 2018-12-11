@@ -27,7 +27,7 @@ def suite(qtbot, device):
 @show_widget
 def test_suite_with_child_devices(suite, device):
     assert device in suite.devices
-    device_group = suite.top_level_groups[0]
+    device_group = suite.top_level_groups['Devices']
     assert len(device_group.childs) == 1
     child_displays = device_group.childs[0].childs
     assert len(child_displays) == len(device._sub_devices)
@@ -36,7 +36,7 @@ def test_suite_with_child_devices(suite, device):
 def test_suite_without_children(device, qtbot):
     childless = TyphonSuite.from_device(device, children=False)
     qtbot.addWidget(childless)
-    device_group = childless.top_level_groups[0]
+    device_group = childless.top_level_groups['Devices']
     childless_displays = device_group.childs[0].childs
     assert len(childless_displays) == 0
 
@@ -64,7 +64,7 @@ def test_suite_show_display_by_device(suite, device):
 
 
 def test_suite_show_display_by_parameter(suite):
-    device_param = suite.top_level_groups[0].childs[0]
+    device_param = suite.top_level_groups['Devices'].childs[0]
     suite.show_subdisplay(device_param)
     dock = suite.layout().itemAt(suite.layout().count() - 1).widget()
     assert isinstance(dock, QDockWidget)
@@ -81,7 +81,7 @@ def test_suite_hide_subdisplay_by_device(suite, device, qtbot):
 
 
 def test_suite_hide_subdisplay_by_parameter(suite, qtbot):
-    device_param = suite.top_level_groups[0].childs[0]
+    device_param = suite.top_level_groups['Devices'].childs[0]
     suite.show_subdisplay(device_param)
     display = suite.get_subdisplay(device_param.device)
     suite.show_subdisplay(device_param)

@@ -111,10 +111,11 @@ class TyphonSuite(TyphonBase):
 
     @property
     def top_level_groups(self):
-        """All top-level groups expressed as ``QGroupParameterItem`` objects"""
+        """All top-level groups as name, ``QGroupParameterItem`` pairs"""
         root = self._tree.invisibleRootItem()
-        return [root.child(idx).param
-                for idx in range(root.childCount())]
+        return dict((root.child(idx).param.name(),
+                     root.child(idx).param)
+                    for idx in range(root.childCount()))
 
     def add_tool(self, name, tool):
         """
@@ -157,7 +158,7 @@ class TyphonSuite(TyphonBase):
             suite.get_subdisplay(my_device.x)
             suite.get_subdisplay('My Tool')
         """
-        for group in self.top_level_groups:
+        for group in self.top_level_groups.values():
             tree = flatten_tree(group)
             for param in tree:
                 match = (display in getattr(param.value(), 'devices', [])
@@ -232,16 +233,16 @@ class TyphonSuite(TyphonBase):
         Hide all open displays
         """
         # Grab children from devices
-        for group in self.top_level_groups:
+        for group in self.top_level_groups.values():
             for param in flatten_tree(group)[1:]:
                 self.hide_subdisplay(param)
 
     @property
     def tools(self):
         """Tools loaded into the DeviceDisplay"""
-        for group in self.top_level_groups:
-            if group.name() == 'Tools':
-                return [param.value() for param in group.childs]
+        if 'Tools' in self.top_level_groups:
+            return [param.value()
+                    for param in self.top_level_groups['Tools'].childs]
         return []
 
     def add_device(self, device, children=True, category='Devices'):
@@ -312,10 +313,8 @@ class TyphonSuite(TyphonBase):
         """Add an item to the sidebar, connecting necessary signals"""
         if category:
             # Create or grab our category
-            group_dict = dict((param.name(), param)
-                              for param in self.top_level_groups)
-            if category in group_dict:
-                group = group_dict[category]
+            if category in self.top_level_groups:
+                group = self.top_level_groups[category]
             else:
                 logger.debug("Creating new category %r ...", category)
                 group = ptypes.GroupParameter(name=category)
