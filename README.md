@@ -43,7 +43,7 @@ as well for those who prefer installation via `pip`
 If installed in this manner, in an environment that is not **root**, the
 environment variables will be setup in such a way that the Typhon widgets will
 immediately be available in the `QtDesigner`. Otherwise, see the
-``typhon_env.sh`` script contained in the ``bin`` folder of this repository.
+``typhon_env.sh`` script contained in the ``etc`` folder of this repository.
 
 ## Getting Started
 Creating your first ``typhon`` panel for an``ophyd.Device`` only takes two
