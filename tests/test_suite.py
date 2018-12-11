@@ -5,6 +5,7 @@
 ############
 # External #
 ############
+import pytest
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from qtpy.QtWidgets import QDockWidget
 
@@ -16,48 +17,89 @@ from typhon.suite import TyphonSuite, DeviceParameter
 from .conftest import show_widget
 
 
-@show_widget
-def test_suite(device):
-    device.name = 'test'
-    suite = TyphonSuite.from_device(device)
-    assert device in suite.devices
-    # Grab all device displays
-    assert len(suite._device_group.childs) == 1
-    child_displays = suite._device_group.childs[0].childs
-    assert len(child_displays) == len(device._sub_devices)
-    # Default tools are loaded
-    assert len(suite.tools) == 3
-    assert len(suite.tools[0].devices) == 1
-    # No children
-    childless = TyphonSuite.from_device(device, children=False)
-    # Grab all device displays
-    childless_displays = childless._device_group.childs[0].childs
-    assert len(childless_displays) == 0
-    return suite
-
-
-@show_widget
-def test_suite_subdisplay(qapp, qtbot, device):
-    # Set display by Device component
+@pytest.fixture(scope='function')
+def suite(qtbot, device):
     suite = TyphonSuite.from_device(device)
     qtbot.addWidget(suite)
-    x_display = suite.get_subdisplay(device.x)
-    assert device.x in x_display.devices
-    suite.show_subdisplay(device.x)
-    assert isinstance(x_display.parent(), QDockWidget)
-    # Set display by name
-    y_display = suite.get_subdisplay(device.y)
-    qtbot.addWidget(y_display)
-    assert device.y in y_display.devices
-    suite.show_subdisplay(clean_name(device.y))
-    assert isinstance(y_display.parent(), QDockWidget)
-    with qtbot.waitSignal(y_display.parent().closing):
-        # Hide all our subdisplays
-        suite.hide_subdisplays()
     return suite
 
 
 @show_widget
+def test_suite_with_child_devices(suite, device):
+    assert device in suite.devices
+    device_group = suite.top_level_groups['Devices']
+    assert len(device_group.childs) == 1
+    child_displays = device_group.childs[0].childs
+    assert len(child_displays) == len(device._sub_devices)
+    return suite
+
+def test_suite_without_children(device, qtbot):
+    childless = TyphonSuite.from_device(device, children=False)
+    qtbot.addWidget(childless)
+    device_group = childless.top_level_groups['Devices']
+    childless_displays = device_group.childs[0].childs
+    assert len(childless_displays) == 0
+
+
+def test_suite_tools(suite):
+    assert len(suite.tools) == 3
+    assert len(suite.tools[0].devices) == 1
+
+
+def test_suite_get_subdisplay_by_device(suite, device):
+    display = suite.get_subdisplay(device)
+    assert device in display.devices
+
+
+def test_suite_get_subdisplay_by_name(suite, device):
+    display = suite.get_subdisplay(device.name)
+    assert device in display.devices
+
+
+def test_suite_show_display_by_device(suite, device):
+    suite.show_subdisplay(device.x)
+    dock = suite.layout().itemAt(suite.layout().count() - 1).widget()
+    assert isinstance(dock, QDockWidget)
+    assert device.x in dock.widget().devices
+
+
+def test_suite_show_display_by_parameter(suite):
+    device_param = suite.top_level_groups['Devices'].childs[0]
+    suite.show_subdisplay(device_param)
+    dock = suite.layout().itemAt(suite.layout().count() - 1).widget()
+    assert isinstance(dock, QDockWidget)
+    assert device_param.device in dock.widget().devices
+    assert dock.receivers(dock.closing) == 1
+
+
+def test_suite_hide_subdisplay_by_device(suite, device, qtbot):
+    display = suite.get_subdisplay(device)
+    suite.show_subdisplay(device)
+    with qtbot.waitSignal(display.parent().closing):
+        suite.hide_subdisplay(device)
+    assert display.parent().isHidden()
+
+
+def test_suite_hide_subdisplay_by_parameter(suite, qtbot):
+    device_param = suite.top_level_groups['Devices'].childs[0]
+    suite.show_subdisplay(device_param)
+    display = suite.get_subdisplay(device_param.device)
+    suite.show_subdisplay(device_param)
+    with qtbot.waitSignal(display.parent().closing):
+        suite.hide_subdisplay(device_param)
+    assert display.parent().isHidden()
+
+
+def test_suite_hide_subdisplays(suite, device):
+    suite.show_subdisplay(device)
+    suite.show_subdisplay(device.x)
+    suite.show_subdisplay(device.y)
+    suite.hide_subdisplays()
+    for dev in (device, device.x, device.y):
+        display = suite.get_subdisplay(device)
+        assert display.parent().isHidden()
+
+
 def test_device_parameter_tree(qtbot, motor, device):
     tree = ParameterTree(showHeader=False)
     devices = ptypes.GroupParameter(name='Devices')
@@ -71,4 +113,3 @@ def test_device_parameter_tree(qtbot, motor, device):
     dev_param = DeviceParameter(device, emeddable=True)
     assert len(dev_param.childs) == len(device._sub_devices)
     devices.addChild(dev_param)
-    return tree
