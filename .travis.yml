@@ -10,10 +10,23 @@ matrix:
   include:
      - python: 3.6
        env:
+          - BUILD_DOCS=1
           - BUILD=1
           - PYDM_CHANNEL=pcds-tag
      - python: 3.6
        env: PYDM_CHANNEL=pydm-dev
+     - python: 3.7
+       dist: xenial
+       env:
+           - PYDM_CHANNEL=pcds-tag
+           - BUILD=1
+  allow_failures:
+     - python: 3.7
+       dist: xenial
+       env:
+           - PYDM_CHANNEL=pcds-tag
+           - BUILD=1
+
 
 install:
   - sudo apt-get update
@@ -67,7 +80,7 @@ script:
   # Build docs
   - set -e
   - |
-    if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD ]]; then
+    if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD_DOCS ]]; then
       # Create HTML documentation  
       pushd docs
       make html
