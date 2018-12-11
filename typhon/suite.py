@@ -309,7 +309,7 @@ class TyphonSuite(TyphonBase):
         return display
 
     def _add_to_sidebar(self, parameter, category=None):
-        """Add an item to the sidebar, connecting neccesary signals"""
+        """Add an item to the sidebar, connecting necessary signals"""
         if category:
             # Create or grab our category
             group_dict = dict((param.name(), param)
