@@ -19,7 +19,7 @@ from .conftest import show_widget
 
 @pytest.fixture(scope='function')
 def suite(qtbot, device):
-    suite = TyphonSuite.from_device(device)
+    suite = TyphonSuite.from_device(device, tools=dict())
     qtbot.addWidget(suite)
     return suite
 
@@ -41,7 +41,8 @@ def test_suite_without_children(device, qtbot):
     assert len(childless_displays) == 0
 
 
-def test_suite_tools(suite):
+def test_suite_tools(device):
+    suite = TyphonSuite.from_device(device)
     assert len(suite.tools) == 3
     assert len(suite.tools[0].devices) == 1
 
