@@ -239,18 +239,30 @@ class TyphonSuite(TyphonBase):
             widget and hide it. If the widget provided to us is inside a
             DockWidget we will close that, otherwise the widget is just hidden.
         """
-        # If we have a parameter grab the widget
-        if isinstance(widget, SidebarParameter):
-            for item in widget.items:
-                item._mark_hidden()
-            widget = widget.value()
-        elif not isinstance(widget, QWidget):
+        if not isinstance(widget, QWidget):
             widget = self.get_subdisplay(widget)
+        sidebar = self._get_sidebar(widget)
+        if sidebar:
+            for item in sidebar.items:
+                item._mark_hidden()
+        else:
+            logger.warning("Unable to find sidebar item for %r", widget)
         # Make sure the actual widget is hidden
         logger.debug("Hiding widget %r ...", widget)
         if isinstance(widget.parent(), QDockWidget):
             logger.debug("Closing dock ...")
             widget.parent().close()
+        # Hide the full dock if this is the last widget
+        elif (self.embedded_dock
+              and widget.parent() == self.embedded_dock.widget()):
+            logger.debug("Removing %r from embedded widget layout ...",
+                         widget)
+            self.embedded_dock.widget().layout().removeWidget(widget)
+            widget.hide()
+            if self.embedded_dock.widget().layout().count() == 1:
+                logger.debug("Closing embedded layout ...")
+                self.embedded_dock.close()
+                self.embedded_dock = None
         else:
             widget.hide()
 
