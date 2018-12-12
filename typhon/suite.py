@@ -60,9 +60,12 @@ class DeviceParameter(SidebarParameter):
                                             strip_parent=subdevice.root)
                     child_display = TyphonDisplay.from_device(subdevice)
                     children.append(SidebarParameter(value=child_display,
-                                                     name=child_name))
+                                                     name=child_name,
+                                                     embeddable=True))
         opts['children'] = children
-        super().__init__(value=TyphonDisplay.from_device(device), **opts)
+        super().__init__(value=TyphonDisplay.from_device(device),
+                         embeddable=opts.pop('embeddable', True),
+                         **opts)
 
 
 class TyphonSuite(TyphonBase):
@@ -369,4 +372,7 @@ class TyphonSuite(TyphonBase):
                                           parameter))
         parameter.sigHide.connect(partial(self.hide_subdisplay,
                                           parameter))
+        if parameter.embeddable:
+            parameter.sigEmbed.connect(partial(self.embed_subdisplay,
+                                               parameter))
         return parameter
