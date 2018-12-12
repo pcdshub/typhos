@@ -162,6 +162,8 @@ class TyphonSuite(TyphonBase):
             suite.get_subdisplay(my_device.x)
             suite.get_subdisplay('My Tool')
         """
+        if isinstance(display, SidebarParameter):
+            return display.value()
         for group in self.top_level_groups.values():
             tree = flatten_tree(group)
             for param in tree:
@@ -185,20 +187,18 @@ class TyphonSuite(TyphonBase):
             shown and the sidebar item update. Otherwise, the information is
             passed to :meth:`.get_subdisplay`
         """
+        # Grab true widget
+        if not isinstance(widget, QWidget):
+            widget = self.get_subdisplay(widget)
         # Setup the dock
         dock = SubDisplay(self)
-        # Grab the relevant display
-        if isinstance(widget, SidebarParameter):
-            for item in widget.items:
-                item._mark_shown()
-            # Make sure we react if the dock is closed outside of our menu
-            dock.closing.connect(partial(self.hide_subdisplay,
-                                         widget))
-            widget = widget.value()
-        elif not isinstance(widget, QWidget):
-            widget = self.get_subdisplay(widget)
+        # Set sidebar properly
+        self._show_sidebar(widget, dock)
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
+        if hasattr(widget, 'display_type'):
+            widget.display_type = widget.detailed_screen
+        widget.setVisible(True)
         dock.setWidget(widget)
         # Add to layout
         self.layout().addWidget(dock)
