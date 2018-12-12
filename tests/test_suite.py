@@ -114,3 +114,23 @@ def test_device_parameter_tree(qtbot, motor, device):
     dev_param = DeviceParameter(device, emeddable=True)
     assert len(dev_param.childs) == len(device._sub_devices)
     devices.addChild(dev_param)
+
+
+def test_suite_embed_device(suite, device):
+    suite.embed_subdisplay(device.x)
+    dock_layout = suite.embedded_dock.widget().layout()
+    assert dock_layout.itemAt(0).widget().devices[0] == device.x
+
+
+def test_suite_embed_device_by_name(suite, device):
+    suite.embed_subdisplay(device.name)
+    dock_layout = suite.embedded_dock.widget().layout()
+    assert dock_layout.itemAt(0).widget().devices[0] == device
+
+
+def test_hide_embedded_display(suite, device):
+    suite.embed_subdisplay(device.x)
+    suite.hide_subdisplay(device.x)
+    display = suite.get_subdisplay(device.x)
+    assert suite.embedded_dock is None
+    assert display.isHidden()
