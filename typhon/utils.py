@@ -16,8 +16,9 @@ import warnings
 from ophyd import Kind, Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from ophyd.sim import SignalRO
-from qtpy.QtGui import QColor
-from qtpy.QtWidgets import QApplication, QStyleFactory, QWidget
+from qtpy.QtGui import QColor, QPainter
+from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
+                            QWidget)
 
 #############
 #  Package  #
@@ -170,6 +171,16 @@ class TyphonBase(QWidget):
         """
         logger.debug("Adding device %s ...", device.name)
         self.devices.append(device)
+
+    def paintEvent(self, event):
+        # This is necessary because by default QWidget ignores stylesheets
+        # https://wiki.qt.io/How_to_Change_the_Background_Color_of_QWidget
+        opt = QStyleOption()
+        opt.initFrom(self)
+        painter = QPainter()
+        painter.begin(self)
+        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+        super().paintEvent(event)
 
     @classmethod
     def from_device(cls, device, parent=None, **kwargs):
