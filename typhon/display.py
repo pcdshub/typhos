@@ -156,7 +156,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     def force_template(self, value):
         if value != self._forced_template:
             self._forced_template = value
-            self.load_template()
+            self.load_template(macros=self._last_macros)
 
     def add_device(self, device, macros=None):
         """
