@@ -146,6 +146,10 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             self._main_widget = QWidget()
         finally:
             self.layout().addWidget(self._main_widget)
+            # The following code reapplies the stylesheet
+            self.style().unpolish(self)
+            self.style().polish(self)
+            self.update()
 
     @Property(str)
     def force_template(self):
