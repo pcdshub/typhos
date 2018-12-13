@@ -99,6 +99,15 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             self._display_type = value
             self.load_template(macros=self._last_macros)
 
+    @Property(str, designable=False)
+    def device_class(self):
+        """Full class with module name of loaded device"""
+        if self.devices:
+            device_class = self.devices[0].__class__
+            return '.'.join((device_class.__module__,
+                             device_class.__name__))
+        return ''
+
     def load_template(self, macros=None):
         """
         Load a new template
