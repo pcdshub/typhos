@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     print('pytest arguments: {}'.format(args))
 
-    root_logger = logging.getLogger()
+    root_logger = logging.getLogger('typhon')
     root_logger.setLevel(logging.DEBUG)
     log_dir = Path(os.path.dirname(__file__)) / 'logs'
     log_file = log_dir / 'run_tests_log.txt'

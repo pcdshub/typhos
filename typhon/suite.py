@@ -9,7 +9,7 @@ import logging
 ############
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from qtpy.QtCore import Signal, Slot, Qt
-from qtpy.QtWidgets import QDockWidget, QHBoxLayout, QWidget
+from qtpy.QtWidgets import QDockWidget, QHBoxLayout, QVBoxLayout, QWidget
 
 ###########
 # Package #
@@ -60,9 +60,12 @@ class DeviceParameter(SidebarParameter):
                                             strip_parent=subdevice.root)
                     child_display = TyphonDisplay.from_device(subdevice)
                     children.append(SidebarParameter(value=child_display,
-                                                     name=child_name))
+                                                     name=child_name,
+                                                     embeddable=True))
         opts['children'] = children
-        super().__init__(value=TyphonDisplay.from_device(device), **opts)
+        super().__init__(value=TyphonDisplay.from_device(device),
+                         embeddable=opts.pop('embeddable', True),
+                         **opts)
 
 
 class TyphonSuite(TyphonBase):
@@ -86,6 +89,7 @@ class TyphonSuite(TyphonBase):
         self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
         self._layout.addWidget(self._tree)
         self.setLayout(self._layout)
+        self.embedded_dock = None
 
     def add_subdisplay(self, name, display, category):
         """
@@ -158,6 +162,8 @@ class TyphonSuite(TyphonBase):
             suite.get_subdisplay(my_device.x)
             suite.get_subdisplay('My Tool')
         """
+        if isinstance(display, SidebarParameter):
+            return display.value()
         for group in self.top_level_groups.values():
             tree = flatten_tree(group)
             for param in tree:
@@ -181,23 +187,44 @@ class TyphonSuite(TyphonBase):
             shown and the sidebar item update. Otherwise, the information is
             passed to :meth:`.get_subdisplay`
         """
+        # Grab true widget
+        if not isinstance(widget, QWidget):
+            widget = self.get_subdisplay(widget)
         # Setup the dock
         dock = SubDisplay(self)
-        # Grab the relevant display
-        if isinstance(widget, SidebarParameter):
-            for item in widget.items:
-                item._mark_shown()
-            # Make sure we react if the dock is closed outside of our menu
-            dock.closing.connect(partial(self.hide_subdisplay,
-                                         widget))
-            widget = widget.value()
-        elif not isinstance(widget, QWidget):
-            widget = self.get_subdisplay(widget)
+        # Set sidebar properly
+        self._show_sidebar(widget, dock)
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
+        if hasattr(widget, 'display_type'):
+            widget.display_type = widget.detailed_screen
+        widget.setVisible(True)
         dock.setWidget(widget)
         # Add to layout
         self.layout().addWidget(dock)
+
+    @Slot(str)
+    @Slot(object)
+    def embed_subdisplay(self, widget):
+        """Embed a display in the dock system"""
+        # Grab the relevant display
+        if not self.embedded_dock:
+            self.embedded_dock = SubDisplay()
+            self.embedded_dock.setWidget(QWidget())
+            self.embedded_dock.widget().setLayout(QVBoxLayout())
+            self.embedded_dock.widget().layout().addStretch(1)
+            self.layout().addWidget(self.embedded_dock)
+
+        if not isinstance(widget, QWidget):
+            widget = self.get_subdisplay(widget)
+        # Set sidebar properly
+        self._show_sidebar(widget, self.embedded_dock)
+        # Set our widget to be embedded
+        widget.setVisible(True)
+        widget.display_type = widget.embedded_screen
+        widget_count = self.embedded_dock.widget().layout().count()
+        self.embedded_dock.widget().layout().insertWidget(widget_count - 1,
+                                                          widget)
 
     @Slot()
     @Slot(object)
@@ -212,18 +239,30 @@ class TyphonSuite(TyphonBase):
             widget and hide it. If the widget provided to us is inside a
             DockWidget we will close that, otherwise the widget is just hidden.
         """
-        # If we have a parameter grab the widget
-        if isinstance(widget, SidebarParameter):
-            for item in widget.items:
-                item._mark_hidden()
-            widget = widget.value()
-        elif not isinstance(widget, QWidget):
+        if not isinstance(widget, QWidget):
             widget = self.get_subdisplay(widget)
+        sidebar = self._get_sidebar(widget)
+        if sidebar:
+            for item in sidebar.items:
+                item._mark_hidden()
+        else:
+            logger.warning("Unable to find sidebar item for %r", widget)
         # Make sure the actual widget is hidden
         logger.debug("Hiding widget %r ...", widget)
         if isinstance(widget.parent(), QDockWidget):
             logger.debug("Closing dock ...")
             widget.parent().close()
+        # Hide the full dock if this is the last widget
+        elif (self.embedded_dock
+              and widget.parent() == self.embedded_dock.widget()):
+            logger.debug("Removing %r from embedded widget layout ...",
+                         widget)
+            self.embedded_dock.widget().layout().removeWidget(widget)
+            widget.hide()
+            if self.embedded_dock.widget().layout().count() == 1:
+                logger.debug("Closing embedded layout ...")
+                self.embedded_dock.close()
+                self.embedded_dock = None
         else:
             widget.hide()
 
@@ -309,6 +348,23 @@ class TyphonSuite(TyphonBase):
         display.show_subdisplay(device)
         return display
 
+    def _get_sidebar(self, widget):
+        items = {}
+        for group in self.top_level_groups.values():
+            for item in flatten_tree(group):
+                items[item.value()] = item
+        return items.get(widget)
+
+    def _show_sidebar(self, widget, dock):
+        sidebar = self._get_sidebar(widget)
+        if sidebar:
+            for item in sidebar.items:
+                item._mark_shown()
+            # Make sure we react if the dock is closed outside of our menu
+            dock.closing.connect(partial(self.hide_subdisplay, sidebar))
+        else:
+            logger.warning("Unable to find sidebar item for %r", widget)
+
     def _add_to_sidebar(self, parameter, category=None):
         """Add an item to the sidebar, connecting necessary signals"""
         if category:
@@ -328,4 +384,7 @@ class TyphonSuite(TyphonBase):
                                           parameter))
         parameter.sigHide.connect(partial(self.hide_subdisplay,
                                           parameter))
+        if parameter.embeddable:
+            parameter.sigEmbed.connect(partial(self.embed_subdisplay,
+                                               parameter))
         return parameter
