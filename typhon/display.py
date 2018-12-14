@@ -108,6 +108,13 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
                              device_class.__name__))
         return ''
 
+    @Property(str, designable=False)
+    def device_name(self):
+        "Name of loaded device"
+        if self.devices:
+            return self.devices[0].name
+        return ''
+
     def load_template(self, macros=None):
         """
         Load a new template
