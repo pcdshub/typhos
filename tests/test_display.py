@@ -87,3 +87,9 @@ def test_display_device_class_property(motor, display):
     assert display.device_class == ''
     display.add_device(motor)
     assert display.device_class == 'ophyd.sim.SynAxis'
+
+
+def test_display_device_name_property(motor, display):
+    assert display.device_name == ''
+    display.add_device(motor)
+    assert display.device_name == motor.name
