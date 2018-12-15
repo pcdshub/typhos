@@ -1,5 +1,7 @@
 import os
 
+from qtpy.QtCore import QRect
+from qtpy.QtGui import QPaintEvent
 from qtpy.QtWidgets import QWidget
 from ophyd import Device, Component as Cpt, Kind
 import pytest
@@ -61,4 +63,5 @@ def test_qtdesigner_env():
 
 def test_typhonbase_repaint_smoke():
     tp = TyphonBase()
-    tp.repaint()
+    pe = QPaintEvent(QRect(1, 2, 3, 4))
+    tp.paintEvent(pe)
