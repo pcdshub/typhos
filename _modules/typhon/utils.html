@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.utils &mdash; Typhon 0.2.1+237.gf2af0b1 documentation</title>
+  <title>typhon.utils &mdash; Typhon 0.2.1+248.g76839e3 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+237.gf2af0b1
+                0.2.1+248.g76839e3
               </div>
             
           
@@ -173,8 +173,9 @@
 <span class="kn">from</span> <span class="nn">ophyd</span> <span class="k">import</span> <span class="n">Kind</span><span class="p">,</span> <span class="n">Device</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="k">import</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
 <span class="kn">from</span> <span class="nn">ophyd.sim</span> <span class="k">import</span> <span class="n">SignalRO</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="k">import</span> <span class="n">QColor</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QStyleFactory</span><span class="p">,</span> <span class="n">QWidget</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="k">import</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QPainter</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QApplication</span><span class="p">,</span> <span class="n">QStyle</span><span class="p">,</span> <span class="n">QStyleOption</span><span class="p">,</span> <span class="n">QStyleFactory</span><span class="p">,</span>
+                            <span class="n">QWidget</span><span class="p">)</span>
 
 <span class="c1">#############</span>
 <span class="c1">#  Package  #</span>
@@ -327,6 +328,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding device </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphonBase.paintEvent"><a class="viewcode-back" href="../../basic_usage.html#typhon.utils.TyphonBase.paintEvent">[docs]</a>    <span class="k">def</span> <span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># This is necessary because by default QWidget ignores stylesheets</span>
+        <span class="c1"># https://wiki.qt.io/How_to_Change_the_Background_Color_of_QWidget</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">QStyleOption</span><span class="p">()</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">initFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QPainter</span><span class="p">()</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">begin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">drawPrimitive</span><span class="p">(</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PE_Widget</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">paintEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphonBase.from_device"><a class="viewcode-back" href="../../basic_usage.html#typhon.utils.TyphonBase.from_device">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.2.1+237.gf2af0b1 documentation</title>
+  <title>typhon.signal &mdash; Typhon 0.2.1+248.g76839e3 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+237.gf2af0b1
+                0.2.1+248.g76839e3
               </div>
             
           
@@ -217,6 +217,7 @@
     <span class="k">if</span> <span class="n">read_only</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Label for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonLabel</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_label&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Grab a description of the widget to see the correct widget type</span>
         <span class="k">try</span><span class="p">:</span>
@@ -229,11 +230,15 @@
         <span class="k">if</span> <span class="s1">&#39;enum_strs&#39;</span> <span class="ow">in</span> <span class="n">desc</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Combobox for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonComboBox</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_combo&#39;</span>
         <span class="c1"># Otherwise a LineEdit will suffice</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating LineEdit for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonLineEdit</span>
-    <span class="k">return</span> <span class="n">widget</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">chan</span><span class="p">)</span></div>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_edit&#39;</span>
+    <span class="n">widget_instance</span> <span class="o">=</span> <span class="n">widget</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">chan</span><span class="p">)</span>
+    <span class="n">widget_instance</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">widget_instance</span></div>
 
 
 <div class="viewcode-block" id="SignalPanel"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel">[docs]</a><span class="k">class</span> <span class="nc">SignalPanel</span><span class="p">(</span><span class="n">QGridLayout</span><span class="p">):</span>
