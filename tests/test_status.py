@@ -52,3 +52,11 @@ def test_status_thread_completed(qtbot, threaded_status):
     with qtbot.waitSignal(thread.status_finished, timeout=2000):
         status._finished()
     assert listener.finished.called_with(True)
+
+
+def test_status_thread_timeout(threaded_status):
+    listener, thread, status = threaded_status
+    thread.timeout = 0.01
+    thread.run()
+    assert listener.started.called
+    assert not listener.finished.called
