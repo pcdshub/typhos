@@ -32,10 +32,11 @@ class TyphonStatusThread(QThread):
     status_started = Signal()
     status_finished = Signal(bool)
 
-    def __init__(self, status, lag=0., parent=None):
+    def __init__(self, status, lag=0., timeout=10.0, parent=None):
         super().__init__(parent=parent)
         self.status = status
         self.lag = lag
+        self.timeout = timeout
 
     def run(self):
         """Start following a new motion"""
@@ -52,6 +53,10 @@ class TyphonStatusThread(QThread):
             return
         # Draw
         self.status_started.emit()
-        status_wait(self.status)
-        logger.debug("Status completed!")
-        self.status_finished.emit(self.status.success)
+        try:
+            status_wait(self.status, timeout=self.timeout)
+            logger.debug("Status completed!")
+            self.status_finished.emit(self.status.success)
+        except TimeoutError:
+            logger.error("Status %r did not complete in %s seconds",
+                         self.status, self.timeout)
