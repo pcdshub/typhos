@@ -81,3 +81,15 @@ def test_display_with_channel(client, qtbot):
     panel.channel = 'happi://test_motor'
     assert panel.channel == 'happi://test_motor'
     assert len(panel.devices) == 1
+
+
+def test_display_device_class_property(motor, display):
+    assert display.device_class == ''
+    display.add_device(motor)
+    assert display.device_class == 'ophyd.sim.SynAxis'
+
+
+def test_display_device_name_property(motor, display):
+    assert display.device_name == ''
+    display.add_device(motor)
+    assert display.device_name == motor.name

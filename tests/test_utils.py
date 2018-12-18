@@ -1,12 +1,14 @@
 import os
 
+from qtpy.QtCore import QRect
+from qtpy.QtGui import QPaintEvent
 from qtpy.QtWidgets import QWidget
 from ophyd import Device, Component as Cpt, Kind
 import pytest
 
 import typhon
-from typhon.utils import use_stylesheet, clean_name, grab_hints, grab_kind
-
+from typhon.utils import (use_stylesheet, clean_name, grab_hints, grab_kind,
+                          TyphonBase)
 
 class NestedDevice(Device):
     phi = Cpt(Device)
@@ -57,3 +59,9 @@ conda_prefix = os.getenv("CONDA_PREFIX")
                     reason='Package not installed via CONDA')
 def test_qtdesigner_env():
     assert 'etc/typhon' in os.getenv('PYQTDESIGNERPATH', '')
+
+
+def test_typhonbase_repaint_smoke():
+    tp = TyphonBase()
+    pe = QPaintEvent(QRect(1, 2, 3, 4))
+    tp.paintEvent(pe)

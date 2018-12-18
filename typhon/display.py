@@ -99,6 +99,22 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             self._display_type = value
             self.load_template(macros=self._last_macros)
 
+    @Property(str, designable=False)
+    def device_class(self):
+        """Full class with module name of loaded device"""
+        if self.devices:
+            device_class = self.devices[0].__class__
+            return '.'.join((device_class.__module__,
+                             device_class.__name__))
+        return ''
+
+    @Property(str, designable=False)
+    def device_name(self):
+        "Name of loaded device"
+        if self.devices:
+            return self.devices[0].name
+        return ''
+
     def load_template(self, macros=None):
         """
         Load a new template
@@ -137,6 +153,10 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             self._main_widget = QWidget()
         finally:
             self.layout().addWidget(self._main_widget)
+            # The following code reapplies the stylesheet
+            self.style().unpolish(self)
+            self.style().polish(self)
+            self.update()
 
     @Property(str)
     def force_template(self):
@@ -147,7 +167,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     def force_template(self, value):
         if value != self._forced_template:
             self._forced_template = value
-            self.load_template()
+            self.load_template(macros=self._last_macros)
 
     def add_device(self, device, macros=None):
         """

@@ -60,6 +60,7 @@ def signal_widget(signal, read_only=False):
     if read_only:
         logger.debug("Creating Label for %s", signal.name)
         widget = TyphonLabel
+        name = signal.name + '_label'
     else:
         # Grab a description of the widget to see the correct widget type
         try:
@@ -72,11 +73,15 @@ def signal_widget(signal, read_only=False):
         if 'enum_strs' in desc:
             logger.debug("Creating Combobox for %s", signal.name)
             widget = TyphonComboBox
+            name = signal.name + '_combo'
         # Otherwise a LineEdit will suffice
         else:
             logger.debug("Creating LineEdit for %s", signal.name)
             widget = TyphonLineEdit
-    return widget(init_channel=chan)
+            name = signal.name + '_edit'
+    widget_instance = widget(init_channel=chan)
+    widget_instance.setObjectName(name)
+    return widget_instance
 
 
 class SignalPanel(QGridLayout):
