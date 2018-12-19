@@ -1,17 +1,22 @@
 ############
 # Standard #
 ############
+import time
+import threading
 
 ############
 # External #
 ############
 import pytest
+from ophyd import Device
+from ophyd.status import Status
+from unittest.mock import Mock
 
 ###########
 # Package #
 ###########
 from .conftest import show_widget
-from typhon.func import FunctionPanel, FunctionDisplay
+from typhon.func import FunctionPanel, FunctionDisplay, TyphonMethodButton
 
 kwargs = dict()
 
@@ -27,6 +32,35 @@ def func_display(qtbot):
                                hide_params=['hide'])
     qtbot.addWidget(func_dis)
     return func_dis
+
+
+class MyDevice(Device):
+
+    def __init__(self, *args, **kwargs):
+        self.mock = Mock()
+        super().__init__(*args, **kwargs)
+
+    def my_method(self):
+        self.mock()
+        status = Status()
+
+        def sleep_and_finish():
+            time.sleep(3)
+            status._finished()
+
+        self._thread = threading.Thread(target=sleep_and_finish)
+        self._thread.start()
+        return status
+
+
+@pytest.fixture(scope='function')
+def method_button(qtbot):
+    dev = MyDevice(name='test')
+    button = TyphonMethodButton()
+    qtbot.addWidget(button)
+    button.add_device(dev)
+    button.method_name = 'my_method'
+    return button
 
 
 @show_widget
@@ -85,3 +119,19 @@ def test_func_panel(qtbot):
     assert 'foo' in fp.methods
     assert 'foobar' in fp.methods
     return fp
+
+
+def test_method_button_execute(method_button):
+    assert method_button.method_name == 'my_method'
+    method_button.execute()
+    dev = method_button.devices[0]
+    assert dev.mock.called
+
+
+def test_method_button_use_status(qtbot, method_button):
+    method_button.use_status = True
+    assert method_button.use_status == True
+    method_button.execute()
+    assert not method_button._status_thread is None
+    qtbot.waitUntil(lambda : not method_button.isEnabled(), timeout=5000)
+    qtbot.waitUntil(method_button.isEnabled, timeout=5000)
