@@ -170,7 +170,7 @@ class SignalConnection(PyDMConnection):
             for _typ in self.supported_types:
                 try:
                     channel.value_signal[_typ].disconnect(self.put_value)
-                except KeyError:
+                except (KeyError, TypeError):
                     logger.debug("Unable to disconnect value_signal from %s "
                                  "for type %s", channel.address, _typ)
         # Disconnect any other signals
