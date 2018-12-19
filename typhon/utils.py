@@ -4,10 +4,12 @@ Utility functions for typhon
 ############
 # Standard #
 ############
+import io
 import re
 import logging
 import os.path
 import random
+import traceback
 import warnings
 
 ############
@@ -18,7 +20,7 @@ from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from ophyd.sim import SignalRO
 from qtpy.QtGui import QColor, QPainter
 from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
-                            QWidget)
+                            QWidget, QMessageBox)
 
 #############
 #  Package  #
@@ -239,3 +241,18 @@ def clear_layout(layout):
             child.widget().deleteLater()
         elif child.layout():
             clear_layout(child.layout())
+
+
+def raise_to_operator(exc):
+    """Utility function to show an Exception to a user"""
+    logger.error("Reporting error %r to user ...", exc)
+    err_msg = QMessageBox()
+    err_msg.setText(repr(exc))
+    err_msg.setWindowTitle(type(exc).__name__)
+    err_msg.setIcon(QMessageBox.Critical)
+    handle = io.StringIO()
+    traceback.print_tb(exc.__traceback__, file=handle)
+    handle.seek(0)
+    err_msg.setDetailedText(handle.read())
+    err_msg.exec_()
+    return err_msg
