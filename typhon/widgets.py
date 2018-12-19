@@ -233,3 +233,8 @@ class TyphonDesignerMixin(PyDMWidget):
             # Connect the channel to the HappiPlugin
             if hasattr(channel, 'connect'):
                 channel.connect()
+
+    @Slot(object)
+    def _tx(self, value):
+        """Receive information from happi channel"""
+        self.add_device(value['obj'])
