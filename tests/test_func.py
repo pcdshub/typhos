@@ -56,9 +56,8 @@ class MyDevice(Device):
 @pytest.fixture(scope='function')
 def method_button(qtbot):
     dev = MyDevice(name='test')
-    button = TyphonMethodButton()
+    button = TyphonMethodButton.from_device(dev)
     qtbot.addWidget(button)
-    button.add_device(dev)
     button.method_name = 'my_method'
     return button
 
