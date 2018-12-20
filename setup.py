@@ -18,4 +18,4 @@ setup(name='typhon',
       include_package_data=True,
       install_requires=requirements,
       description='Interface generation for ophyd devices',
-      )
+      entry_points= {'console_scripts': ['typhon=typhon.cli:main']})
