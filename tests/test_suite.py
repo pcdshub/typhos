@@ -5,6 +5,7 @@
 ############
 # External #
 ############
+from pydm.utilities import close_widget_connections
 import pytest
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from qtpy.QtWidgets import QDockWidget
@@ -21,7 +22,8 @@ from .conftest import show_widget
 def suite(qtbot, device):
     suite = TyphonSuite.from_device(device, tools=dict())
     qtbot.addWidget(suite)
-    return suite
+    yield suite
+    close_widget_connections(suite)
 
 
 @show_widget
