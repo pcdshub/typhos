@@ -306,7 +306,3 @@ class TyphonPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
     def sizeHint(self):
         """Default SizeHint"""
         return QSize(240, 140)
-
-    def _tx(self, value):
-        """Receive new device information"""
-        self.add_device(value['obj'])

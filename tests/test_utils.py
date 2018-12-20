@@ -2,13 +2,13 @@ import os
 
 from qtpy.QtCore import QRect
 from qtpy.QtGui import QPaintEvent
-from qtpy.QtWidgets import QWidget
+from qtpy.QtWidgets import QWidget, QMessageBox
 from ophyd import Device, Component as Cpt, Kind
 import pytest
 
 import typhon
 from typhon.utils import (use_stylesheet, clean_name, grab_hints, grab_kind,
-                          TyphonBase)
+                          TyphonBase, raise_to_operator)
 
 class NestedDevice(Device):
     phi = Cpt(Device)
@@ -65,3 +65,16 @@ def test_typhonbase_repaint_smoke():
     tp = TyphonBase()
     pe = QPaintEvent(QRect(1, 2, 3, 4))
     tp.paintEvent(pe)
+
+
+def test_raise_to_operator_msg(monkeypatch):
+
+    monkeypatch.setattr(QMessageBox, 'exec_', lambda x: 1)
+    exc_dialog = None
+    try:
+        1/0
+    except ZeroDivisionError as exc:
+        exc_dialog = raise_to_operator(exc)
+
+    assert exc_dialog is not None
+    assert 'ZeroDivisionError' in exc_dialog.text()

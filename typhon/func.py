@@ -23,7 +23,7 @@ from functools import partial
 # External #
 ############
 import numpy as np
-from qtpy.QtCore import Slot, Qt, QSize
+from qtpy.QtCore import Property, Slot, Qt, QSize
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (QSizePolicy, QGroupBox, QLabel, QSpacerItem,
                             QWidget, QPushButton, QLineEdit, QCheckBox,
@@ -32,8 +32,10 @@ from qtpy.QtWidgets import (QSizePolicy, QGroupBox, QLabel, QSpacerItem,
 ###########
 # Package #
 ###########
-from .utils import clean_attr
-from .widgets import TogglePanel
+from .utils import clean_attr, raise_to_operator
+from .widgets import TogglePanel, TyphonDesignerMixin
+from .status import TyphonStatusThread
+
 
 logger = logging.getLogger(__name__)
 
@@ -424,3 +426,105 @@ class FunctionPanel(TogglePanel):
         self.show_contents(True)
         self.contents.layout().insertWidget(len(self.methods),
                                             widget)
+
+
+class TyphonMethodButton(QPushButton, TyphonDesignerMixin):
+    """
+    QPushButton to access a method of a Device
+
+    The function provided by the loaded device and the :attr:`.method_name`
+    will be run when the button is clicked. If ``use_status`` is set to True,
+    the button will be disabled while the ``Status`` object is active.
+    """
+    _min_visible_operation = 0.1
+    _max_allowed_operation = 10.0
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._method = ''
+        self._use_status = False
+        self._status_thread = None
+        self.clicked.connect(self.execute)
+        self.devices = list()
+
+    def add_device(self, device):
+        """
+        Add a new device to the widget
+
+        Parameters
+        ----------
+        device : ophyd.Device
+        """
+        logger.debug("Adding device %s ...", device.name)
+        self.devices.append(device)
+
+    @Property(str)
+    def method_name(self):
+        """Name of method on provided Device to execute"""
+        return self._method
+
+    @method_name.setter
+    def method_name(self, value):
+        self._method = value
+
+    @Property(bool)
+    def use_status(self):
+        """
+        Use the status to enable and disable the button
+        """
+        return self._use_status
+
+    @use_status.setter
+    def use_status(self, value):
+        self._use_status = value
+
+    @Slot()
+    def execute(self):
+        """Execute the method given by ``method_name``"""
+        if not self.devices:
+            logger.error("No device loaded into the object")
+            return
+        device = self.devices[0]
+        logger.debug("Grabbing method %r from %r ...",
+                     self.method_name, device.name)
+        try:
+            method = getattr(device, self.method_name)
+            logger.debug("Executing method ...")
+            status = method()
+        except Exception as exc:
+            logger.exception("Error executing method %r.",
+                             self.method_name)
+            raise_to_operator(exc)
+        if self.use_status:
+            logger.debug("Tearing down any old status threads ...")
+            if self._status_thread and self._status_thread.isRunning():
+                # We should usually never reach this line of code because the
+                # button should be disabled while the status object is not
+                # done. However, it is good to catch this to make sure that we
+                # only have one active thread at a time
+                logger.debug("Removing running TyphonStatusThread!")
+                self._status_thread.terminate()
+            self._status_thread = None
+            logger.debug("Setting up new status thread ...")
+            self._status_thread = TyphonStatusThread(
+                                          status,
+                                          lag=self._min_visible_operation,
+                                          timeout=self._max_allowed_operation)
+            self._status_thread.status_started.connect(
+                                    partial(self.setEnabled, False))
+            self._status_thread.status_finished.connect(
+                                    partial(self.setEnabled, True))
+            # Connect the finished signal so that even in the worst case
+            # scenario, we re-enable the button. Almost always the button will
+            # be ended by the status_finished signal
+            self._status_thread.finished.connect(partial(self.setEnabled,
+                                                         True))
+            logger.debug("Starting TyphonStatusThread ...")
+            self._status_thread.start()
+
+    @classmethod
+    def from_device(cls, device, parent=None):
+        """Create a TyphonMethodButton from a device"""
+        instance = cls(parent=parent)
+        instance.add_device(device)
+        return instance
