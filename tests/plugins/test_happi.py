@@ -1,9 +1,13 @@
+import importlib
+import sys
 import types
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from happi import Device
 import pytest
 
+import typhon
+import typhon.plugins
 from typhon.plugins.happi import HappiPlugin, HappiChannel
 
 
@@ -33,3 +37,10 @@ def test_bad_address_smoke(client):
     hp = HappiPlugin()
     hc = HappiChannel(address='happi://not_a_device', tx_slot=lambda x: None)
     hp.add_connection(hc)
+
+
+def test_happi_is_optional():
+    with patch.dict(sys.modules, {'happi': None}):
+        importlib.reload(typhon.plugins)
+        importlib.reload(typhon)
+        assert sys.modules['happi'] is None
