@@ -3,7 +3,6 @@ import logging
 import sys
 
 import coloredlogs
-import happi
 from qtpy.QtWidgets import QApplication
 
 import typhon
@@ -48,6 +47,12 @@ def typhon_cli(args):
     # Version endpoint
     if args.version:
         print(f'Typhon: Version {typhon.__version__} from {typhon.__file__}')
+        return
+
+    try:
+        import happi
+    except (ImportError, ModuleNotFoundError):
+        logger.exception("Unable to import happi to load devices!")
         return
 
     logger.debug("Creating Happi Client ...")
