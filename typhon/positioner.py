@@ -77,7 +77,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
             self.devices[0].set(value)
         except Exception as exc:
             logger.exception("Error setting %r to %r",
-                             self.devices[0], value)
+                             self.devices, value)
             raise_to_operator(exc)
 
     def add_device(self, device):
