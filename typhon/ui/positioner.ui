@@ -113,14 +113,14 @@
         <widget class="PyDMLabel" name="low_limit">
          <property name="font">
           <font>
-           <pointsize>-1</pointsize>
+           <pointsize>8</pointsize>
           </font>
          </property>
          <property name="toolTip">
           <string/>
          </property>
          <property name="styleSheet">
-          <string notr="true">font-size: 8px; background-color: None; color: None;</string>
+          <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -371,14 +371,14 @@
         <widget class="PyDMLabel" name="high_limit">
          <property name="font">
           <font>
-           <pointsize>-1</pointsize>
+           <pointsize>8</pointsize>
           </font>
          </property>
          <property name="toolTip">
           <string/>
          </property>
          <property name="styleSheet">
-          <string notr="true">font-size: 8px; background-color: None; color: None;</string>
+          <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
