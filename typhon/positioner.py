@@ -161,7 +161,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
         This will lag behind the actual state of the positioner in order to
         prevent unneccesary rapid movements
         """
-        return self._moving
+        return getattr(self, '_moving', False)
 
     @moving.setter
     def moving(self, value):

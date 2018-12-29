@@ -103,7 +103,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     @Property(str, designable=False)
     def device_class(self):
         """Full class with module name of loaded device"""
-        if self.devices:
+        if getattr(self, 'devices', []):
             device_class = self.devices[0].__class__
             return '.'.join((device_class.__module__,
                              device_class.__name__))
@@ -112,7 +112,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     @Property(str, designable=False)
     def device_name(self):
         "Name of loaded device"
-        if self.devices:
+        if getattr(self, 'devices', []):
             return self.devices[0].name
         return ''
 
