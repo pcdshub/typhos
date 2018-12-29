@@ -22,7 +22,9 @@ def motor_widget(qtbot):
     motor = SimMotor(name='test')
     setwidget = TyphonPositionerWidget.from_device(motor)
     qtbot.addWidget(setwidget)
-    return motor, setwidget
+    yield motor, setwidget
+    if setwidget._status_thread and setwidget._status_thread.isRunning():
+        setwidget._status_thread.wait()
 
 
 def test_positioner_widget_no_limits(qtbot, motor):
@@ -83,3 +85,13 @@ def test_positioner_widget_negative_tweak(motor_widget):
     widget.ui.tweak_value.setText('1')
     widget.negative_tweak()
     assert motor.position == -1
+
+
+def test_positioner_widget_moving_property(motor_widget, qtbot):
+    motor, widget = motor_widget
+    assert not widget.moving
+    motor.delay = 1.
+    widget.ui.set_value.setText('34')
+    widget.set()
+    qtbot.waitUntil(lambda: widget.moving, timeout=500)
+    qtbot.waitUntil(lambda: not widget.moving, timeout=1000)
