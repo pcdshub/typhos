@@ -49,3 +49,7 @@ QListWidget::item:!selected:hover {
 PyDMLogDisplay > QPlainTextEdit {
     font: 10px normal;
 }
+
+TyphonPositionerWidget[moving="true"] PyDMLabel{
+    background-color: green;
+}
