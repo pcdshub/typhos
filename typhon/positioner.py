@@ -1,13 +1,15 @@
+from functools import partial
 import os.path
 import logging
 
 from ophyd import Device
 from qtpy import uic
-from qtpy.QtCore import Slot
+from qtpy.QtCore import Property, Slot
 
 from .plugins import register_signal
 from .utils import (TyphonBase, ui_dir, channel_from_signal, grab_kind,
-                    raise_to_operator)
+                    raise_to_operator, reload_widget_stylesheet)
+from .status import TyphonStatusThread
 from .widgets import TyphonDesignerMixin
 
 
@@ -29,8 +31,10 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
     ``ophyd``.
     """
     ui_template = os.path.join(ui_dir, 'positioner.ui')
+    _min_visible_operation = 0.1
 
     def __init__(self, parent=None):
+        self._moving = False
         super().__init__(parent=parent)
         # Instantiate UI
         self.ui = uic.loadUi(self.ui_template, self)
@@ -41,6 +45,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
         self._readback = None
+        self._status_thread = None
 
     @Slot()
     def set(self):
@@ -72,9 +77,28 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
 
     def _set(self, value):
         try:
+            # Check that we have a device configured
             if not self.devices:
                 raise Exception("No Device configured for widget!")
-            self.devices[0].set(value)
+            # Clear any old statuses
+            if self._status_thread and self._status_thread.isRunning():
+                logger.debug("Clearing current active status")
+                self._status_thread.terminate()
+            self._status_thread = None
+            # Call the set
+            logger.debug("Setting device %r to %r", self.devices[0], value)
+            status = self.devices[0].set(value)
+            logger.debug("Setting up new status thread ...")
+            self._status_thread = TyphonStatusThread(
+                                        status,
+                                        lag=self._min_visible_operation)
+            self._status_thread.status_started.connect(self.move_changed)
+            self._status_thread.status_finished.connect(self.done_moving)
+            # In case something kills our status_thread make sure we cleanup
+            # properly
+            self._status_thread.finished.connect(partial(self.done_moving,
+                                                         None))
+            self._status_thread.start()
         except Exception as exc:
             logger.exception("Error setting %r to %r",
                              self.devices, value)
@@ -128,3 +152,29 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
         else:
             self.ui.low_limit.hide()
             self.ui.high_limit.hide()
+
+    @Property(bool, designable=False)
+    def moving(self):
+        """
+        Current state of widget
+
+        This will lag behind the actual state of the positioner in order to
+        prevent unneccesary rapid movements
+        """
+        return self._moving
+
+    @moving.setter
+    def moving(self, value):
+        if value != self._moving:
+            self._moving = value
+            reload_widget_stylesheet(self, cascade=True)
+
+    def move_changed(self):
+        """Called when a move is begun"""
+        logger.debug("Begin showing move in TyphonPositionerWidget")
+        self.moving = True
+
+    def done_moving(self, success):
+        """Called when a move is complete"""
+        logger.debug("Completed move in TyphonPositionerWidget")
+        self.moving = False
