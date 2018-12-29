@@ -256,3 +256,14 @@ def raise_to_operator(exc):
     err_msg.setDetailedText(handle.read())
     err_msg.exec_()
     return err_msg
+
+
+def reload_widget_stylesheet(widget, cascade=False):
+    """Reload the stylsheet of provided widget"""
+    widget.style().unpolish(widget)
+    widget.style().polish(widget)
+    widget.update()
+    if cascade:
+        for child in widget.children():
+            if isinstance(child, QWidget):
+                reload_widget_stylesheet(child, cascade=True)
