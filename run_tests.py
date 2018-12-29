@@ -18,8 +18,8 @@ if __name__ == '__main__':
 
     print('pytest arguments: {}'.format(args))
 
-    root_logger = logging.getLogger('typhon')
-    root_logger.setLevel(logging.DEBUG)
+    typhon_logger = logging.getLogger('typhon')
+    pydm_logger = logging.getLogger('pydm')
     log_dir = Path(os.path.dirname(__file__)) / 'logs'
     log_file = log_dir / 'run_tests_log.txt'
 
@@ -35,14 +35,14 @@ if __name__ == '__main__':
     if do_rollover:
         handler.doRollover()
     formatter = logging.Formatter(fmt=('%(asctime)s.%(msecs)03d '
-                                       '%(module)-13s '
+                                       '%(name)-30s '
                                        '%(levelname)-8s '
                                        '%(threadName)-10s '
                                        '%(message)s'),
                                   datefmt='%H:%M:%S')
     handler.setFormatter(formatter)
-    root_logger.addHandler(handler)
-
-    logger = logging.getLogger(__name__)
+    for log in (typhon_logger, pydm_logger):
+        log.setLevel(logging.DEBUG)
+        log.addHandler(handler)
 
     sys.exit(pytest.main(args))
