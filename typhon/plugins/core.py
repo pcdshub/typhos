@@ -157,7 +157,7 @@ class SignalConnection(PyDMConnection):
                     logger.debug("%s has no value_signal for type %s",
                                  channel.address, _typ)
 
-    def remove_listener(self, channel, **kwargs):
+    def remove_listener(self, channel, destroying=False, **kwargs):
         """
         Remove a listener channel from this connection
 
@@ -166,7 +166,7 @@ class SignalConnection(PyDMConnection):
         """
         logger.debug("Removing %r ...", channel)
         # Disconnect put_value from outgoing channel
-        if channel.value_signal is not None:
+        if channel.value_signal is not None and not destroying:
             for _typ in self.supported_types:
                 try:
                     channel.value_signal[_typ].disconnect(self.put_value)
