@@ -46,12 +46,10 @@ def test_status_finished_during_lag(threaded_status):
 
 def test_status_thread_completed(qtbot, threaded_status):
     listener, thread, status = threaded_status
-    with qtbot.waitSignal(thread.status_started, timeout=1000):
-        thread.start()
-    assert listener.started.called
-    with qtbot.waitSignal(thread.status_finished, timeout=2000):
-        status._finished()
-    assert listener.finished.called_with(True)
+    thread.start()
+    qtbot.waitUntil(lambda: listener.started.called, timeout=2000)
+    status._finished()
+    qtbot.waitUntil(lambda: listener.finished.called, timeout=2000)
 
 
 def test_status_thread_timeout(threaded_status):
