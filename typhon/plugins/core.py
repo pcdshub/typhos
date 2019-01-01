@@ -175,6 +175,7 @@ class SignalConnection(PyDMConnection):
                                  "for type %s", channel.address, _typ)
         # Disconnect any other signals
         super().remove_listener(channel, **kwargs)
+        logger.debug("Successfully removed %r", channel)
 
 
 class SignalPlugin(PyDMPlugin):
