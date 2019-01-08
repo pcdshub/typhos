@@ -17,6 +17,7 @@ from qtpy.QtCore import Slot, Qt
 ##########
 # Module #
 ##########
+from ..utils import raise_to_operator
 
 logger = logging.getLogger(__name__)
 
@@ -87,8 +88,9 @@ class SignalConnection(PyDMConnection):
                 new_val = self.signal_type(new_val)
             logger.debug("Putting value %r to %r", new_val, self.address)
             self.signal.put(new_val)
-        except Exception:
+        except Exception as exc:
             logger.exception("Unable to put %r to %s", new_val, self.address)
+            raise_to_operator(exc)
 
     def send_new_value(self, value=None, **kwargs):
         """
@@ -157,7 +159,7 @@ class SignalConnection(PyDMConnection):
                     logger.debug("%s has no value_signal for type %s",
                                  channel.address, _typ)
 
-    def remove_listener(self, channel, **kwargs):
+    def remove_listener(self, channel, destroying=False, **kwargs):
         """
         Remove a listener channel from this connection
 
@@ -166,7 +168,7 @@ class SignalConnection(PyDMConnection):
         """
         logger.debug("Removing %r ...", channel)
         # Disconnect put_value from outgoing channel
-        if channel.value_signal is not None:
+        if channel.value_signal is not None and not destroying:
             for _typ in self.supported_types:
                 try:
                     channel.value_signal[_typ].disconnect(self.put_value)
@@ -175,6 +177,7 @@ class SignalConnection(PyDMConnection):
                                  "for type %s", channel.address, _typ)
         # Disconnect any other signals
         super().remove_listener(channel, **kwargs)
+        logger.debug("Successfully removed %r", channel)
 
 
 class SignalPlugin(PyDMPlugin):
