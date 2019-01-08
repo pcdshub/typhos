@@ -17,6 +17,7 @@ from qtpy.QtCore import Slot, Qt
 ##########
 # Module #
 ##########
+from ..utils import raise_to_operator
 
 logger = logging.getLogger(__name__)
 
@@ -87,8 +88,9 @@ class SignalConnection(PyDMConnection):
                 new_val = self.signal_type(new_val)
             logger.debug("Putting value %r to %r", new_val, self.address)
             self.signal.put(new_val)
-        except Exception:
+        except Exception as exc:
             logger.exception("Unable to put %r to %s", new_val, self.address)
+            raise_to_operator(exc)
 
     def send_new_value(self, value=None, **kwargs):
         """
