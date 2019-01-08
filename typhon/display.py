@@ -127,6 +127,12 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         macros: dict, optional
             Macro substitutions to be made in the file
         """
+        # If we are not fully initialized yet do not try and add anything to
+        # the layout. This will happen if the QApplication has a stylesheet
+        # that forces a template, prior to the creation of this display
+        if self.layout() is None:
+            logger.debug("Widget not initialized, do not load template")
+            return
         # Clear anything that exists in the current layout
         if self._main_widget:
             logger.debug("Clearing existing layout ...")
