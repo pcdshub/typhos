@@ -38,7 +38,6 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
         super().__init__(parent=parent)
         # Instantiate UI
         self.ui = uic.loadUi(self.ui_template, self)
-        self.ui.progress_bar.hide()  # Hide until we are ready to move
         # Connect signals to slots
         self.ui.set_value.returnPressed.connect(self.set)
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
