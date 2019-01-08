@@ -65,6 +65,12 @@ def typhon_cli(args):
 
     logger.debug("Creating widgets ...")
     app = QApplication([])
+
+    if args.stylesheet:
+        logger.info("Loading QSS file %r ...", args.stylesheet)
+        with open(args.stylesheet, 'r') as handle:
+            app.setStyleSheet(handle.read())
+
     suite = typhon.TyphonSuite()
 
     # Load and add each device
@@ -79,11 +85,6 @@ def typhon_cli(args):
 
     # Deal with stylesheet
     typhon.use_stylesheet(dark=args.dark)
-    if args.stylesheet:
-        logger.info("Loading QSS file %r ...", args.stylesheet)
-        with open(args.stylesheet, 'r') as handle:
-            app.setStyleSheet(handle.read())
-
     logger.info("Launching application ...")
     suite.show()
     app.exec_()
