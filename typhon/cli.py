@@ -20,7 +20,7 @@ parser.add_argument('devices', nargs='*',
 parser.add_argument('--happi-cfg',
                     help='Location of happi configuration file '
                          'if not specified by $HAPPI_CFG environment variable')
-parser.add_argument('--version', action='store_true',
+parser.add_argument('--version', '-V', action='store_true',
                     help='Current version and location '
                          'of Typhon installation.')
 parser.add_argument('--debug', action='store_true',
