@@ -1,3 +1,4 @@
+"""This module defines the ``typhon`` command line utility"""
 import argparse
 import logging
 import sys
@@ -28,6 +29,10 @@ parser.add_argument('--dark', action='store_true',
                     help='Use the QDarkStyleSheet shipped with typhon')
 parser.add_argument('--stylesheet',
                     help='Additional stylesheet options')
+
+
+# Append to module docs
+__doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 
 
 def typhon_cli(args):
