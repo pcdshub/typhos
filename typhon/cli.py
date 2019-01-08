@@ -23,7 +23,7 @@ parser.add_argument('--happi-cfg',
 parser.add_argument('--version', '-V', action='store_true',
                     help='Current version and location '
                          'of Typhon installation.')
-parser.add_argument('--debug', action='store_true',
+parser.add_argument('--verbose', '-v', action='store_true',
                     help='Show the debug logging stream')
 parser.add_argument('--dark', action='store_true',
                     help='Use the QDarkStyleSheet shipped with typhon')
@@ -39,7 +39,7 @@ def typhon_cli(args):
     args = parser.parse_args(args)
 
     # Logging Level handling
-    if args.debug:
+    if args.verbose:
         level = "DEBUG"
         shown_logger = logging.getLogger('typhon')
     else:
