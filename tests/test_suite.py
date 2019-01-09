@@ -43,8 +43,9 @@ def test_suite_without_children(device, qtbot):
     assert len(childless_displays) == 0
 
 
-def test_suite_tools(device):
+def test_suite_tools(device, qtbot):
     suite = TyphonSuite.from_device(device)
+    qtbot.addWidget(suite)
     assert len(suite.tools) == 3
     assert len(suite.tools[0].devices) == 1
 
