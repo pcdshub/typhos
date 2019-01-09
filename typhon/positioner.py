@@ -49,32 +49,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
     @Slot()
     def set(self):
         """Set the device to the value configured by ``ui.set_value``"""
-        self._set(self.ui.set_value.text())
-
-    @Slot()
-    def positive_tweak(self):
-        """Tweak positive by the amount listed in ``ui.tweak_value``"""
-        setpoint = self._get_position() + float(self.tweak_value.text())
-        self._set(setpoint)
-
-    @Slot()
-    def negative_tweak(self):
-        """Tweak negative by the amount listed in ``ui.tweak_value``"""
-        setpoint = self._get_position() - float(self.tweak_value.text())
-        self._set(setpoint)
-
-    @Slot()
-    def stop(self):
-        """Stop device"""
-        for device in self.devices:
-            device.stop()
-
-    def _get_position(self):
-        if not self._readback:
-            raise Exception("No Device configured for widget!")
-        return self._readback.get()
-
-    def _set(self, value):
+        value = self.ui.set_value.text()
         try:
             # Check that we have a device configured
             if not self.devices:
@@ -101,6 +76,31 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
             self._last_move = False
             reload_widget_stylesheet(self, cascade=True)
             raise_to_operator(exc)
+
+    @Slot()
+    def positive_tweak(self):
+        """Tweak positive by the amount listed in ``ui.tweak_value``"""
+        setpoint = self._get_position() + float(self.tweak_value.text())
+        self.ui.set_value.setText(str(setpoint))
+        self.set()
+
+    @Slot()
+    def negative_tweak(self):
+        """Tweak negative by the amount listed in ``ui.tweak_value``"""
+        setpoint = self._get_position() - float(self.tweak_value.text())
+        self.ui.set_value.setText(str(setpoint))
+        self.set()
+
+    @Slot()
+    def stop(self):
+        """Stop device"""
+        for device in self.devices:
+            device.stop()
+
+    def _get_position(self):
+        if not self._readback:
+            raise Exception("No Device configured for widget!")
+        return self._readback.get()
 
     def add_device(self, device):
         """Add a device to the widget"""
