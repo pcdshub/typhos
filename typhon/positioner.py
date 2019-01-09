@@ -1,4 +1,3 @@
-from functools import partial
 import os.path
 import logging
 
@@ -95,10 +94,6 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
                                         lag=self._min_visible_operation)
             self._status_thread.status_started.connect(self.move_changed)
             self._status_thread.status_finished.connect(self.done_moving)
-            # In case something kills our status_thread make sure we cleanup
-            # properly
-            self._status_thread.finished.connect(partial(self.done_moving,
-                                                         False))
             self._status_thread.start()
         except Exception as exc:
             logger.exception("Error setting %r to %r",
