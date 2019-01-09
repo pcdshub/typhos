@@ -35,6 +35,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
 
     def __init__(self, parent=None):
         self._moving = False
+        self._last_move = None
         super().__init__(parent=parent)
         # Instantiate UI
         self.ui = uic.loadUi(self.ui_template, self)
@@ -84,6 +85,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
                 logger.debug("Clearing current active status")
                 self._status_thread.terminate()
             self._status_thread = None
+            self._last_move = None
             # Call the set
             logger.debug("Setting device %r to %r", self.devices[0], value)
             status = self.devices[0].set(value)
@@ -96,11 +98,13 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
             # In case something kills our status_thread make sure we cleanup
             # properly
             self._status_thread.finished.connect(partial(self.done_moving,
-                                                         None))
+                                                         False))
             self._status_thread.start()
         except Exception as exc:
             logger.exception("Error setting %r to %r",
                              self.devices, value)
+            self._last_move = False
+            reload_widget_stylesheet(self, cascade=True)
             raise_to_operator(exc)
 
     def add_device(self, device):
@@ -168,6 +172,16 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
             self._moving = value
             reload_widget_stylesheet(self, cascade=True)
 
+    @Property(bool, designable=False)
+    def successful_move(self):
+        """The last requested move was successful"""
+        return self._last_move is True
+
+    @Property(bool, designable=False)
+    def failed_move(self):
+        """The last requested move failed"""
+        return self._last_move is False
+
     def move_changed(self):
         """Called when a move is begun"""
         logger.debug("Begin showing move in TyphonPositionerWidget")
@@ -175,5 +189,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
 
     def done_moving(self, success):
         """Called when a move is complete"""
-        logger.debug("Completed move in TyphonPositionerWidget")
+        logger.debug("Completed move in TyphonPositionerWidget (success=%s)",
+                     success)
+        self._last_move = success
         self.moving = False
