@@ -65,8 +65,8 @@ class SignalConnection(PyDMConnection):
         # Collect our signal
         self.signal = signal_registry[address]
         # Subscribe to updates from Ophyd
-        self.signal.subscribe(self.send_new_value,
-                              event_type=self.signal.SUB_VALUE)
+        self._cid = self.signal.subscribe(self.send_new_value,
+                                          event_type=self.signal.SUB_VALUE)
         # Add listener
         self.add_listener(channel)
 
@@ -178,6 +178,10 @@ class SignalConnection(PyDMConnection):
         # Disconnect any other signals
         super().remove_listener(channel, destroying=destroying, **kwargs)
         logger.debug("Successfully removed %r", channel)
+
+    def close(self):
+        """Unsubscribe from the Ophyd signal"""
+        self.signal.unsubscribe(self._cid)
 
 
 class SignalPlugin(PyDMPlugin):
