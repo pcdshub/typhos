@@ -247,7 +247,7 @@ def raise_to_operator(exc):
     """Utility function to show an Exception to a user"""
     logger.error("Reporting error %r to user ...", exc)
     err_msg = QMessageBox()
-    err_msg.setText(repr(exc))
+    err_msg.setText(f'{exc.__class__.__name__}: {exc}')
     err_msg.setWindowTitle(type(exc).__name__)
     err_msg.setIcon(QMessageBox.Critical)
     handle = io.StringIO()
