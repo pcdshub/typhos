@@ -90,11 +90,11 @@ def motor():
 class RichSignal(Signal):
 
     def describe(self):
-        return {self.name : {'enum_strs': ('a', 'b', 'c'),
-                             'precision': 2,
-                             'units': 'urad',
-                             'dtype': 'number',
-                             'shape': []}}
+        return {self.name: {'enum_strs': ('a', 'b', 'c'),
+                            'precision': 2,
+                            'units': 'urad',
+                            'dtype': 'number',
+                            'shape': []}}
 
 
 class DeadSignal(Signal):
