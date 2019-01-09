@@ -50,7 +50,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
     @Slot()
     def set(self):
         """Set the device to the value configured by ``ui.set_value``"""
-        self._set(float(self.ui.set_value.text()))
+        self._set(self.ui.set_value.text())
 
     @Slot()
     def positive_tweak(self):
@@ -88,7 +88,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
             self._last_move = None
             # Call the set
             logger.debug("Setting device %r to %r", self.devices[0], value)
-            status = self.devices[0].set(value)
+            status = self.devices[0].set(float(value))
             logger.debug("Setting up new status thread ...")
             self._status_thread = TyphonStatusThread(
                                         status,
