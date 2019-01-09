@@ -1,6 +1,7 @@
 ############
 # Standard #
 ############
+import random
 
 ############
 # External #
@@ -19,17 +20,27 @@ from .conftest import show_widget, RichSignal, DeadSignal
 
 
 def test_panel_creation(qtbot):
+    standard = FakeEpicsSignal('Tst:Pv')
+    read_and_write = FakeEpicsSignal('Tst:Read', write_pv='Tst:Write')
+    read_only = FakeEpicsSignalRO('Tst:Pv:RO')
+    simulated = SynSignal(func=random.random, name='simul')
+    simulated_ro = SynSignalRO(func=random.random, name='simul_ro')
+
+    standard.sim_put(1)
+    read_and_write.sim_put(2)
+    read_only.sim_put(3)
+    simulated.put(4)
+
     panel = SignalPanel(signals={
                     # Signal is its own write
-                    'Standard': FakeEpicsSignal('Tst:Pv'),
+                    'Standard': standard,
                     # Signal has separate write/read
-                    'Read and Write': FakeEpicsSignal('Tst:Read',
-                                                      write_pv='Tst:Write'),
+                    'Read and Write': read_and_write,
                     # Signal is read-only
-                    'Read Only': FakeEpicsSignalRO('Tst:Pv:RO'),
+                    'Read Only': read_only,
                     # Simulated Signal
-                    'Simulated': SynSignal(name='simul'),
-                    'SimulatedRO': SynSignalRO(name='simul_ro')})
+                    'Simulated': simulated,
+                    'SimulatedRO': simulated_ro})
     widget = QWidget()
     qtbot.addWidget(widget)
     widget.setLayout(panel)
@@ -51,7 +62,9 @@ def test_panel_add_enum(qtbot):
     widget.setLayout(panel)
     # Create an enum pv
     epics_sig = FakeEpicsSignal("Tst:Enum")
-    epics_sig.sim_set_enum_strs = ('A', 'B')
+    epics_sig.sim_set_enum_strs(('A', 'B'))
+    epics_sig.sim_put('A')
+
     # Create an enum signal
     syn_sig = RichSignal(name='Syn:Enum', value=1)
     # Add our signals to the panel
