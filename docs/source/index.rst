@@ -47,6 +47,7 @@ Related Projects
    :caption: API Documentation
    :hidden:
 
+   cli.rst
    display.rst
    widgets.rst
    plugins.rst
