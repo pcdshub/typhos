@@ -1,6 +1,5 @@
 import os.path
 
-from pydm.utilities import close_widget_connections
 import pytest
 
 from typhon import TyphonDisplay
@@ -13,8 +12,7 @@ from .conftest import show_widget
 def display(qtbot):
     display = TyphonDisplay()
     qtbot.addWidget(display)
-    yield display
-    close_widget_connections(display)
+    return display
 
 
 @show_widget
