@@ -96,3 +96,15 @@ def test_positioner_widget_moving_property(motor_widget, qtbot):
     widget.set()
     qtbot.waitUntil(lambda: widget.moving, timeout=500)
     qtbot.waitUntil(lambda: not widget.moving, timeout=1000)
+
+
+def test_positioner_widget_last_move(motor_widget, qtbot):
+    motor, widget = motor_widget
+    assert not widget.successful_move
+    assert not widget.failed_move
+    widget.done_moving(True)
+    assert widget.successful_move
+    assert not widget.failed_move
+    widget.done_moving(False)
+    assert not widget.successful_move
+    assert widget.failed_move
