@@ -176,7 +176,7 @@ class SignalConnection(PyDMConnection):
                     logger.debug("Unable to disconnect value_signal from %s "
                                  "for type %s", channel.address, _typ)
         # Disconnect any other signals
-        super().remove_listener(channel, **kwargs)
+        super().remove_listener(channel, destroying=destroying, **kwargs)
         logger.debug("Successfully removed %r", channel)
 
 
