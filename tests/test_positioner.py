@@ -78,6 +78,7 @@ def test_positioner_widget_positive_tweak(motor_widget):
     motor, widget = motor_widget
     widget.ui.tweak_value.setText('1')
     widget.positive_tweak()
+    assert widget.ui.set_value.text() == '1.0'
     assert motor.position == 1
 
 
@@ -85,6 +86,7 @@ def test_positioner_widget_negative_tweak(motor_widget):
     motor, widget = motor_widget
     widget.ui.tweak_value.setText('1')
     widget.negative_tweak()
+    assert widget.ui.set_value.text() == '-1.0'
     assert motor.position == -1
 
 
