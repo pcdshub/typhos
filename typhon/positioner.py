@@ -157,7 +157,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
         Current state of widget
 
         This will lag behind the actual state of the positioner in order to
-        prevent unneccesary rapid movements
+        prevent unnecessary rapid movements
         """
         return getattr(self, '_moving', False)
 
