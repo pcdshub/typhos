@@ -143,7 +143,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
                 self.ui.high_limit.channel = high_lim_chan
                 return
         # Check that we have limits at all, or if they are implemented
-        if hasattr(device, 'limits') and device.limits[0] != device.limits[1]:
+        if hasattr(device, 'limits') and device.limits[0] < device.limits[1]:
             self.ui.low_limit.setText(str(device.limits[0]))
             self.ui.high_limit.setText(str(device.limits[1]))
         # Look for limit value components
