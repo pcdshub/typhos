@@ -142,7 +142,7 @@
     </widget>
    </item>
    <item>
-    <widget class="TyphonPanel" name="hint_panel">
+    <widget class="TyphonSignalPanel" name="hint_panel">
      <property name="toolTip">
       <string/>
      </property>
@@ -179,7 +179,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphonPanel</class>
+   <class>TyphonSignalPanel</class>
    <extends>QWidget</extends>
    <header>typhon.signal</header>
   </customwidget>

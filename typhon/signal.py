@@ -198,7 +198,7 @@ class SignalOrder:
     byName = 1
 
 
-class TyphonPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
+class TyphonSignalPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
     """
     Panel of Signals for Device
     """
