@@ -20,14 +20,34 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
     Widget to interact with an ``ophyd.Positioner``
 
     Standard positioner motion requires a large amount of context for
-    operators.For most motors, it may not be enough to simply have a text field
-    where setpoints can be punched in. Instead, information like soft limits
-    and hardware limit switches are crucial for a full understanding of the
-    position and behavior of a motor. This widget can supply a standard display
-    for all of these, but at a bare minimum the provided ``Device`` needs a
-    valid ``set`` function. The rest of the signals are searched for assuming
-    that the interface matches the ``EpicsMotor`` example supplied in
-    ``ophyd``.
+    operators. For most motors, it may not be enough to simply have a text
+    field where setpoints can be punched in. Instead, information like soft
+    limits and hardware limit switches are crucial for a full understanding of
+    the position and behavior of a motor. The widget will work with any object
+    that implements ``set``, however to get other relevant information, we also
+    duck-type to see if we can find other useful signals.  Below is a table of
+    attributes that the widget looks for to inform screen design:
+
+    ============== ===========================================================
+    Widget         Attribute Selection
+    ============== ===========================================================
+    User Readback  The widget first searches for a ``Signal`` called
+                   ``user_readback``. If this is not found the
+                   **first** hint is used.
+
+    Limit Switches Attributes ``low_limit_switch`` and ``high_limit_switch``
+                   are queried. If these are not found the widgets are hidden.
+
+    Soft Limits    The widget first looks for ``low_limit`` and ``high_limit``
+                   signals. If these do not exist, we look for ``limits`` and
+                   sets the text to match the returned tuple from this method.
+
+    Set and Tweak  Both of these methods simply use ``Device.set`` which is
+                   expected to take a ``float`` and return a ``status`` object
+                   that indicates the motion completeness. Must be implemented.
+
+    Stop           Device.stop()
+    ============== ===========================================================
     """
     ui_template = os.path.join(ui_dir, 'positioner.ui')
     _min_visible_operation = 0.1
