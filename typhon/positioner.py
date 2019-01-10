@@ -19,10 +19,10 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
     """
     Widget to interact with an ``ophyd.Positioner``
 
-    Standard positioner motion requires a large amount of context for operators.
-    For most motors, it may not be enough to simply have a text field where
-    setpoints can be punched in. Instead, information like soft limits and
-    hardware limit switches are crucial for a full understanding of the
+    Standard positioner motion requires a large amount of context for
+    operators.For most motors, it may not be enough to simply have a text field
+    where setpoints can be punched in. Instead, information like soft limits
+    and hardware limit switches are crucial for a full understanding of the
     position and behavior of a motor. This widget can supply a standard display
     for all of these, but at a bare minimum the provided ``Device`` needs a
     valid ``set`` function. The rest of the signals are searched for assuming
