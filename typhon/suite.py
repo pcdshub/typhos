@@ -379,6 +379,9 @@ class TyphonSuite(TyphonBase):
             logger.debug("Adding %r to category %r ...",
                          parameter.name(), group.name())
             group.addChild(parameter)
+        # Setup window to have a parent
+        parameter.value().setParent(self)
+        parameter.value().setHidden(True)
         logger.debug("Connecting parameter signals ...")
         parameter.sigOpen.connect(partial(self.show_subdisplay,
                                           parameter))

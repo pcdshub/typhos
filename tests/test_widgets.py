@@ -2,9 +2,10 @@ from typhon.widgets import TyphonSidebarItem
 from typhon.suite import SidebarParameter
 
 
-def test_sidebar_item():
+def test_sidebar_item(qtbot):
     param = SidebarParameter(name='test', embeddable=True)
     item = TyphonSidebarItem(param, 0)
+    qtbot.addWidget(item)
     assert len(item.toolbar.actions()) == 3
     assert item.open_action.isEnabled()
     assert item.embed_action.isEnabled()

@@ -61,13 +61,14 @@ def test_qtdesigner_env():
     assert 'etc/typhon' in os.getenv('PYQTDESIGNERPATH', '')
 
 
-def test_typhonbase_repaint_smoke():
+def test_typhonbase_repaint_smoke(qtbot):
     tp = TyphonBase()
+    qtbot.addWidget(tp)
     pe = QPaintEvent(QRect(1, 2, 3, 4))
     tp.paintEvent(pe)
 
 
-def test_raise_to_operator_msg(monkeypatch):
+def test_raise_to_operator_msg(monkeypatch, qtbot):
 
     monkeypatch.setattr(QMessageBox, 'exec_', lambda x: 1)
     exc_dialog = None
@@ -76,5 +77,6 @@ def test_raise_to_operator_msg(monkeypatch):
     except ZeroDivisionError as exc:
         exc_dialog = raise_to_operator(exc)
 
+    qtbot.addWidget(exc_dialog)
     assert exc_dialog is not None
     assert 'ZeroDivisionError' in exc_dialog.text()

@@ -64,7 +64,9 @@ def typhon_cli(args):
     client = happi.Client.from_config(cfg=args.happi_cfg)
 
     logger.debug("Creating widgets ...")
-    app = QApplication([])
+    app = QApplication.instance()
+    if not app:
+        app = QApplication([])
 
     if args.stylesheet:
         logger.info("Loading QSS file %r ...", args.stylesheet)

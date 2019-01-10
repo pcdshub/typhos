@@ -10,7 +10,7 @@ from ophyd.signal import Signal, EpicsSignal, EpicsSignalRO
 from ophyd.sim import SynSignal, SynSignalRO
 from ophyd.tests.conftest import using_fake_epics_pv
 from pydm.widgets import PyDMEnumComboBox
-
+from qtpy.QtWidgets import QWidget
 ###########
 # Package #
 ###########
@@ -18,7 +18,7 @@ from typhon.signal import SignalPanel, TyphonPanel
 from .conftest import show_widget, RichSignal, DeadSignal
 
 @using_fake_epics_pv
-def test_panel_creation():
+def test_panel_creation(qtbot):
     panel = SignalPanel(signals={
                     # Signal is its own write
                     'Standard': EpicsSignal('Tst:Pv'),
@@ -30,6 +30,9 @@ def test_panel_creation():
                     # Simulated Signal
                     'Simulated': SynSignal(name='simul'),
                     'SimulatedRO': SynSignalRO(name='simul_ro')})
+    widget = QWidget()
+    qtbot.addWidget(widget)
+    widget.setLayout(panel)
     assert len(panel.signals) == 5
     # Check read-only channels do not have write widgets
     panel.layout().itemAtPosition(2, 1).layout().count() == 1
@@ -42,8 +45,11 @@ def test_panel_creation():
 
 
 @using_fake_epics_pv
-def test_panel_add_enum():
+def test_panel_add_enum(qtbot):
     panel = SignalPanel()
+    widget = QWidget()
+    qtbot.addWidget(widget)
+    widget.setLayout(panel)
     # Create an enum pv
     epics_sig = EpicsSignal("Tst:Enum")
     epics_sig._write_pv.enum_strs = ('A', 'B')
@@ -65,16 +71,22 @@ def test_panel_add_enum():
     return panel
 
 
-def test_add_dead_signal():
+def test_add_dead_signal(qtbot):
     panel = SignalPanel()
+    widget = QWidget()
+    qtbot.addWidget(widget)
+    widget.setLayout(panel)
     dead_sig = DeadSignal(name='ded', value=0)
     panel.add_signal(dead_sig, 'Dead Signal')
     assert 'Dead Signal' in panel.signals
 
 
 @using_fake_epics_pv
-def test_add_pv():
+def test_add_pv(qtbot):
     panel = SignalPanel()
+    widget = QWidget()
+    qtbot.addWidget(widget)
+    widget.setLayout(panel)
     panel.add_pv('Tst:A', 'Read Only')
     assert 'Read Only' in panel.signals
     assert panel.layout().itemAtPosition(0, 1).count() == 1
@@ -83,8 +95,9 @@ def test_add_pv():
 
 
 @show_widget
-def test_typhon_panel(qapp, client):
+def test_typhon_panel(qapp, client, qtbot):
     panel = TyphonPanel()
+    qtbot.addWidget(panel)
     # Setting Kind without device doesn't explode
     panel.showConfig = False
     panel.showConfig = True
@@ -115,8 +128,9 @@ def test_typhon_panel(qapp, client):
 
 
 @show_widget
-def test_typhon_panel_sorting(qapp, client):
+def test_typhon_panel_sorting(qapp, client, qtbot):
     panel = TyphonPanel()
+    qtbot.addWidget(panel)
     # Sort by name
     panel.sortBy = panel.SignalOrder.byName
     panel.channel = 'happi://test_motor'

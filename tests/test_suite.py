@@ -5,7 +5,6 @@
 ############
 # External #
 ############
-from pydm.utilities import close_widget_connections
 import pytest
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from qtpy.QtWidgets import QDockWidget
@@ -15,6 +14,7 @@ from qtpy.QtWidgets import QDockWidget
 ###########
 from typhon.utils import clean_name
 from typhon.suite import TyphonSuite, DeviceParameter
+from typhon.display import TyphonDisplay
 from .conftest import show_widget
 
 
@@ -22,9 +22,7 @@ from .conftest import show_widget
 def suite(qtbot, device):
     suite = TyphonSuite.from_device(device, tools=dict())
     qtbot.addWidget(suite)
-    yield suite
-    close_widget_connections(suite)
-
+    return suite
 
 @show_widget
 def test_suite_with_child_devices(suite, device):
@@ -43,8 +41,9 @@ def test_suite_without_children(device, qtbot):
     assert len(childless_displays) == 0
 
 
-def test_suite_tools(device):
+def test_suite_tools(device, qtbot):
     suite = TyphonSuite.from_device(device)
+    qtbot.addWidget(suite)
     assert len(suite.tools) == 3
     assert len(suite.tools[0].devices) == 1
 
@@ -53,6 +52,9 @@ def test_suite_get_subdisplay_by_device(suite, device):
     display = suite.get_subdisplay(device)
     assert device in display.devices
 
+def test_suite_subdisplay_parentage(suite, device):
+    display = suite.get_subdisplay(device)
+    assert display in suite.findChildren(TyphonDisplay)
 
 def test_suite_get_subdisplay_by_name(suite, device):
     display = suite.get_subdisplay(device.name)
