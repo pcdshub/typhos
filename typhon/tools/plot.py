@@ -5,7 +5,6 @@ Typhon Plotting Interface
 # Standard #
 ############
 import logging
-from warnings import warn
 
 ###############
 # Third Party #
@@ -160,9 +159,3 @@ class TyphonTimePlot(TyphonBase):
                         logger.exception("Unable to add %s to "
                                          "plot-able signals",
                                          component)
-
-
-def DeviceTimePlot(device, parent=None):
-    warn("DeviceTimePlot has been deprecated. "
-         "Use TyphonTimePlot.from_device instead.")
-    return TyphonTimePlot.from_device(device, parent=parent)
