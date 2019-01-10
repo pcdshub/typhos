@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.2.1+269.ged9fc60 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.2.1+291.g412c103 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+269.ged9fc60
+                0.2.1+291.g412c103
               </div>
             
           
@@ -89,6 +89,7 @@
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhon Plugins</a></li>
@@ -284,6 +285,12 @@
 <span class="sd">        macros: dict, optional</span>
 <span class="sd">            Macro substitutions to be made in the file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If we are not fully initialized yet do not try and add anything to</span>
+        <span class="c1"># the layout. This will happen if the QApplication has a stylesheet</span>
+        <span class="c1"># that forces a template, prior to the creation of this display</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Widget not initialized, do not load template&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
         <span class="c1"># Clear anything that exists in the current layout</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing existing layout ...&quot;</span><span class="p">)</span>
