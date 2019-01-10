@@ -236,6 +236,3 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'], macros=value['md'])
-
-
-DeviceDisplay = TyphonDisplay.from_device
