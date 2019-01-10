@@ -49,8 +49,8 @@ def test_positioner_widget_with_signal_limits(motor_widget):
     # Check limit switches
     low_limit_chan = widget.ui.low_limit_switch.channel
     assert motor.low_limit_switch.name in low_limit_chan
-    low_limit_chan = widget.ui.low_limit_switch.channel
-    assert motor.low_limit_switch.name in low_limit_chan
+    high_limit_chan = widget.ui.high_limit_switch.channel
+    assert motor.high_limit_switch.name in high_limit_chan
     motor.delay = 3.  # Just for visual testing purposes
     return widget
 
