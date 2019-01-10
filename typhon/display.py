@@ -6,7 +6,8 @@ from pydm import Display
 from qtpy.QtCore import Property, Slot, Q_ENUMS
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
-from .utils import ui_dir, TyphonBase, clear_layout
+from .utils import (ui_dir, TyphonBase, clear_layout,
+                    reload_widget_stylesheet)
 from .widgets import TyphonDesignerMixin
 
 
@@ -102,7 +103,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     @Property(str, designable=False)
     def device_class(self):
         """Full class with module name of loaded device"""
-        if self.devices:
+        if getattr(self, 'devices', []):
             device_class = self.devices[0].__class__
             return '.'.join((device_class.__module__,
                              device_class.__name__))
@@ -111,7 +112,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     @Property(str, designable=False)
     def device_name(self):
         "Name of loaded device"
-        if self.devices:
+        if getattr(self, 'devices', []):
             return self.devices[0].name
         return ''
 
@@ -159,10 +160,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             self._main_widget = QWidget()
         finally:
             self.layout().addWidget(self._main_widget)
-            # The following code reapplies the stylesheet
-            self.style().unpolish(self)
-            self.style().polish(self)
-            self.update()
+            reload_widget_stylesheet(self)
 
     @Property(str)
     def force_template(self):

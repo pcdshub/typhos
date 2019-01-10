@@ -49,3 +49,19 @@ QListWidget::item:!selected:hover {
 PyDMLogDisplay > QPlainTextEdit {
     font: 10px normal;
 }
+
+TyphonPositionerWidget[moving="true"] .QFrame {
+    border: 2px solid yellow;
+}
+
+TyphonPositionerWidget[moving="false"] .QFrame {
+    border: 2px solid transparent;
+}
+
+TyphonPositionerWidget[moving="false"][successful_move="true"] .QFrame {
+    border: 2px solid green;
+}
+
+TyphonPositionerWidget[moving="false"][failed_move="true"] .QFrame {
+    border: 2px solid red;
+}

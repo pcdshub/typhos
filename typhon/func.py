@@ -440,9 +440,9 @@ class TyphonMethodButton(QPushButton, TyphonDesignerMixin):
     _max_allowed_operation = 10.0
 
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
         self._method = ''
         self._use_status = False
+        super().__init__(parent=parent)
         self._status_thread = None
         self.clicked.connect(self.execute)
         self.devices = list()

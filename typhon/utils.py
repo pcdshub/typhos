@@ -247,7 +247,7 @@ def raise_to_operator(exc):
     """Utility function to show an Exception to a user"""
     logger.error("Reporting error %r to user ...", exc)
     err_msg = QMessageBox()
-    err_msg.setText(repr(exc))
+    err_msg.setText(f'{exc.__class__.__name__}: {exc}')
     err_msg.setWindowTitle(type(exc).__name__)
     err_msg.setIcon(QMessageBox.Critical)
     handle = io.StringIO()
@@ -256,3 +256,14 @@ def raise_to_operator(exc):
     err_msg.setDetailedText(handle.read())
     err_msg.exec_()
     return err_msg
+
+
+def reload_widget_stylesheet(widget, cascade=False):
+    """Reload the stylesheet of the provided widget"""
+    widget.style().unpolish(widget)
+    widget.style().polish(widget)
+    widget.update()
+    if cascade:
+        for child in widget.children():
+            if isinstance(child, QWidget):
+                reload_widget_stylesheet(child, cascade=True)
