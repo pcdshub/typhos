@@ -259,7 +259,7 @@ def raise_to_operator(exc):
 
 
 def reload_widget_stylesheet(widget, cascade=False):
-    """Reload the stylsheet of provided widget"""
+    """Reload the stylesheet of the provided widget"""
     widget.style().unpolish(widget)
     widget.style().polish(widget)
     widget.update()
