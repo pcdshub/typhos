@@ -10,7 +10,6 @@ import logging
 import os.path
 import random
 import traceback
-import warnings
 
 ############
 # External #
@@ -70,12 +69,6 @@ def grab_kind(device, kind):
         if cpt.kind >= kind and not isinstance(cpt, Device):
             signals.append((attr, cpt))
     return signals
-
-
-def grab_hints(device):
-    """Grab all the hinted signals from a Device"""
-    warnings.warn("This will be deprecated. Use ``grab_kind``.")
-    return [cpt[1] for cpt in grab_kind(device, kind=Kind.hinted)]
 
 
 def channel_name(pv, protocol='ca'):

@@ -7,7 +7,7 @@ from ophyd import Device, Component as Cpt, Kind
 import pytest
 
 import typhon
-from typhon.utils import (use_stylesheet, clean_name, grab_hints, grab_kind,
+from typhon.utils import (use_stylesheet, clean_name, grab_kind,
                           TyphonBase, raise_to_operator)
 
 class NestedDevice(Device):
@@ -26,12 +26,6 @@ def test_clean_name():
                       strip_parent=False) == 'test radial phi'
     assert clean_name(device.radial.phi, strip_parent=True) == 'phi'
     assert clean_name(device.radial.phi, strip_parent=device) == 'radial phi'
-
-
-def test_grab_hints(motor):
-    hint_names = [cpt.name for cpt in grab_hints(motor)]
-    assert all([field in hint_names
-                for field in motor.hints['fields']])
 
 
 def test_stylesheet(qtbot):
