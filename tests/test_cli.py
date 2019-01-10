@@ -30,7 +30,7 @@ def test_cli_happi_cfg(monkeypatch, qtbot, happi_cfg):
 def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
     with open('test.qss', 'w+') as handle:
-        handle.write("TyphonDisplay {qproperty-force_template: 'test.ui'}")
+        handle.write("TyphonDeviceDisplay {qproperty-force_template: 'test.ui'}")
     style = qapp.styleSheet()
     suite = typhon_cli(['test_motor', '--stylesheet', 'test.qss',
                         '--happi-cfg', happi_cfg])

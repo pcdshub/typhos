@@ -4,9 +4,9 @@ Supported Tools
 
 In experimental environments there are a variety of external tools and 
 applications that are critical to day to day operation. Typhon hopes to
-integrate many of these services into the :class:`.DeviceDisplay` for ease of
-operation. This approach has two advantages; the first is that getting to
-helpful tools requires fewer clicks and therefore less time, secondly, if we
+integrate many of these services into the :class:`.TyphonDeviceDisplay` for
+ease of operation. This approach has two advantages; the first is that getting
+to helpful tools requires fewer clicks and therefore less time, secondly, if we
 assume that the context in which they want to use the external tool includes
 this device, we can pre-populate many of the fields for them.
 

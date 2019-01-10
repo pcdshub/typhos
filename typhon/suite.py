@@ -14,7 +14,7 @@ from qtpy.QtWidgets import QDockWidget, QHBoxLayout, QVBoxLayout, QWidget
 ###########
 # Package #
 ###########
-from .display import TyphonDisplay
+from .display import TyphonDeviceDisplay
 from .utils import clean_name, TyphonBase, flatten_tree
 from .widgets import TyphonSidebarItem, SubDisplay
 from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonConsole
@@ -58,12 +58,12 @@ class DeviceParameter(SidebarParameter):
                 else:
                     child_name = clean_name(subdevice,
                                             strip_parent=subdevice.root)
-                    child_display = TyphonDisplay.from_device(subdevice)
+                    child_display = TyphonDeviceDisplay.from_device(subdevice)
                     children.append(SidebarParameter(value=child_display,
                                                      name=child_name,
                                                      embeddable=True))
         opts['children'] = children
-        super().__init__(value=TyphonDisplay.from_device(device),
+        super().__init__(value=TyphonDeviceDisplay.from_device(device),
                          embeddable=opts.pop('embeddable', True),
                          **opts)
 
@@ -278,7 +278,7 @@ class TyphonSuite(TyphonBase):
 
     @property
     def tools(self):
-        """Tools loaded into the DeviceDisplay"""
+        """Tools loaded into the TyphonDeviceDisplay"""
         if 'Tools' in self.top_level_groups:
             return [param.value()
                     for param in self.top_level_groups['Tools'].childs]
@@ -321,7 +321,7 @@ class TyphonSuite(TyphonBase):
                            'Console': TyphonConsole},
                     **kwargs):
         """
-        Create a new TyphonDisplay from an ophyd.Device
+        Create a new TyphonDeviceDisplay from an ophyd.Device
 
         Parameters
         ----------
