@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Typhon 0.2.1+291.g412c103 documentation</title>
+  <title>Index &mdash; Typhon 0.2.1+326.ga4fe492 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.1+291.g412c103
+                0.2.1+326.ga4fe492
               </div>
             
           
@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="positioner.html">TyphonPositionerWidget</a></li>
 </ul>
 
             
@@ -169,6 +170,8 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -199,6 +202,8 @@
       <li><a href="display.html#typhon.TyphonDisplay.add_device">add_device() (typhon.TyphonDisplay method)</a>
 
       <ul>
+        <li><a href="positioner.html#typhon.TyphonPositionerWidget.add_device">(typhon.TyphonPositionerWidget method)</a>
+</li>
         <li><a href="display.html#typhon.TyphonSuite.add_device">(typhon.TyphonSuite method)</a>
 </li>
         <li><a href="basic_usage.html#typhon.utils.TyphonBase.add_device">(typhon.utils.TyphonBase method)</a>
@@ -232,11 +237,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="display.html#typhon.TyphonDisplay.device_class">device_class (typhon.TyphonDisplay attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="display.html#typhon.TyphonDisplay.device_name">device_name (typhon.TyphonDisplay attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="display.html#typhon.DeviceDisplay">DeviceDisplay() (in module typhon)</a>
+</li>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.done_moving">done_moving() (typhon.TyphonPositionerWidget method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -252,6 +259,8 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.failed_move">failed_move (typhon.TyphonPositionerWidget attribute)</a>
+</li>
       <li><a href="display.html#typhon.TyphonDisplay.force_template">force_template (typhon.TyphonDisplay attribute)</a>
 </li>
       <li><a href="display.html#typhon.TyphonDisplay.from_device">from_device() (typhon.TyphonDisplay class method)</a>
@@ -297,6 +306,26 @@
   </ul></td>
 </tr></table>
 
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.move_changed">move_changed() (typhon.TyphonPositionerWidget method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.moving">moving (typhon.TyphonPositionerWidget attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.negative_tweak">negative_tweak() (typhon.TyphonPositionerWidget method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -304,6 +333,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.positive_tweak">positive_tweak() (typhon.TyphonPositionerWidget method)</a>
+</li>
       <li><a href="plugins.html#typhon.plugins.SignalConnection.put_value">put_value() (typhon.plugins.SignalConnection method)</a>
 </li>
   </ul></td>
@@ -326,19 +357,25 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="plugins.html#typhon.plugins.SignalConnection.send_new_value">send_new_value() (typhon.plugins.SignalConnection method)</a>
 </li>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.set">set() (typhon.TyphonPositionerWidget method)</a>
+</li>
       <li><a href="display.html#typhon.TyphonSuite.show_subdisplay">show_subdisplay() (typhon.TyphonSuite method)</a>
 </li>
       <li><a href="plugins.html#typhon.plugins.SignalConnection.signal">signal (typhon.plugins.SignalConnection attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="widgets.html#typhon.signal.signal_widget">signal_widget() (in module typhon.signal)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="plugins.html#typhon.plugins.SignalConnection">SignalConnection (class in typhon.plugins)</a>
 </li>
       <li><a href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel">SignalPanel (class in typhon.signal)</a>
 </li>
       <li><a href="plugins.html#typhon.plugins.SignalPlugin">SignalPlugin (class in typhon.plugins)</a>
+</li>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.stop">stop() (typhon.TyphonPositionerWidget method)</a>
+</li>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget.successful_move">successful_move (typhon.TyphonPositionerWidget attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -363,6 +400,8 @@
       <li><a href="display.html#typhon.TyphonDisplay.TemplateEnum">TyphonDisplay.TemplateEnum (class in typhon)</a>
 </li>
       <li><a href="generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay">TyphonLogDisplay (class in typhon.tools)</a>
+</li>
+      <li><a href="positioner.html#typhon.TyphonPositionerWidget">TyphonPositionerWidget (class in typhon)</a>
 </li>
       <li><a href="display.html#typhon.TyphonSuite">TyphonSuite (class in typhon)</a>
 </li>

@@ -4,6 +4,7 @@
 ./_modules/typhon/display.html
 ./_modules/typhon/func.html
 ./_modules/typhon/plugins/core.html
+./_modules/typhon/positioner.html
 ./_modules/typhon/signal.html
 ./_modules/typhon/suite.html
 ./_modules/typhon/tools/console.html
@@ -21,6 +22,7 @@
 ./_sources/generated/typhon.tools.TyphonTimePlot.rst.txt
 ./_sources/index.rst.txt
 ./_sources/plugins.rst.txt
+./_sources/positioner.rst.txt
 ./_sources/python_methods.rst.txt
 ./_sources/tools.rst.txt
 ./_sources/widgets.rst.txt
@@ -94,6 +96,7 @@
 ./index.html
 ./objects.inv
 ./plugins.html
+./positioner.html
 ./py-modindex.html
 ./python_methods.html
 ./search.html
