@@ -79,6 +79,10 @@ class TyphonSuite(TyphonBase):
     ----------
     parent : QWidget, optional
     """
+    default_tools = {'Log': TyphonLogDisplay,
+                     'StripTool': TyphonTimePlot,
+                     'Console': TyphonConsole}
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         # Setup parameter tree
@@ -316,10 +320,7 @@ class TyphonSuite(TyphonBase):
 
     @classmethod
     def from_device(cls, device, parent=None,
-                    tools={'Log': TyphonLogDisplay,
-                           'StripTool': TyphonTimePlot,
-                           'Console': TyphonConsole},
-                    **kwargs):
+                    tools=dict(), **kwargs):
         """
         Create a new TyphonDeviceDisplay from an ophyd.Device
 
@@ -333,17 +334,23 @@ class TyphonSuite(TyphonBase):
         parent: QWidgets
 
         tools: dict, optional
-            Tools to load for the object. ``dict`` should be name, class pairs
+            Tools to load for the object. ``dict`` should be name, class pairs.
+            By default these will be ``.default_tools``, but ``None`` can be
+            passed to avoid tool loading completely.
 
         kwargs:
             Passed to :meth:`TyphonSuite.add_device`
         """
         display = cls(parent=parent)
-        for name, tool in tools.items():
-            try:
-                display.add_tool(name, tool())
-            except Exception:
-                logger.exception("Unable to load %s", type(tool))
+        if tools is not None:
+            if not tools:
+                logger.debug("Using default TyphonSuite tools ...")
+                tools = cls.default_tools
+                for name, tool in tools.items():
+                    try:
+                        display.add_tool(name, tool())
+                    except Exception:
+                        logger.exception("Unable to load %s", type(tool))
         display.add_device(device, **kwargs)
         display.show_subdisplay(device)
         return display
