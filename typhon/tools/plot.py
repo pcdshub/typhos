@@ -111,7 +111,7 @@ class TyphonTimePlot(TyphonBase):
             Name of the curve to remove. This should match the name given
             during the call of :meth:`.add_curve`
         """
-        logger.debug("Removing %s from DeviceTimePlot ...", name)
+        logger.debug("Removing %s from TyphonTimePlot ...", name)
         self.timechart.remove_curve(name)
 
     @Slot()
