@@ -20,7 +20,7 @@ from .conftest import show_widget
 
 @pytest.fixture(scope='function')
 def suite(qtbot, device):
-    suite = TyphonSuite.from_device(device, tools=dict())
+    suite = TyphonSuite.from_device(device, tools=None)
     qtbot.addWidget(suite)
     return suite
 
