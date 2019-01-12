@@ -14,7 +14,7 @@ from qtpy.QtWidgets import QDockWidget, QHBoxLayout, QVBoxLayout, QWidget
 ###########
 # Package #
 ###########
-from .display import TyphonDisplay
+from .display import TyphonDeviceDisplay
 from .utils import clean_name, TyphonBase, flatten_tree
 from .widgets import TyphonSidebarItem, SubDisplay
 from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonConsole
@@ -58,12 +58,12 @@ class DeviceParameter(SidebarParameter):
                 else:
                     child_name = clean_name(subdevice,
                                             strip_parent=subdevice.root)
-                    child_display = TyphonDisplay.from_device(subdevice)
+                    child_display = TyphonDeviceDisplay.from_device(subdevice)
                     children.append(SidebarParameter(value=child_display,
                                                      name=child_name,
                                                      embeddable=True))
         opts['children'] = children
-        super().__init__(value=TyphonDisplay.from_device(device),
+        super().__init__(value=TyphonDeviceDisplay.from_device(device),
                          embeddable=opts.pop('embeddable', True),
                          **opts)
 
@@ -79,6 +79,10 @@ class TyphonSuite(TyphonBase):
     ----------
     parent : QWidget, optional
     """
+    default_tools = {'Log': TyphonLogDisplay,
+                     'StripTool': TyphonTimePlot,
+                     'Console': TyphonConsole}
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         # Setup parameter tree
@@ -278,7 +282,7 @@ class TyphonSuite(TyphonBase):
 
     @property
     def tools(self):
-        """Tools loaded into the DeviceDisplay"""
+        """Tools loaded into the TyphonDeviceDisplay"""
         if 'Tools' in self.top_level_groups:
             return [param.value()
                     for param in self.top_level_groups['Tools'].childs]
@@ -316,12 +320,9 @@ class TyphonSuite(TyphonBase):
 
     @classmethod
     def from_device(cls, device, parent=None,
-                    tools={'Log': TyphonLogDisplay,
-                           'StripTool': TyphonTimePlot,
-                           'Console': TyphonConsole},
-                    **kwargs):
+                    tools=dict(), **kwargs):
         """
-        Create a new TyphonDisplay from an ophyd.Device
+        Create a new TyphonDeviceDisplay from an ophyd.Device
 
         Parameters
         ----------
@@ -333,17 +334,23 @@ class TyphonSuite(TyphonBase):
         parent: QWidgets
 
         tools: dict, optional
-            Tools to load for the object. ``dict`` should be name, class pairs
+            Tools to load for the object. ``dict`` should be name, class pairs.
+            By default these will be ``.default_tools``, but ``None`` can be
+            passed to avoid tool loading completely.
 
         kwargs:
             Passed to :meth:`TyphonSuite.add_device`
         """
         display = cls(parent=parent)
-        for name, tool in tools.items():
-            try:
-                display.add_tool(name, tool())
-            except Exception:
-                logger.exception("Unable to load %s", type(tool))
+        if tools is not None:
+            if not tools:
+                logger.debug("Using default TyphonSuite tools ...")
+                tools = cls.default_tools
+                for name, tool in tools.items():
+                    try:
+                        display.add_tool(name, tool())
+                    except Exception:
+                        logger.exception("Unable to load %s", type(tool))
         display.add_device(device, **kwargs)
         display.show_subdisplay(device)
         return display

@@ -2,7 +2,7 @@ import os.path
 
 import pytest
 
-from typhon import TyphonDisplay
+from typhon import TyphonDeviceDisplay
 from typhon.utils import clean_attr
 
 from .conftest import show_widget
@@ -10,14 +10,14 @@ from .conftest import show_widget
 
 @pytest.fixture(scope='function')
 def display(qtbot):
-    display = TyphonDisplay()
+    display = TyphonDeviceDisplay()
     qtbot.addWidget(display)
     return display
 
 
 @show_widget
 def test_device_display(device, motor, qtbot):
-    panel = TyphonDisplay.from_device(motor)
+    panel = TyphonDeviceDisplay.from_device(motor)
     panel_main = panel._main_widget
     qtbot.addWidget(panel)
     # We have all our signals
@@ -76,7 +76,7 @@ def test_display_force_template(display):
     assert display.current_template == 'tst.ui'
 
 def test_display_with_channel(client, qtbot):
-    panel = TyphonDisplay()
+    panel = TyphonDeviceDisplay()
     qtbot.addWidget(panel)
     panel.channel = 'happi://test_motor'
     assert panel.channel == 'happi://test_motor'

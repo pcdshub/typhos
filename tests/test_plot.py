@@ -18,7 +18,7 @@ from qtpy.QtGui import QColor
 # Module #
 ##########
 from typhon import register_signal
-from typhon.tools.plot import TyphonTimePlot, DeviceTimePlot
+from typhon.tools.plot import TyphonTimePlot
 from typhon.utils import channel_from_signal
 
 

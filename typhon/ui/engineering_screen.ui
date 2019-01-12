@@ -112,7 +112,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignTop">
-        <widget class="TyphonPanel" name="read_panel">
+        <widget class="TyphonSignalPanel" name="read_panel">
          <property name="toolTip">
           <string/>
          </property>
@@ -128,7 +128,7 @@
           <bool>false</bool>
          </property>
          <property name="sortBy" stdset="0">
-          <enum>TyphonPanel::byName</enum>
+          <enum>TyphonSignalPanel::byName</enum>
          </property>
         </widget>
        </item>
@@ -180,7 +180,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignTop">
-        <widget class="TyphonPanel" name="config_panel">
+        <widget class="TyphonSignalPanel" name="config_panel">
          <property name="toolTip">
           <string/>
          </property>
@@ -199,7 +199,7 @@
           <bool>false</bool>
          </property>
          <property name="sortBy" stdset="0">
-          <enum>TyphonPanel::byName</enum>
+          <enum>TyphonSignalPanel::byName</enum>
          </property>
         </widget>
        </item>
@@ -251,7 +251,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignTop">
-        <widget class="TyphonPanel" name="misc_panel">
+        <widget class="TyphonSignalPanel" name="misc_panel">
          <property name="toolTip">
           <string/>
          </property>
@@ -270,7 +270,7 @@
           <bool>false</bool>
          </property>
          <property name="sortBy" stdset="0">
-          <enum>TyphonPanel::byName</enum>
+          <enum>TyphonSignalPanel::byName</enum>
          </property>
         </widget>
        </item>
@@ -295,7 +295,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphonPanel</class>
+   <class>TyphonSignalPanel</class>
    <extends>QWidget</extends>
    <header>typhon.signal</header>
   </customwidget>

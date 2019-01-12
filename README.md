@@ -63,7 +63,7 @@ by the operator:
 * ``TyphonSuite``: The overall view for a Typhon window. It allows the
 operator to view all of the loaded components and tools
 
-* ``TyphonDisplay``: This is the widget created for a standard
+* ``TyphonDeviceDisplay``: This is the widget created for a standard
 ``ophyd.Device``. Signals are organized based on their
 ``Kind`` and description.
 

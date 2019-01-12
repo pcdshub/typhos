@@ -74,7 +74,9 @@ def typhon_cli(args):
             app.setStyleSheet(handle.read())
 
     suite = typhon.TyphonSuite()
-
+    logger.info("Loading Tools ...")
+    for name, tool in suite.default_tools.items():
+        suite.add_tool(name, tool())
     # Load and add each device
     for device in args.devices:
         logger.info("Loading %r ...", device)

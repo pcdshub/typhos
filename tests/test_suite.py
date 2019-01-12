@@ -14,13 +14,13 @@ from qtpy.QtWidgets import QDockWidget
 ###########
 from typhon.utils import clean_name
 from typhon.suite import TyphonSuite, DeviceParameter
-from typhon.display import TyphonDisplay
+from typhon.display import TyphonDeviceDisplay
 from .conftest import show_widget
 
 
 @pytest.fixture(scope='function')
 def suite(qtbot, device):
-    suite = TyphonSuite.from_device(device, tools=dict())
+    suite = TyphonSuite.from_device(device, tools=None)
     qtbot.addWidget(suite)
     return suite
 
@@ -54,7 +54,7 @@ def test_suite_get_subdisplay_by_device(suite, device):
 
 def test_suite_subdisplay_parentage(suite, device):
     display = suite.get_subdisplay(device)
-    assert display in suite.findChildren(TyphonDisplay)
+    assert display in suite.findChildren(TyphonDeviceDisplay)
 
 def test_suite_get_subdisplay_by_name(suite, device):
     display = suite.get_subdisplay(device.name)

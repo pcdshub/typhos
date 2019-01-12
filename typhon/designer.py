@@ -2,15 +2,20 @@ import logging
 
 from pydm.widgets.qtplugin_base import qtplugin_factory
 
-from .signal import TyphonPanel
-from .display import TyphonDisplay
+from .signal import TyphonSignalPanel
+from .display import TyphonDeviceDisplay
 from .func import TyphonMethodButton
 from .positioner import TyphonPositionerWidget
 
 logger = logging.getLogger(__name__)
+logger.info("Loading Typhon QtDesigner plugins ...")
 
-logging.info("Loading Typhon QtDesigner plugins ...")
-TyphonPanelPlugin = qtplugin_factory(TyphonPanel)
-TyphonDisplayPlugin = qtplugin_factory(TyphonDisplay)
-TyphonMethodButtonPlugin = qtplugin_factory(TyphonMethodButton)
-TyphonPositionerWidgetPlugin = qtplugin_factory(TyphonPositionerWidget)
+group_name = 'Typhon Widgets'
+TyphonSignalPanelPlugin = qtplugin_factory(TyphonSignalPanel,
+                                           group=group_name)
+TyphonDeviceDisplayPlugin = qtplugin_factory(TyphonDeviceDisplay,
+                                             group=group_name)
+TyphonMethodButtonPlugin = qtplugin_factory(TyphonMethodButton,
+                                            group=group_name)
+TyphonPositionerWidgetPlugin = qtplugin_factory(TyphonPositionerWidget,
+                                                group=group_name)

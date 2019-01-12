@@ -30,7 +30,7 @@ class DisplayTypes:
         return Enum('TemplateEnum', entries)
 
 
-class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
+class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -175,7 +175,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
 
     def add_device(self, device, macros=None):
         """
-        Add a Device and signals to the TyphonDisplay
+        Add a Device and signals to the TyphonDeviceDisplay
 
         Parameters
         ----------
@@ -210,7 +210,7 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     @classmethod
     def from_device(cls, device, template=None, macros=None):
         """
-        Create a new TyphonDisplay from a Device
+        Create a new TyphonDeviceDisplay from a Device
 
         Loads the signals in to the appropriate positions and sets the title to
         a cleaned version of the device name
@@ -236,6 +236,3 @@ class TyphonDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'], macros=value['md'])
-
-
-DeviceDisplay = TyphonDisplay.from_device

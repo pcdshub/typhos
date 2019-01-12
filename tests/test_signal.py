@@ -14,7 +14,7 @@ from qtpy.QtWidgets import QWidget
 ###########
 # Package #
 ###########
-from typhon.signal import SignalPanel, TyphonPanel
+from typhon.signal import SignalPanel, TyphonSignalPanel
 from .conftest import show_widget, RichSignal, DeadSignal
 
 @using_fake_epics_pv
@@ -96,7 +96,7 @@ def test_add_pv(qtbot):
 
 @show_widget
 def test_typhon_panel(qapp, client, qtbot):
-    panel = TyphonPanel()
+    panel = TyphonSignalPanel()
     qtbot.addWidget(panel)
     # Setting Kind without device doesn't explode
     panel.showConfig = False
@@ -129,7 +129,7 @@ def test_typhon_panel(qapp, client, qtbot):
 
 @show_widget
 def test_typhon_panel_sorting(qapp, client, qtbot):
-    panel = TyphonPanel()
+    panel = TyphonSignalPanel()
     qtbot.addWidget(panel)
     # Sort by name
     panel.sortBy = panel.SignalOrder.byName

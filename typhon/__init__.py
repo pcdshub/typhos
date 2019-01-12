@@ -1,9 +1,9 @@
-__all__ = ['TyphonDisplay', 'DeviceDisplay', 'use_stylesheet',
-           'register_signal', 'TyphonSuite', 'TyphonPanel',
+__all__ = ['TyphonDeviceDisplay', 'use_stylesheet',
+           'register_signal', 'TyphonSuite', 'TyphonSignalPanel',
            'TyphonPositionerWidget']
-from .display import TyphonDisplay, DeviceDisplay
+from .display import TyphonDeviceDisplay
 from .suite import TyphonSuite
-from .signal import TyphonPanel
+from .signal import TyphonSignalPanel
 from .positioner import TyphonPositionerWidget
 from .utils import use_stylesheet
 from .plugins import register_signal
