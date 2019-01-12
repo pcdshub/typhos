@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How it Works &mdash; Typhon 0.2.1+326.ga4fe492 documentation</title>
+  <title>How it Works &mdash; Typhon 0.2.1+337.g7d7d34a documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+326.ga4fe492
+                0.2.1+337.g7d7d34a
               </div>
             
           
@@ -171,7 +171,7 @@ by the operator:</p>
 <ul class="simple">
 <li><strong>TyphonSuite</strong> : The overall view for a Typhon window. It allows the
 operator to view all of the loaded components and tools.</li>
-<li><strong>TyphonDisplay</strong> : This is the widget created for a standard
+<li><strong>TyphonDeviceDisplay</strong> : This is the widget created for a standard
 <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code>. Signals are organized based on their <code class="docutils literal notranslate"><span class="pre">Kind</span></code> and
 description.</li>
 <li><strong>typhon.tools</strong> : These are widgets that interface with external
@@ -284,10 +284,10 @@ operator will want to control and which ones are purely meant to be read back.
 We also have these signals grouped by their importance to operation, each with
 a terse human legible description of what the PV represents.</p>
 <p>Typhon takes advantage of this to generate a concise PyDM user display. The
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> uses the signal groups; <code class="docutils literal notranslate"><span class="pre">read_attrs</span></code>,
+<a class="reference internal" href="display.html#typhon.TyphonDeviceDisplay" title="typhon.TyphonDeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDeviceDisplay</span></code></a> uses the signal groups; <code class="docutils literal notranslate"><span class="pre">read_attrs</span></code>,
 <code class="docutils literal notranslate"><span class="pre">configuration_attrs</span></code> and <code class="docutils literal notranslate"><span class="pre">hints</span></code> to generate plots and widgets based on
 the type and class of EPICSSignals. In order to best select the widget types,
-<code class="xref py py-class docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> attempts to connect to all of the PVs listed. If this
+<a class="reference internal" href="display.html#typhon.TyphonDeviceDisplay" title="typhon.TyphonDeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDeviceDisplay</span></code></a> attempts to connect to all of the PVs listed. If this
 is not possible, there are ways to manually configure which widget will be
 used. Simply invoke your device and then create your <code class="docutils literal notranslate"><span class="pre">PyDMApplication</span></code> and
 widget</p>

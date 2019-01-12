@@ -5,7 +5,7 @@ Including Python Code
 
 Adding Methods
 ==============
-Each :class:`.TyphonDisplay` has an :attr:`.method_panel`. You can add methods
+Each :class:`.TyphonDeviceDisplay` has an :attr:`.method_panel`. You can add methods
 manually or pass them in via the constructor. In order to make the appropriate
 widgets,  the function signature is examined. For example lets make a mock
 function:

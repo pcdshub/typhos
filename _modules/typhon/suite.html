@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.suite &mdash; Typhon 0.2.1+326.ga4fe492 documentation</title>
+  <title>typhon.suite &mdash; Typhon 0.2.1+337.g7d7d34a documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+326.ga4fe492
+                0.2.1+337.g7d7d34a
               </div>
             
           
@@ -173,7 +173,7 @@
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
 <span class="c1">###########</span>
-<span class="kn">from</span> <span class="nn">.display</span> <span class="k">import</span> <span class="n">TyphonDisplay</span>
+<span class="kn">from</span> <span class="nn">.display</span> <span class="k">import</span> <span class="n">TyphonDeviceDisplay</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">,</span> <span class="n">flatten_tree</span>
 <span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonSidebarItem</span><span class="p">,</span> <span class="n">SubDisplay</span>
 <span class="kn">from</span> <span class="nn">.tools</span> <span class="k">import</span> <span class="n">TyphonTimePlot</span><span class="p">,</span> <span class="n">TyphonLogDisplay</span><span class="p">,</span> <span class="n">TyphonConsole</span>
@@ -217,12 +217,12 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">child_name</span> <span class="o">=</span> <span class="n">clean_name</span><span class="p">(</span><span class="n">subdevice</span><span class="p">,</span>
                                             <span class="n">strip_parent</span><span class="o">=</span><span class="n">subdevice</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
-                    <span class="n">child_display</span> <span class="o">=</span> <span class="n">TyphonDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">subdevice</span><span class="p">)</span>
+                    <span class="n">child_display</span> <span class="o">=</span> <span class="n">TyphonDeviceDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">subdevice</span><span class="p">)</span>
                     <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SidebarParameter</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">child_display</span><span class="p">,</span>
                                                      <span class="n">name</span><span class="o">=</span><span class="n">child_name</span><span class="p">,</span>
                                                      <span class="n">embeddable</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="n">opts</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">TyphonDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">device</span><span class="p">),</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">TyphonDeviceDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">device</span><span class="p">),</span>
                          <span class="n">embeddable</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;embeddable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
                          <span class="o">**</span><span class="n">opts</span><span class="p">)</span>
 
@@ -238,6 +238,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    parent : QWidget, optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">default_tools</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Log&#39;</span><span class="p">:</span> <span class="n">TyphonLogDisplay</span><span class="p">,</span>
+                     <span class="s1">&#39;StripTool&#39;</span><span class="p">:</span> <span class="n">TyphonTimePlot</span><span class="p">,</span>
+                     <span class="s1">&#39;Console&#39;</span><span class="p">:</span> <span class="n">TyphonConsole</span><span class="p">}</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="c1"># Setup parameter tree</span>
@@ -437,7 +441,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Tools loaded into the DeviceDisplay&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Tools loaded into the TyphonDeviceDisplay&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;Tools&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
                     <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="p">[</span><span class="s1">&#39;Tools&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">childs</span><span class="p">]</span>
@@ -475,12 +479,9 @@
 
 <div class="viewcode-block" id="TyphonSuite.from_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonSuite.from_device">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">tools</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Log&#39;</span><span class="p">:</span> <span class="n">TyphonLogDisplay</span><span class="p">,</span>
-                           <span class="s1">&#39;StripTool&#39;</span><span class="p">:</span> <span class="n">TyphonTimePlot</span><span class="p">,</span>
-                           <span class="s1">&#39;Console&#39;</span><span class="p">:</span> <span class="n">TyphonConsole</span><span class="p">},</span>
-                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <span class="n">tools</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new TyphonDisplay from an ophyd.Device</span>
+<span class="sd">        Create a new TyphonDeviceDisplay from an ophyd.Device</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -492,17 +493,23 @@
 <span class="sd">        parent: QWidgets</span>
 
 <span class="sd">        tools: dict, optional</span>
-<span class="sd">            Tools to load for the object. ``dict`` should be name, class pairs</span>
+<span class="sd">            Tools to load for the object. ``dict`` should be name, class pairs.</span>
+<span class="sd">            By default these will be ``.default_tools``, but ``None`` can be</span>
+<span class="sd">            passed to avoid tool loading completely.</span>
 
 <span class="sd">        kwargs:</span>
 <span class="sd">            Passed to :meth:`TyphonSuite.add_device`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">display</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">display</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">())</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to load </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">tool</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">tools</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">tools</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using default TyphonSuite tools ...&quot;</span><span class="p">)</span>
+                <span class="n">tools</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_tools</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">display</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">())</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to load </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">tool</span><span class="p">))</span>
         <span class="n">display</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">display</span><span class="o">.</span><span class="n">show_subdisplay</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">display</span></div>

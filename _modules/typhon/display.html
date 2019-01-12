@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.2.1+326.ga4fe492 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.2.1+337.g7d7d34a documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+326.ga4fe492
+                0.2.1+337.g7d7d34a
               </div>
             
           
@@ -189,7 +189,7 @@
         <span class="k">return</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;TemplateEnum&#39;</span><span class="p">,</span> <span class="n">entries</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TyphonDisplay"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphonDisplay</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">TyphonDesignerMixin</span><span class="p">,</span> <span class="n">DisplayTypes</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonDeviceDisplay"><a class="viewcode-back" href="../../display.html#typhon.TyphonDeviceDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphonDeviceDisplay</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">TyphonDesignerMixin</span><span class="p">,</span> <span class="n">DisplayTypes</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main Panel display for a signal Ophyd Device</span>
 
@@ -275,7 +275,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 
-<div class="viewcode-block" id="TyphonDisplay.load_template"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.load_template">[docs]</a>    <span class="k">def</span> <span class="nf">load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonDeviceDisplay.load_template"><a class="viewcode-back" href="../../display.html#typhon.TyphonDeviceDisplay.load_template">[docs]</a>    <span class="k">def</span> <span class="nf">load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a new template</span>
 
@@ -332,9 +332,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_forced_template</span> <span class="o">=</span> <span class="n">value</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TyphonDisplay.add_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonDeviceDisplay.add_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDeviceDisplay.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a Device and signals to the TyphonDisplay</span>
+<span class="sd">        Add a Device and signals to the TyphonDeviceDisplay</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -366,10 +366,10 @@
         <span class="c1"># Reload template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TyphonDisplay.from_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDisplay.from_device">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TyphonDeviceDisplay.from_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDeviceDisplay.from_device">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new TyphonDisplay from a Device</span>
+<span class="sd">        Create a new TyphonDeviceDisplay from a Device</span>
 
 <span class="sd">        Loads the signals in to the appropriate positions and sets the title to</span>
 <span class="sd">        a cleaned version of the device name</span>
@@ -395,9 +395,6 @@
     <span class="k">def</span> <span class="nf">_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Receive information from happi channel&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">],</span> <span class="n">macros</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;md&#39;</span><span class="p">])</span></div>
-
-
-<span class="n">DeviceDisplay</span> <span class="o">=</span> <span class="n">TyphonDisplay</span><span class="o">.</span><span class="n">from_device</span>
 </pre></div>
 
            </div>

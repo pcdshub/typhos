@@ -6,7 +6,7 @@ by the operator:
 
 * **TyphonSuite** : The overall view for a Typhon window. It allows the
   operator to view all of the loaded components and tools.
-* **TyphonDisplay** : This is the widget created for a standard
+* **TyphonDeviceDisplay** : This is the widget created for a standard
   ``ophyd.Device``. Signals are organized based on their ``Kind`` and
   description.
 * **typhon.tools** : These are widgets that interface with external
@@ -65,10 +65,10 @@ We also have these signals grouped by their importance to operation, each with
 a terse human legible description of what the PV represents.
 
 Typhon takes advantage of this to generate a concise PyDM user display. The
-:class:`.DeviceDisplay` uses the signal groups; ``read_attrs``,
+:class:`.TyphonDeviceDisplay` uses the signal groups; ``read_attrs``,
 ``configuration_attrs`` and ``hints`` to generate plots and widgets based on
 the type and class of EPICSSignals. In order to best select the widget types,
-:class:`.DeviceDisplay` attempts to connect to all of the PVs listed. If this
+:class:`.TyphonDeviceDisplay` attempts to connect to all of the PVs listed. If this
 is not possible, there are ways to manually configure which widget will be
 used. Simply invoke your device and then create your ``PyDMApplication`` and
 widget
