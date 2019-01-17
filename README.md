@@ -32,7 +32,7 @@ different categories based on their relevance to operators. Typhon uses this
 information to craft user interfaces.
 
 ## Installation
-Recommended installation:
+Recommended installation on Linux:
 ```
 conda install typhon -c pcds-tag -c conda-forge
 ```
@@ -44,6 +44,13 @@ If installed in this manner, in an environment that is not **root**, the
 environment variables will be setup in such a way that the Typhon widgets will
 immediately be available in the `QtDesigner`. Otherwise, see the
 ``typhon_env.sh`` script contained in the ``etc`` folder of this repository.
+
+### Qt Installation
+There have been some observed inconsistencies between installations of `Qt`
+available on `pip`, `defaults` and `conda-forge`. It is recommended that if you
+want to use the full `typhon` feature to install via `conda-forge`. We have
+found this the most reliable, especially when it comes to using the
+`QtDesigner`.
 
 ## Getting Started
 Creating your first ``typhon`` panel for an``ophyd.Device`` only takes two
