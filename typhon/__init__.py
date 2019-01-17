@@ -1,7 +1,8 @@
 __all__ = ['TyphonDeviceDisplay', 'use_stylesheet',
            'register_signal', 'TyphonSuite', 'TyphonSignalPanel',
-           'TyphonPositionerWidget']
+           'TyphonPositionerWidget', 'TyphonMethodButton']
 from .display import TyphonDeviceDisplay
+from .func import TyphonMethodButton
 from .suite import TyphonSuite
 from .signal import TyphonSignalPanel
 from .positioner import TyphonPositionerWidget
