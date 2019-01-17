@@ -28,3 +28,9 @@ TyphonPositionerWidget
 
 .. autoclass:: typhon.TyphonPositionerWidget
    :members:
+
+
+TyphonMethodButton
+==================
+.. autoclass:: typhon.TyphonMethodButton
+   :members:
