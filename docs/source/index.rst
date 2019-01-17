@@ -51,4 +51,3 @@ Related Projects
    display.rst
    widgets.rst
    plugins.rst
-   positioner.rst
