@@ -34,7 +34,7 @@ information to craft user interfaces.
 ## Installation
 Recommended installation on Linux:
 ```
-conda install typhon -c pcds-tag -c conda-forge
+conda install typhon -c conda-forge -c pcds-tag
 ```
 All `-tag` channels have `-dev` counterparts for bleeding edge installations.
 Both `requirements.txt` and optional `dev-requirements.txt` are kept up to date
