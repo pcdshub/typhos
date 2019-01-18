@@ -77,7 +77,7 @@ like with `happi``
     register_client(client)
     # Add a device to our new database
     device = happi.Device(device_class='ophyd.sim.SynAxis',
-                          prefix='Tst:Mtr', args=[], kwargs={{name}},
+                          prefix='Tst:Mtr', args=[], kwargs='{{name}}',
                           name='my_motor', beamline='TST')
     client.add_device(device)
 
