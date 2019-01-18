@@ -133,7 +133,7 @@ using ``happi`` and the corresponding ``Python`` code is shown as well:
 Now, at first glance it may not be obvious, but there is a lot of information
 here! We know which of these signals an operator will want to control and which
 ones are purely meant to be read back. We also have these signals grouped by
-their importance to operation, each with a terse human legible description of
+their importance to operation, each with a terse human-readable description of
 what the ``Signal`` represents.
 
 Filling Templates
