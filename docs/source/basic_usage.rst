@@ -110,7 +110,7 @@ the various attributes allows us to see how our signals are organized.
 
 .. ipython:: python
  
-    # Most important signal/s
+    # Most important signal(s)
     motor.hints
     # Important signals, all hints will be found here as well
     motor.read()
