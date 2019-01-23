@@ -52,9 +52,9 @@ Engineering Units     `"units"`
 Happi Plugin
 ============
 
-The PyDM Plugin interface makes no mandate about the type of signals
-that we connect to our widgets. The :class:`.HappiPlugin` and corresponding
-``HappiChannel`` reimagines theses signals and sends entire ``ophyd`` objects
-from a stored database to our widgets. This is useful where we want to populate
-a template with an entire devices signals instead of connecting widgets one by
-one.
+The PyDM Plugin interface makes no mandate about the type of signals that we
+connect to our widgets. The :class:`.HappiPlugin` and corresponding
+``HappiChannel`` contains alternative signals in order to send entire ``ophyd``
+objects from a stored database to our widgets. This is useful where we want to
+populate a template with an entire devices signals instead of connecting
+widgets one by one.
