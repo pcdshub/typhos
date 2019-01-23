@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How it Works &mdash; Typhon 0.2.1+337.g7d7d34a documentation</title>
+  <title>How it Works &mdash; Typhon 0.3.0rc1+17.g072e3cd documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+337.g7d7d34a
+                0.3.0rc1+17.g072e3cd
               </div>
             
           
@@ -85,7 +85,13 @@
               <p class="caption"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">How it Works</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#interpreting-a-device">Interpreting a Device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interpreting-a-device">Interpreting a Device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-happi">Using Happi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#display-signals">Display Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filling-templates">Filling Templates</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-typhonsuite">The TyphonSuite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-stylesheet">Using the StyleSheet</a></li>
 </ul>
 </li>
@@ -99,7 +105,6 @@
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="positioner.html">TyphonPositionerWidget</a></li>
 </ul>
 
             
@@ -240,95 +245,136 @@ alternatively and be constructed using the <code class="docutils literal notrans
 <h2>Interpreting a Device<a class="headerlink" href="#interpreting-a-device" title="Permalink to this headline">¶</a></h2>
 <p>Typhon interprets the internal structure of the <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> to create the
 <cite>PyDM</cite> user interface, so the most intuitive way to configure the created
-display is to include things in the device itself. This also has the advantage
+display is to include components on the device itself. This also has the advantage
 of keeping your Python API and display in sync, making the transition from
 using screens to using an IPython shell seamless.</p>
-<p>Take for instance the built-in <code class="docutils literal notranslate"><span class="pre">ophyd.EpicsMotor</span></code> class, we can do a quick
-survey of what the default <code class="docutils literal notranslate"><span class="pre">read</span></code> and <code class="docutils literal notranslate"><span class="pre">configuration</span></code> attributes are:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">ophyd</span>
+<p>For the following applications we’ll use the <code class="docutils literal notranslate"><span class="pre">motor</span></code> simulation contained
+within <code class="docutils literal notranslate"><span class="pre">ophyd</span></code> itself. We also need to create a <code class="docutils literal notranslate"><span class="pre">QApplication</span></code> before we
+create any widgets:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span>
 
-<span class="gp">In [2]: </span><span class="n">ophyd</span><span class="o">.</span><span class="n">EpicsMotor</span><span class="o">.</span><span class="n">_default_read_attrs</span>
-
-<span class="gp">In [3]: </span><span class="n">ophyd</span><span class="o">.</span><span class="n">EpicsMotor</span><span class="o">.</span><span class="n">_default_configuration_attrs</span>
+<span class="gp">In [2]: </span><span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
 </pre></div>
 </div>
-<p>These <code class="docutils literal notranslate"><span class="pre">read</span></code> and <code class="docutils literal notranslate"><span class="pre">configuration</span></code> attributes can always be changed when the
-device is instantiated.  However, this is only a small subset of the signals
-that are associated with the class.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="n">ophyd</span><span class="o">.</span><span class="n">EpicsMotor</span><span class="o">.</span><span class="n">_sig_attrs</span>
-<span class="gh">Out[4]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;user_readback&#39;, Component(EpicsSignalRO, &#39;.RBV&#39;, kind=5)),</span>
-<span class="go">             (&#39;user_setpoint&#39;,</span>
-<span class="go">              Component(EpicsSignal, &#39;.VAL&#39;, limits=True, kind=1)),</span>
-<span class="go">             (&#39;user_offset&#39;, Component(EpicsSignal, &#39;.OFF&#39;, kind=2)),</span>
-<span class="go">             (&#39;user_offset_dir&#39;, Component(EpicsSignal, &#39;.DIR&#39;, kind=2)),</span>
-<span class="go">             (&#39;offset_freeze_switch&#39;, Component(EpicsSignal, &#39;.FOFF&#39;, kind=0)),</span>
-<span class="go">             (&#39;set_use_switch&#39;, Component(EpicsSignal, &#39;.SET&#39;, kind=0)),</span>
-<span class="go">             (&#39;velocity&#39;, Component(EpicsSignal, &#39;.VELO&#39;, kind=2)),</span>
-<span class="go">             (&#39;acceleration&#39;, Component(EpicsSignal, &#39;.ACCL&#39;, kind=2)),</span>
-<span class="go">             (&#39;motor_egu&#39;, Component(EpicsSignal, &#39;.EGU&#39;, kind=2)),</span>
-<span class="go">             (&#39;motor_is_moving&#39;, Component(EpicsSignalRO, &#39;.MOVN&#39;, kind=0)),</span>
-<span class="go">             (&#39;motor_done_move&#39;, Component(EpicsSignalRO, &#39;.DMOV&#39;, kind=0)),</span>
-<span class="go">             (&#39;high_limit_switch&#39;, Component(EpicsSignal, &#39;.HLS&#39;, kind=0)),</span>
-<span class="go">             (&#39;low_limit_switch&#39;, Component(EpicsSignal, &#39;.LLS&#39;, kind=0)),</span>
-<span class="go">             (&#39;direction_of_travel&#39;, Component(EpicsSignal, &#39;.TDIR&#39;, kind=0)),</span>
-<span class="go">             (&#39;motor_stop&#39;, Component(EpicsSignal, &#39;.STOP&#39;, kind=0)),</span>
-<span class="go">             (&#39;home_forward&#39;, Component(EpicsSignal, &#39;.HOMF&#39;, kind=0)),</span>
-<span class="go">             (&#39;home_reverse&#39;, Component(EpicsSignal, &#39;.HOMR&#39;, kind=0))])</span>
+<div class="section" id="using-happi">
+<h3>Using Happi<a class="headerlink" href="#using-happi" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">happi</span></code> is not a requirement for using <code class="docutils literal notranslate"><span class="pre">typhon</span></code>. However, it is certainly
+recommended. For more information, visit the <a class="reference external" href="https://github.com/pcdshub/happi/">GitHub</a> repository. The main purpose of the
+package is to store information on our Ophyd objects so that we can load them
+in a variety of contexts. If you do not use <code class="docutils literal notranslate"><span class="pre">happi</span></code> you will need to create
+your objects and displays in the same process.</p>
+<p>Here is a quick example if you wanted to get a feel for what <code class="docutils literal notranslate"><span class="pre">typhon</span></code> looks
+like with <cite>happi`</cite></p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">happi</span>
+<span class="kn">from</span> <span class="nn">typhon.plugins</span> <span class="k">import</span> <span class="n">register_client</span>
+
+<span class="c1"># Initialize a new JSON based client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">happi</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;db.json&#39;</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Register this with typhon</span>
+<span class="n">register_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="c1"># Add a device to our new database</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">happi</span><span class="o">.</span><span class="n">Device</span><span class="p">(</span><span class="n">device_class</span><span class="o">=</span><span class="s1">&#39;ophyd.sim.SynAxis&#39;</span><span class="p">,</span>
+                      <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;Tst:Mtr&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="s1">&#39;{{name}}&#39;</span><span class="p">,</span>
+                      <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_motor&#39;</span><span class="p">,</span> <span class="n">beamline</span><span class="o">=</span><span class="s1">&#39;TST&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 </pre></div>
+</div>
+<p>In practice, it is not necessary to call <a class="reference internal" href="plugins.html#typhon.plugins.register_client" title="typhon.plugins.register_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">register_client()</span></code></a> if you have
+configured the <code class="docutils literal notranslate"><span class="pre">$HAPPI_CFG</span></code> environment variable such that
+<code class="docutils literal notranslate"><span class="pre">happi.Client.from_config</span></code> yields the desired client.</p>
+<p>We can now check that we can load the complete <code class="docutils literal notranslate"><span class="pre">SynAxis</span></code> object.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">motor</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">load_device</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_motor&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="display-signals">
+<h3>Display Signals<a class="headerlink" href="#display-signals" title="Permalink to this headline">¶</a></h3>
+<p>The first thing we’ll talk about is showing a group of signals
+associated with our <code class="docutils literal notranslate"><span class="pre">motor</span></code> object in a basic form called a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">`TyphonSignalPanel</span></code>. Simply inspecting the device reveals a few
+signals for us to display</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">motor</span><span class="o">.</span><span class="n">component_names</span>
+<span class="gh">Out[3]: </span><span class="go">(&#39;readback&#39;, &#39;setpoint&#39;, &#39;velocity&#39;, &#39;acceleration&#39;, &#39;unused&#39;)</span>
+</pre></div>
+</div>
+<p>It is crucial that we understand the importance of these signals to the
+operator. In order to glean this information from the object the <code class="docutils literal notranslate"><span class="pre">kind</span></code>
+attributes are inspected. For more information see the <a class="reference external" href="https://nsls-ii.github.io/ophyd/signals.html#kind/">ophyd documentation</a>. A quick inspection of
+the various attributes allows us to see how our signals are organized.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="go"># Most important signal(s)</span>
+<span class="gp">In [4]: </span><span class="n">motor</span><span class="o">.</span><span class="n">hints</span>
+<span class="gh">Out[4]: </span><span class="go">{&#39;fields&#39;: [&#39;motor&#39;]}</span>
+
+<span class="go"># Important signals, all hints will be found here as well</span>
+<span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                              Out[5]: </span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1548280272.52064}),</span>
+<span class="go">             (&#39;motor_setpoint&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1548280272.520639})])</span>
+
+<span class="go"># Configuration information</span>
+<span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                            Out[6]: </span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1548280272.5210104}),</span>
+<span class="go">             (&#39;motor_acceleration&#39;,</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1548280272.5210612})])</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonSignalPanel</span></code> will render these, allowing us to select a subset
+of the signals to display based on their kind. Below both the <code class="docutils literal notranslate"><span class="pre">QtDesigner</span></code>
+using <code class="docutils literal notranslate"><span class="pre">happi</span></code> and the corresponding <code class="docutils literal notranslate"><span class="pre">Python</span></code> code is shown as well:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="kn">from</span> <span class="nn">typhon</span> <span class="kn">import</span> <span class="n">TyphonSignalPanel</span>
+
+<span class="gp">In [8]: </span><span class="n">panel</span> <span class="o">=</span> <span class="n">TyphonSignalPanel</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/kind_panel.gif"><img alt="_images/kind_panel.gif" src="_images/kind_panel.gif" style="width: 840.0px; height: 563.0px;" /></a>
 </div>
 <p>Now, at first glance it may not be obvious, but there is a lot of information
-here! We have a Python abstraction capable of instantiating a number of useful
-EPICS signals based on a given <code class="docutils literal notranslate"><span class="pre">prefix</span></code>. We know which of these signals an
-operator will want to control and which ones are purely meant to be read back.
-We also have these signals grouped by their importance to operation, each with
-a terse human legible description of what the PV represents.</p>
-<p>Typhon takes advantage of this to generate a concise PyDM user display. The
-<a class="reference internal" href="display.html#typhon.TyphonDeviceDisplay" title="typhon.TyphonDeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDeviceDisplay</span></code></a> uses the signal groups; <code class="docutils literal notranslate"><span class="pre">read_attrs</span></code>,
-<code class="docutils literal notranslate"><span class="pre">configuration_attrs</span></code> and <code class="docutils literal notranslate"><span class="pre">hints</span></code> to generate plots and widgets based on
-the type and class of EPICSSignals. In order to best select the widget types,
-<a class="reference internal" href="display.html#typhon.TyphonDeviceDisplay" title="typhon.TyphonDeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDeviceDisplay</span></code></a> attempts to connect to all of the PVs listed. If this
-is not possible, there are ways to manually configure which widget will be
-used. Simply invoke your device and then create your <code class="docutils literal notranslate"><span class="pre">PyDMApplication</span></code> and
-widget</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span>
+here! We know which of these signals an operator will want to control and which
+ones are purely meant to be read back. We also have these signals grouped by
+their importance to operation, each with a terse human-readable description of
+what the <code class="docutils literal notranslate"><span class="pre">Signal</span></code> represents.</p>
+</div>
+<div class="section" id="filling-templates">
+<h3>Filling Templates<a class="headerlink" href="#filling-templates" title="Permalink to this headline">¶</a></h3>
+<p>Taking this concept further, instead of filling a single panel
+<a class="reference internal" href="display.html#typhon.TyphonDeviceDisplay" title="typhon.TyphonDeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonDeviceDisplay</span></code></a> allows a template to be created with a multitude
+of widgets and panels. <code class="docutils literal notranslate"><span class="pre">Typhon</span></code> will find widgets that accept devices, but do
+not have any devices already. Typhon comes with some default templates, and you
+can cycle between them by changing the <code class="docutils literal notranslate"><span class="pre">display_type</span></code></p>
+<p>Once again, both the <code class="docutils literal notranslate"><span class="pre">Python</span></code> code and the <code class="docutils literal notranslate"><span class="pre">QtDesigner</span></code> use cases are
+shown:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="kn">from</span> <span class="nn">typhon</span> <span class="kn">import</span> <span class="n">TyphonDeviceDisplay</span>
 
-<span class="kn">from</span> <span class="nn">typhon</span> <span class="k">import</span> <span class="n">TyphonSuite</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">()</span>
-
-<span class="n">dg1_m1</span> <span class="o">=</span> <span class="n">EpicsMotor</span><span class="p">(</span><span class="s1">&#39;MFX:DG1:MMS:01&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;DG1 M1&quot;</span><span class="p">)</span>
-
-<span class="n">typhon_suite</span> <span class="o">=</span> <span class="n">TyphonSuite</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">dg1_m1</span><span class="p">)</span>
-
-<span class="n">typhon_suite</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">In [10]: </span><span class="n">display</span> <span class="o">=</span> <span class="n">TyphonDeviceDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Typhon also watches for trees of devices, for instance, if we wanted to
-represent a stack of three EPICS motors as a single object.</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ophyd</span> <span class="k">import</span> <span class="n">EpicsMotor</span><span class="p">,</span> <span class="n">Device</span><span class="p">,</span> <span class="n">Component</span> <span class="k">as</span> <span class="n">C</span>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/device_display.gif"><img alt="_images/device_display.gif" src="_images/device_display.gif" style="width: 842.0px; height: 565.0px;" /></a>
+</div>
+</div>
+</div>
+<div class="section" id="the-typhonsuite">
+<h2>The TyphonSuite<a class="headerlink" href="#the-typhonsuite" title="Permalink to this headline">¶</a></h2>
+<p>A complete application can be made by loading the <a class="reference internal" href="display.html#typhon.TyphonSuite" title="typhon.TyphonSuite"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonSuite</span></code></a>. Below
+is the complete code from start to finish required to create the suite. Look at
+the <code class="docutils literal notranslate"><span class="pre">TyphonSuited.default_tools</span></code> to control which <code class="docutils literal notranslate"><span class="pre">typhon.tools</span></code> are
+loaded.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ophyd.sim</span> <span class="k">import</span> <span class="n">motor</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span>
+<span class="kn">import</span> <span class="nn">typhon</span>
 
-<span class="k">class</span> <span class="nc">XYZStage</span><span class="p">(</span><span class="n">Device</span><span class="p">):</span>
+<span class="c1"># Create our application</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+<span class="n">typhon</span><span class="o">.</span><span class="n">use_stylesheet</span><span class="p">()</span>  <span class="c1"># Optional</span>
+<span class="n">suite</span> <span class="o">=</span> <span class="n">typhon</span><span class="o">.</span><span class="n">TyphonSuite</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
 
-     <span class="c1"># Define three separate motor axes</span>
-     <span class="n">x</span> <span class="o">=</span> <span class="n">C</span><span class="p">(</span><span class="n">EpicsMotor</span><span class="p">,</span> <span class="s2">&quot;:MMS:01&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span> <span class="s1">&#39;X Positioner&#39;</span><span class="p">)</span>
-     <span class="n">y</span> <span class="o">=</span> <span class="n">C</span><span class="p">(</span><span class="n">EpicsMotor</span><span class="p">,</span> <span class="s2">&quot;:MMS:02&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span> <span class="s1">&#39;Y Positioner&#39;</span><span class="p">)</span>
-     <span class="n">z</span> <span class="o">=</span> <span class="n">C</span><span class="p">(</span><span class="n">EpicsMotor</span><span class="p">,</span> <span class="s2">&quot;:MMS:03&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span> <span class="s1">&#39;Z Positioner&#39;</span><span class="p">)</span>
-
-     <span class="c1"># Define basic read attributes</span>
-     <span class="n">_default_read_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x.user_readback&#39;</span><span class="p">,</span> <span class="s1">&#39;y.user_readback&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;z.user_readback&#39;</span><span class="p">,</span> <span class="s1">&#39;x.user_setpoint&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;y.user_setpoint&#39;</span><span class="p">,</span> <span class="s1">&#39;z.user_setpoint&#39;</span><span class="p">]</span>
-
-     <span class="nd">@property</span>
-     <span class="k">def</span> <span class="nf">hints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-         <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;x.readback&#39;</span><span class="p">,</span> <span class="s1">&#39;y.readback&#39;</span><span class="p">,</span> <span class="s1">&#39;z.readback&#39;</span><span class="p">]</span>
+<span class="c1"># Launch</span>
+<span class="n">suite</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">_exec</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Typhon will show the top level features of the class, but still allow the
-operator to view lower level details as they see fit. This allows for the
-representation of complex devices with nested structures in clean consistent
-user displays.</p>
 </div>
 <div class="section" id="using-the-stylesheet">
 <h2>Using the StyleSheet<a class="headerlink" href="#using-the-stylesheet" title="Permalink to this headline">¶</a></h2>

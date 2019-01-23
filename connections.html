@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Application Connections &mdash; Typhon 0.2.1+337.g7d7d34a documentation</title>
+  <title>Application Connections &mdash; Typhon 0.3.0rc1+17.g072e3cd documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+337.g7d7d34a
+                0.3.0rc1+17.g072e3cd
               </div>
             
           
@@ -91,6 +91,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#inclusion-of-metadata">Inclusion of Metadata</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#happi-plugin">Happi Plugin</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
@@ -101,7 +102,6 @@
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="positioner.html">TyphonPositionerWidget</a></li>
 </ul>
 
             
@@ -225,6 +225,15 @@ sure that it is expressed properly in the output of <code class="docutils litera
 </tbody>
 </table>
 </div>
+</div>
+<div class="section" id="happi-plugin">
+<h2>Happi Plugin<a class="headerlink" href="#happi-plugin" title="Permalink to this headline">¶</a></h2>
+<p>The PyDM Plugin interface makes no mandate about the type of signals that we
+connect to our widgets. The <a class="reference internal" href="plugins.html#typhon.plugins.HappiPlugin" title="typhon.plugins.HappiPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">HappiPlugin</span></code></a> and corresponding
+<code class="docutils literal notranslate"><span class="pre">HappiChannel</span></code> contains alternative signals in order to send entire <code class="docutils literal notranslate"><span class="pre">ophyd</span></code>
+objects from a stored database to our widgets. This is useful where we want to
+populate a template with an entire devices signals instead of connecting
+widgets one by one.</p>
 </div>
 </div>
 

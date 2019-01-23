@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Typhon Plugins &mdash; Typhon 0.2.1+337.g7d7d34a documentation</title>
+  <title>Typhon Plugins &mdash; Typhon 0.3.0rc1+17.g072e3cd documentation</title>
   
 
   
@@ -28,7 +28,6 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="TyphonPositionerWidget" href="positioner.html" />
     <link rel="prev" title="typhon.func.FunctionPanel" href="generated/typhon.func.FunctionPanel.html" /> 
 
   
@@ -58,7 +57,7 @@
             
             
               <div class="version">
-                0.2.1+337.g7d7d34a
+                0.3.0rc1+17.g072e3cd
               </div>
             
           
@@ -96,9 +95,9 @@
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Typhon Plugins</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#signalplugin">SignalPlugin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#happiplugin">HappiPlugin</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="positioner.html">TyphonPositionerWidget</a></li>
 </ul>
 
             
@@ -247,6 +246,42 @@ addition to the default disconnection performed in PyDMConnection</p>
 </dd></dl>
 
 </div>
+<div class="section" id="happiplugin">
+<h2>HappiPlugin<a class="headerlink" href="#happiplugin" title="Permalink to this headline">¶</a></h2>
+<p>These functions will not be imported if <code class="docutils literal notranslate"><span class="pre">happi</span></code> is not installed in the
+current Python environment</p>
+<dl class="function">
+<dt id="typhon.plugins.register_client">
+<code class="descclassname">typhon.plugins.</code><code class="descname">register_client</code><span class="sig-paren">(</span><em>client</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/happi.html#register_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.register_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a Happi Client to be used with the DataPlugin</p>
+<p>This is not required to be called by the user, if your environment is setup
+such that <code class="docutils literal notranslate"><span class="pre">happi.Client.from_config</span></code> will return the desired client</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="typhon.plugins.HappiConnection">
+<em class="property">class </em><code class="descclassname">typhon.plugins.</code><code class="descname">HappiConnection</code><span class="sig-paren">(</span><em>channel</em>, <em>address</em>, <em>protocol=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/happi.html#HappiConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.HappiConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>A PyDMConnection to the Happi Database</p>
+<dl class="method">
+<dt id="typhon.plugins.HappiConnection.add_listener">
+<code class="descname">add_listener</code><span class="sig-paren">(</span><em>channel</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/happi.html#HappiConnection.add_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.HappiConnection.add_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new channel to the existing connection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.plugins.HappiConnection.remove_listener">
+<code class="descname">remove_listener</code><span class="sig-paren">(</span><em>channel</em>, <em>destroying=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/happi.html#HappiConnection.remove_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.HappiConnection.remove_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a channel from the database connection</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="typhon.plugins.HappiPlugin">
+<em class="property">class </em><code class="descclassname">typhon.plugins.</code><code class="descname">HappiPlugin</code><a class="reference internal" href="_modules/typhon/plugins/happi.html#HappiPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.HappiPlugin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 </div>
 
 
@@ -256,8 +291,6 @@ addition to the default disconnection performed in PyDMConnection</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="positioner.html" class="btn btn-neutral float-right" title="TyphonPositionerWidget" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="generated/typhon.func.FunctionPanel.html" class="btn btn-neutral" title="typhon.func.FunctionPanel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

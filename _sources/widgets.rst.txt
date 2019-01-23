@@ -21,3 +21,16 @@ hides and shows the contents. Each variation in Typhon is documented below.
 
    typhon.signal.SignalPanel
    typhon.func.FunctionPanel
+
+
+TyphonPositionerWidget
+======================
+
+.. autoclass:: typhon.TyphonPositionerWidget
+   :members:
+
+
+TyphonMethodButton
+==================
+.. autoclass:: typhon.TyphonMethodButton
+   :members:
