@@ -12,7 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 def register_client(client):
-    """Register a Happi Client to be used with the DataPlugin"""
+    """
+    Register a Happi Client to be used with the DataPlugin
+
+    This is not required to be called by the user, if your environment is setup
+    such that ``happi.Client.from_config`` will return the desired client
+    """
     global _client
     _client = client
 

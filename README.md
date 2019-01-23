@@ -32,9 +32,9 @@ different categories based on their relevance to operators. Typhon uses this
 information to craft user interfaces.
 
 ## Installation
-Recommended installation:
+Recommended installation on Linux:
 ```
-conda install typhon -c pcds-tag -c conda-forge
+conda install typhon -c conda-forge -c pcds-tag
 ```
 All `-tag` channels have `-dev` counterparts for bleeding edge installations.
 Both `requirements.txt` and optional `dev-requirements.txt` are kept up to date
@@ -45,15 +45,30 @@ environment variables will be setup in such a way that the Typhon widgets will
 immediately be available in the `QtDesigner`. Otherwise, see the
 ``typhon_env.sh`` script contained in the ``etc`` folder of this repository.
 
+### Qt Installation
+There have been some observed inconsistencies between installations of `Qt`
+available on `pip`, `defaults` and `conda-forge`. It is recommended that if you
+want to use the full `typhon` feature to install via `conda-forge`. We have
+found this the most reliable, especially when it comes to using the
+`QtDesigner`.
+
 ## Getting Started
 Creating your first ``typhon`` panel for an``ophyd.Device`` only takes two
 lines:
 
 ```python
+from ophyd.sim import motor
+from qtpy.QtWidgets import QApplication
+import typhon
 
-from typhon import TyphonSuite
+# Create our application
+app = QApplication([])
+typhon.use_stylesheet()  # Optional
+suite = typhon.TyphonSuite.from_device(motor)
 
-suite = TyphonSuite.from_device(my_device)
+# Launch
+suite.show()
+app._exec()
 ```
 
 ## Available Widgets
