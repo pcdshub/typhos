@@ -260,3 +260,29 @@ def reload_widget_stylesheet(widget, cascade=False):
         for child in widget.children():
             if isinstance(child, QWidget):
                 reload_widget_stylesheet(child, cascade=True)
+
+
+def save_suite(suite, file_or_buffer):
+    """Create a file capable of relaunching the TyphonSuite"""
+    # Accept file-like objects or a handle
+    if isinstance(file_or_buffer, str):
+        handle = open(file_or_buffer, 'w+')
+    else:
+        handle = file_or_buffer
+    logger.debug("Saving TyphonSuite contents to %r", handle)
+    devices = [device.name for device in suite.devices]
+    handle.write(saved_template.format(devices=devices))
+
+
+saved_template = """\
+import sys
+import typhon.cli
+
+devices = {devices}
+
+def create_suite(cfg):
+    return typhon.cli.create_suite(devices, cfg=cfg)
+
+if __name__ == '__main__':
+    typhon.cli.typhon_cli(devices + sys.argv[1:])
+"""
