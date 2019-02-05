@@ -2,6 +2,7 @@
 # Standard #
 ############
 import io
+import os
 from pathlib import Path
 import tempfile
 
@@ -161,6 +162,7 @@ def test_suite_save(suite, monkeypatch):
     assert tfile.exists()
     devices = [device.name for device in suite.devices]
     assert str(devices) in open(str(tfile), 'r').read()
+    os.remove(str(tfile))
 
 
 def test_suite_save_cancel_smoke(suite, monkeypatch):

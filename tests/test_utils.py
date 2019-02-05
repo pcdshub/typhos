@@ -90,6 +90,7 @@ def test_load_suite(qtbot):
     qtbot.addWidget(suite)
     assert isinstance(suite, typhon.TyphonSuite)
     assert suite.devices == []
+    os.remove(module_file)
 
 
 def test_load_suite_with_bad_py_file():
