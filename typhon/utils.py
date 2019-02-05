@@ -297,7 +297,7 @@ import typhon.cli
 
 devices = {devices}
 
-def create_suite(cfg):
+def create_suite(cfg=None):
     return typhon.cli.create_suite(devices, cfg=cfg)
 
 if __name__ == '__main__':
