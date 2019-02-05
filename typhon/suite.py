@@ -1,7 +1,7 @@
 ############
 # Standard #
 ############
-import pathlib
+import os
 from functools import partial
 import logging
 
@@ -368,7 +368,7 @@ class TyphonSuite(TyphonBase):
         location of the created Python file
         """
         logger.debug("Requesting file location for saved TyphonSuite")
-        root_dir = str(pathlib.Path(__file__).parent)
+        root_dir = os.getcwd()
         filename = QFileDialog.getSaveFileName(self, 'Save TyphonSuite',
                                                root_dir, "Python (*.py)")
         if filename:
