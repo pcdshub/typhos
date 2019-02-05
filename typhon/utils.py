@@ -5,6 +5,8 @@ Utility functions for typhon
 # Standard #
 ############
 import io
+import importlib.util
+import pathlib
 import re
 import logging
 import os.path
@@ -272,6 +274,21 @@ def save_suite(suite, file_or_buffer):
     logger.debug("Saving TyphonSuite contents to %r", handle)
     devices = [device.name for device in suite.devices]
     handle.write(saved_template.format(devices=devices))
+
+
+def load_suite(path):
+    """"Load a file saved via Typhon"""
+    logger.info("Importing TyphonSuite from file %r ...", path)
+    module_name = pathlib.Path(path).name.replace('.py', '')
+    spec = importlib.util.spec_from_file_location(module_name,
+                                                  path)
+    suite_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(suite_module)
+    if hasattr(suite_module, 'create_suite'):
+        logger.debug("Executing create_suite method from %r", suite_module)
+        return suite_module.create_suite()
+    else:
+        raise AttributeError("Imported module has no 'create_suite' method!")
 
 
 saved_template = """\
