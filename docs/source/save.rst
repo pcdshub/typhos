@@ -24,7 +24,7 @@ to disk.
 There are two major ways to use this created file:
 
 1. Execute the Python file from the command line. This will route the call
-   through the standard :func:`.typhon.cli.typhon_cli` meaning all options
+   through the standard :func:`.cli.typhon_cli` meaning all options
    described there are also available.
 
 .. code:: bash
