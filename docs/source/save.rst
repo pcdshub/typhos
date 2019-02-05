@@ -17,8 +17,8 @@ to disk.
     def create_suite(cfg=None):
         return typhon.cli.create_suite(devices, cfg=cfg)
 
-        if __name__ == '__main__':
-            typhon.cli.typhon_cli(devices + sys.argv[1:])
+    if __name__ == '__main__':
+        typhon.cli.typhon_cli(devices + sys.argv[1:])
 
 
 There are two major ways to use this created file:
