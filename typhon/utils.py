@@ -265,7 +265,16 @@ def reload_widget_stylesheet(widget, cascade=False):
 
 
 def save_suite(suite, file_or_buffer):
-    """Create a file capable of relaunching the TyphonSuite"""
+    """
+    Create a file capable of relaunching the TyphonSuite
+
+    Parameters
+    ----------
+    suite: TyphonSuite
+
+    file_or_buffer : str or file-like
+        Either a path to the file or a handle that supports ``write``
+    """
     # Accept file-like objects or a handle
     if isinstance(file_or_buffer, str):
         handle = open(file_or_buffer, 'w+')
@@ -277,7 +286,19 @@ def save_suite(suite, file_or_buffer):
 
 
 def load_suite(path):
-    """"Load a file saved via Typhon"""
+    """"
+    Load a file saved via Typhon
+
+    Parameters
+    ----------
+    path: str
+        Path to file describing the ``TyphonSuite``. This needs to be of the
+        format created by the :meth:`.save_suite` function.
+
+    Returns
+    -------
+    suite: TyphonSuite
+    """
     logger.info("Importing TyphonSuite from file %r ...", path)
     module_name = pathlib.Path(path).name.replace('.py', '')
     spec = importlib.util.spec_from_file_location(module_name,

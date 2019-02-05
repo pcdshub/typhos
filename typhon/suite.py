@@ -361,7 +361,12 @@ class TyphonSuite(TyphonBase):
         return display
 
     def save(self):
-        """Save the TyphonSuite to a Python file using :meth:`.save_suite`"""
+        """
+        Save the TyphonSuite to a Python file using :meth:`.save_suite`
+
+        A ``QFileDialog`` will be used to query the user for the desired
+        location of the created Python file
+        """
         logger.debug("Requesting file location for saved TyphonSuite")
         root_dir = str(pathlib.Path(__file__).parent)
         filename = QFileDialog.getSaveFileName(self, 'Save TyphonSuite',
