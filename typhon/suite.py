@@ -1,6 +1,7 @@
 ############
 # Standard #
 ############
+import pathlib
 from functools import partial
 import logging
 
@@ -9,13 +10,14 @@ import logging
 ############
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from qtpy.QtCore import Signal, Slot, Qt
-from qtpy.QtWidgets import QDockWidget, QHBoxLayout, QVBoxLayout, QWidget
-
+from qtpy.QtWidgets import (QDockWidget, QHBoxLayout, QVBoxLayout, QWidget,
+                            QFileDialog)
 ###########
 # Package #
 ###########
 from .display import TyphonDeviceDisplay
-from .utils import clean_name, TyphonBase, flatten_tree
+from .utils import (clean_name, TyphonBase, flatten_tree, raise_to_operator,
+                    save_suite)
 from .widgets import TyphonSidebarItem, SubDisplay
 from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonConsole
 
@@ -88,6 +90,9 @@ class TyphonSuite(TyphonBase):
         # Setup parameter tree
         self._tree = ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
+        self._save_action = ptypes.ActionParameter(name='Save Suite')
+        self._tree.addParameters(self._save_action)
+        self._save_action.sigActivated.connect(self.save)
         # Setup layout
         self._layout = QHBoxLayout()
         self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
@@ -354,6 +359,22 @@ class TyphonSuite(TyphonBase):
         display.add_device(device, **kwargs)
         display.show_subdisplay(device)
         return display
+
+    def save(self):
+        """Save the TyphonSuite to a Python file using :meth:`.save_suite`"""
+        logger.debug("Requesting file location for saved TyphonSuite")
+        root_dir = str(pathlib.Path(__file__).parent)
+        filename = QFileDialog.getSaveFileName(self, 'Save TyphonSuite',
+                                               root_dir, "Python (*.py)")
+        if filename:
+            try:
+                with open(filename[0], 'w+') as handle:
+                    save_suite(self, handle)
+            except Exception as exc:
+                logger.error("Failed to save TyphonSuite")
+                raise_to_operator(exc)
+        else:
+            logger.debug("No filename chosen")
 
     def _get_sidebar(self, widget):
         items = {}
