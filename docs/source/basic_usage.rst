@@ -27,6 +27,7 @@ alternatively and be constructed using the ``from_device`` classmethod.
 
 .. autoclass:: typhon.utils.TyphonBase
    :members:
+   :noindex:
 
 
 Interpreting a Device
