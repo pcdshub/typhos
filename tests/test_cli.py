@@ -24,6 +24,7 @@ def test_cli_happi_cfg(monkeypatch, qtbot, happi_cfg):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
     suite = typhon_cli(['test_motor', '--happi-cfg', happi_cfg])
     qtbot.addWidget(suite)
+    assert suite.isVisible()
     assert 'test_motor' == suite.devices[0].name
 
 
