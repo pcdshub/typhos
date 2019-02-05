@@ -150,3 +150,21 @@ def test_suite_save_util(suite, device):
     handle.seek(0)
     devices = [device.name for device in suite.devices]
     assert str(devices) in handle.read()
+
+
+def test_suite_save(suite, monkeypatch):
+    tfile = Path(tempfile.gettempdir()) / 'test.py'
+    monkeypatch.setattr(typhon.suite.QFileDialog,
+                        'getSaveFileName',
+                        lambda *args: (str(tfile), str(tfile)))
+    suite.save()
+    assert tfile.exists()
+    devices = [device.name for device in suite.devices]
+    assert str(devices) in open(str(tfile), 'r').read()
+
+
+def test_suite_save_cancel_smoke(suite, monkeypatch):
+    monkeypatch.setattr(typhon.suite.QFileDialog,
+                        'getSaveFileName',
+                        lambda *args: None)
+    suite.save()
