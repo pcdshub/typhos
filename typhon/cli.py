@@ -55,11 +55,11 @@ def typhon_cli_setup(args):
         return
 
     # Deal with stylesheet
-    logger.debug("Applying stylesheet ...")
     if not app:
         logger.debug("Creating QApplication ...")
         app = QApplication([])
 
+    logger.debug("Applying stylesheet ...")
     typhon.use_stylesheet(dark=args.dark)
     if args.stylesheet:
         logger.info("Loading QSS file %r ...", args.stylesheet)
