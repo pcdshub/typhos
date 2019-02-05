@@ -376,7 +376,7 @@ class TyphonSuite(TyphonBase):
                 with open(filename[0], 'w+') as handle:
                     save_suite(self, handle)
             except Exception as exc:
-                logger.error("Failed to save TyphonSuite")
+                logger.exception("Failed to save TyphonSuite")
                 raise_to_operator(exc)
         else:
             logger.debug("No filename chosen")
