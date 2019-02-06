@@ -3,28 +3,15 @@ Saving and Loading
 ##################
 :class:`.TyphonSuite` objects can be stored for later use. The devices that
 were loaded into the suite via :meth:`.TyphonSuite.add_device` will be added
-once again assuming that they are stored in a ``happi`` database. When you call
-:meth:`.TyphonSuite.save` a Python file with the template shown below is saved
-to disk.
+once again assuming that they are stored in a ``happi`` database.
 
-.. code:: python
-
-    import sys
-    import typhon.cli
-
-    devices = {devices}
-
-    def create_suite(cfg=None):
-        return typhon.cli.create_suite(devices, cfg=cfg)
-
-    if __name__ == '__main__':
-        typhon.cli.typhon_cli(devices + sys.argv[1:])
-
+.. automethod:: typhon.TyphonSuite.save
+   :noindex:
 
 There are two major ways to use this created file:
 
 1. Execute the Python file from the command line. This will route the call
-   through the standard :func:`.cli.typhon_cli` meaning all options
+   through the standard :mod:`typhon.cli` meaning all options
    described there are also available.
 
 .. code:: bash
