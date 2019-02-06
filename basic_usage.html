@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How it Works &mdash; Typhon 0.3.0rc1+17.g072e3cd documentation</title>
+  <title>How it Works &mdash; Typhon 0.3.0+24.g30992f7 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0rc1+17.g072e3cd
+                0.3.0+24.g30992f7
               </div>
             
           
@@ -96,6 +96,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
 </ul>
@@ -105,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
 </ul>
 
             
@@ -194,12 +196,12 @@ arguments. The reason for this is to ensure that we can use all of the
 have an <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> every class has an <code class="docutils literal notranslate"><span class="pre">add_device</span></code> method and
 alternatively and be constructed using the <code class="docutils literal notranslate"><span class="pre">from_device</span></code> classmethod.</p>
 <dl class="class">
-<dt id="typhon.utils.TyphonBase">
-<em class="property">class </em><code class="descclassname">typhon.utils.</code><code class="descname">TyphonBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase" title="Permalink to this definition">¶</a></dt>
+<dt>
+<em class="property">class </em><code class="descclassname">typhon.utils.</code><code class="descname">TyphonBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Base widget for all Typhon widgets that interface with devices</p>
 <dl class="method">
-<dt id="typhon.utils.TyphonBase.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase.add_device" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.add_device"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Add a new device to the widget</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -212,8 +214,8 @@ alternatively and be constructed using the <code class="docutils literal notrans
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="typhon.utils.TyphonBase.from_device">
-<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase.from_device" title="Permalink to this definition">¶</a></dt>
+<dt>
+<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.from_device"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Create a new instance of the widget for a Device</p>
 <p>Shortcut for:</p>
 <div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphonBase</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
@@ -235,8 +237,8 @@ alternatively and be constructed using the <code class="docutils literal notrans
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.utils.TyphonBase.paintEvent">
-<code class="descname">paintEvent</code><span class="sig-paren">(</span><em>self</em>, <em>QPaintEvent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.paintEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase.paintEvent" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">paintEvent</code><span class="sig-paren">(</span><em>self</em>, <em>QPaintEvent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.paintEvent"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -308,15 +310,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="go">                              Out[5]: </span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1548280272.52064}),</span>
-<span class="go">             (&#39;motor_setpoint&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1548280272.520639})])</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1549482085.9041672}),</span>
+<span class="go">             (&#39;motor_setpoint&#39;,</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1549482085.9041662})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                            Out[6]: </span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1548280272.5210104}),</span>
+<span class="go">                                                                                                                                                                                                             Out[6]: </span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1549482085.9045491}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1548280272.5210612})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1549482085.9046006})])</span>
 </pre></div>
 </div>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonSignalPanel</span></code> will render these, allowing us to select a subset
@@ -432,6 +435,7 @@ interface have an operating system independent look and feel.</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

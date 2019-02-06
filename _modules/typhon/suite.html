@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.suite &mdash; Typhon 0.3.0rc1+17.g072e3cd documentation</title>
+  <title>typhon.suite &mdash; Typhon 0.3.0+24.g30992f7 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.3.0rc1+17.g072e3cd
+                0.3.0+24.g30992f7
               </div>
             
           
@@ -84,6 +84,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 </ul>
@@ -93,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
 </ul>
 
             
@@ -159,21 +161,24 @@
 <span></span><span class="c1">############</span>
 <span class="c1"># Standard #</span>
 <span class="c1">############</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
 
 <span class="c1">############</span>
 <span class="c1"># External #</span>
 <span class="c1">############</span>
 <span class="kn">from</span> <span class="nn">pyqtgraph.parametertree</span> <span class="k">import</span> <span class="n">ParameterTree</span><span class="p">,</span> <span class="n">parameterTypes</span> <span class="k">as</span> <span class="n">ptypes</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Qt</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QDockWidget</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span>
-
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QDockWidget</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span>
+                            <span class="n">QFileDialog</span><span class="p">)</span>
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
 <span class="c1">###########</span>
 <span class="kn">from</span> <span class="nn">.display</span> <span class="k">import</span> <span class="n">TyphonDeviceDisplay</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">,</span> <span class="n">flatten_tree</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">clean_name</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">,</span> <span class="n">flatten_tree</span><span class="p">,</span> <span class="n">raise_to_operator</span><span class="p">,</span>
+                    <span class="n">save_suite</span><span class="p">,</span> <span class="n">saved_template</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonSidebarItem</span><span class="p">,</span> <span class="n">SubDisplay</span>
 <span class="kn">from</span> <span class="nn">.tools</span> <span class="k">import</span> <span class="n">TyphonTimePlot</span><span class="p">,</span> <span class="n">TyphonLogDisplay</span><span class="p">,</span> <span class="n">TyphonConsole</span>
 
@@ -246,6 +251,9 @@
         <span class="c1"># Setup parameter tree</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="n">ParameterTree</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">showHeader</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">setAlternatingRowColors</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_action</span> <span class="o">=</span> <span class="n">ptypes</span><span class="o">.</span><span class="n">ActionParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Save Suite&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">addParameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_save_action</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_action</span><span class="o">.</span><span class="n">sigActivated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">)</span>
         <span class="c1"># Setup layout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">setSizeConstraint</span><span class="p">(</span><span class="n">QHBoxLayout</span><span class="o">.</span><span class="n">SetFixedSize</span><span class="p">)</span>
@@ -513,6 +521,34 @@
         <span class="n">display</span><span class="o">.</span><span class="n">show_subdisplay</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">display</span></div>
 
+<div class="viewcode-block" id="TyphonSuite.save"><a class="viewcode-back" href="../../save.html#typhon.TyphonSuite.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the TyphonSuite to a file using :meth:`typhon.utils.save_suite`</span>
+
+<span class="sd">        A ``QFileDialog`` will be used to query the user for the desired</span>
+<span class="sd">        location of the created Python file</span>
+
+<span class="sd">        The template will be of the form:</span>
+
+<span class="sd">        .. code::</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Requesting file location for saved TyphonSuite&quot;</span><span class="p">)</span>
+        <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Save TyphonSuite&#39;</span><span class="p">,</span>
+                                               <span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;Python (*.py)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+                    <span class="n">save_suite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to save TyphonSuite&quot;</span><span class="p">)</span>
+                <span class="n">raise_to_operator</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No filename chosen&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># Add the template to the docstring</span>
+    <span class="n">save</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">saved_template</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_get_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="n">items</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -593,6 +629,7 @@
         <script type="text/javascript" src="../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
 
   

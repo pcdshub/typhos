@@ -39,6 +39,7 @@ Related Projects
 
    basic_usage.rst
    tools.rst
+   save.rst
    connections.rst
    python_methods.rst
 
@@ -51,3 +52,4 @@ Related Projects
    display.rst
    widgets.rst
    plugins.rst
+   utils.rst

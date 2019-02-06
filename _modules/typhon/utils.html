@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.utils &mdash; Typhon 0.3.0rc1+17.g072e3cd documentation</title>
+  <title>typhon.utils &mdash; Typhon 0.3.0+24.g30992f7 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.3.0rc1+17.g072e3cd
+                0.3.0+24.g30992f7
               </div>
             
           
@@ -84,6 +84,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 </ul>
@@ -93,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
 </ul>
 
             
@@ -163,6 +165,8 @@
 <span class="c1"># Standard #</span>
 <span class="c1">############</span>
 <span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">importlib.util</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
@@ -187,7 +191,7 @@
 <span class="n">ui_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;ui&#39;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+<div class="viewcode-block" id="channel_from_signal"><a class="viewcode-back" href="../../utils.html#typhon.utils.channel_from_signal">[docs]</a><span class="k">def</span> <span class="nf">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a PyDM address from arbitrary signal type</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -195,20 +199,20 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">_read_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">is_signal_ro</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+<div class="viewcode-block" id="is_signal_ro"><a class="viewcode-back" href="../../utils.html#typhon.utils.is_signal_ro">[docs]</a><span class="k">def</span> <span class="nf">is_signal_ro</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return whether the signal is read-only</span>
 
 <span class="sd">    In the future this may be easier to do through improvements to</span>
 <span class="sd">    introspection in the ophyd library. Until that day we need to check classes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="p">(</span><span class="n">SignalRO</span><span class="p">,</span> <span class="n">EpicsSignalRO</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="p">(</span><span class="n">SignalRO</span><span class="p">,</span> <span class="n">EpicsSignalRO</span><span class="p">))</span></div>
 
 
-<span class="k">def</span> <span class="nf">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+<div class="viewcode-block" id="grab_kind"><a class="viewcode-back" href="../../utils.html#typhon.utils.grab_kind">[docs]</a><span class="k">def</span> <span class="nf">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Grab all signals of a specific Kind from a Device&quot;&quot;&quot;</span>
     <span class="c1"># Accept actual Kind or string value</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">Kind</span><span class="p">):</span>
@@ -226,24 +230,24 @@
         <span class="n">cpt</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cpt</span><span class="o">.</span><span class="n">kind</span> <span class="o">&gt;=</span> <span class="n">kind</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cpt</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
             <span class="n">signals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">attr</span><span class="p">,</span> <span class="n">cpt</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">signals</span>
+    <span class="k">return</span> <span class="n">signals</span></div>
 
 
-<span class="k">def</span> <span class="nf">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;ca&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="channel_name"><a class="viewcode-back" href="../../utils.html#typhon.utils.channel_name">[docs]</a><span class="k">def</span> <span class="nf">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;ca&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a valid PyDM channel from a PV name</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">protocol</span> <span class="o">+</span> <span class="s1">&#39;://&#39;</span> <span class="o">+</span> <span class="n">pv</span>
+    <span class="k">return</span> <span class="n">protocol</span> <span class="o">+</span> <span class="s1">&#39;://&#39;</span> <span class="o">+</span> <span class="n">pv</span></div>
 
 
-<span class="k">def</span> <span class="nf">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
+<div class="viewcode-block" id="clean_attr"><a class="viewcode-back" href="../../utils.html#typhon.utils.clean_attr">[docs]</a><span class="k">def</span> <span class="nf">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a nicer, human readable alias from a Python attribute name</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="clean_name"><a class="viewcode-back" href="../../utils.html#typhon.utils.clean_name">[docs]</a><span class="k">def</span> <span class="nf">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a human readable name for a device</span>
 
@@ -265,10 +269,10 @@
             <span class="n">parent_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parent_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="c1"># Return the cleaned alias</span>
-    <span class="k">return</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">use_stylesheet</span><span class="p">(</span><span class="n">dark</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="use_stylesheet"><a class="viewcode-back" href="../../utils.html#typhon.utils.use_stylesheet">[docs]</a><span class="k">def</span> <span class="nf">use_stylesheet</span><span class="p">(</span><span class="n">dark</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use the Typhon stylesheet</span>
 
@@ -298,23 +302,23 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QApplication</span><span class="p">):</span>
         <span class="n">widget</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">QStyleFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Fusion&#39;</span><span class="p">))</span>
     <span class="c1"># Set Stylesheet</span>
-    <span class="n">widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">style</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">random_color</span><span class="p">():</span>
+<div class="viewcode-block" id="random_color"><a class="viewcode-back" href="../../utils.html#typhon.utils.random_color">[docs]</a><span class="k">def</span> <span class="nf">random_color</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Return a random hex color description&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">QColor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
                   <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
-                  <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+                  <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="TyphonBase"><a class="viewcode-back" href="../../basic_usage.html#typhon.utils.TyphonBase">[docs]</a><span class="k">class</span> <span class="nc">TyphonBase</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonBase"><a class="viewcode-back" href="../../utils.html#typhon.utils.TyphonBase">[docs]</a><span class="k">class</span> <span class="nc">TyphonBase</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base widget for all Typhon widgets that interface with devices&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
-<div class="viewcode-block" id="TyphonBase.add_device"><a class="viewcode-back" href="../../basic_usage.html#typhon.utils.TyphonBase.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonBase.add_device"><a class="viewcode-back" href="../../utils.html#typhon.utils.TyphonBase.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new device to the widget</span>
 
@@ -325,7 +329,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding device </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TyphonBase.paintEvent"><a class="viewcode-back" href="../../basic_usage.html#typhon.utils.TyphonBase.paintEvent">[docs]</a>    <span class="k">def</span> <span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphonBase.paintEvent"><a class="viewcode-back" href="../../utils.html#typhon.utils.TyphonBase.paintEvent">[docs]</a>    <span class="k">def</span> <span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="c1"># This is necessary because by default QWidget ignores stylesheets</span>
         <span class="c1"># https://wiki.qt.io/How_to_Change_the_Background_Color_of_QWidget</span>
         <span class="n">opt</span> <span class="o">=</span> <span class="n">QStyleOption</span><span class="p">()</span>
@@ -335,7 +339,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">drawPrimitive</span><span class="p">(</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PE_Widget</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">paintEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TyphonBase.from_device"><a class="viewcode-back" href="../../basic_usage.html#typhon.utils.TyphonBase.from_device">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TyphonBase.from_device"><a class="viewcode-back" href="../../utils.html#typhon.utils.TyphonBase.from_device">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new instance of the widget for a Device</span>
@@ -358,7 +362,7 @@
         <span class="k">return</span> <span class="n">instance</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">make_identifier</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="make_identifier"><a class="viewcode-back" href="../../utils.html#typhon.utils.make_identifier">[docs]</a><span class="k">def</span> <span class="nf">make_identifier</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Make a Python string into a valid Python identifier&quot;&quot;&quot;</span>
     <span class="c1"># That was easy</span>
     <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
@@ -373,28 +377,28 @@
     <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^0-9a-zA-Z_]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
     <span class="c1"># Remove leading characters until we find a letter or an underscore</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;^[^a-zA-Z_]+&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">name</span>
+    <span class="k">return</span> <span class="n">name</span></div>
 
 
-<span class="k">def</span> <span class="nf">flatten_tree</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+<div class="viewcode-block" id="flatten_tree"><a class="viewcode-back" href="../../utils.html#typhon.utils.flatten_tree">[docs]</a><span class="k">def</span> <span class="nf">flatten_tree</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Flatten a tree of parameters&quot;&quot;&quot;</span>
     <span class="n">tree</span> <span class="o">=</span> <span class="p">[</span><span class="n">param</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">childs</span><span class="p">:</span>
         <span class="n">tree</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flatten_tree</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">tree</span>
+    <span class="k">return</span> <span class="n">tree</span></div>
 
 
-<span class="k">def</span> <span class="nf">clear_layout</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
+<div class="viewcode-block" id="clear_layout"><a class="viewcode-back" href="../../utils.html#typhon.utils.clear_layout">[docs]</a><span class="k">def</span> <span class="nf">clear_layout</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Clear a QLayout&quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
         <span class="n">child</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">():</span>
             <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">layout</span><span class="p">():</span>
-            <span class="n">clear_layout</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span>
+            <span class="n">clear_layout</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span></div>
 
 
-<span class="k">def</span> <span class="nf">raise_to_operator</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span>
+<div class="viewcode-block" id="raise_to_operator"><a class="viewcode-back" href="../../utils.html#typhon.utils.raise_to_operator">[docs]</a><span class="k">def</span> <span class="nf">raise_to_operator</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Utility function to show an Exception to a user&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Reporting error </span><span class="si">%r</span><span class="s2"> to user ...&quot;</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
     <span class="n">err_msg</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="p">()</span>
@@ -406,10 +410,10 @@
     <span class="n">handle</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">err_msg</span><span class="o">.</span><span class="n">setDetailedText</span><span class="p">(</span><span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
     <span class="n">err_msg</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">err_msg</span>
+    <span class="k">return</span> <span class="n">err_msg</span></div>
 
 
-<span class="k">def</span> <span class="nf">reload_widget_stylesheet</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="reload_widget_stylesheet"><a class="viewcode-back" href="../../utils.html#typhon.utils.reload_widget_stylesheet">[docs]</a><span class="k">def</span> <span class="nf">reload_widget_stylesheet</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Reload the stylesheet of the provided widget&quot;&quot;&quot;</span>
     <span class="n">widget</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">unpolish</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
     <span class="n">widget</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">polish</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
@@ -417,7 +421,69 @@
     <span class="k">if</span> <span class="n">cascade</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">widget</span><span class="o">.</span><span class="n">children</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">):</span>
-                <span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_suite"><a class="viewcode-back" href="../../utils.html#typhon.utils.save_suite">[docs]</a><span class="k">def</span> <span class="nf">save_suite</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">file_or_buffer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a file capable of relaunching the TyphonSuite</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    suite: TyphonSuite</span>
+
+<span class="sd">    file_or_buffer : str or file-like</span>
+<span class="sd">        Either a path to the file or a handle that supports ``write``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Accept file-like objects or a handle</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_or_buffer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_or_buffer</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">handle</span> <span class="o">=</span> <span class="n">file_or_buffer</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saving TyphonSuite contents to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">handle</span><span class="p">)</span>
+    <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">suite</span><span class="o">.</span><span class="n">devices</span><span class="p">]</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">saved_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="n">devices</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="load_suite"><a class="viewcode-back" href="../../utils.html#typhon.utils.load_suite">[docs]</a><span class="k">def</span> <span class="nf">load_suite</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="sd">    Load a file saved via Typhon</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to file describing the ``TyphonSuite``. This needs to be of the</span>
+<span class="sd">        format created by the :meth:`.save_suite` function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    suite: TyphonSuite</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Importing TyphonSuite from file </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="n">module_name</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span>
+                                                  <span class="n">path</span><span class="p">)</span>
+    <span class="n">suite_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">suite_module</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">suite_module</span><span class="p">,</span> <span class="s1">&#39;create_suite&#39;</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing create_suite method from </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">suite_module</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">suite_module</span><span class="o">.</span><span class="n">create_suite</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Imported module has no &#39;create_suite&#39; method!&quot;</span><span class="p">)</span></div>
+
+
+<span class="n">saved_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">import sys</span>
+<span class="s2">import typhon.cli</span>
+
+<span class="s2">devices = </span><span class="si">{devices}</span><span class="s2"></span>
+
+<span class="s2">def create_suite(cfg=None):</span>
+<span class="s2">    return typhon.cli.create_suite(devices, cfg=cfg)</span>
+
+<span class="s2">if __name__ == &#39;__main__&#39;:</span>
+<span class="s2">    typhon.cli.typhon_cli(devices + sys.argv[1:])</span>
+<span class="s2">&quot;&quot;&quot;</span>
 </pre></div>
 
            </div>
@@ -455,6 +521,7 @@
         <script type="text/javascript" src="../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
     
 
   

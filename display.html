@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.3.0rc1+17.g072e3cd documentation</title>
+  <title>Display Types &mdash; Typhon 0.3.0+24.g30992f7 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0rc1+17.g072e3cd
+                0.3.0+24.g30992f7
               </div>
             
           
@@ -86,6 +86,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
 </ul>
@@ -99,6 +100,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
 </ul>
 
             
@@ -325,6 +327,27 @@ DockWidget we will close that, otherwise the widget is just hidden.</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="typhon.TyphonSuite.save">
+<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the TyphonSuite to a file using <a class="reference internal" href="utils.html#typhon.utils.save_suite" title="typhon.utils.save_suite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">typhon.utils.save_suite()</span></code></a></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">QFileDialog</span></code> will be used to query the user for the desired
+location of the created Python file</p>
+<p>The template will be of the form:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">typhon.cli</span>
+
+<span class="n">devices</span> <span class="o">=</span> <span class="p">{</span><span class="n">devices</span><span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">create_suite</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">typhon</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">create_suite</span><span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">typhon</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">typhon_cli</span><span class="p">(</span><span class="n">devices</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="typhon.TyphonSuite.show_subdisplay">
 <code class="descname">show_subdisplay</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.show_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.show_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open a display in the dock system</p>
@@ -529,6 +552,7 @@ a cleaned version of the device name</p>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
 
   

@@ -26,7 +26,9 @@
 ./_sources/index.rst.txt
 ./_sources/plugins.rst.txt
 ./_sources/python_methods.rst.txt
+./_sources/save.rst.txt
 ./_sources/tools.rst.txt
+./_sources/utils.rst.txt
 ./_sources/widgets.rst.txt
 ./_static/ajax-loader.gif
 ./_static/basic.css
@@ -78,6 +80,7 @@
 ./_static/js/modernizr.min.js
 ./_static/js/theme.js
 ./_static/kind_panel.gif
+./_static/language_data.js
 ./_static/minus.png
 ./_static/plus.png
 ./_static/pygments.css
@@ -102,7 +105,9 @@
 ./plugins.html
 ./py-modindex.html
 ./python_methods.html
+./save.html
 ./search.html
 ./searchindex.js
 ./tools.html
+./utils.html
 ./widgets.html

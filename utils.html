@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Utility Functions &mdash; Typhon 0.3.0+24.g30992f7 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Typhon Plugins" href="plugins.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Typhon
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3.0+24.g30992f7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utility Functions</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Typhon</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Utility Functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-typhon.utils">
+<span id="utility-functions"></span><h1>Utility Functions<a class="headerlink" href="#module-typhon.utils" title="Permalink to this headline">¶</a></h1>
+<p>Utility functions for typhon</p>
+<dl class="class">
+<dt id="typhon.utils.TyphonBase">
+<em class="property">class </em><code class="descclassname">typhon.utils.</code><code class="descname">TyphonBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base widget for all Typhon widgets that interface with devices</p>
+<dl class="method">
+<dt id="typhon.utils.TyphonBase.add_device">
+<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase.add_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new device to the widget</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device</strong> (<em>ophyd.Device</em>) – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="typhon.utils.TyphonBase.from_device">
+<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase.from_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new instance of the widget for a Device</p>
+<p>Shortcut for:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphonBase</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>parent</strong> (<em>QWidget</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.utils.TyphonBase.paintEvent">
+<code class="descname">paintEvent</code><span class="sig-paren">(</span><em>self</em>, <em>QPaintEvent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.paintEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.TyphonBase.paintEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.channel_from_signal">
+<code class="descclassname">typhon.utils.</code><code class="descname">channel_from_signal</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#channel_from_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.channel_from_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a PyDM address from arbitrary signal type</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.channel_name">
+<code class="descclassname">typhon.utils.</code><code class="descname">channel_name</code><span class="sig-paren">(</span><em>pv</em>, <em>protocol='ca'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#channel_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.channel_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a valid PyDM channel from a PV name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.clean_attr">
+<code class="descclassname">typhon.utils.</code><code class="descname">clean_attr</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#clean_attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.clean_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a nicer, human readable alias from a Python attribute name</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.clean_name">
+<code class="descclassname">typhon.utils.</code><code class="descname">clean_name</code><span class="sig-paren">(</span><em>device</em>, <em>strip_parent=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#clean_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.clean_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a human readable name for a device</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
+<li><strong>strip_parent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em> or </em><em>Device</em>) – Remove the parent name of the device from name. If strip_parent is
+True, the name of the direct parent of the device is stripped. If a
+device is provided the name of that device is used. This allows
+specification for removal at any point of the device schema</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.clear_layout">
+<code class="descclassname">typhon.utils.</code><code class="descname">clear_layout</code><span class="sig-paren">(</span><em>layout</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#clear_layout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.clear_layout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear a QLayout</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.flatten_tree">
+<code class="descclassname">typhon.utils.</code><code class="descname">flatten_tree</code><span class="sig-paren">(</span><em>param</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#flatten_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.flatten_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flatten a tree of parameters</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.grab_kind">
+<code class="descclassname">typhon.utils.</code><code class="descname">grab_kind</code><span class="sig-paren">(</span><em>device</em>, <em>kind</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#grab_kind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.grab_kind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grab all signals of a specific Kind from a Device</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.is_signal_ro">
+<code class="descclassname">typhon.utils.</code><code class="descname">is_signal_ro</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#is_signal_ro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.is_signal_ro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether the signal is read-only</p>
+<p>In the future this may be easier to do through improvements to
+introspection in the ophyd library. Until that day we need to check classes</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.load_suite">
+<code class="descclassname">typhon.utils.</code><code class="descname">load_suite</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#load_suite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.load_suite" title="Permalink to this definition">¶</a></dt>
+<dd><p>”
+Load a file saved via Typhon</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to file describing the <code class="docutils literal notranslate"><span class="pre">TyphonSuite</span></code>. This needs to be of the
+format created by the <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_suite()</span></code> function.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>suite</strong></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="display.html#typhon.TyphonSuite" title="typhon.TyphonSuite">TyphonSuite</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.make_identifier">
+<code class="descclassname">typhon.utils.</code><code class="descname">make_identifier</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#make_identifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.make_identifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a Python string into a valid Python identifier</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.raise_to_operator">
+<code class="descclassname">typhon.utils.</code><code class="descname">raise_to_operator</code><span class="sig-paren">(</span><em>exc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#raise_to_operator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.raise_to_operator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function to show an Exception to a user</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.random_color">
+<code class="descclassname">typhon.utils.</code><code class="descname">random_color</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#random_color"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.random_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a random hex color description</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.reload_widget_stylesheet">
+<code class="descclassname">typhon.utils.</code><code class="descname">reload_widget_stylesheet</code><span class="sig-paren">(</span><em>widget</em>, <em>cascade=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#reload_widget_stylesheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.reload_widget_stylesheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reload the stylesheet of the provided widget</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.save_suite">
+<code class="descclassname">typhon.utils.</code><code class="descname">save_suite</code><span class="sig-paren">(</span><em>suite</em>, <em>file_or_buffer</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#save_suite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.save_suite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a file capable of relaunching the TyphonSuite</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>suite</strong> (<a class="reference internal" href="display.html#typhon.TyphonSuite" title="typhon.TyphonSuite"><em>TyphonSuite</em></a>) – </li>
+<li><strong>file_or_buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>file-like</em>) – Either a path to the file or a handle that supports <code class="docutils literal notranslate"><span class="pre">write</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="typhon.utils.use_stylesheet">
+<code class="descclassname">typhon.utils.</code><code class="descname">use_stylesheet</code><span class="sig-paren">(</span><em>dark=False</em>, <em>widget=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#use_stylesheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.use_stylesheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the Typhon stylesheet</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dark</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether or not to use the QDarkStyleSheet theme. By default the light
+theme is chosen.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="plugins.html" class="btn btn-neutral" title="Typhon Plugins" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, SLAC National Accelerator Laboratory
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
