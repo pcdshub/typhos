@@ -1,5 +1,12 @@
+# vi: sw=2 ts=2 sts=2 expandtab
+
 language: python
-sudo: required
+
+addons:
+    apt:
+      packages:
+        - xvfb
+        - herbstluftwm
 
 env:
   global:
@@ -10,28 +17,30 @@ matrix:
   include:
      - python: 3.6
        env:
-          - BUILD_DOCS=1
-          - BUILD=1
-          - PYDM_CHANNEL=pcds-tag
+           - BUILD_DOCS=1
+           - BUILD=1
+           - PYDM_CHANNEL=pcds-tag
+           - NSLS2_CHANNEL=lightsource2-tag
      - python: 3.6
-       env: PYDM_CHANNEL=pydm-dev
+       env:
+           - PYDM_CHANNEL=pydm-dev
+           - NSLS2_CHANNEL=lightsource2-dev
      - python: 3.7
        dist: xenial
        env:
            - PYDM_CHANNEL=pcds-tag
+           - NSLS2_CHANNEL=lightsource2-tag
            - BUILD=1
   allow_failures:
      - python: 3.7
        dist: xenial
        env:
            - PYDM_CHANNEL=pcds-tag
+           - NSLS2_CHANNEL=lightsource2-tag
            - BUILD=1
 
 
 install:
-  - sudo apt-get update
-  # Install windows manager
-  - sudo apt-get install -y xvfb herbstluftwm
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -41,7 +50,7 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda install conda-build anaconda-client
   - conda update -q conda conda-build
-  - conda config --add channels $PYDM_CHANNEL 
+  - conda config --add channels $PYDM_CHANNEL
   - conda config --append channels pcds-tag
   - conda config --append channels conda-forge
   # Useful for debugging any issues with conda
@@ -53,6 +62,7 @@ install:
   # Launch Conda environment
   - source activate test-environment
   # temporarily install ophyd master
+  # - conda install -c $NSLS2_CHANNEL ophyd
   - pip install -U git+https://github.com/NSLS-II/ophyd.git
   # Setup some path environment variables for epics
   - export PATH=$PATH:$EPICS_BASE/bin/$EPICS_HOST_ARCH
@@ -83,7 +93,7 @@ script:
   - set -e
   - |
     if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD_DOCS ]]; then
-      # Create HTML documentation  
+      # Create HTML documentation
       pushd docs
       make html
       popd
