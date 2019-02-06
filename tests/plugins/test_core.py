@@ -5,6 +5,7 @@
 ############
 # External #
 ############
+import numpy as np
 from ophyd import Signal
 from pydm.widgets.base import PyDMWritableWidget
 from qtpy.QtWidgets import QWidget
@@ -102,3 +103,24 @@ def test_disconnection(qtbot):
     # This should fail on the get
     sig.subscribable = True
     sig_conn = SignalConnection(listener, 'broken_signal')
+
+
+def test_array_signal_send_value(qapp, qtbot):
+    sig = Signal(name='my_array', value=np.ones(4))
+    register_signal(sig)
+    widget = WritableWidget()
+    qtbot.addWidget(widget)
+    widget.channel = 'sig://my_array'
+    qapp.processEvents()
+    assert all(widget.value == np.ones(4))
+
+
+def test_array_signal_put_value(qapp, qtbot):
+    sig = Signal(name='my_array_write', value=np.ones(4))
+    register_signal(sig)
+    widget = WritableWidget()
+    qtbot.addWidget(widget)
+    widget.channel = 'sig://my_array_write'
+    widget.send_value_signal[np.ndarray].emit(np.zeros(4))
+    qapp.processEvents()
+    assert all(sig.value == np.zeros(4))
