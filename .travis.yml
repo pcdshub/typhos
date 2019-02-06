@@ -1,5 +1,12 @@
+# vi: sw=2 ts=2 sts=2 expandtab
+
 language: python
-sudo: required
+
+addons:
+    apt:
+      packages:
+        - xvfb
+        - herbstluftwm
 
 env:
   global:
@@ -10,9 +17,9 @@ matrix:
   include:
      - python: 3.6
        env:
-          - BUILD_DOCS=1
-          - BUILD=1
-          - PYDM_CHANNEL=pcds-tag
+           - BUILD_DOCS=1
+           - BUILD=1
+           - PYDM_CHANNEL=pcds-tag
      - python: 3.6
        env: PYDM_CHANNEL=pydm-dev
      - python: 3.7
@@ -29,12 +36,7 @@ matrix:
 
 
 install:
-  - sudo apt-get update
-  # Install windows manager
-  - sudo apt-get install -y xvfb herbstluftwm
-  # We do this conditionally because it saves us some downloading if the
-  # version is the same.
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
