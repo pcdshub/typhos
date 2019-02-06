@@ -70,6 +70,33 @@ class SignalConnection(PyDMConnection):
         # Add listener
         self.add_listener(channel)
 
+    def cast(self, value):
+        """
+        Cast a value to the correct Python type based on ``signal_type``
+
+        If ``signal_type`` is not set, the result of ``ophyd.Signal.describe``
+        is used to determine what the correct Python type for value is. We need
+        to be aware of the correct Python type so that we can emit the value
+        through the correct signal and convert values returned by the widget to
+        the correct type before handing them to Ophyd Signal
+        """
+        # If this is the first time we are receiving a new value note the type
+        # We make the assumption that signals do not change types during a
+        # connection
+        if not self.signal_type:
+            dtype = self.signal.describe()[self.signal.name]['dtype']
+            # Only way this raises a KeyError is if ophyd is confused
+            self.signal_type = _type_map[dtype][0]
+            logger.debug("Found signal type %r for %r. Using Python type %r",
+                         dtype, self.signal.name, self.signal_type)
+
+        logger.debug("Casting %r to %r", value, self.signal_type)
+        if self.signal_type is np.ndarray:
+            value = np.asarray(value)
+        else:
+            value = self.signal_type(value)
+        return value
+
     @Slot(int)
     @Slot(float)
     @Slot(str)
@@ -83,9 +110,7 @@ class SignalConnection(PyDMConnection):
         reported type of the signal unless it is of type ``np.ndarray``
         """
         try:
-            # Cast into the correct type
-            if self.signal_type is not np.ndarray:
-                new_val = self.signal_type(new_val)
+            new_val = self.cast(new_val)
             logger.debug("Putting value %r to %r", new_val, self.address)
             self.signal.put(new_val)
         except Exception as exc:
@@ -96,15 +121,8 @@ class SignalConnection(PyDMConnection):
         """
         Update the UI with a new value from the Signal
         """
-        # If this is the first time we are receiving a new value note the type
-        # We make the assumption that signals do not change types during a
-        # connection
-        if not self.signal_type:
-            dtype = self.signal.describe()[self.signal.name]['dtype']
-            # Only way this raises a KeyError is if ophyd is confused
-            self.signal_type = _type_map[dtype][0]
         try:
-            value = self.signal_type(value)
+            value = self.cast(value)
             self.new_value_signal[self.signal_type].emit(value)
         except Exception:
             logger.exception("Unable to update %r with value %r.",
