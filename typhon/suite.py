@@ -363,7 +363,7 @@ class TyphonSuite(TyphonBase):
 
     def save(self):
         """
-        Save the TyphonSuite to a Python file using :meth:`typhon.utils.save_suite`
+        Save the TyphonSuite to a file using :meth:`typhon.utils.save_suite`
 
         A ``QFileDialog`` will be used to query the user for the desired
         location of the created Python file
@@ -386,10 +386,8 @@ class TyphonSuite(TyphonBase):
         else:
             logger.debug("No filename chosen")
 
-
     # Add the template to the docstring
     save.__doc__ += textwrap.indent('\n' + saved_template, '\t\t')
-
 
     def _get_sidebar(self, widget):
         items = {}
