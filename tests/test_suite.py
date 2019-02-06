@@ -1,6 +1,10 @@
 ############
 # Standard #
 ############
+import io
+import os
+from pathlib import Path
+import tempfile
 
 ############
 # External #
@@ -12,7 +16,8 @@ from qtpy.QtWidgets import QDockWidget
 ###########
 # Package #
 ###########
-from typhon.utils import clean_name
+import typhon.suite
+from typhon.utils import clean_name, save_suite
 from typhon.suite import TyphonSuite, DeviceParameter
 from typhon.display import TyphonDeviceDisplay
 from .conftest import show_widget
@@ -138,3 +143,30 @@ def test_hide_embedded_display(suite, device):
     display = suite.get_subdisplay(device.x)
     assert suite.embedded_dock is None
     assert display.isHidden()
+
+
+def test_suite_save_util(suite, device):
+    handle = io.StringIO()
+    save_suite(suite, handle)
+    handle.seek(0)
+    devices = [device.name for device in suite.devices]
+    assert str(devices) in handle.read()
+
+
+def test_suite_save(suite, monkeypatch):
+    tfile = Path(tempfile.gettempdir()) / 'test.py'
+    monkeypatch.setattr(typhon.suite.QFileDialog,
+                        'getSaveFileName',
+                        lambda *args: (str(tfile), str(tfile)))
+    suite.save()
+    assert tfile.exists()
+    devices = [device.name for device in suite.devices]
+    assert str(devices) in open(str(tfile), 'r').read()
+    os.remove(str(tfile))
+
+
+def test_suite_save_cancel_smoke(suite, monkeypatch):
+    monkeypatch.setattr(typhon.suite.QFileDialog,
+                        'getSaveFileName',
+                        lambda *args: None)
+    suite.save()

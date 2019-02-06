@@ -1,21 +1,24 @@
 ############
 # Standard #
 ############
+import os
 from functools import partial
 import logging
+import textwrap
 
 ############
 # External #
 ############
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from qtpy.QtCore import Signal, Slot, Qt
-from qtpy.QtWidgets import QDockWidget, QHBoxLayout, QVBoxLayout, QWidget
-
+from qtpy.QtWidgets import (QDockWidget, QHBoxLayout, QVBoxLayout, QWidget,
+                            QFileDialog)
 ###########
 # Package #
 ###########
 from .display import TyphonDeviceDisplay
-from .utils import clean_name, TyphonBase, flatten_tree
+from .utils import (clean_name, TyphonBase, flatten_tree, raise_to_operator,
+                    save_suite, saved_template)
 from .widgets import TyphonSidebarItem, SubDisplay
 from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonConsole
 
@@ -88,6 +91,9 @@ class TyphonSuite(TyphonBase):
         # Setup parameter tree
         self._tree = ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
+        self._save_action = ptypes.ActionParameter(name='Save Suite')
+        self._tree.addParameters(self._save_action)
+        self._save_action.sigActivated.connect(self.save)
         # Setup layout
         self._layout = QHBoxLayout()
         self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
@@ -354,6 +360,34 @@ class TyphonSuite(TyphonBase):
         display.add_device(device, **kwargs)
         display.show_subdisplay(device)
         return display
+
+    def save(self):
+        """
+        Save the TyphonSuite to a file using :meth:`typhon.utils.save_suite`
+
+        A ``QFileDialog`` will be used to query the user for the desired
+        location of the created Python file
+
+        The template will be of the form:
+
+        .. code::
+        """
+        logger.debug("Requesting file location for saved TyphonSuite")
+        root_dir = os.getcwd()
+        filename = QFileDialog.getSaveFileName(self, 'Save TyphonSuite',
+                                               root_dir, "Python (*.py)")
+        if filename:
+            try:
+                with open(filename[0], 'w+') as handle:
+                    save_suite(self, handle)
+            except Exception as exc:
+                logger.exception("Failed to save TyphonSuite")
+                raise_to_operator(exc)
+        else:
+            logger.debug("No filename chosen")
+
+    # Add the template to the docstring
+    save.__doc__ += textwrap.indent('\n' + saved_template, '\t\t')
 
     def _get_sidebar(self, widget):
         items = {}

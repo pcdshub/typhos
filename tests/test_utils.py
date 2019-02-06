@@ -1,4 +1,6 @@
 import os
+import pathlib
+import tempfile
 
 from qtpy.QtCore import QRect
 from qtpy.QtGui import QPaintEvent
@@ -8,7 +10,8 @@ import pytest
 
 import typhon
 from typhon.utils import (use_stylesheet, clean_name, grab_kind,
-                          TyphonBase, raise_to_operator)
+                          TyphonBase, raise_to_operator, load_suite,
+                          saved_template)
 
 class NestedDevice(Device):
     phi = Cpt(Device)
@@ -74,3 +77,22 @@ def test_raise_to_operator_msg(monkeypatch, qtbot):
     qtbot.addWidget(exc_dialog)
     assert exc_dialog is not None
     assert 'ZeroDivisionError' in exc_dialog.text()
+
+
+def test_load_suite(qtbot):
+    # Setup new saved file
+    module = saved_template.format(devices=[])
+    module_file = str(pathlib.Path(tempfile.gettempdir()) / 'my_suite.py')
+    with open(module_file, 'w+') as handle:
+        handle.write(module)
+
+    suite = load_suite(module_file)
+    qtbot.addWidget(suite)
+    assert isinstance(suite, typhon.TyphonSuite)
+    assert suite.devices == []
+    os.remove(module_file)
+
+
+def test_load_suite_with_bad_py_file():
+    with pytest.raises(AttributeError):
+        suite = load_suite(typhon.utils.__file__)

@@ -67,14 +67,14 @@ before_script:
   - sleep 1
 
 script:
-  - coverage run run_tests.py
+  - coverage run run_tests.py --show-capture=no
   - coverage report -m
     #- coverage report -m
   - flake8 typhon
   # Test again but with installed version
   - mkdir notest
   - mv typhon/*.* notest
-  - python run_tests.py
+  - python run_tests.py --show-capture=no
   - mv notest/* typhon
   - rmdir notest
   # Build docs

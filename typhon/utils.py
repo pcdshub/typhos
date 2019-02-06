@@ -5,6 +5,8 @@ Utility functions for typhon
 # Standard #
 ############
 import io
+import importlib.util
+import pathlib
 import re
 import logging
 import os.path
@@ -260,3 +262,65 @@ def reload_widget_stylesheet(widget, cascade=False):
         for child in widget.children():
             if isinstance(child, QWidget):
                 reload_widget_stylesheet(child, cascade=True)
+
+
+def save_suite(suite, file_or_buffer):
+    """
+    Create a file capable of relaunching the TyphonSuite
+
+    Parameters
+    ----------
+    suite: TyphonSuite
+
+    file_or_buffer : str or file-like
+        Either a path to the file or a handle that supports ``write``
+    """
+    # Accept file-like objects or a handle
+    if isinstance(file_or_buffer, str):
+        handle = open(file_or_buffer, 'w+')
+    else:
+        handle = file_or_buffer
+    logger.debug("Saving TyphonSuite contents to %r", handle)
+    devices = [device.name for device in suite.devices]
+    handle.write(saved_template.format(devices=devices))
+
+
+def load_suite(path):
+    """"
+    Load a file saved via Typhon
+
+    Parameters
+    ----------
+    path: str
+        Path to file describing the ``TyphonSuite``. This needs to be of the
+        format created by the :meth:`.save_suite` function.
+
+    Returns
+    -------
+    suite: TyphonSuite
+    """
+    logger.info("Importing TyphonSuite from file %r ...", path)
+    module_name = pathlib.Path(path).name.replace('.py', '')
+    spec = importlib.util.spec_from_file_location(module_name,
+                                                  path)
+    suite_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(suite_module)
+    if hasattr(suite_module, 'create_suite'):
+        logger.debug("Executing create_suite method from %r", suite_module)
+        return suite_module.create_suite()
+    else:
+        raise AttributeError("Imported module has no 'create_suite' method!")
+
+
+saved_template = """\
+import sys
+import typhon.cli
+
+devices = {devices}
+
+def create_suite(cfg=None):
+    return typhon.cli.create_suite(devices, cfg=cfg)
+
+if __name__ == '__main__':
+    typhon.cli.typhon_cli(devices + sys.argv[1:])
+"""
