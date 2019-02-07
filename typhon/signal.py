@@ -18,7 +18,8 @@ from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
                     is_signal_ro, TyphonBase)
 from .widgets import (TyphonLineEdit, TyphonComboBox, TyphonLabel,
-                      TyphonDesignerMixin)
+                      TyphonDesignerMixin, ImageDialogButton,
+                      WaveformDialogButton)
 from .plugins import register_signal
 
 
@@ -56,29 +57,44 @@ def signal_widget(signal, read_only=False):
         # Register signal with plugin
         register_signal(signal)
         chan = channel_name(signal.name, protocol='sig')
-    # Check for enum_strs, if so create a QCombobox
-    if read_only:
-        logger.debug("Creating Label for %s", signal.name)
-        widget = TyphonLabel
-        name = signal.name + '_label'
-    else:
-        # Grab a description of the widget to see the correct widget type
-        try:
-            desc = signal.describe()[signal.name]
-        except Exception:
-            logger.error("Unable to connect to %r during widget creation",
-                         signal.name)
-            desc = {}
-        # Create a QCombobox if the widget has enum_strs
-        if 'enum_strs' in desc:
-            logger.debug("Creating Combobox for %s", signal.name)
-            widget = TyphonComboBox
-            name = signal.name + '_combo'
-        # Otherwise a LineEdit will suffice
+    # Grab a description of the widget to see the correct widget type
+    try:
+        desc = signal.describe()[signal.name]
+    except Exception:
+        logger.error("Unable to connect to %r during widget creation",
+                     signal.name)
+        desc = {}
+    # Unshaped data
+    if desc.get('shape', []) == []:
+        # Check for enum_strs, if so create a QCombobox
+        if read_only:
+            logger.debug("Creating Label for %s", signal.name)
+            widget = TyphonLabel
+            name = signal.name + '_label'
         else:
-            logger.debug("Creating LineEdit for %s", signal.name)
-            widget = TyphonLineEdit
-            name = signal.name + '_edit'
+            # Create a QCombobox if the widget has enum_strs
+            if 'enum_strs' in desc:
+                logger.debug("Creating Combobox for %s", signal.name)
+                widget = TyphonComboBox
+                name = signal.name + '_combo'
+            # Otherwise a LineEdit will suffice
+            else:
+                logger.debug("Creating LineEdit for %s", signal.name)
+                widget = TyphonLineEdit
+                name = signal.name + '_edit'
+    # Waveform
+    elif len(desc.get('shape')) == 1:
+        logger.debug("Creating WaveformDialogButton for %s", signal.name)
+        widget = WaveformDialogButton
+        name = signal.name + '_waveform_button'
+    # B/W image
+    elif len(desc.get('shape')) == 2:
+        logger.debug("Creating ImageDialogButton for %s", signal.name)
+        widget = ImageDialogButton
+        name = signal.name + '_image_button'
+    else:
+        raise ValueError(f"Unable to create widget for widget of "
+                         f"shape {len(desc.get('shape'))} from {signal.name}")
     widget_instance = widget(init_channel=chan)
     widget_instance.setObjectName(name)
     return widget_instance
