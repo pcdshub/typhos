@@ -9,8 +9,9 @@ import logging
 import qtawesome as qta
 from qtpy.QtCore import Property, QSize, Qt, Signal, Slot
 from qtpy.QtWidgets import (QAction, QPushButton, QVBoxLayout, QWidget,
-                            QToolBar, QDockWidget)
-from pydm.widgets import PyDMLabel, PyDMEnumComboBox, PyDMLineEdit
+                            QToolBar, QDockWidget, QDialog)
+from pydm.widgets import (PyDMLabel, PyDMEnumComboBox, PyDMLineEdit,
+                          PyDMWaveformPlot, PyDMImageView)
 from pydm.widgets.base import PyDMWidget
 from pyqtgraph.parametertree import parameterTypes as ptypes
 
@@ -238,3 +239,62 @@ class TyphonDesignerMixin(PyDMWidget):
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'])
+
+
+class SignalDialogButton(QPushButton):
+    """QPushButton to launch a QDialog with a PyDMWidget"""
+    text = NotImplemented
+    icon = NotImplemented
+
+    def __init__(self, init_channel, parent=None):
+        super().__init__(qta.icon(self.icon), self.text, parent=parent)
+        self.clicked.connect(self.show_dialog)
+        self.dialog = None
+        self.channel = init_channel
+        self.setIconSize(QSize(15, 15))
+
+    def widget(self, channel):
+        """Return a widget created with channel"""
+        raise NotImplementedError
+
+    def show_dialog(self):
+        """Show the channel in a QDialog"""
+        # Dialog Creation
+        if not self.dialog:
+            logger.debug("Creating QDialog for %r", self.channel)
+            # Set up the QDialog
+            self.dialog = QDialog(self)
+            self.dialog.setLayout(QVBoxLayout())
+            self.dialog.layout().setContentsMargins(2, 2, 2, 2)
+            # Add the widget
+            widget = self.widget()
+            self.dialog.layout().addWidget(widget)
+        # Handle a lost dialog
+        else:
+            logger.debug("Redisplaying QDialog for %r", self.channel)
+            self.dialog.close()
+        # Show the dialog
+        logger.debug("Showing QDialog for %r", self.channel)
+        self.dialog.show()
+
+
+class ImageDialogButton(SignalDialogButton):
+    """QPushButton to show a 2-d array"""
+    text = 'Show Image'
+    icon = 'fa.camera'
+
+    def widget(self):
+        """Create PyDMImageView"""
+        return PyDMImageView(parent=self,
+                             image_channel=[self.channel])
+
+
+class WaveformDialogButton(SignalDialogButton):
+    """QPushButton to show a 1-d array"""
+    text = 'Show Waveform'
+    icon = 'fa5s.chart-line'
+
+    def widget(self):
+        """Create PyDMWaveformPlot"""
+        return PyDMWaveformPlot(init_y_channels=[self.channel],
+                                parent=self)
