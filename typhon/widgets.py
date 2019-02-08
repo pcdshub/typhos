@@ -246,7 +246,9 @@ class SignalDialogButton(QPushButton):
     text = NotImplemented
     icon = NotImplemented
 
-    def __init__(self, init_channel, parent=None):
+    def __init__(self, init_channel, text=None, icon=None, parent=None):
+        self.text = text or self.text
+        self.icon = icon or self.icon
         super().__init__(qta.icon(self.icon), self.text, parent=parent)
         self.clicked.connect(self.show_dialog)
         self.dialog = None
