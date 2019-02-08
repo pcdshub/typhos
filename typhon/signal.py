@@ -65,7 +65,12 @@ def signal_widget(signal, read_only=False):
                      signal.name)
         desc = {}
     # Unshaped data
-    if desc.get('shape', []) == []:
+    shape = desc.get('shape', [])
+    try:
+        dimensions = len(shape)
+    except TypeError:
+        dimensions = 0
+    if dimensions == 0:
         # Check for enum_strs, if so create a QCombobox
         if read_only:
             logger.debug("Creating Label for %s", signal.name)
