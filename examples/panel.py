@@ -12,7 +12,7 @@ class Sample(Device):
     readback = Cpt(SignalRO, value=1)
     setpoint = Cpt(Signal, value=2)
     waveform = Cpt(SignalRO, value=np.random.randn(100, ))
-    image = Cpt(SignalRO, value=np.random.randn((100, 100)) * 455)
+    image = Cpt(SignalRO, value=np.abs(np.random.randn(100, 100)) * 455)
 
 
 # Create my device without a prefix
