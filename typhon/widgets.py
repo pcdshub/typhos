@@ -264,6 +264,7 @@ class SignalDialogButton(QPushButton):
             logger.debug("Creating QDialog for %r", self.channel)
             # Set up the QDialog
             self.dialog = QDialog(self)
+            self.dialog.setWindowTitle(self.channel)
             self.dialog.setLayout(QVBoxLayout())
             self.dialog.layout().setContentsMargins(2, 2, 2, 2)
             # Add the widget
