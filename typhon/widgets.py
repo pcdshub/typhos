@@ -286,7 +286,7 @@ class ImageDialogButton(SignalDialogButton):
     def widget(self):
         """Create PyDMImageView"""
         return PyDMImageView(parent=self,
-                             image_channel=[self.channel])
+                             image_channel=self.channel)
 
 
 class WaveformDialogButton(SignalDialogButton):
