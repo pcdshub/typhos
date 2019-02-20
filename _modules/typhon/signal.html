@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.3.0+28.g07f335f documentation</title>
+  <title>typhon.signal &mdash; Typhon 0.3.0+42.g85b4dcf documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.3.0+28.g07f335f
+                0.3.0+42.g85b4dcf
               </div>
             
           
@@ -178,7 +178,8 @@
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">clear_layout</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">grab_kind</span><span class="p">,</span>
                     <span class="n">is_signal_ro</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">TyphonLineEdit</span><span class="p">,</span> <span class="n">TyphonComboBox</span><span class="p">,</span> <span class="n">TyphonLabel</span><span class="p">,</span>
-                      <span class="n">TyphonDesignerMixin</span><span class="p">)</span>
+                      <span class="n">TyphonDesignerMixin</span><span class="p">,</span> <span class="n">ImageDialogButton</span><span class="p">,</span>
+                      <span class="n">WaveformDialogButton</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
 
 
@@ -216,29 +217,49 @@
         <span class="c1"># Register signal with plugin</span>
         <span class="n">register_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
         <span class="n">chan</span> <span class="o">=</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">)</span>
-    <span class="c1"># Check for enum_strs, if so create a QCombobox</span>
-    <span class="k">if</span> <span class="n">read_only</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Label for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonLabel</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_label&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Grab a description of the widget to see the correct widget type</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">desc</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span>
-                         <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">desc</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># Create a QCombobox if the widget has enum_strs</span>
-        <span class="k">if</span> <span class="s1">&#39;enum_strs&#39;</span> <span class="ow">in</span> <span class="n">desc</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Combobox for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonComboBox</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_combo&#39;</span>
-        <span class="c1"># Otherwise a LineEdit will suffice</span>
+    <span class="c1"># Grab a description of the widget to see the correct widget type</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span>
+                     <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># Unshaped data</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">desc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dimensions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">dimensions</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Check for enum_strs, if so create a QCombobox</span>
+        <span class="k">if</span> <span class="n">read_only</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Label for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonLabel</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_label&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating LineEdit for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonLineEdit</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_edit&#39;</span>
+            <span class="c1"># Create a QCombobox if the widget has enum_strs</span>
+            <span class="k">if</span> <span class="s1">&#39;enum_strs&#39;</span> <span class="ow">in</span> <span class="n">desc</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Combobox for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonComboBox</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_combo&#39;</span>
+            <span class="c1"># Otherwise a LineEdit will suffice</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating LineEdit for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonLineEdit</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_edit&#39;</span>
+    <span class="c1"># Waveform</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shape&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating WaveformDialogButton for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">WaveformDialogButton</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_waveform_button&#39;</span>
+    <span class="c1"># B/W image</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shape&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating ImageDialogButton for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">ImageDialogButton</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_image_button&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unable to create widget for widget of &quot;</span>
+                         <span class="n">f</span><span class="s2">&quot;shape {len(desc.get(&#39;shape&#39;))} from </span><span class="si">{signal.name}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">widget_instance</span> <span class="o">=</span> <span class="n">widget</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">chan</span><span class="p">)</span>
     <span class="n">widget_instance</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">widget_instance</span></div>

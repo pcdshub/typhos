@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Typhon Plugins &mdash; Typhon 0.3.0+28.g07f335f documentation</title>
+  <title>Typhon Plugins &mdash; Typhon 0.3.0+42.g85b4dcf documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0+28.g07f335f
+                0.3.0+42.g85b4dcf
               </div>
             
           
@@ -209,6 +209,17 @@ through the execution of the application</p>
 <p>This attaches values input by the user to the <cite>send_new_value</cite> function
 in order to update the Signal object in addition to the default setup
 performed in PyDMConnection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="typhon.plugins.SignalConnection.cast">
+<code class="descname">cast</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.cast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.cast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast a value to the correct Python type based on <code class="docutils literal notranslate"><span class="pre">signal_type</span></code></p>
+<p>If <code class="docutils literal notranslate"><span class="pre">signal_type</span></code> is not set, the result of <code class="docutils literal notranslate"><span class="pre">ophyd.Signal.describe</span></code>
+is used to determine what the correct Python type for value is. We need
+to be aware of the correct Python type so that we can emit the value
+through the correct signal and convert values returned by the widget to
+the correct type before handing them to Ophyd Signal</p>
 </dd></dl>
 
 <dl class="method">
