@@ -1,5 +1,27 @@
-from typhon.widgets import TyphonSidebarItem
+import pytest
+import qtawesome as qta
+from qtpy.QtWidgets import QWidget
+from qtpy.QtGui import QIcon
+
+from typhon.widgets import (TyphonSidebarItem, SignalDialogButton, QDialog,
+                            ImageDialogButton, WaveformDialogButton)
 from typhon.suite import SidebarParameter
+
+
+class DialogButton(SignalDialogButton):
+    icon = 'fa.play'
+    text = 'Show Widget'
+
+    def widget(self):
+        return QWidget(parent=self)
+
+
+@pytest.fixture(scope='function')
+def widget_button(qtbot, monkeypatch):
+    monkeypatch.setattr(QDialog, 'exec_', lambda x: 1)
+    button = DialogButton('ca://Pv:1')
+    qtbot.addWidget(button)
+    return button
 
 
 def test_sidebar_item(qtbot):
@@ -22,3 +44,27 @@ def test_sidebar_item(qtbot):
     assert not item.open_action.isEnabled()
     assert not item.embed_action.isEnabled()
     assert item.hide_action.isEnabled()
+
+
+def test_signal_dialog_button_show(widget_button):
+    widget_button.show_dialog()
+    assert widget_button.dialog is not None
+    assert widget_button.dialog.isVisible()
+    assert len(widget_button.children()) == 1
+
+
+def test_signal_dialog_button_repeated_show(widget_button):
+    widget_button.show_dialog()
+    dialog = widget_button.dialog
+    widget_button.show_dialog()
+    assert id(dialog) == id(widget_button.dialog)
+
+
+@pytest.mark.parametrize('button_type', [WaveformDialogButton,
+                                         ImageDialogButton],
+                         ids=['Waveform', 'Image'])
+def test_dialog_button_instances_smoke(qtbot, button_type):
+    button = button_type(init_channel='ca://Pv:2')
+    qtbot.addWidget(button)
+    widget = button.widget()
+    assert widget.parent() == button

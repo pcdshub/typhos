@@ -5,6 +5,7 @@
 ############
 # External #
 ############
+import numpy as np
 from ophyd import Kind
 from ophyd.signal import Signal, EpicsSignal, EpicsSignalRO
 from ophyd.sim import SynSignal, SynSignalRO
@@ -14,7 +15,8 @@ from qtpy.QtWidgets import QWidget
 ###########
 # Package #
 ###########
-from typhon.signal import SignalPanel, TyphonSignalPanel
+from typhon.signal import SignalPanel, TyphonSignalPanel, signal_widget
+from typhon.widgets import ImageDialogButton, WaveformDialogButton
 from .conftest import show_widget, RichSignal, DeadSignal
 
 @using_fake_epics_pv
@@ -143,3 +145,22 @@ def test_typhon_panel_sorting(qapp, client, qtbot):
     key_order = list(panel.layout().signals.keys())
     assert key_order[0] == 'readback'
     assert key_order[-1] == 'unused'
+    return panel
+
+
+@show_widget
+def test_signal_widget_waveform(qtbot):
+    signal = Signal(name='test_wave', value=np.zeros((4, )))
+    widget = signal_widget(signal)
+    qtbot.addWidget(widget)
+    assert isinstance(widget, WaveformDialogButton)
+    return widget
+
+
+@show_widget
+def test_signal_widget_image(qtbot):
+    signal = Signal(name='test_img', value=np.zeros((400, 540)))
+    widget = signal_widget(signal)
+    qtbot.addWidget(widget)
+    assert isinstance(widget, ImageDialogButton)
+    return widget
