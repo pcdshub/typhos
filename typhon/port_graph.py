@@ -1,5 +1,4 @@
 import logging
-import os
 import threading
 
 from pyqtgraph.flowchart import (Flowchart, Node, NodeGraphicsItem,
@@ -7,7 +6,7 @@ from pyqtgraph.flowchart import (Flowchart, Node, NodeGraphicsItem,
 from pyqtgraph.flowchart.library import NodeLibrary
 import pyqtgraph.widgets as qtg_widgets
 
-from qtpy import QtWidgets, QtGui, QtCore
+from qtpy import QtWidgets, QtCore
 
 from ophyd import SimDetector, Component as Cpt, CommonPlugins_V32, CamBase
 
@@ -118,7 +117,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
 
         self.chartWidget = FlowchartWidget(chart, self)
         # self.chartWidget.viewBox().autoRange()
-        self.chart_window = QtGui.QMainWindow()
+        self.chart_window = QtWidgets.QMainWindow()
         self.chart_window.setWindowTitle('Flowchart')
         self.chart_window.setCentralWidget(self.chartWidget)
         self.chart_window.resize(1000, 800)
@@ -155,11 +154,11 @@ class PortGraphControlWidget(QtWidgets.QWidget):
 
     def addNode(self, node):
         ctrl = node.ctrlWidget()
-        item = QtGui.QTreeWidgetItem([node.name(), '', ''])
+        item = QtWidgets.QTreeWidgetItem([node.name(), '', ''])
         self.tree.addTopLevelItem(item)
 
         if ctrl is not None:
-            item2 = QtGui.QTreeWidgetItem()
+            item2 = QtWidgets.QTreeWidgetItem()
             item.addChild(item2)
             self.tree.setItemWidget(item2, 0, ctrl)
 
@@ -403,16 +402,13 @@ def position_nodes(edges, port_dict, *, x_spacing=PortNodeItem.WIDTH * 1.5,
     return positions
 
 
-def test():
+def example(prefix='13SIM1:'):
     class Detector(SimDetector):
         plugins = Cpt(CommonPlugins_V32, '')
 
-    det = Detector(prefix='13SIM1:', name='det')
-
+    det = Detector(prefix=prefix, name='det')
     fc = PortGraphFlowchart(detector=det, library=Library())
-
     fc.monitor.update_ports()
-
     w = fc.widget()
     # layout.addWidget(fc.widget(), 0, 0, 2, 1)
     # win.show()
@@ -423,14 +419,13 @@ if __name__ == '__main__':
     import sys
     logging.basicConfig()
     logger.setLevel('DEBUG')
-    app = QtGui.QApplication([])
-
-    win = QtGui.QMainWindow()
-    cw = QtGui.QWidget()
+    app = QtWidgets.QApplication([])
+    win = QtWidgets.QMainWindow()
+    cw = QtWidgets.QWidget()
     win.setCentralWidget(cw)
-    layout = QtGui.QGridLayout()
+    layout = QtWidgets.QGridLayout()
     cw.setLayout(layout)
 
-    test()
+    example()
     if sys.flags.interactive != 1:
-        QtGui.QApplication.instance().exec_()
+        QtWidgets.QApplication.instance().exec_()
