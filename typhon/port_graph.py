@@ -215,22 +215,50 @@ class PortGraphMonitor(QtCore.QObject):
     port_added = QtCore.Signal(str)
     port_removed = QtCore.Signal(str)
     update = QtCore.Signal(list, list, list, list)
+    port_information_attrs = ['ad_core_version', 'plugin_type',
+                              'driver_version']
 
     def __init__(self, detector, parent=None):
         super().__init__(parent=parent)
-        self.digraph = None
-        self.port_dict = {}
+        self.known_ports = []
         self.edges = set()
         self.positions = {}
         self.detector = detector
-        self._subscriptions = {}
         self.lock = threading.Lock()
+        self._port_map = {}
+        self._subscriptions = {}
+
+    @property
+    def port_map(self):
+        if not self._port_map:
+            self.detector.wait_for_connection()
+            self._port_map = self.detector.get_asyn_port_dictionary()
+        return dict(self._port_map)
+
+    def get_edges(self):
+        '''Get an updated list of the directed graph edges
+
+        Returns
+        -------
+        edges : list
+            List of (src, dest)
+        '''
+        edges = set()
+        for out_port, cpt in self.port_map.items():
+            try:
+                in_port = cpt.nd_array_port.get()
+            except AttributeError:
+                ...
+            else:
+                edges.add((in_port, out_port))
+
+        return edges
 
     @property
     def cameras(self):
         'All camera port names'
         return [port
-                for port, plugin in self.port_dict.items()
+                for port, plugin in self.port_map.items()
                 if isinstance(plugin, CamBase)]
 
     def _port_changed_callback(self, value=None, obj=None, **kwargs):
@@ -239,34 +267,30 @@ class PortGraphMonitor(QtCore.QObject):
 
     def update_ports(self):
         'Read the port digraph/dictionary from the detector and emit updates'
-        self.detector.wait_for_connection()
-        digraph, port_dict = self.detector.get_asyn_digraph()
+        port_map = self.port_map
+        edges = self.get_edges()
 
         with self.lock:
-            for port, plugin in sorted(port_dict.items()):
+            for port, plugin in sorted(port_map.items()):
                 if (port not in self._subscriptions and
                         hasattr(plugin, 'nd_array_port')):
                     logger.debug('Subscribing to port %s (%s) NDArrayPort',
                                  port, plugin.name)
                     self._subscriptions[port] = plugin.nd_array_port.subscribe(
                         self._port_changed_callback, run=False)
-                # plugin_type, ad_core_version, driver_version
 
-            edges = list(sorted(digraph.edges))
-            ports_removed = list(sorted(set(self.port_dict) - set(port_dict)))
-            ports_added = list(sorted(set(port_dict) - set(self.port_dict)))
+            ports_removed = list(sorted(set(self.known_ports) - set(port_map)))
+            ports_added = list(sorted(set(port_map) - set(self.known_ports)))
             edges_removed = list(sorted(set(self.edges) - set(edges)))
             edges_added = list(sorted((set(edges) - set(self.edges))))
 
-            self.digraph = digraph
             self.edges = edges
-            self.port_dict.clear()
-            self.port_dict.update(**port_dict)
+            self.known_ports = list(port_map)
 
             for port in ports_removed:
                 sub = self._subscriptions.pop(port, None)
                 if sub is not None:
-                    plugin = port_dict[port].nd_array_port.unsubscribe(sub)
+                    plugin = port_map[port].nd_array_port.unsubscribe(sub)
 
         for port in ports_removed:
             self.port_removed.emit(port)
@@ -314,7 +338,7 @@ class PortGraphFlowchart(Flowchart):
 
     def _ports_updated(self, ports_removed, ports_added, edges_removed,
                        edges_added):
-        self.port_dict = self.monitor.port_dict
+        self.port_map = self.monitor.port_map
 
         for src, dest in edges_removed:
             try:
@@ -334,7 +358,7 @@ class PortGraphFlowchart(Flowchart):
             self.removeNode(node)
 
         for port in ports_added:
-            plugin = self.port_dict[port]
+            plugin = self.port_map[port]
             self._nodes[port] = dict(node=self.add_port(port, plugin),
                                      plugin=plugin)
 
@@ -359,7 +383,7 @@ class PortGraphFlowchart(Flowchart):
             self._edges.add((src, dest))
 
         if self._auto_position:
-            positions = position_nodes(self._edges, self.port_dict)
+            positions = position_nodes(self._edges, self.port_map)
             for port, (px, py) in positions.items():
                 node = self._nodes[port]['node']
                 node.graphicsItem().setPos(px, py)
@@ -385,7 +409,7 @@ class PortGraphFlowchart(Flowchart):
         return node
 
 
-def position_nodes(edges, port_dict, *, x_spacing=PortNodeItem.WIDTH * 1.5,
+def position_nodes(edges, port_map, *, x_spacing=PortNodeItem.WIDTH * 1.5,
                    y_spacing=PortNodeItem.HEIGHT * 1.5, x=0, y=0):
     '''
     Generate an (x, y) position dictionary for all nodes in the port dictionary
@@ -393,8 +417,8 @@ def position_nodes(edges, port_dict, *, x_spacing=PortNodeItem.WIDTH * 1.5,
     Parameters
     ----------
     edges : list of (src, dest)
-        Digraph edges that connect source -> destination ports
-    port_dict : dict
+        Directed graph edges that connect source -> destination ports
+    port_map : dict
         Dictionary of port name to ophyd plugin
     x_spacing : float, optional
         Horizontal spacing between items
@@ -414,7 +438,7 @@ def position_nodes(edges, port_dict, *, x_spacing=PortNodeItem.WIDTH * 1.5,
         for idx, dest in enumerate(sorted(dests)):
             position_port(dest, x + x_spacing, y + idx * y_spacing)
 
-    cameras = [port for port, cam in port_dict.items()
+    cameras = [port for port, cam in port_map.items()
                if isinstance(cam, CamBase)]
 
     start_x = x
@@ -431,7 +455,7 @@ def position_nodes(edges, port_dict, *, x_spacing=PortNodeItem.WIDTH * 1.5,
     if positions:
         y = y_spacing + max(y for x, y in positions.values())
 
-    for port in port_dict:
+    for port in port_map:
         if port not in positions:
             position_port(port, x, y)
 
