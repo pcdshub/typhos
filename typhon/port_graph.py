@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class PortNodeItem(NodeGraphicsItem):
+    'The scene graphics item associated with one AreaDetector PortNode'
     WIDTH = 100
     HEIGHT = 40
 
@@ -34,6 +35,7 @@ class PortNodeItem(NodeGraphicsItem):
 
 
 class PortNode(Node):
+    'A graph node representing one AreaDetector port'
     nodeName = 'PortNode'
 
     def __init__(self, name, *, has_input=True, has_output=True):
@@ -58,6 +60,7 @@ class PortNode(Node):
 
 
 class Library(NodeLibrary):
+    'Container for AreaDetector port graphs which contain only PortNodes'
     def __init__(self):
         super().__init__()
         self.addNodeType(PortNode, [('AreaDetector', )])
@@ -67,6 +70,7 @@ class Library(NodeLibrary):
 
 
 class PortTreeWidget(qtg_widgets.TreeWidget.TreeWidget):
+    'Tree representation of AreaDetector port graph'
     @QtCore.Slot()
     def reorder(self):
         ...
@@ -184,6 +188,28 @@ class PortGraphControlWidget(QtWidgets.QWidget):
 
 
 class PortGraphMonitor(QtCore.QObject):
+    '''Monitors the connectivity of all AreaDetector ports in a detector
+
+    Parameters
+    ----------
+    detector : ophyd.Detector
+        The detector to monitor
+    parent : QtCore.QObject, optional
+        The parent widget
+
+    Attributes
+    ----------
+    edge_added : Signal
+        An edge was added between (src, dest)
+    edge_removed : Signal
+        An edge was removed between (src, dest)
+    port_added : Signal
+        A port was added with name (port_name, )
+    update : Signal
+        A full batch update including all edges added and removed, ports added
+        and removed, with the signature (ports_removed, ports_added,
+        edges_removed, edges_added), all of which are lists of strings.
+    '''
     edge_added = QtCore.Signal(str, str)
     edge_removed = QtCore.Signal(str, str)
     port_added = QtCore.Signal(str)
@@ -260,6 +286,16 @@ class PortGraphMonitor(QtCore.QObject):
 
 
 class PortGraphFlowchart(Flowchart):
+    '''
+    A flow chart representing one AreaDetector's port connectivity
+
+    Parameters
+    ----------
+    detector : ophyd.Detector
+        The detector to monitor
+    parent : QtCore.QObject, optional
+        The parent widget
+    '''
     def __init__(self, detector, library):
         super().__init__(terminals={},
                          library=library)
