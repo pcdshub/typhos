@@ -259,12 +259,38 @@ class PortGraphMonitor(QtCore.QObject):
         self._port_map = {}
         self._subscriptions = {}
 
+    def update_port_map(self):
+        'Update the port map'
+        self.detector.wait_for_connection()
+        self._port_map = self.detector.get_asyn_port_dictionary()
+        self._port_information = {port: self.get_port_information(port)
+                                  for port in self._port_map
+                                  }
+
     @property
     def port_map(self):
+        'Port map of {port_name: ophyd_plugin}'
         if not self._port_map:
-            self.detector.wait_for_connection()
-            self._port_map = self.detector.get_asyn_port_dictionary()
+            self.update_port_map()
         return dict(self._port_map)
+
+    @property
+    def port_information(self):
+        'Map of {port_name: dict(information_key=...)}'
+        if not self._port_map:
+            self.update_port_map()
+        return dict(self._port_information)
+
+    def get_port_information(self, port):
+        'Get information on a specific port/plugin'
+        info = {}
+        plugin = self.port_map[port]
+        for attr in self.port_information_attrs:
+            try:
+                info[attr] = getattr(plugin, attr).get()
+            except AttributeError:
+                ...
+        return info
 
     def get_edges(self):
         '''Get an updated list of the directed graph edges
