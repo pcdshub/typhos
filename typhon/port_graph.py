@@ -119,21 +119,23 @@ class PortGraphFlowchartWidget(FlowchartWidget):
         node = items[0].node
         self.ctrl.select(node)
 
-        outputs = [conn.node().name()
-                   for output in node.outputs().values()
-                   for conn in output.connections()]
         inputs = [conn.node().name()
                   for input in node.inputs().values()
                   for conn in input.connections()]
 
-        # Port graphs only support one input
-        data = {
-            'input': inputs[0] if inputs else 'N/A',
-        }
+        monitor = self.chart.monitor
+        port_info = monitor.port_information.get(node.name(), {})
+
+        connectivity = {}
+        connectivity['Input'] = inputs[0] if inputs else 'N/A'
+
+        outputs = [conn.node().name()
+                   for output in node.outputs().values()
+                   for conn in output.connections()]
 
         # But multiple outputs
-        data.update(**{f'output{idx}': output for idx, output
-                       in enumerate(outputs, 1)})
+        connectivity.update(**{f'Output{idx}': output for idx, output
+                               in enumerate(outputs, 1)})
 
         self.selNameLabel.setText(node.name())
         self.selDescLabel.setText(
@@ -143,6 +145,9 @@ class PortGraphFlowchartWidget(FlowchartWidget):
         # if node.exception is not None:
         #     data['exception'] = node.exception
 
+        data = {'Version': port_info,
+                'Connectivity': connectivity
+                }
         self.selectedTree.setData(data, hideRoot=True)
 
     def hoverOver(self, items):
@@ -292,7 +297,7 @@ class PortGraphMonitor(QtCore.QObject):
     port_added = QtCore.Signal(str)
     port_removed = QtCore.Signal(str)
     update = QtCore.Signal(list, list, list, list)
-    port_information_attrs = ['ad_core_version', 'plugin_type',
+    port_information_attrs = ['plugin_type', 'ad_core_version',
                               'driver_version']
 
     def __init__(self, detector, parent=None):
@@ -463,7 +468,7 @@ class PortGraphFlowchart(Flowchart):
         for port in ports_added:
             plugin = self.port_map[port]
             self._port_nodes[port] = dict(node=self.add_port(port, plugin),
-                                     plugin=plugin)
+                                          plugin=plugin)
 
         for src, dest in edges_added:
             try:
