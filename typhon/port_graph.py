@@ -1,3 +1,27 @@
+'''
+Very confusing widget overview:
+
+PortGraphFlowchart(Flowchart)
+|- .monitor = PortGraphMonitor
+|- ._widget = PortGraphControlWidget
+
+PortGraphControlWidget(QWidget)
+|   Reimplementation of FlowChartCtrlWidget
+|- .tree = PortTreeWidget
+|- .reload_button = FeedbackButton
+|- .chartWidget = PortGraphFlowchartDock
+
+FlowchartWidget(DockArea)
+PortGraphFlowchartDock(FlowchartWidget)
+|- .chart = PortGraphFlowchart
+|- .ctrl = PortGraphControlWidget
+|- .hoverItem = ...
+
+PortNode(Node)
+|- ._graphicsItem = PortNodeItem(NodeGraphicsItem)
+
+PortGraphMonitor(QObject): detector + signals only
+'''
 import logging
 import threading
 
@@ -76,6 +100,10 @@ class PortTreeWidget(qtg_widgets.TreeWidget.TreeWidget):
         ...
 
 
+class PortGraphFlowchartDock(FlowchartWidget):
+    ...
+
+
 class PortGraphControlWidget(QtWidgets.QWidget):
     '''
     The widget that contains the list of all the nodes in a flowchart and their
@@ -86,49 +114,52 @@ class PortGraphControlWidget(QtWidgets.QWidget):
 
     def __init__(self, chart):
         self.items = {}
-        # self.loadDir = loadDir  ## where to look initially for chart files
         self.currentFileName = None
         super().__init__()
         self.chart = chart
 
-        self.layout = QtWidgets.QGridLayout(self)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        self.layout.setVerticalSpacing(0)
+        layout = QtWidgets.QGridLayout(self)
+        self.layout = layout
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setVerticalSpacing(0)
 
-        self.reload_button = qtg_widgets.FeedbackButton.FeedbackButton(self)
-        self.reload_button.setText('Reload')
-        self.reload_button.setCheckable(False)
-        self.reload_button.setFlat(False)
-        self.layout.addWidget(self.reload_button, 4, 0, 1, 2)
+        reload_button = qtg_widgets.FeedbackButton.FeedbackButton(self)
+        self.reload_button = reload_button
+        reload_button.setText('Reload')
+        reload_button.setCheckable(False)
+        reload_button.setFlat(False)
+        layout.addWidget(reload_button, 4, 0, 1, 2)
 
-        self.show_chart_button = QtWidgets.QPushButton(self)
-        self.show_chart_button.setText('Show chart')
-        self.show_chart_button.setCheckable(True)
-        self.layout.addWidget(self.show_chart_button, 4, 2, 1, 2)
+        show_chart_button = QtWidgets.QPushButton(self)
+        self.show_chart_button = show_chart_button
+        show_chart_button.setText('Show chart')
+        show_chart_button.setCheckable(True)
+        layout.addWidget(show_chart_button, 4, 2, 1, 2)
 
-        self.tree = PortTreeWidget(self)
-        self.tree.headerItem().setText(0, 'Port')
-        self.tree.header().setVisible(False)
-        self.tree.header().setStretchLastSection(False)
-        self.tree.header().setSectionResizeMode(0, self.tree.header().Stretch)
-        self.layout.addWidget(self.tree, 3, 0, 1, 4)
+        tree = PortTreeWidget(self)
+        self.tree = tree
+        tree.headerItem().setText(0, 'Port')
+        tree.header().setVisible(False)
+        tree.header().setStretchLastSection(False)
+        tree.header().setSectionResizeMode(0, tree.header().Stretch)
+        layout.addWidget(tree, 3, 0, 1, 4)
 
-        self.tree.setColumnCount(2)
-        self.tree.setColumnWidth(1, 20)
-        self.tree.setVerticalScrollMode(self.tree.ScrollPerPixel)
-        self.tree.setHorizontalScrollBarPolicy(
-            QtCore.Qt.ScrollBarAlwaysOff)
+        tree.setColumnCount(2)
+        tree.setColumnWidth(1, 20)
+        tree.setVerticalScrollMode(tree.ScrollPerPixel)
+        tree.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        self.chartWidget = FlowchartWidget(chart, self)
+        self.chartWidget = PortGraphFlowchartDock(chart, self)
         # self.chartWidget.viewBox().autoRange()
-        self.chart_window = QtWidgets.QMainWindow()
-        self.chart_window.setWindowTitle('Flowchart')
-        self.chart_window.setCentralWidget(self.chartWidget)
-        self.chart_window.resize(1000, 800)
+        chart_window = QtWidgets.QMainWindow()
+        self.chart_window = chart_window
+        chart_window.setWindowTitle('Flowchart')
+        chart_window.setCentralWidget(self.chartWidget)
+        chart_window.resize(1000, 800)
 
-        self.tree.itemChanged.connect(self.itemChanged)
-        self.show_chart_button.toggled.connect(self.chartToggled)
-        self.reload_button.clicked.connect(self.reloadClicked)
+        tree.itemChanged.connect(self.itemChanged)
+        show_chart_button.toggled.connect(self.chartToggled)
+        reload_button.clicked.connect(self.reloadClicked)
 
     def chartToggled(self, b):
         if b:
@@ -141,7 +172,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
             self.chartWidget.reloadLibrary()
             self.reload_button.success('Reloaded.')
         except Exception:
-            self.reload_button.success('Error.')
+            self.reload_button.failure('Error.')
             raise
 
     def itemChanged(self, *args):
