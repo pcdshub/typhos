@@ -9,13 +9,18 @@ PortGraphControlWidget(QWidget)
 |   Reimplementation of FlowChartCtrlWidget
 |- .tree = PortTreeWidget
 |- .reload_button = FeedbackButton
-|- .chartWidget = PortGraphFlowchartDock
+|- .chartWidget = PortGraphFlowchartWidget
 
 FlowchartWidget(DockArea)
-PortGraphFlowchartDock(FlowchartWidget)
+PortGraphFlowchartWidget(FlowchartWidget)
 |- .chart = PortGraphFlowchart
 |- .ctrl = PortGraphControlWidget
 |- .hoverItem = ...
+|- .view = FlowchartGraphicsView
+|- .hoverText = QTextEdit
+|- .selInfo = QWidget
+|- ._scene => .view.scene()
+|- ._viewBox => .view.viewBox()
 
 PortNode(Node)
 |- ._graphicsItem = PortNodeItem(NodeGraphicsItem)
@@ -49,7 +54,7 @@ class PortNodeItem(NodeGraphicsItem):
         self.bounds = QtCore.QRectF(0, 0, self.WIDTH, self.HEIGHT)
 
         # Do not allow ports to be renamed:
-        self.nameItem.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
+        self.nameItem.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
 
     def mouseClickEvent(self, ev):
         if int(ev.button()) != int(QtCore.Qt.RightButton):
@@ -100,8 +105,49 @@ class PortTreeWidget(qtg_widgets.TreeWidget.TreeWidget):
         ...
 
 
-class PortGraphFlowchartDock(FlowchartWidget):
-    ...
+class PortGraphFlowchartWidget(FlowchartWidget):
+    def __init__(self, chart, ctrl):
+        super().__init__(chart, ctrl)
+        self.hoverDock.setVisible(False)
+
+    def selectionChanged(self):
+        items = self._scene.selectedItems()
+        if len(items) == 0 or not hasattr(items[0], 'node'):
+            self.selectedTree.setData(None, hideRoot=True)
+            return
+
+        node = items[0].node
+        self.ctrl.select(node)
+
+        outputs = [conn.node().name()
+                   for output in node.outputs().values()
+                   for conn in output.connections()]
+        inputs = [conn.node().name()
+                  for input in node.inputs().values()
+                  for conn in input.connections()]
+
+        # Port graphs only support one input
+        data = {
+            'input': inputs[0] if inputs else 'N/A',
+        }
+
+        # But multiple outputs
+        data.update(**{f'output{idx}': output for idx, output
+                       in enumerate(outputs, 1)})
+
+        self.selNameLabel.setText(node.name())
+        self.selDescLabel.setText(
+            f"<b>{node.nodeName}</b>: {node.__class__.__doc__}"
+        )
+
+        # if node.exception is not None:
+        #     data['exception'] = node.exception
+
+        self.selectedTree.setData(data, hideRoot=True)
+
+    def hoverOver(self, items):
+        ...
+        # Hiding the hover information for now - any ideas for usage?
 
 
 class PortGraphControlWidget(QtWidgets.QWidget):
@@ -149,7 +195,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         tree.setVerticalScrollMode(tree.ScrollPerPixel)
         tree.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        self.chartWidget = PortGraphFlowchartDock(chart, self)
+        self.chartWidget = PortGraphFlowchartWidget(chart, self)
         # self.chartWidget.viewBox().autoRange()
         chart_window = QtWidgets.QMainWindow()
         self.chart_window = chart_window
@@ -389,7 +435,7 @@ class PortGraphFlowchart(Flowchart):
         self.monitor = PortGraphMonitor(detector, parent=self)
 
         self.monitor.update.connect(self._ports_updated)
-        self._nodes = {}
+        self._port_nodes = {}
         self._edges = set()
         self._auto_position = True
 
@@ -399,8 +445,8 @@ class PortGraphFlowchart(Flowchart):
 
         for src, dest in edges_removed:
             try:
-                src_node = self._nodes[src]['node']
-                dest_node = self._nodes[dest]['node']
+                src_node = self._port_nodes[src]['node']
+                dest_node = self._port_nodes[dest]['node']
             except KeyError:
                 logger.debug('Edge removed that did not connect a known port, '
                              'likely in error: %s -> %s', src, dest)
@@ -410,19 +456,19 @@ class PortGraphFlowchart(Flowchart):
             self._edges.remove((src, dest))
 
         for port in ports_removed:
-            node = self._nodes.pop(port)
+            node = self._port_nodes.pop(port)
             node.disconnectAll()
             self.removeNode(node)
 
         for port in ports_added:
             plugin = self.port_map[port]
-            self._nodes[port] = dict(node=self.add_port(port, plugin),
+            self._port_nodes[port] = dict(node=self.add_port(port, plugin),
                                      plugin=plugin)
 
         for src, dest in edges_added:
             try:
-                src_node = self._nodes[src]['node']
-                dest_node = self._nodes[dest]['node']
+                src_node = self._port_nodes[src]['node']
+                dest_node = self._port_nodes[dest]['node']
             except KeyError:
                 # Scenarios:
                 #  1. Invalid port name used
@@ -442,7 +488,7 @@ class PortGraphFlowchart(Flowchart):
         if self._auto_position:
             positions = position_nodes(self._edges, self.port_map)
             for port, (px, py) in positions.items():
-                node = self._nodes[port]['node']
+                node = self._port_nodes[port]['node']
                 node.graphicsItem().setPos(px, py)
 
             self.widget().chartWidget.view.scale(1, 1)
@@ -519,19 +565,6 @@ def position_nodes(edges, port_map, *, x_spacing=PortNodeItem.WIDTH * 1.5,
     return positions
 
 
-def example(prefix='13SIM1:'):
-    class Detector(SimDetector):
-        plugins = Cpt(CommonPlugins_V32, '')
-
-    det = Detector(prefix=prefix, name='det')
-    fc = PortGraphFlowchart(detector=det, library=Library())
-    fc.monitor.update_ports()
-    w = fc.widget()
-    # layout.addWidget(fc.widget(), 0, 0, 2, 1)
-    # win.show()
-    w.show()
-
-
 if __name__ == '__main__':
     import sys
     logging.basicConfig()
@@ -543,6 +576,15 @@ if __name__ == '__main__':
     layout = QtWidgets.QGridLayout()
     cw.setLayout(layout)
 
-    example()
+    class Detector(SimDetector):
+        plugins = Cpt(CommonPlugins_V32, '')
+
+    det = Detector(prefix='13SIM1:', name='det')
+    fc = PortGraphFlowchart(detector=det, library=Library())
+    fc.monitor.update_ports()
+    w = fc.widget()
+    # layout.addWidget(fc.widget(), 0, 0, 2, 1)
+    # win.show()
+    w.show()
     if sys.flags.interactive != 1:
         QtWidgets.QApplication.instance().exec_()
