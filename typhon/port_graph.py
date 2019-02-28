@@ -31,9 +31,11 @@ PortGraphControlWidget(QWidget)     <-- Widget with tree
 '''
 import logging
 import threading
+import types
 
 from pyqtgraph.flowchart import (Flowchart, Node, NodeGraphicsItem,
-                                 FlowchartWidget)
+                                 FlowchartWidget, Terminal,
+                                 TerminalGraphicsItem, ConnectionItem)
 from pyqtgraph.flowchart.library import NodeLibrary
 import pyqtgraph.widgets as qtg_widgets
 
@@ -43,6 +45,67 @@ from ophyd import SimDetector, Component as Cpt, CommonPlugins_V32, CamBase
 
 
 logger = logging.getLogger(__name__)
+
+
+class PortTerminal(Terminal):
+    def __init__(self, node, name, io, optional=False, multi=False, pos=None,
+                 renamable=False, removable=False, multiable=False,
+                 bypass=None):
+        super().__init__(node, name, io, optional=optional, multi=multi,
+                         pos=pos, renamable=renamable, removable=removable,
+                         multiable=multiable, bypass=bypass)
+
+        def mouse_drag_event(tgi, ev):
+            if ev.button() != QtCore.Qt.LeftButton:
+                ev.ignore()
+                return
+
+            ev.accept()
+            if ev.isStart():
+                if tgi.newConnection is None:
+                    tgi.newConnection = ConnectionItem(tgi)
+                    tgi.getViewBox().addItem(tgi.newConnection)
+                tgi.newConnection.setTarget(tgi.mapToView(ev.pos()))
+            elif ev.isFinish():
+                if tgi.newConnection is not None:
+                    items = tgi.scene().items(ev.scenePos())
+                    targets = [item for item in items
+                               if isinstance(item, TerminalGraphicsItem)]
+                    if not targets:
+                        tgi.newConnection.close()
+                        tgi.newConnection = None
+                        return
+
+                    target = targets[0]
+                    tgi.newConnection.setTarget(target)
+                    a_term = tgi.term
+                    b_term = target.term
+                    a_node, a_name, a_term = (a_term.node(),
+                                              a_term.node().name(),
+                                              a_term.name())
+                    b_node, b_name, b_term = (b_term.node(),
+                                              b_term.node().name(),
+                                              b_term.name())
+                    if a_term == 'In' and b_term == 'Out':
+                        b_node.connection_drawn.emit(b_name, a_name)
+                    elif a_term == 'Out' and b_term == 'In':
+                        a_node.connection_drawn.emit(a_name, b_name)
+                    else:
+                        logger.error('Cannot connect %s.%s to %s.%s',
+                                     a_name, a_term, b_name, b_term)
+                    # tgi.scene().removeItem(tgi.newConnection)
+                    tgi.newConnection.close()
+                    tgi.newConnection = None
+            else:
+                if tgi.newConnection is not None:
+                    tgi.newConnection.setTarget(tgi.mapToView(ev.pos()))
+
+        # Monkey-patch because we're animals:
+        self._graphicsItem.mouseDragEvent = types.MethodType(
+            mouse_drag_event, self._graphicsItem)
+
+        # Alternatives: either re-implement __init__, or nuke the graphicsItem
+        # and re-create it...
 
 
 class PortNodeItem(NodeGraphicsItem):
@@ -68,6 +131,7 @@ class PortNodeItem(NodeGraphicsItem):
 class PortNode(Node):
     'A graph node representing one AreaDetector port'
     nodeName = 'PortNode'
+    connection_drawn = QtCore.Signal(str, str)
 
     def __init__(self, name, *, has_input=True, has_output=True):
         terminals = {}
@@ -83,6 +147,25 @@ class PortNode(Node):
 
     def processBypassed(self, args):
         return super().processBypassed(args)
+
+    def addTerminal(self, name, **opts):
+        """Add a new terminal to this Node with the given name.
+
+        Notes
+        -----
+        Extra keyword arguments are passed to Terminal.__init__.
+        Causes sigTerminalAdded to be emitted.
+        """
+        name = self.nextTerminalName(name)
+        term = PortTerminal(self, name, **opts)
+        self.terminals[name] = term
+        if term.isInput():
+            self._inputs[name] = term
+        elif term.isOutput():
+            self._outputs[name] = term
+        self.graphicsItem().updateTerminals()
+        self.sigTerminalAdded.emit(self, term)
+        return term
 
     def graphicsItem(self):
         if self._graphicsItem is None:
@@ -390,13 +473,25 @@ class PortGraphMonitor(QtCore.QObject):
         return edges
 
     def set_new_source(self, source_port, dest_port):
-        'Set a new source port for a plugin'
+        '''Set a new source port for a plugin
+
+        Parameters
+        ----------
+        source_port : str
+            The source port (e.g., CAM1)
+        dest_port : str
+            The destination port (e.g., ROI1)
+        '''
+        logger.info('Attempting to connect %s -> %s', source_port, dest_port)
         try:
-            self.port_map[source_port]
+            source_plugin = self.port_map[source_port]
             dest_plugin = self.port_map[dest_port]
         except KeyError as ex:
             raise ValueError(
                 f'Invalid source/destination port: {ex}') from None
+
+        if source_plugin == dest_plugin or source_port == dest_port:
+            raise ValueError('Cannot connect a port to itself')
 
         try:
             signal = dest_plugin.nd_array_port
@@ -564,6 +659,7 @@ class PortGraphFlowchart(Flowchart):
     def add_port(self, name, plugin, pos=None):
         has_input = not isinstance(plugin, CamBase)
         node = PortNode(name, has_input=has_input)
+        node.connection_drawn.connect(self.monitor.set_new_source)
         self.addNode(node, name, pos=pos)
         return node
 
