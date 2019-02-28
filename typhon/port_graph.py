@@ -197,7 +197,6 @@ class PortGraphControlWidget(QtWidgets.QWidget):
     controls, as well as buttons for loading/saving flowcharts.
 
     '''
-    # ((WIP reimplementation of FlowChartCtrlWidget))
 
     def __init__(self, chart):
         self.items = {}
@@ -215,13 +214,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         reload_button.setText('Reload')
         reload_button.setCheckable(False)
         reload_button.setFlat(False)
-        layout.addWidget(reload_button, 4, 0, 1, 2)
-
-        show_chart_button = QtWidgets.QPushButton(self)
-        self.show_chart_button = show_chart_button
-        show_chart_button.setText('Show chart')
-        show_chart_button.setCheckable(True)
-        layout.addWidget(show_chart_button, 4, 2, 1, 2)
+        layout.addWidget(reload_button, 1, 0, 1, 2)
 
         tree = PortTreeWidget(chart, self)
         self.tree = tree
@@ -229,7 +222,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         tree.header().setVisible(False)
         tree.header().setStretchLastSection(False)
         tree.header().setSectionResizeMode(0, tree.header().Stretch)
-        layout.addWidget(tree, 3, 0, 1, 4)
+        layout.addWidget(tree, 0, 0, 1, 4)
 
         tree.setColumnCount(2)
         tree.setColumnWidth(1, 20)
@@ -237,22 +230,11 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         tree.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         self.chartWidget = PortGraphFlowchartWidget(chart, self)
+        layout.addWidget(self.chartWidget, 0, 4, 4, 1)
         # self.chartWidget.viewBox().autoRange()
-        chart_window = QtWidgets.QMainWindow()
-        self.chart_window = chart_window
-        chart_window.setWindowTitle('Flowchart')
-        chart_window.setCentralWidget(self.chartWidget)
-        chart_window.resize(1000, 800)
 
         tree.itemChanged.connect(self.itemChanged)
-        show_chart_button.toggled.connect(self.chartToggled)
         reload_button.clicked.connect(self.reloadClicked)
-
-    def chartToggled(self, b):
-        if b:
-            self.chart_window.show()
-        else:
-            self.chart_window.hide()
 
     def reloadClicked(self):
         try:
