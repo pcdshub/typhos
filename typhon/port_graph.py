@@ -1,17 +1,18 @@
 '''
 Very confusing widget overview:
 
-PortGraphFlowchart(Flowchart)
+PortNode(Node)
+|- ._graphicsItem = PortNodeItem(NodeGraphicsItem)
+
+PortGraphMonitor(QObject):
+|- .detector = ophyd.Detector
+|- + signals for updates
+
+PortGraphFlowchart(Flowchart)        <-- The chart, created first
 |- .monitor = PortGraphMonitor
 |- ._widget = PortGraphControlWidget
 
-PortGraphControlWidget(QWidget)
-|   Reimplementation of FlowChartCtrlWidget
-|- .tree = PortTreeWidget
-|- .reload_button = FeedbackButton
-|- .chartWidget = PortGraphFlowchartWidget
-
-FlowchartWidget(DockArea)
+FlowchartWidget(DockArea)            <-- Dock with info about selection
 PortGraphFlowchartWidget(FlowchartWidget)
 |- .chart = PortGraphFlowchart
 |- .ctrl = PortGraphControlWidget
@@ -22,10 +23,11 @@ PortGraphFlowchartWidget(FlowchartWidget)
 |- ._scene => .view.scene()
 |- ._viewBox => .view.viewBox()
 
-PortNode(Node)
-|- ._graphicsItem = PortNodeItem(NodeGraphicsItem)
-
-PortGraphMonitor(QObject): detector + signals only
+PortGraphControlWidget(QWidget)     <-- Widget with tree
+|   Reimplementation of FlowChartCtrlWidget
+|- .tree = PortTreeWidget
+|- .reload_button = FeedbackButton
+|- .chartWidget = PortGraphFlowchartWidget
 '''
 import logging
 import threading
@@ -98,11 +100,45 @@ class Library(NodeLibrary):
         ...
 
 
-class PortTreeWidget(qtg_widgets.TreeWidget.TreeWidget):
+class PortTreeWidget(QtWidgets.QTreeWidget):
     'Tree representation of AreaDetector port graph'
-    @QtCore.Slot()
-    def reorder(self):
-        ...
+    def __init__(self, chart, parent=None):
+        super().__init__(parent=parent)
+        self.chart = chart
+        self.items = {}
+        self.chart.flowchart_updated.connect(self._chart_updated)
+
+    def _chart_updated(self):
+        root = self.invisibleRootItem()
+        for item in self.items.values():
+            parent = (root if item.parent() is None
+                      else item.parent())
+            parent.takeChild(parent.indexOfChild(item))
+
+        # TODO: store it this way to start with?
+        # TODO will fail if the same plugin is used twice
+        port_to_item = {node.name(): item
+                        for node, item in self.items.items()
+                        }
+
+        monitor = self.chart.monitor
+        edges = monitor.edges
+        cams = monitor.cameras
+        for cam in cams:
+            item = port_to_item[cam]
+            self.addTopLevelItem(item)
+
+        for src, dest in sorted(edges):
+            src_item = port_to_item[src]
+            dest_item = port_to_item[dest]
+
+            old_parent = dest_item.parent()
+            if old_parent is not None:
+                old_parent.removeChild(dest_item)
+            src_item.addChild(dest_item)
+
+        for item in self.items.values():
+            item.setExpanded(True)
 
 
 class PortGraphFlowchartWidget(FlowchartWidget):
@@ -187,7 +223,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         show_chart_button.setCheckable(True)
         layout.addWidget(show_chart_button, 4, 2, 1, 2)
 
-        tree = PortTreeWidget(self)
+        tree = PortTreeWidget(chart, self)
         self.tree = tree
         tree.headerItem().setText(0, 'Port')
         tree.header().setVisible(False)
@@ -248,12 +284,15 @@ class PortGraphControlWidget(QtWidgets.QWidget):
             item.addChild(item2)
             self.tree.setItemWidget(item2, 0, ctrl)
 
-        self.items[node] = item
+        self.tree.items[node] = item
 
     def removeNode(self, node):
-        if node in self.items:
-            item = self.items[node]
-            self.tree.removeTopLevelItem(item)
+        if node in self.tree.items:
+            item = self.tree.items.pop(node)
+            parent = (item.parent()
+                      if item.parent() is not None
+                      else self.tree.invisibleRootItem())
+            parent.takeChild(parent.indexOfChild(item))
 
     def chartWidget(self):
         return self.chartWidget
@@ -265,7 +304,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         self.chartWidget.clear()
 
     def select(self, node):
-        item = self.items[node]
+        item = self.tree.items[node]
         self.tree.setCurrentItem(item)
 
 
@@ -428,18 +467,21 @@ class PortGraphFlowchart(Flowchart):
     parent : QtCore.QObject, optional
         The parent widget
     '''
+
+    flowchart_updated = QtCore.Signal()
+
     def __init__(self, detector, library):
-        super().__init__(terminals={},
-                         library=library)
-        self._widget = None
+        super().__init__(terminals={}, library=library)
+        # Through some strange __init__ mechanism, the associated
+        # PortGraphControlWidget actually gets created by this point.
 
         # Unused input/output widgets:
         for node in (self.inputNode, self.outputNode):
             self.removeNode(node)
 
         self.monitor = PortGraphMonitor(detector, parent=self)
-
         self.monitor.update.connect(self._ports_updated)
+
         self._port_nodes = {}
         self._edges = set()
         self._auto_position = True
@@ -490,13 +532,17 @@ class PortGraphFlowchart(Flowchart):
 
             self._edges.add((src, dest))
 
+        control_widget = self.widget()
+
         if self._auto_position:
             positions = position_nodes(self._edges, self.port_map)
             for port, (px, py) in positions.items():
                 node = self._port_nodes[port]['node']
                 node.graphicsItem().setPos(px, py)
 
-            self.widget().chartWidget.view.scale(1, 1)
+            control_widget.chartWidget.view.scale(1, 1)
+
+        self.flowchart_updated.emit()
 
     def widget(self):
         """Return the control widget for this flowchart.
