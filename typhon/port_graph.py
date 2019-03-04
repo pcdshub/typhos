@@ -216,13 +216,17 @@ class PortTreeWidget(QtWidgets.QTreeWidget):
             self.addTopLevelItem(item)
 
         for src, dest in sorted(edges):
-            src_item = self.port_to_item[src]
-            dest_item = self.port_to_item[dest]
+            try:
+                src_item = self.port_to_item[src]
+                dest_item = self.port_to_item[dest]
+            except KeyError:
+                continue
 
             old_parent = dest_item.parent()
             if old_parent is not None:
                 old_parent.removeChild(dest_item)
-            src_item.addChild(dest_item)
+            if src_item != dest_item:
+                src_item.addChild(dest_item)
 
         for item in self.port_to_item.values():
             item.setExpanded(True)
@@ -280,8 +284,7 @@ class PortGraphFlowchartWidget(FlowchartWidget):
 
 class PortGraphControlWidget(QtWidgets.QWidget):
     '''
-    The widget that contains the list of all the nodes in a flowchart and their
-    controls, as well as buttons for loading/saving flowcharts.
+    The widget that contains the tree of all the nodes in a flowchart
     '''
 
     def __init__(self, chart):
@@ -319,7 +322,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         layout.addWidget(self.chartWidget, 0, 4, 4, 1)
         # self.chartWidget.viewBox().autoRange()
 
-        tree.itemChanged.connect(self.itemChanged)
+        # tree.itemChanged.connect(self.itemChanged)
         reload_button.clicked.connect(self.reloadClicked)
 
     def reloadClicked(self):
@@ -331,9 +334,6 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         else:
             self.reload_button.success('Reloaded.')
 
-    def itemChanged(self, *args):
-        pass
-
     def scene(self):
         return self.chartWidget.scene()
 
@@ -341,18 +341,11 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         return self.chartWidget.viewBox()
 
     def nodeRenamed(self, node, oldName):
-        self.port_to_item[node.name()].setText(0, node.name())
+        ...  # API compatibility
 
     def addNode(self, node):
-        ctrl = node.ctrlWidget()
         item = QtWidgets.QTreeWidgetItem([node.name()])
         self.tree.addTopLevelItem(item)
-
-        if ctrl is not None:
-            item2 = QtWidgets.QTreeWidgetItem()
-            item.addChild(item2)
-            self.tree.setItemWidget(item2, 0, ctrl)
-
         self.tree.port_to_item[node.name()] = item
 
     def removeNode(self, node):
@@ -365,15 +358,6 @@ class PortGraphControlWidget(QtWidgets.QWidget):
                       if item.parent() is not None
                       else self.tree.invisibleRootItem())
             parent.takeChild(parent.indexOfChild(item))
-
-    def chartWidget(self):
-        return self.chartWidget
-
-    def outputChanged(self, data):
-        pass
-
-    def clear(self):
-        self.chartWidget.clear()
 
     def select(self, node):
         item = self.tree.port_to_item[node.name()]
