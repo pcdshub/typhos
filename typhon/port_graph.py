@@ -726,32 +726,3 @@ def position_nodes(edges, port_map, *, x_spacing=PortNodeItem.WIDTH * 1.5,
             position_port(port, start_x, get_next_y())
 
     return positions
-
-
-if __name__ == '__main__':
-    import sys
-    logging.basicConfig()
-    logger.setLevel('DEBUG')
-    app = QtWidgets.QApplication([])
-    win = QtWidgets.QMainWindow()
-    cw = QtWidgets.QWidget()
-    win.setCentralWidget(cw)
-    layout = QtWidgets.QGridLayout()
-    cw.setLayout(layout)
-
-    CommonPlugins_V32 = select_version(CommonPlugins, (3, 2))
-
-    class Detector(SimDetector, CommonPlugins_V32):
-        # plugins = Cpt(CommonPlugins_V32, '')
-        ...
-
-    det = Detector(prefix='13SIM1:', name='det')
-    fc = PortGraphFlowchart(detector=det, library=Library())
-    fc.monitor.update_ports()
-
-    w = fc.widget()
-    # layout.addWidget(fc.widget(), 0, 0, 2, 1)
-    # win.show()
-    w.show()
-    if sys.flags.interactive != 1:
-        QtWidgets.QApplication.instance().exec_()
