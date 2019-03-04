@@ -300,7 +300,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         reload_button.setText('Reload')
         reload_button.setCheckable(False)
         reload_button.setFlat(False)
-        layout.addWidget(reload_button, 1, 0, 1, 2)
+        layout.addWidget(reload_button, 1, 0, 1, 4)
 
         tree = PortTreeWidget(chart, self)
         self.tree = tree
