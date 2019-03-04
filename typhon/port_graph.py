@@ -571,7 +571,10 @@ class PortGraphFlowchart(Flowchart):
 
     flowchart_updated = QtCore.Signal()
 
-    def __init__(self, detector, library):
+    def __init__(self, detector, *, library=None):
+        if library is None:
+            library = Library()
+
         super().__init__(terminals={}, library=library)
         # Through some strange __init__ mechanism, the associated
         # PortGraphControlWidget actually gets created by this point.
