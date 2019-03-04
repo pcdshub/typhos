@@ -29,6 +29,7 @@ PortGraphControlWidget(QWidget)     <-- Widget with tree
 |- .reload_button = FeedbackButton
 |- .chartWidget = PortGraphFlowchartWidget
 '''
+import collections
 import logging
 import threading
 import types
@@ -41,7 +42,7 @@ import pyqtgraph.widgets as qtg_widgets
 
 from qtpy import QtWidgets, QtCore
 
-from ophyd import SimDetector, Component as Cpt, CommonPlugins_V32, CamBase
+from ophyd import (SimDetector, CommonPlugins, CamBase, select_version)
 
 
 logger = logging.getLogger(__name__)
@@ -685,6 +686,11 @@ def position_nodes(edges, port_map, *, x_spacing=PortNodeItem.WIDTH * 1.5,
         Starting y position
     '''
     def position_port(port, x, y):
+        if y < y_minimum[x]:
+            y = y_minimum[x]
+
+        y_minimum[x] = y + y_spacing
+
         positions[port] = (x, y)
         dests = [dest for src, dest in edges
                  if src == port
@@ -696,23 +702,25 @@ def position_nodes(edges, port_map, *, x_spacing=PortNodeItem.WIDTH * 1.5,
     cameras = [port for port, cam in port_map.items()
                if isinstance(cam, CamBase)]
 
+    y_minimum = collections.defaultdict(lambda: -len(port_map) * y_spacing)
+
     start_x = x
     positions = {}
 
+    def get_next_y():
+        if positions:
+            return y_spacing + max(y for x, y in positions.values())
+        else:
+            return 0
+
     # Start with all of the cameras and the plugins connected
     for camera in sorted(cameras):
-        position_port(camera, x, y)
-        x = start_x
-        y = y_spacing + max(y for x, y in positions.values())
+        position_port(camera, start_x, get_next_y())
 
     # Add any ports that are otherwise unconnected
-    x = start_x
-    if positions:
-        y = y_spacing + max(y for x, y in positions.values())
-
     for port in port_map:
         if port not in positions:
-            position_port(port, x, y)
+            position_port(port, start_x, get_next_y())
 
     return positions
 
@@ -728,12 +736,16 @@ if __name__ == '__main__':
     layout = QtWidgets.QGridLayout()
     cw.setLayout(layout)
 
-    class Detector(SimDetector):
-        plugins = Cpt(CommonPlugins_V32, '')
+    CommonPlugins_V32 = select_version(CommonPlugins, (3, 2))
+
+    class Detector(SimDetector, CommonPlugins_V32):
+        # plugins = Cpt(CommonPlugins_V32, '')
+        ...
 
     det = Detector(prefix='13SIM1:', name='det')
     fc = PortGraphFlowchart(detector=det, library=Library())
     fc.monitor.update_ports()
+
     w = fc.widget()
     # layout.addWidget(fc.widget(), 0, 0, 2, 1)
     # win.show()
