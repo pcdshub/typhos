@@ -1,5 +1,5 @@
 import pytest
-from qtpy import QtCore
+from qtpy import QtCore, QtGui
 
 from typhon.port_graph import PortGraphFlowchart
 
@@ -137,7 +137,7 @@ def test_graph_select_node(qtbot, fake_detector, port_graph, chart_widget):
 
 
 class FakeDragEvent:
-    def __init__(self, pos, scene_pos, *, button=QtCore.Qt.LeftButton,
+    def __init__(self, pos, scene_pos=None, *, button=QtCore.Qt.LeftButton,
                  finish=False):
         self._button = button
         self._finish = finish
@@ -186,3 +186,16 @@ def test_graph_connect_output_to_input(qtbot, fake_detector, port_graph,
     cam_out.mouseDragEvent(ev)
 
     # TODO: this does not find the tiff_in terminal, somehow (see coverage)
+
+
+def test_tree_drag(qtbot, fake_detector, port_graph, control_widget,
+                   chart_widget):
+    reload_graph(qtbot, port_graph)
+    tree = control_widget.tree
+
+    roi1 = tree.port_to_item['roi1']
+    tiff1 = tree.port_to_item['tiff1']
+    # qtbot.mousePress(tree, QtCore.Qt.LeftButton, pos=roi1.pos())
+    # qtbot.mouseMove(tree, pos=tiff1.pos())
+    # qtbot.mouseRelease(tree, pos=roi1.pos())
+    # TODO?
