@@ -34,6 +34,8 @@ import logging
 import threading
 import types
 
+import networkx
+
 from pyqtgraph.flowchart import (Flowchart, Node, NodeGraphicsItem,
                                  FlowchartWidget, Terminal,
                                  TerminalGraphicsItem, ConnectionItem)
@@ -450,7 +452,7 @@ class PortGraphMonitor(QtCore.QObject):
 
         Returns
         -------
-        edges : list
+        edges : set
             List of (src, dest)
         '''
         edges = set()
@@ -507,7 +509,7 @@ class PortGraphMonitor(QtCore.QObject):
     def update_ports(self):
         'Read the port digraph/dictionary from the detector and emit updates'
         port_map = self.port_map
-        edges = self.get_edges()
+        edges = break_cycles(self.get_edges())
 
         with self.lock:
             for port, plugin in sorted(port_map.items()):
@@ -659,6 +661,28 @@ class PortGraphFlowchart(Flowchart):
         return node
 
 
+def break_cycles(edges):
+    '''Break any graph cycles present in the list of edges'''
+    dig = networkx.digraph.DiGraph()
+    for src, dest in edges:
+        dig.add_edge(src, dest)
+
+    while True:
+        try:
+            cycle = networkx.find_cycle(dig)
+        except networkx.NetworkXNoCycle:
+            break
+
+        src, dest = cycle[-1]
+        logger.warning('Found cycles in port graph: %s; breaking at %s->%s',
+                       cycle, src, dest)
+
+        dig.remove_edge(src, dest)
+        edges.remove((src, dest))
+
+    return edges
+
+
 def position_nodes(edges, port_map, *, x_spacing=PortNodeItem.WIDTH * 1.5,
                    y_spacing=PortNodeItem.HEIGHT * 1.5, x=0, y=0):
     '''
@@ -688,7 +712,8 @@ def position_nodes(edges, port_map, *, x_spacing=PortNodeItem.WIDTH * 1.5,
         positions[port] = (x, y)
         dests = [dest for src, dest in edges
                  if src == port
-                 and src != dest]
+                 and src != dest
+                 and dest not in positions]
         y -= y_spacing * (len(dests) // 2)
         for idx, dest in enumerate(sorted(dests)):
             position_port(dest, x + x_spacing, y + idx * y_spacing)
