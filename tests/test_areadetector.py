@@ -1,7 +1,7 @@
 import pytest
 from qtpy import QtCore
 
-from typhon.tools import PortGraphFlowchart
+from typhon.tools import TyphonAreaDetectorGraphWidget
 
 
 @pytest.fixture(scope='function')
@@ -33,10 +33,17 @@ def fake_detector():
 
 
 @pytest.fixture(scope='function')
-def port_graph(qtbot, fake_detector):
-    widget = PortGraphFlowchart(fake_detector)
+def typhon_graph_widget(qtbot, fake_detector):
+    widget = TyphonAreaDetectorGraphWidget()
     qtbot.addWidget(widget)
+    widget.add_device(fake_detector)
     return widget
+
+
+@pytest.fixture(scope='function')
+def port_graph(qtbot, typhon_graph_widget):
+    chart, control = typhon_graph_widget.charts[0]
+    return chart
 
 
 @pytest.fixture(scope='function')

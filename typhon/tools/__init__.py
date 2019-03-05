@@ -4,4 +4,4 @@ __all__ = ['TyphonConsole', 'TyphonLogDisplay', 'TyphonTimePlot']
 from .console import TyphonConsole
 from .plot import TyphonTimePlot
 from .log import TyphonLogDisplay
-from .areadetector import PortGraphFlowchart, PortTreeWidget
+from .areadetector import TyphonAreaDetectorGraphWidget

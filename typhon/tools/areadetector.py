@@ -46,10 +46,44 @@ from qtpy import QtWidgets, QtCore
 
 from ophyd import CamBase
 
-from ..utils import raise_to_operator
+from ..utils import TyphonBase, raise_to_operator
 
 
 logger = logging.getLogger(__name__)
+
+
+class TyphonAreaDetectorGraphWidget(TyphonBase):
+    flowchart_updated = QtCore.Signal(object)
+    port_selected = QtCore.Signal(object, str)
+
+    def __init__(self, level=logging.INFO, parent=None):
+        super().__init__(parent=parent)
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(self.layout)
+        self.charts = []
+
+    def add_device(self, device):
+        """Add a device to the graph display"""
+        super().add_device(device)
+
+        chart = PortGraphFlowchart(device)
+        control = chart.widget()
+
+        self.layout.addWidget(control)
+        self.charts.append((chart, control))
+
+        def emit_update():
+            self.flowchart_updated.emit(device)
+
+        chart.flowchart_updated.connect(emit_update)
+
+        def port_selected(port):
+            self.port_selected.emit(device, port)
+
+        chart.port_selected.connect(port_selected)
+        return chart, control
 
 
 class PortTerminal(Terminal):
