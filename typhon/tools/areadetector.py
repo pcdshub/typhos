@@ -244,6 +244,9 @@ class PortGraphFlowchartWidget(FlowchartWidget):
         super().__init__(chart, ctrl)
         self.hoverDock.setVisible(False)
 
+        # Hide the 'data type' column
+        self.selectedTree.hideColumn(1)
+
     def selectionChanged(self):
         items = self._scene.selectedItems()
         if len(items) == 0 or not hasattr(items[0], 'node'):
