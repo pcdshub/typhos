@@ -315,7 +315,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
         layout.addWidget(self.chartWidget, 0, 4, 4, 1)
         # self.chartWidget.viewBox().autoRange()
 
-        # tree.itemChanged.connect(self.itemChanged)
+        tree.itemSelectionChanged.connect(self._tree_selection_changed)
         reload_button.clicked.connect(self.reloadClicked)
 
     def reloadClicked(self):
@@ -355,6 +355,20 @@ class PortGraphControlWidget(QtWidgets.QWidget):
     def select(self, node):
         item = self.tree.port_to_item[node.name()]
         self.tree.setCurrentItem(item)
+
+    def _tree_selection_changed(self):
+        try:
+            item, = self.tree.selectedItems()
+        except (TypeError, ValueError):
+            return
+
+        port_name = item.text(0)
+        node = self.chart._port_nodes[port_name]['node']
+        node_graphic = node.graphicsItem()
+
+        self.chart.scene.clearSelection()
+        node_graphic.setSelected(True)
+        self.chartWidget.view.centerOn(node_graphic)
 
 
 class PortGraphMonitor(QtCore.QObject):
