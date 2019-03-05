@@ -44,7 +44,7 @@ import pyqtgraph.widgets as qtg_widgets
 
 from qtpy import QtWidgets, QtCore
 
-from ophyd import (SimDetector, CommonPlugins, CamBase, select_version)
+from ophyd import CamBase
 
 
 logger = logging.getLogger(__name__)
