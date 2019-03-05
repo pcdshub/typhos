@@ -371,6 +371,7 @@ class PortGraphControlWidget(QtWidgets.QWidget):
     def select(self, node):
         item = self.tree.port_to_item[node.name()]
         self.tree.setCurrentItem(item)
+        self.chart.port_selected.emit(node.name())
 
     def _tree_selection_changed(self):
         try:
@@ -577,6 +578,7 @@ class PortGraphFlowchart(Flowchart):
     '''
 
     flowchart_updated = QtCore.Signal()
+    port_selected = QtCore.Signal(str)
 
     def __init__(self, detector, *, library=None):
         if library is None:
@@ -596,6 +598,11 @@ class PortGraphFlowchart(Flowchart):
         self._port_nodes = {}
         self._edges = set()
         self._auto_position = True
+
+    @property
+    def edges(self):
+        'Set of (src, dest) ports that make up the AreaDetector port graph'
+        return self.monitor.edges
 
     def _ports_updated(self, ports_removed, ports_added, edges_removed,
                        edges_added):

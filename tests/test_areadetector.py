@@ -86,6 +86,10 @@ def test_monitor_sources(monitor):
     assert ('roi1', 'tiff1') in monitor.get_edges()
 
 
+def test_graph_smoke(qtbot, monitor, port_graph):
+    print('edges are', port_graph.edges)
+
+
 def test_add_edge(qtbot, monitor, port_graph):
     reload_graph(qtbot, port_graph)
     monitor.set_new_source('roi1', 'tiff1')
