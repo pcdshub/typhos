@@ -1,7 +1,7 @@
 import pytest
-from qtpy import QtCore, QtGui
+from qtpy import QtCore
 
-from typhon.port_graph import PortGraphFlowchart
+from typhon.tools import PortGraphFlowchart
 
 
 @pytest.fixture(scope='function')
