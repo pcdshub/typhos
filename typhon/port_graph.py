@@ -143,12 +143,6 @@ class PortNode(Node):
 
         super().__init__(name, terminals=terminals, allowRemove=False)
 
-    def process(self, **kwds):
-        return {'Out': 0}
-
-    def processBypassed(self, args):
-        return super().processBypassed(args)
-
     def addTerminal(self, name, **opts):
         """Add a new terminal to this Node with the given name.
 
@@ -181,7 +175,7 @@ class Library(NodeLibrary):
         self.addNodeType(PortNode, [('AreaDetector', )])
 
     def reload(self):
-        ...
+        ...  # API compat
 
 
 class PortTreeWidget(QtWidgets.QTreeWidget):
