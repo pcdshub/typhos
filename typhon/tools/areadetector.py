@@ -46,6 +46,8 @@ from qtpy import QtWidgets, QtCore
 
 from ophyd import CamBase
 
+from ..utils import raise_to_operator
+
 
 logger = logging.getLogger(__name__)
 
@@ -191,11 +193,20 @@ class PortTreeWidget(QtWidgets.QTreeWidget):
         self.setDragDropMode(self.InternalMove)
 
     def dropEvent(self, ev):
-        super().dropEvent(ev)
         dragged_to = self.itemAt(ev.pos())
+        if dragged_to is None:
+            ev.ignore()
+            return
+
         source_port = dragged_to.text(0)
         dest_port = self.currentItem().text(0)
-        self.chart.monitor.set_new_source(source_port, dest_port)
+
+        try:
+            self.chart.monitor.set_new_source(source_port, dest_port)
+        except Exception as ex:
+            raise_to_operator(ex)
+        else:
+            super().dropEvent(ev)
 
     def _chart_updated(self):
         root = self.invisibleRootItem()
@@ -654,9 +665,15 @@ class PortGraphFlowchart(Flowchart):
         return self._widget
 
     def add_port(self, name, plugin, pos=None):
+        def connection_drawn(src, dest):
+            try:
+                self.monitor.set_new_source(src, dest)
+            except Exception as ex:
+                raise_to_operator(ex)
+
         has_input = not isinstance(plugin, CamBase)
         node = PortNode(name, has_input=has_input)
-        node.connection_drawn.connect(self.monitor.set_new_source)
+        node.connection_drawn.connect(connection_drawn)
         self.addNode(node, name, pos=pos)
         return node
 
