@@ -289,7 +289,6 @@ class PortGraphControlWidget(QtWidgets.QWidget):
 
         layout = QtWidgets.QGridLayout(self)
         self.layout = layout
-        layout.setContentsMargins(0, 0, 0, 0)
         layout.setVerticalSpacing(0)
 
         reload_button = qtg_widgets.FeedbackButton.FeedbackButton(self)
