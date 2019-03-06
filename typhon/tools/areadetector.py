@@ -654,8 +654,9 @@ class PortGraphFlowchart(Flowchart):
             library = Library()
 
         super().__init__(terminals={}, library=library)
-        # Through some strange __init__ mechanism, the associated
-        # PortGraphControlWidget actually gets created by this point.
+        # Though the superclass as of the time of writing calls self.widget()
+        # in __init__, ensure that's always the case here:
+        self.widget()
 
         # Unused input/output widgets:
         for node in (self.inputNode, self.outputNode):
