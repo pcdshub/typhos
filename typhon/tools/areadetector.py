@@ -46,6 +46,7 @@ from qtpy import QtWidgets, QtCore, QtGui
 
 from ophyd import CamBase
 
+from ..suite import TyphonSuite
 from ..utils import TyphonBase, raise_to_operator
 
 
@@ -55,14 +56,16 @@ logger = logging.getLogger(__name__)
 class TyphonAreaDetectorGraphWidget(TyphonBase):
     flowchart_updated = QtCore.Signal(object)
     port_selected = QtCore.Signal(object, str, object)
+    configure_request = QtCore.Signal(str, object)
 
-    def __init__(self, level=logging.INFO, parent=None):
+    def __init__(self, suite=None, level=logging.INFO, parent=None):
         super().__init__(parent=parent)
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.layout)
         self.charts = []
+        self.suite = suite
 
     def add_device(self, device):
         """Add a device to the graph display"""
@@ -85,6 +88,21 @@ class TyphonAreaDetectorGraphWidget(TyphonBase):
             self.port_selected.emit(device, port, plugin)
 
         chart.port_selected.connect(port_selected)
+
+        chart.configure_request.connect(self.configure_request.emit)
+
+        def show_configuration(port, plugin):
+            # TODO what do we actually want to do?
+            # TODO: where should this live?
+            if self.suite is None:
+                self.suite = TyphonSuite()
+
+            if plugin not in self.suite.devices:
+                self.suite.add_device(plugin)
+
+            self.suite.show()
+
+        chart.configure_request.connect(show_configuration)
         return chart, control
 
 
