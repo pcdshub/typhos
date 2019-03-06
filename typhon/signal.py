@@ -220,8 +220,10 @@ class SignalOrder(IntEnum):
     byName = 1
 
 
-class TyphonSignalPanel(UsesEnums(SignalOrder),
-                        TyphonBase, TyphonDesignerMixin):
+QtSignalOrder = UsesEnums(SignalOrder)
+
+
+class TyphonSignalPanel(QtSignalOrder, TyphonBase, TyphonDesignerMixin):
     """
     Panel of Signals for Device
     """

@@ -34,7 +34,8 @@ ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
 
 def UsesEnums(*enum_classes, base=QWidget):
     '''
-    Add Qt Designer compatible enums to a class.
+    Add Qt Designer compatible enums to a class. Under the hood, this generates
+    a base class for the target class.
 
     Parameters
     ----------
@@ -46,17 +47,22 @@ def UsesEnums(*enum_classes, base=QWidget):
         QObject or QWidget (or have one in the class hierarchy)
     '''
     class EnumBase(base):
-        '''
-
-        Attributes
-        ----------
-        _enums : tuple
-            Tuple of Qt-compatible enum classes used
-        '''
         for enum in enum_classes:
             Q_ENUMS(enum)
 
-        _enums = enum_classes
+        _qt_enums = enum_classes
+
+        @classmethod
+        def _find_qt_enums(class_):
+            'Return the set of all used Q_ENUMS on this class'
+            return set(
+                sum((cls._qt_enums
+                     for cls in class_.mro()
+                     if isinstance(getattr(cls, '_qt_enums', None), tuple)
+                     ),
+                    tuple()
+                    )
+            )
 
     for enum in enum_classes:
         # Allow access via cls.enum_class_name.member
