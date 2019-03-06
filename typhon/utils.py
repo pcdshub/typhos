@@ -22,6 +22,7 @@ from ophyd.sim import SignalRO
 from qtpy.QtGui import QColor, QPainter
 from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
                             QWidget, QMessageBox)
+from qtpy.QtCore import Q_ENUMS
 
 #############
 #  Package  #
@@ -29,6 +30,51 @@ from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
 
 logger = logging.getLogger(__name__)
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
+
+
+def UsesEnums(*enum_classes, base=QWidget):
+    '''
+    Add Qt Designer compatible enums to a class.
+
+    Parameters
+    ----------
+    *enum_classes : enum.Enum or namespace
+        Enum classes - can be either of type `enum.Enum` or a simple namespace
+        where one attribute is associated with one value.
+    base : class
+        The base class for the generated Qt-compatible class. Must be either
+        QObject or QWidget (or have one in the class hierarchy)
+    '''
+    class EnumBase(base):
+        '''
+
+        Attributes
+        ----------
+        _enums : tuple
+            Tuple of Qt-compatible enum classes used
+        '''
+        for enum in enum_classes:
+            Q_ENUMS(enum)
+
+        _enums = enum_classes
+
+    for enum in enum_classes:
+        # Allow access via cls.enum_class_name.member
+        setattr(EnumBase, enum.__name__, enum)
+
+        # Allow access via cls.member (omitting class_name.)
+        if hasattr(enum, '__members__'):
+            # For enum.Enum
+            for name, member in enum.__members__.items():
+                setattr(EnumBase, name, member)
+        else:
+            # For any other type
+            instance = enum()
+            for name in dir(instance):
+                if not name.startswith('_'):
+                    setattr(EnumBase, name, getattr(instance, name))
+
+    return EnumBase
 
 
 def channel_from_signal(signal):

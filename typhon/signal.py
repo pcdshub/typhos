@@ -1,6 +1,7 @@
 ############
 # Standard #
 ############
+from enum import IntEnum
 from functools import partial
 import logging
 
@@ -9,14 +10,14 @@ import logging
 ############
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
-from qtpy.QtCore import Property, Q_ENUMS, QSize
+from qtpy.QtCore import Property, QSize
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 
 #############
 #  Package  #
 #############
 from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
-                    is_signal_ro, TyphonBase)
+                    is_signal_ro, TyphonBase, UsesEnums)
 from .widgets import (TyphonLineEdit, TyphonComboBox, TyphonLabel,
                       TyphonDesignerMixin, ImageDialogButton,
                       WaveformDialogButton)
@@ -213,18 +214,17 @@ class SignalPanel(QGridLayout):
         return loc
 
 
-class SignalOrder:
+class SignalOrder(IntEnum):
     """Option to sort signals"""
     byKind = 0
     byName = 1
 
 
-class TyphonSignalPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
+class TyphonSignalPanel(UsesEnums(SignalOrder),
+                        TyphonBase, TyphonDesignerMixin):
     """
     Panel of Signals for Device
     """
-    Q_ENUMS(SignalOrder)  # Necessary for display in Designer
-    SignalOrder = SignalOrder  # For convenience
     # From top of page to bottom
     kind_order = (Kind.hinted, Kind.normal,
                   Kind.config, Kind.omitted)
