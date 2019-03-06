@@ -12,8 +12,8 @@ PortGraphFlowchart(Flowchart)        <-- The chart, created first
 |- .monitor = PortGraphMonitor
 |- ._widget = PortGraphControlWidget
 
-FlowchartWidget(DockArea)            <-- Dock with info about selection
 PortGraphFlowchartWidget(FlowchartWidget)
+FlowchartWidget(DockArea)            <-- Dock with info about selection
 |- .chart = PortGraphFlowchart
 |- .ctrl = PortGraphControlWidget
 |- .hoverItem = ...
@@ -23,7 +23,7 @@ PortGraphFlowchartWidget(FlowchartWidget)
 |- ._scene => .view.scene()
 |- ._viewBox => .view.viewBox()
 
-PortGraphControlWidget(QWidget)     <-- Widget with tree
+PortGraphControlWidget(QWidget)      <-- Widget with tree
 |   Reimplementation of FlowChartCtrlWidget
 |- .tree = PortTreeWidget
 |- .reload_button = FeedbackButton
@@ -42,7 +42,7 @@ from pyqtgraph.flowchart import (Flowchart, Node, NodeGraphicsItem,
 from pyqtgraph.flowchart.library import NodeLibrary
 import pyqtgraph.widgets as qtg_widgets
 
-from qtpy import QtWidgets, QtCore
+from qtpy import QtWidgets, QtCore, QtGui
 
 from ophyd import CamBase
 
@@ -145,6 +145,13 @@ class PortTerminal(Terminal):
         self._graphicsItem.mouseDragEvent = types.MethodType(
             mouse_drag_event, self._graphicsItem)
 
+        def get_menu(self):
+            self._item_menu = QtWidgets.QMenu()
+            return self._item_menu
+
+        self._graphicsItem.getMenu = types.MethodType(
+            get_menu, self._graphicsItem)
+
         # Alternatives: either re-implement __init__, or nuke the graphicsItem
         # and re-create it...
 
@@ -162,17 +169,19 @@ class PortNodeItem(NodeGraphicsItem):
         # Do not allow ports to be renamed:
         self.nameItem.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
 
-    def mouseClickEvent(self, ev):
-        if int(ev.button()) != int(QtCore.Qt.RightButton):
-            super().mouseClickEvent(ev)
-        else:
-            ev.ignore()
+    def getMenu(self):
+        self.menu = QtWidgets.QMenu()
+        self.menu.setTitle(f'Node {self.node.name()}')
+        self.menu.addAction(f'&Configure {self.node.name()}...',
+                            self.node.configure_request.emit)
+        return self.menu
 
 
 class PortNode(Node):
     'A graph node representing one AreaDetector port'
     nodeName = 'PortNode'
     connection_drawn = QtCore.Signal(str, str)
+    configure_request = QtCore.Signal()
 
     def __init__(self, name, *, has_input=True, has_output=True):
         terminals = {}
@@ -279,6 +288,11 @@ class PortGraphFlowchartWidget(FlowchartWidget):
     def __init__(self, chart, ctrl):
         super().__init__(chart, ctrl)
         self.hoverDock.setVisible(False)
+
+        def get_context_menus(ev):
+            return []
+
+        self.view._vb.getContextMenus = get_context_menus
 
         # Hide the 'data type' column
         self.selectedTree.hideColumn(1)
@@ -615,6 +629,7 @@ class PortGraphFlowchart(Flowchart):
 
     flowchart_updated = QtCore.Signal()
     port_selected = QtCore.Signal(str)
+    configure_request = QtCore.Signal(str, object)
 
     def __init__(self, detector, *, library=None):
         if library is None:
@@ -717,8 +732,12 @@ class PortGraphFlowchart(Flowchart):
             except Exception as ex:
                 raise_to_operator(ex)
 
+        def configure_request():
+            self.configure_request.emit(name, plugin)
+
         has_input = not isinstance(plugin, CamBase)
         node = PortNode(name, has_input=has_input)
+        node.configure_request.connect(configure_request)
         node.connection_drawn.connect(connection_drawn)
         self.addNode(node, name, pos=pos)
         return node
