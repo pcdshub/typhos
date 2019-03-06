@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
 
 class TyphonAreaDetectorGraphWidget(TyphonBase):
     flowchart_updated = QtCore.Signal(object)
-    port_selected = QtCore.Signal(object, str)
+    port_selected = QtCore.Signal(object, str, object)
 
     def __init__(self, level=logging.INFO, parent=None):
         super().__init__(parent=parent)
@@ -80,7 +80,9 @@ class TyphonAreaDetectorGraphWidget(TyphonBase):
         chart.flowchart_updated.connect(emit_update)
 
         def port_selected(port):
-            self.port_selected.emit(device, port)
+            port_map = chart.port_map
+            plugin = port_map[port]
+            self.port_selected.emit(device, port, plugin)
 
         chart.port_selected.connect(port_selected)
         return chart, control
