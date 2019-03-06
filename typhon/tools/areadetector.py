@@ -46,7 +46,6 @@ from qtpy import QtWidgets, QtCore, QtGui
 
 from ophyd import CamBase
 
-from ..suite import TyphonSuite
 from ..utils import TyphonBase, raise_to_operator
 
 
@@ -92,6 +91,7 @@ class TyphonAreaDetectorGraphWidget(TyphonBase):
         chart.configure_request.connect(self.configure_request.emit)
 
         def show_configuration(port, plugin):
+            from ..suite import TyphonSuite
             # TODO what do we actually want to do?
             # TODO: where should this live?
             if self.suite is None:
