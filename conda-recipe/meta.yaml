@@ -26,6 +26,7 @@ requirements:
       - qtconsole
       - qtpy
       - timechart
+      - numpydoc
 
 test:
     imports:
