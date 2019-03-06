@@ -7,3 +7,4 @@ qtconsole
 qtpy
 pyqtgraph
 ophyd
+numpydoc

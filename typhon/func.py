@@ -28,6 +28,7 @@ from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (QSizePolicy, QGroupBox, QLabel, QSpacerItem,
                             QWidget, QPushButton, QLineEdit, QCheckBox,
                             QHBoxLayout, QVBoxLayout)
+from numpydoc import docscrape
 
 ###########
 # Package #
@@ -221,6 +222,25 @@ class FunctionDisplay(QGroupBox):
         self.param_controls = list()
         # Add our button to execute the function
         self.execute_button = QPushButton()
+
+        self.docs = None
+        if func.__doc__ is not None:
+            try:
+                parsed = docscrape.NumpyDocString(func.__doc__)
+                self.docs = dict(summary='\n'.join(parsed['Summary']),
+                                 params={param.name: param
+                                         for param in parsed['Parameters']
+                                         }
+                                 )
+            except Exception as ex:
+                logger.warning('Unable to parse docstring for function %s: %s',
+                               name, ex, exc_info=ex)
+                # Show the docstring, even if we can't parse it:
+                self.execute_button.setToolTip(func.__doc__)
+            else:
+                # Parsed the docstring successfully, so use just the summary:
+                self.execute_button.setToolTip(self.docs['summary'])
+
         self.execute_button.setText(clean_attr(self.name))
         self.execute_button.clicked.connect(self.execute)
         self._layout.addWidget(self.execute_button)
@@ -260,8 +280,29 @@ class FunctionDisplay(QGroupBox):
             else:
                 raise TypeError("Parameter {} has an unspecified "
                                 "type".format(param.name))
+
+            tooltip_header = f'{param.name} - {_type.__name__}'
+            tooltip = [tooltip_header, '-' * len(tooltip_header)]
+
+            if param.default != inspect._empty:
+                tooltip.append(f'Default: {param.default}')
+
+            if self.docs is not None:
+                try:
+                    doc_param = self.docs['params'][param.name]
+                except KeyError:
+                    ...
+                else:
+                    if doc_param.desc is not None:
+                        tooltip.extend(doc_param.desc)
+
+            # If the tooltip is just the header, remove the dashes underneath:
+            if len(tooltip) == 2:
+                tooltip = tooltip[:1]
+
             # Add our parameter
-            self.add_parameter(param.name, _type, default=param.default)
+            self.add_parameter(param.name, _type, default=param.default,
+                               tooltip='\n'.join(tooltip))
         # Hide optional parameter widget if there are no such parameters
         if not self.optional_params:
             self.optional.hide()
@@ -324,7 +365,7 @@ class FunctionDisplay(QGroupBox):
         else:
             logger.info("Operation Complete")
 
-    def add_parameter(self, name, _type, default=inspect._empty):
+    def add_parameter(self, name, _type, default=inspect._empty, tooltip=None):
         """
         Add a parameter to the function display
 
@@ -336,8 +377,16 @@ class FunctionDisplay(QGroupBox):
         _type : type
             Type of variable that we are expecting the user to input
 
-        default : optional
+        default : any, optional
             Default value for the parameter
+
+        tooltip : str, optional
+            Tooltip to use for the control widget
+
+        Returns
+        -------
+        widget : QWidget
+            The generated widget
         """
         # Create our parameter control widget
         # QCheckBox field
@@ -364,6 +413,10 @@ class FunctionDisplay(QGroupBox):
                 self.optional.show()
             # Add the control widget to our contents
             self.optional.contents.layout().addWidget(cntrl)
+
+        if tooltip is not None:
+            cntrl.setToolTip(tooltip)
+        return cntrl
 
     def sizeHint(self):
         """Suggested size"""
