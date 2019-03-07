@@ -7,7 +7,7 @@
 ############
 import numpy as np
 from ophyd import Signal
-from pydm.widgets.base import PyDMWritableWidget
+from pydm.widgets import PyDMLineEdit
 from qtpy.QtWidgets import QWidget
 
 ###########
@@ -19,7 +19,7 @@ from typhon.plugins.core import (SignalPlugin, SignalConnection,
 
 
 
-class WritableWidget(QWidget, PyDMWritableWidget):
+class WritableWidget(PyDMLineEdit):
     """Simple Testing Widget"""
     pass
 
