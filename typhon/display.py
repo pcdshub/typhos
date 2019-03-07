@@ -153,7 +153,11 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
                                         macros=macros)
             # Add device to all children widgets
             if self.devices:
-                for widget in self._main_widget.findChildren(TyphonBase):
+                designer = (self._main_widget.findChildren(TyphonDesignerMixin)
+                            or [])
+                bases = (self._main_widget.findChildren(TyphonBase)
+                         or [])
+                for widget in set(bases + designer):
                     widget.add_device(self.devices[0])
         except (FileNotFoundError, IsADirectoryError):
             logger.exception("Unable to load file %r", self.current_template)

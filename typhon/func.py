@@ -495,6 +495,7 @@ class TyphonMethodButton(QPushButton, TyphonDesignerMixin):
             logger.exception("Error executing method %r.",
                              self.method_name)
             raise_to_operator(exc)
+            return
         if self.use_status:
             logger.debug("Tearing down any old status threads ...")
             if self._status_thread and self._status_thread.isRunning():
