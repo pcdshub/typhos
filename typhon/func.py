@@ -223,23 +223,22 @@ class FunctionDisplay(QGroupBox):
         # Add our button to execute the function
         self.execute_button = QPushButton()
 
-        self.docs = None
+        self.docs = {'summary': func.__doc__ or '',
+                     'params': {}
+                     }
+
         if func.__doc__ is not None:
             try:
                 parsed = docscrape.NumpyDocString(func.__doc__)
-                self.docs = dict(summary='\n'.join(parsed['Summary']),
-                                 params={param.name: param
-                                         for param in parsed['Parameters']
-                                         }
-                                 )
+                self.docs['summary'] = '\n'.join(parsed['Summary'])
+                self.docs['params'] = {param.name: param
+                                       for param in parsed['Parameters']
+                                       }
             except Exception as ex:
                 logger.warning('Unable to parse docstring for function %s: %s',
                                name, ex, exc_info=ex)
-                # Show the docstring, even if we can't parse it:
-                self.execute_button.setToolTip(func.__doc__)
-            else:
-                # Parsed the docstring successfully, so use just the summary:
-                self.execute_button.setToolTip(self.docs['summary'])
+
+        self.execute_button.setToolTip(self.docs['summary'])
 
         self.execute_button.setText(clean_attr(self.name))
         self.execute_button.clicked.connect(self.execute)
@@ -281,28 +280,8 @@ class FunctionDisplay(QGroupBox):
                 raise TypeError("Parameter {} has an unspecified "
                                 "type".format(param.name))
 
-            tooltip_header = f'{param.name} - {_type.__name__}'
-            tooltip = [tooltip_header, '-' * len(tooltip_header)]
-
-            if param.default != inspect._empty:
-                tooltip.append(f'Default: {param.default}')
-
-            if self.docs is not None:
-                try:
-                    doc_param = self.docs['params'][param.name]
-                except KeyError:
-                    ...
-                else:
-                    if doc_param.desc is not None:
-                        tooltip.extend(doc_param.desc)
-
-            # If the tooltip is just the header, remove the dashes underneath:
-            if len(tooltip) == 2:
-                tooltip = tooltip[:1]
-
             # Add our parameter
-            self.add_parameter(param.name, _type, default=param.default,
-                               tooltip='\n'.join(tooltip))
+            self.add_parameter(param.name, _type, default=param.default)
         # Hide optional parameter widget if there are no such parameters
         if not self.optional_params:
             self.optional.hide()
@@ -381,13 +360,39 @@ class FunctionDisplay(QGroupBox):
             Default value for the parameter
 
         tooltip : str, optional
-            Tooltip to use for the control widget
+            Tooltip to use for the control widget.  If not specified, docstring
+            parameter information will be used if available to generate a
+            default.
 
         Returns
         -------
         widget : QWidget
             The generated widget
         """
+        if tooltip is None:
+            tooltip_header = f'{name} - {_type.__name__}'
+            tooltip = [
+                tooltip_header,
+                '-' * len(tooltip_header)
+            ]
+
+            if default != inspect._empty:
+                tooltip.append(f'Default: {default}')
+
+            try:
+                doc_param = self.docs['params'][name]
+            except KeyError:
+                logger.debug('Parameter information is not available '
+                             'for %s(%s)', self.name, name)
+            else:
+                if doc_param.desc is not None:
+                    tooltip.extend(doc_param.desc)
+
+            # If the tooltip is just the header, remove the dashes underneath:
+            if len(tooltip) == 2:
+                tooltip = tooltip[:1]
+            tooltip = '\n'.join(tooltip)
+
         # Create our parameter control widget
         # QCheckBox field
         if _type == bool:
