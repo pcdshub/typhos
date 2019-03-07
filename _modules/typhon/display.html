@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.3.0+42.g85b4dcf documentation</title>
+  <title>typhon.display &mdash; Typhon 0.3.0+47.gb469177 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.3.0+42.g85b4dcf
+                0.3.0+47.gb469177
               </div>
             
           
@@ -313,7 +313,11 @@
                                         <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
             <span class="c1"># Add device to all children widgets</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">):</span>
+                <span class="n">designer</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphonDesignerMixin</span><span class="p">)</span>
+                            <span class="ow">or</span> <span class="p">[])</span>
+                <span class="n">bases</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">)</span>
+                         <span class="ow">or</span> <span class="p">[])</span>
+                <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">bases</span> <span class="o">+</span> <span class="n">designer</span><span class="p">):</span>
                     <span class="n">widget</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">IsADirectoryError</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to load file </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">)</span>
