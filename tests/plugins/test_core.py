@@ -18,19 +18,11 @@ from typhon.plugins.core import (SignalPlugin, SignalConnection,
                                  register_signal)
 
 
-
-class WritableWidget(PyDMLineEdit):
-    """Simple Testing Widget"""
-    pass
-
-
-
-
 def test_signal_connection(qapp, qtbot):
     # Create a signal and attach our listener
     sig = Signal(name='my_signal', value=1)
     register_signal(sig)
-    widget = WritableWidget()
+    widget = PyDMLineEdit()
     qtbot.addWidget(widget)
     widget.channel = 'sig://my_signal'
     listener = widget.channels()[0]
@@ -71,7 +63,7 @@ def test_signal_connection(qapp, qtbot):
 
 
 def test_metadata(qapp, qtbot):
-    widget = WritableWidget()
+    widget = PyDMLineEdit()
     qtbot.addWidget(widget)
     widget.channel = 'sig://md_signal'
     listener = widget.channels()[0]
@@ -87,7 +79,7 @@ def test_metadata(qapp, qtbot):
 
 
 def test_disconnection(qtbot):
-    widget = WritableWidget()
+    widget = PyDMLineEdit()
     qtbot.addWidget(widget)
     widget.channel = 'sig://invalid'
     listener = widget.channels()[0]
@@ -108,7 +100,7 @@ def test_disconnection(qtbot):
 def test_array_signal_send_value(qapp, qtbot):
     sig = Signal(name='my_array', value=np.ones(4))
     register_signal(sig)
-    widget = WritableWidget()
+    widget = PyDMLineEdit()
     qtbot.addWidget(widget)
     widget.channel = 'sig://my_array'
     qapp.processEvents()
@@ -118,7 +110,7 @@ def test_array_signal_send_value(qapp, qtbot):
 def test_array_signal_put_value(qapp, qtbot):
     sig = Signal(name='my_array_write', value=np.ones(4))
     register_signal(sig)
-    widget = WritableWidget()
+    widget = PyDMLineEdit()
     qtbot.addWidget(widget)
     widget.channel = 'sig://my_array_write'
     widget.send_value_signal[np.ndarray].emit(np.zeros(4))
