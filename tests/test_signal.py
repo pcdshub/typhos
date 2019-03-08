@@ -31,14 +31,17 @@ def test_panel_creation(qtbot):
                     'Read Only': EpicsSignalRO('Tst:Pv:RO'),
                     # Simulated Signal
                     'Simulated': SynSignal(name='simul'),
-                    'SimulatedRO': SynSignalRO(name='simul_ro')})
+                    'SimulatedRO': SynSignalRO(name='simul_ro'),
+                    'Array': Signal(name='array', value=np.ones((5, 10)))})
     widget = QWidget()
     qtbot.addWidget(widget)
     widget.setLayout(panel)
-    assert len(panel.signals) == 5
+    assert len(panel.signals) == 6
     # Check read-only channels do not have write widgets
     panel.layout().itemAtPosition(2, 1).layout().count() == 1
     panel.layout().itemAtPosition(4, 1).layout().count() == 1
+    # Array widget has only a button, even when writable
+    assert panel.layout().itemAtPosition(5, 1).layout().count() == 1
     # Check write widgets are present
     panel.layout().itemAtPosition(0, 1).layout().count() == 2
     panel.layout().itemAtPosition(1, 1).layout().count() == 2
