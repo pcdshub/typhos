@@ -19,7 +19,7 @@ from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
                     is_signal_ro, TyphonBase)
 from .widgets import (TyphonLineEdit, TyphonComboBox, TyphonLabel,
                       TyphonDesignerMixin, ImageDialogButton,
-                      WaveformDialogButton)
+                      WaveformDialogButton, SignalDialogButton)
 from .plugins import register_signal
 
 
@@ -149,7 +149,8 @@ class SignalPanel(QGridLayout):
         # Create the read-only signal
         read = signal_widget(signal, read_only=True)
         # Create the write signal
-        if not is_signal_ro(signal):
+        if (not is_signal_ro(signal) and not isinstance(read,
+                                                        SignalDialogButton)):
             write = signal_widget(signal)
         else:
             write = None
