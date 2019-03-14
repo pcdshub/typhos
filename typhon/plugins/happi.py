@@ -64,11 +64,22 @@ class HappiConnection(PyDMConnection):
         # Connect our channel to the signal
         self.tx.connect(channel.tx_slot)
         logger.debug("Loading %r from happi Client", channel)
+        if '.' in self.address:
+            device, child = self.address.split('.', 1)
+        else:
+            device, child = self.address, None
         # Load the device from the Client
-        md = _client.find_device(name=self.address)
+        md = _client.find_device(name=device)
         obj = from_container(md)
+        md = md.post()
+        # If we have a child grab it
+        if child:
+            logger.debug("Retrieving child %r from %r",
+                         child, obj.name)
+            obj = getattr(obj, child)
+            md = {'name': obj.name}
         # Send the device and metdata to all of our subscribers
-        self.tx.emit({'obj': obj, 'md': md.post()})
+        self.tx.emit({'obj': obj, 'md': md})
 
     def remove_listener(self, channel, destroying=False, **kwargs):
         """Remove a channel from the database connection"""
@@ -91,5 +102,8 @@ class HappiPlugin(PyDMPlugin):
         except SearchError:
             logger.error("Unable to find device for %r in happi database.",
                          channel)
+        except AttributeError as exc:
+            logger.error("Invalid attribute %r for address %r",
+                         exc, channel.address)
         except Exception:
             logger.exception("Unable to load %r from happi", channel.address)
