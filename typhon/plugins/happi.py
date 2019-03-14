@@ -103,7 +103,7 @@ class HappiPlugin(PyDMPlugin):
             logger.error("Unable to find device for %r in happi database.",
                          channel)
         except AttributeError as exc:
-            logger.error("Invalid attribute %r for address %r",
-                         exc, channel.address)
+            logger.exception("Invalid attribute %r for address %r",
+                             exc, channel.address)
         except Exception:
             logger.exception("Unable to load %r from happi", channel.address)
