@@ -82,21 +82,30 @@ def create_suite(devices, cfg=None):
     else:
         logger.debug("Creating new happi Client from configuration")
         client = happi.Client.from_config(cfg=cfg)
-    logger.debug("Creating empty TyphonSuite ...")
-    suite = typhon.TyphonSuite()
-    logger.info("Loading Tools ...")
-    for name, tool in suite.default_tools.items():
-        suite.add_tool(name, tool())
     # Load and add each device
+    loaded_devs = list()
     for device in devices:
         logger.info("Loading %r ...", device)
         try:
             device = client.load_device(name=device)
-            suite.add_device(device)
-            suite.show_subdisplay(device)
+            loaded_devs.append(device)
         except Exception:
-            logger.exception("Unable to add %r to TyphonSuite", device)
-    return suite
+            logger.exception("Unable to load %r", device)
+    if loaded_devs:
+        logger.debug("Creating empty TyphonSuite ...")
+        suite = typhon.TyphonSuite()
+        logger.info("Loading Tools ...")
+        for name, tool in suite.default_tools.items():
+            suite.add_tool(name, tool())
+        logger.info("Adding devices ...")
+        for device in loaded_devs:
+            try:
+                suite.add_device(device)
+                suite.show_subdisplay(device)
+            except Exception:
+                logger.exception("Unable to add %r to TyphonSuite",
+                                 device.name)
+        return suite
 
 
 def typhon_cli(args):
