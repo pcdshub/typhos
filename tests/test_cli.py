@@ -1,16 +1,9 @@
 import os
-import pathlib
 
 import pytest
 
 import typhon
 from typhon.cli import typhon_cli, QApplication
-
-
-@pytest.fixture(scope='session')
-def happi_cfg():
-    path = pathlib.Path(__file__)
-    return str(path.parent / 'happi.cfg')
 
 
 def test_cli_version(capsys):

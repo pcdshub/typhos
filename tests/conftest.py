@@ -2,6 +2,7 @@
 # Standard #
 ############
 import os.path
+import pathlib
 import logging
 from functools import wraps
 
@@ -183,3 +184,9 @@ def client():
                                       'happi.json'))
     register_client(client)
     return client
+
+
+@pytest.fixture(scope='session')
+def happi_cfg():
+    path = pathlib.Path(__file__)
+    return str(path.parent / 'happi.cfg')
