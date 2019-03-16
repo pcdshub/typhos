@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.plugins.happi &mdash; Typhon 0.3.0+50.g30ed39d documentation</title>
+  <title>typhon.plugins.happi &mdash; Typhon 0.3.0+54.g56c29dd documentation</title>
   
 
   
@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
-
-  
-  <script src="../../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -56,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0+50.g30ed39d
+                0.3.0+54.g56c29dd
               </div>
             
           
@@ -224,11 +226,22 @@
         <span class="c1"># Connect our channel to the signal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">tx_slot</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">%r</span><span class="s2"> from happi Client&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
+            <span class="n">device</span><span class="p">,</span> <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">device</span><span class="p">,</span> <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="kc">None</span>
         <span class="c1"># Load the device from the Client</span>
-        <span class="n">md</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">find_device</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">_client</span><span class="o">.</span><span class="n">find_device</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">from_container</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">post</span><span class="p">()</span>
+        <span class="c1"># If we have a child grab it</span>
+        <span class="k">if</span> <span class="n">child</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Retrieving child </span><span class="si">%r</span><span class="s2"> from </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                         <span class="n">child</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
         <span class="c1"># Send the device and metdata to all of our subscribers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">emit</span><span class="p">({</span><span class="s1">&#39;obj&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">post</span><span class="p">()})</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">emit</span><span class="p">({</span><span class="s1">&#39;obj&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">:</span> <span class="n">md</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="HappiConnection.remove_listener"><a class="viewcode-back" href="../../../plugins.html#typhon.plugins.HappiConnection.remove_listener">[docs]</a>    <span class="k">def</span> <span class="nf">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove a channel from the database connection&quot;&quot;&quot;</span>
@@ -251,6 +264,9 @@
         <span class="k">except</span> <span class="n">SearchError</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to find device for </span><span class="si">%r</span><span class="s2"> in happi database.&quot;</span><span class="p">,</span>
                          <span class="n">channel</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Invalid attribute </span><span class="si">%r</span><span class="s2"> for address </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="n">exc</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to load </span><span class="si">%r</span><span class="s2"> from happi&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">)</span></div>
 </pre></div>
@@ -282,26 +298,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
