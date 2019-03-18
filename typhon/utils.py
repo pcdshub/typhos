@@ -12,6 +12,7 @@ import logging
 import os.path
 import random
 import traceback
+import collections
 
 ############
 # External #
@@ -29,6 +30,8 @@ from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
 
 logger = logging.getLogger(__name__)
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
+GrabKindItem = collections.namedtuple('GrabKindItem',
+                                      ('attr', 'component', 'signal'))
 
 
 def channel_from_signal(signal):
@@ -53,7 +56,7 @@ def is_signal_ro(signal):
 
 
 def grab_kind(device, kind):
-    """Grab all signals of a specific Kind from a Device"""
+    """Grab all signals of a specific Kind from a Device instance"""
     # Accept actual Kind or string value
     if not isinstance(kind, Kind):
         kind = Kind[kind]
@@ -65,11 +68,14 @@ def grab_kind(device, kind):
                                 if attr not in device.read_attrs +
                                 device.configuration_attrs]}[kind]
     # Return that kind filtered for devices
-    signals = []
+    signals = collections.OrderedDict()
+    device_class = device.__class__
     for attr in kind_attr:
-        cpt = getattr(device, attr)
-        if cpt.kind >= kind and not isinstance(cpt, Device):
-            signals.append((attr, cpt))
+        signal = getattr(device, attr)
+        if signal.kind >= kind and not isinstance(signal, Device):
+            cpt = getattr(device_class, attr)
+            signals[attr] = GrabKindItem(attr=attr, component=cpt,
+                                         signal=signal)
     return signals
 
 

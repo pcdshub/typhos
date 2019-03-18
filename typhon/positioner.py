@@ -145,7 +145,8 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
             self._readback = device.user_readback
         else:
             # Let us assume it is the first hint
-            self._readback = grab_kind(device, 'hinted')[0][1]
+            hinted = list(grab_kind(device, 'hinted').values())[0]
+            self._readback = hinted.signal
         register_signal(self._readback)
         self.ui.user_readback.channel = channel_from_signal(self._readback)
         # Limit values
