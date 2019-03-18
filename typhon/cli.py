@@ -91,7 +91,7 @@ def create_suite(devices, cfg=None):
             loaded_devs.append(device)
         except Exception:
             logger.exception("Unable to load %r", device)
-    if loaded_devs:
+    if loaded_devs or not devices:
         logger.debug("Creating empty TyphonSuite ...")
         suite = typhon.TyphonSuite()
         logger.info("Loading Tools ...")
