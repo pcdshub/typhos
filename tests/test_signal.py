@@ -65,24 +65,14 @@ def test_panel_add_enum(qtbot):
     widget = QWidget()
     qtbot.addWidget(widget)
     widget.setLayout(panel)
-    # Create an enum pv
-    epics_sig = FakeEpicsSignal("Tst:Enum")
-    epics_sig.sim_set_enum_strs(('A', 'B'))
-    epics_sig.sim_put('A')
 
     # Create an enum signal
     syn_sig = RichSignal(name='Syn:Enum', value=1)
     # Add our signals to the panel
-    loc1 = panel.add_signal(epics_sig, "EPICS Enum PV")
-    loc2 = panel.add_signal(syn_sig, "Sim Enum PV")
+    loc1 = panel.add_signal(syn_sig, "Sim Enum PV")
     # Check our signal was added a QCombobox
     # Assume it is the last item in the button layout
     but_layout = panel.layout().itemAtPosition(loc1, 1)
-    assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
-                      PyDMEnumComboBox)
-    # Check our signal was added a QCombobox
-    # Assume it is the last item in the button layout
-    but_layout = panel.layout().itemAtPosition(loc2, 1)
     assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
                       PyDMEnumComboBox)
     return panel
