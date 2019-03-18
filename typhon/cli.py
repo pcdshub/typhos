@@ -97,7 +97,8 @@ def create_suite(devices, cfg=None):
         logger.info("Loading Tools ...")
         for name, tool in suite.default_tools.items():
             suite.add_tool(name, tool())
-        logger.info("Adding devices ...")
+        if devices:
+            logger.info("Adding devices ...")
         for device in loaded_devs:
             try:
                 suite.add_device(device)
