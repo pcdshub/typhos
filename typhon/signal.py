@@ -16,7 +16,7 @@ from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 #  Package  #
 #############
 from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
-                    GrabKindItem, is_signal_ro, TyphonBase)
+                    is_signal_ro, TyphonBase)
 from .widgets import (TyphonLineEdit, TyphonComboBox, TyphonLabel,
                       TyphonDesignerMixin, ImageDialogButton,
                       WaveformDialogButton, SignalDialogButton)
