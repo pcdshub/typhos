@@ -20,6 +20,16 @@ def test_cli_happi_cfg(monkeypatch, qtbot, happi_cfg):
     assert suite.isVisible()
     assert 'test_motor' == suite.devices[0].name
 
+def test_cli_bad_entry(qtbot, happi_cfg):
+    suite = typhon_cli(['no_motor', '--happi-cfg', happi_cfg])
+    assert suite is None
+
+def test_cli_no_entry(monkeypatch, qtbot, happi_cfg):
+    monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
+    suite = typhon_cli(['--happi-cfg', happi_cfg])
+    qtbot.addWidget(suite)
+    assert suite.isVisible()
+    assert suite.devices == []
 
 def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
