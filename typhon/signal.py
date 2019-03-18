@@ -293,19 +293,16 @@ class TyphonSignalPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
         shown_kind = [kind for kind in Kind if self._kinds[kind.name]]
         # Iterate through kinds
         signals = list()
-        for kind in Kind:
-            if kind in shown_kind:
-                try:
-                    for (attr, signal) in grab_kind(self.devices[0],
-                                                    kind.name):
-                        label = clean_attr(attr)
-                        # Check twice for Kind as signal might have multiple
-                        # kinds
-                        if signal.kind in shown_kind:
-                            signals.append((label, signal))
-                except Exception:
-                    logger.exception("Unable to add %s signals from %r",
-                                     kind.name, self.devices[0])
+        for kind in shown_kind:
+            try:
+                for (attr, signal) in grab_kind(self.devices[0], kind.name):
+                    label = clean_attr(attr)
+                    # Check twice for Kind as signal might have multiple kinds
+                    if signal.kind in shown_kind:
+                        signals.append((label, signal))
+            except Exception:
+                logger.exception("Unable to add %s signals from %r",
+                                 kind.name, self.devices[0])
         # Pick our sorting function
         if self._signal_order == SignalOrder.byKind:
 
