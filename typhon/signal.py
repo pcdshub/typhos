@@ -26,7 +26,7 @@ from .plugins import register_signal
 logger = logging.getLogger(__name__)
 
 
-def signal_widget(signal, read_only=False):
+def signal_widget(signal, read_only=False, tooltip=None):
     """
     Factory for creating a PyDMWidget from a signal
 
@@ -38,6 +38,9 @@ def signal_widget(signal, read_only=False):
     read_only: bool, optional
         Whether this widget should be able to write back to the signal you
         provided
+
+    tooltip : str, optional
+        Tooltip to use for the widget
 
     Returns
     -------
@@ -102,6 +105,8 @@ def signal_widget(signal, read_only=False):
                          f"shape {len(desc.get('shape'))} from {signal.name}")
     widget_instance = widget(init_channel=chan)
     widget_instance.setObjectName(name)
+    if tooltip is not None:
+        widget_instance.setToolTip(tooltip)
     return widget_instance
 
 
@@ -124,7 +129,7 @@ class SignalPanel(QGridLayout):
             for name, sig in signals.items():
                 self.add_signal(sig, name)
 
-    def add_signal(self, signal, name):
+    def add_signal(self, signal, name, *, tooltip=None):
         """
         Add a signal to the panel
 
@@ -155,7 +160,7 @@ class SignalPanel(QGridLayout):
         else:
             write = None
         # Add to the layout
-        return self._add_row(read, name, write=write)
+        return self._add_row(read, name, write=write, tooltip=tooltip)
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
@@ -190,10 +195,12 @@ class SignalPanel(QGridLayout):
         clear_layout(self)
         self.signals.clear()
 
-    def _add_row(self, read, name, write=None):
+    def _add_row(self, read, name, write=None, tooltip=None):
         # Create label
         label = QLabel()
         label.setText(name)
+        if tooltip is not None:
+            label.setToolTip(tooltip)
         # Create signal display
         val_display = QHBoxLayout()
         # Add readback
@@ -293,19 +300,17 @@ class TyphonSignalPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
         shown_kind = [kind for kind in Kind if self._kinds[kind.name]]
         # Iterate through kinds
         signals = list()
-        for kind in Kind:
-            if kind in shown_kind:
-                try:
-                    for (attr, signal) in grab_kind(self.devices[0],
-                                                    kind.name):
+        device = self.devices[0]
+        for kind in shown_kind:
+            try:
+                for attr, item in grab_kind(device, kind.name).items():
+                    # Check twice for Kind as signal might have multiple kinds
+                    if item.signal.kind in shown_kind:
                         label = clean_attr(attr)
-                        # Check twice for Kind as signal might have multiple
-                        # kinds
-                        if signal.kind in shown_kind:
-                            signals.append((label, signal))
-                except Exception:
-                    logger.exception("Unable to add %s signals from %r",
-                                     kind.name, self.devices[0])
+                        signals.append((label, item.signal, item.component))
+            except Exception:
+                logger.exception("Unable to add %s signals from %r",
+                                 kind.name, self.devices[0])
         # Pick our sorting function
         if self._signal_order == SignalOrder.byKind:
 
@@ -322,8 +327,8 @@ class TyphonSignalPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
             logger.exception("Unknown sorting type %r", self.sortBy)
             return
         # Add to layout
-        for (label, signal) in sorted(set(signals), key=sorter):
-            self.layout().add_signal(signal, label)
+        for (label, signal, cpt) in sorted(set(signals), key=sorter):
+            self.layout().add_signal(signal, label, tooltip=cpt.doc)
 
     def sizeHint(self):
         """Default SizeHint"""
