@@ -39,6 +39,7 @@ __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 def typhon_cli_setup(args):
     global app
     # Logging Level handling
+    logging.getLogger().addHandler(logging.NullHandler())
     if args.verbose:
         level = "DEBUG"
         shown_logger = logging.getLogger('typhon')
