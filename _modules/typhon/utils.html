@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.utils &mdash; Typhon 0.3.0+59.g04fc86f documentation</title>
+  <title>typhon.utils &mdash; Typhon 0.3.0+65.gbdf7db8 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0+59.g04fc86f
+                0.3.0+65.gbdf7db8
               </div>
             
           
@@ -174,6 +174,7 @@
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="c1">############</span>
 <span class="c1"># External #</span>
@@ -191,6 +192,8 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">ui_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;ui&#39;</span><span class="p">)</span>
+<span class="n">GrabKindItem</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;GrabKindItem&#39;</span><span class="p">,</span>
+                                      <span class="p">(</span><span class="s1">&#39;attr&#39;</span><span class="p">,</span> <span class="s1">&#39;component&#39;</span><span class="p">,</span> <span class="s1">&#39;signal&#39;</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="channel_from_signal"><a class="viewcode-back" href="../../utils.html#typhon.utils.channel_from_signal">[docs]</a><span class="k">def</span> <span class="nf">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
@@ -215,7 +218,22 @@
 
 
 <div class="viewcode-block" id="grab_kind"><a class="viewcode-back" href="../../utils.html#typhon.utils.grab_kind">[docs]</a><span class="k">def</span> <span class="nf">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Grab all signals of a specific Kind from a Device&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Grab all signals of a specific Kind from a Device instance</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : ophyd.Device</span>
+<span class="sd">        The device instance to introspect</span>
+<span class="sd">    kind : Kind or str</span>
+<span class="sd">        The kind to search for</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    signals : dict</span>
+<span class="sd">        Keyed on attribute name, the signals dict contains GrabKindItem named</span>
+<span class="sd">        tuples, which have attributes {attr, component, signal}.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Accept actual Kind or string value</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">Kind</span><span class="p">):</span>
         <span class="n">kind</span> <span class="o">=</span> <span class="n">Kind</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
@@ -227,11 +245,14 @@
                                 <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">read_attrs</span> <span class="o">+</span>
                                 <span class="n">device</span><span class="o">.</span><span class="n">configuration_attrs</span><span class="p">]}[</span><span class="n">kind</span><span class="p">]</span>
     <span class="c1"># Return that kind filtered for devices</span>
-    <span class="n">signals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">signals</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">device_class</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__class__</span>
     <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">kind_attr</span><span class="p">:</span>
-        <span class="n">cpt</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">cpt</span><span class="o">.</span><span class="n">kind</span> <span class="o">&gt;=</span> <span class="n">kind</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cpt</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
-            <span class="n">signals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">attr</span><span class="p">,</span> <span class="n">cpt</span><span class="p">))</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">kind</span> <span class="o">&gt;=</span> <span class="n">kind</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
+            <span class="n">cpt</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device_class</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="n">signals</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">GrabKindItem</span><span class="p">(</span><span class="n">attr</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">cpt</span><span class="p">,</span>
+                                         <span class="n">signal</span><span class="o">=</span><span class="n">signal</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">signals</span></div>
 
 

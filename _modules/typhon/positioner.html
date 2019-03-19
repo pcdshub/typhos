@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.positioner &mdash; Typhon 0.3.0+59.g04fc86f documentation</title>
+  <title>typhon.positioner &mdash; Typhon 0.3.0+65.gbdf7db8 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0+59.g04fc86f
+                0.3.0+65.gbdf7db8
               </div>
             
           
@@ -307,7 +307,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">user_readback</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Let us assume it is the first hint</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span> <span class="o">=</span> <span class="n">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;hinted&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">hinted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;hinted&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span> <span class="o">=</span> <span class="n">hinted</span><span class="o">.</span><span class="n">signal</span>
         <span class="n">register_signal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_readback</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">user_readback</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel_from_signal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_readback</span><span class="p">)</span>
         <span class="c1"># Limit values</span>

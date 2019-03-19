@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.3.0+59.g04fc86f documentation</title>
+  <title>typhon.signal &mdash; Typhon 0.3.0+65.gbdf7db8 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0+59.g04fc86f
+                0.3.0+65.gbdf7db8
               </div>
             
           
@@ -188,7 +188,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="signal_widget"><a class="viewcode-back" href="../../widgets.html#typhon.signal.signal_widget">[docs]</a><span class="k">def</span> <span class="nf">signal_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="signal_widget"><a class="viewcode-back" href="../../widgets.html#typhon.signal.signal_widget">[docs]</a><span class="k">def</span> <span class="nf">signal_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Factory for creating a PyDMWidget from a signal</span>
 
@@ -200,6 +200,9 @@
 <span class="sd">    read_only: bool, optional</span>
 <span class="sd">        Whether this widget should be able to write back to the signal you</span>
 <span class="sd">        provided</span>
+
+<span class="sd">    tooltip : str, optional</span>
+<span class="sd">        Tooltip to use for the widget</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -264,6 +267,8 @@
                          <span class="n">f</span><span class="s2">&quot;shape {len(desc.get(&#39;shape&#39;))} from </span><span class="si">{signal.name}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">widget_instance</span> <span class="o">=</span> <span class="n">widget</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">chan</span><span class="p">)</span>
     <span class="n">widget_instance</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">widget_instance</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">widget_instance</span></div>
 
 
@@ -286,7 +291,7 @@
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">signals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">add_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a signal to the panel</span>
 
@@ -317,7 +322,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">write</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Add to the layout</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_row</span><span class="p">(</span><span class="n">read</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_row</span><span class="p">(</span><span class="n">read</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="n">tooltip</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_pv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_pv</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write_pv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -352,10 +357,12 @@
         <span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Create label</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">()</span>
         <span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
         <span class="c1"># Create signal display</span>
         <span class="n">val_display</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
         <span class="c1"># Add readback</span>
@@ -455,19 +462,17 @@
         <span class="n">shown_kind</span> <span class="o">=</span> <span class="p">[</span><span class="n">kind</span> <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">Kind</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">]]</span>
         <span class="c1"># Iterate through kinds</span>
         <span class="n">signals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">Kind</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">shown_kind</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span> <span class="ow">in</span> <span class="n">grab_kind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                                    <span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">shown_kind</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">grab_kind</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="c1"># Check twice for Kind as signal might have multiple kinds</span>
+                    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="n">shown_kind</span><span class="p">:</span>
                         <span class="n">label</span> <span class="o">=</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-                        <span class="c1"># Check twice for Kind as signal might have multiple</span>
-                        <span class="c1"># kinds</span>
-                        <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="n">shown_kind</span><span class="p">:</span>
-                            <span class="n">signals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">signal</span><span class="p">))</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%s</span><span class="s2"> signals from </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
-                                     <span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="n">signals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">label</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">signal</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">component</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%s</span><span class="s2"> signals from </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                                 <span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="c1"># Pick our sorting function</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span> <span class="o">==</span> <span class="n">SignalOrder</span><span class="o">.</span><span class="n">byKind</span><span class="p">:</span>
 
@@ -484,8 +489,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unknown sorting type </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sortBy</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="c1"># Add to layout</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">signals</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">sorter</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">cpt</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">signals</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">sorter</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="n">cpt</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Default SizeHint&quot;&quot;&quot;</span>
