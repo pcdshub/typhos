@@ -152,7 +152,7 @@ class SignalPanel(QGridLayout):
         """
         logger.debug("Adding signal %s", name)
         # Create the read-only signal
-        read = signal_widget(signal, read_only=True, tooltip=tooltip)
+        read = signal_widget(signal, read_only=True)
         # Create the write signal
         if (not is_signal_ro(signal) and not isinstance(read,
                                                         SignalDialogButton)):
@@ -160,7 +160,7 @@ class SignalPanel(QGridLayout):
         else:
             write = None
         # Add to the layout
-        return self._add_row(read, name, write=write)
+        return self._add_row(read, name, write=write, tooltip=tooltip)
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
@@ -195,10 +195,12 @@ class SignalPanel(QGridLayout):
         clear_layout(self)
         self.signals.clear()
 
-    def _add_row(self, read, name, write=None):
+    def _add_row(self, read, name, write=None, tooltip=None):
         # Create label
         label = QLabel()
         label.setText(name)
+        if tooltip is not None:
+            label.setToolTip(tooltip)
         # Create signal display
         val_display = QHBoxLayout()
         # Add readback
