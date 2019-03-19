@@ -1,15 +1,16 @@
 ############
 # Standard #
 ############
+import random
 
 ############
 # External #
 ############
 import numpy as np
 from ophyd import Kind
-from ophyd.signal import Signal, EpicsSignal, EpicsSignalRO
-from ophyd.sim import SynSignal, SynSignalRO
-from ophyd.tests.conftest import using_fake_epics_pv
+from ophyd.signal import Signal
+from ophyd.sim import (SynSignal, SynSignalRO, FakeEpicsSignal,
+                       FakeEpicsSignalRO)
 from pydm.widgets import PyDMEnumComboBox
 from qtpy.QtWidgets import QWidget
 ###########
@@ -19,19 +20,29 @@ from typhon.signal import SignalPanel, TyphonSignalPanel, signal_widget
 from typhon.widgets import ImageDialogButton, WaveformDialogButton
 from .conftest import show_widget, RichSignal, DeadSignal
 
-@using_fake_epics_pv
+
 def test_panel_creation(qtbot):
+    standard = FakeEpicsSignal('Tst:Pv')
+    read_and_write = FakeEpicsSignal('Tst:Read', write_pv='Tst:Write')
+    read_only = FakeEpicsSignalRO('Tst:Pv:RO')
+    simulated = SynSignal(func=random.random, name='simul')
+    simulated_ro = SynSignalRO(func=random.random, name='simul_ro')
+
+    standard.sim_put(1)
+    read_and_write.sim_put(2)
+    read_only.sim_put(3)
+    simulated.put(4)
+
     panel = SignalPanel(signals={
                     # Signal is its own write
-                    'Standard': EpicsSignal('Tst:Pv'),
+                    'Standard': standard,
                     # Signal has separate write/read
-                    'Read and Write': EpicsSignal('Tst:Read',
-                                                  write_pv='Tst:Write'),
+                    'Read and Write': read_and_write,
                     # Signal is read-only
-                    'Read Only': EpicsSignalRO('Tst:Pv:RO'),
+                    'Read Only': read_only,
                     # Simulated Signal
-                    'Simulated': SynSignal(name='simul'),
-                    'SimulatedRO': SynSignalRO(name='simul_ro'),
+                    'Simulated': simulated,
+                    'SimulatedRO': simulated_ro,
                     'Array': Signal(name='array', value=np.ones((5, 10)))})
     widget = QWidget()
     qtbot.addWidget(widget)
@@ -49,28 +60,19 @@ def test_panel_creation(qtbot):
     return panel
 
 
-@using_fake_epics_pv
 def test_panel_add_enum(qtbot):
     panel = SignalPanel()
     widget = QWidget()
     qtbot.addWidget(widget)
     widget.setLayout(panel)
-    # Create an enum pv
-    epics_sig = EpicsSignal("Tst:Enum")
-    epics_sig._write_pv.enum_strs = ('A', 'B')
+
     # Create an enum signal
     syn_sig = RichSignal(name='Syn:Enum', value=1)
     # Add our signals to the panel
-    loc1 = panel.add_signal(epics_sig, "EPICS Enum PV")
-    loc2 = panel.add_signal(syn_sig, "Sim Enum PV")
+    loc1 = panel.add_signal(syn_sig, "Sim Enum PV")
     # Check our signal was added a QCombobox
     # Assume it is the last item in the button layout
     but_layout = panel.layout().itemAtPosition(loc1, 1)
-    assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
-                      PyDMEnumComboBox)
-    # Check our signal was added a QCombobox
-    # Assume it is the last item in the button layout
-    but_layout = panel.layout().itemAtPosition(loc2, 1)
     assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
                       PyDMEnumComboBox)
     return panel
@@ -86,7 +88,6 @@ def test_add_dead_signal(qtbot):
     assert 'Dead Signal' in panel.signals
 
 
-@using_fake_epics_pv
 def test_add_pv(qtbot):
     panel = SignalPanel()
     widget = QWidget()

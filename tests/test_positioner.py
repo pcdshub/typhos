@@ -16,6 +16,9 @@ class SimMotor(SynAxis):
     high_limit = Cpt(Signal, value=10)
     stop = Mock()
 
+    # TODO: fix upstream - Mock interferes with @required_for_connection
+    stop._required_for_connection = False
+
 
 @pytest.fixture(scope='function')
 def motor_widget(qtbot):
