@@ -13,7 +13,7 @@ class TyphonLogDisplay(TyphonBase):
         # Set the logname to be non-existant so that we do not attach to the
         # root logger. This causes issue if this widget is closed before the
         # end of the Python session. For the long term this issue will be
-        # resolved with https://github.com/slaclab/pydm/issues/474  
+        # resolved with https://github.com/slaclab/pydm/issues/474
         self.logdisplay = PyDMLogDisplay(logname='not_set', level=level)
         self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.logdisplay)
