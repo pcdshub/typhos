@@ -56,7 +56,22 @@ def is_signal_ro(signal):
 
 
 def grab_kind(device, kind):
-    """Grab all signals of a specific Kind from a Device instance"""
+    """
+    Grab all signals of a specific Kind from a Device instance
+
+    Parameters
+    ----------
+    device : ophyd.Device
+        The device instance to introspect
+    kind : Kind or str
+        The kind to search for
+
+    Returns
+    -------
+    signals : dict
+        Keyed on attribute name, the signals dict contains GrabKindItem named
+        tuples, which have attributes {attr, component, signal}.
+    """
     # Accept actual Kind or string value
     if not isinstance(kind, Kind):
         kind = Kind[kind]
