@@ -40,11 +40,10 @@ def typhon_cli_setup(args):
     global app
     # Logging Level handling
     logging.getLogger().addHandler(logging.NullHandler())
+    shown_logger = logging.getLogger('typhon')
     if args.verbose:
         level = "DEBUG"
-        shown_logger = logging.getLogger('typhon')
     else:
-        shown_logger = logging.getLogger()
         level = "INFO"
     coloredlogs.install(level=level, logger=shown_logger,
                         fmt='[%(asctime)s] - %(levelname)s -  %(message)s')
