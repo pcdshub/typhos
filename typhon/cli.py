@@ -122,7 +122,7 @@ def typhon_cli(args):
             logger.info("Launching application ...")
             QApplication.instance().exec_()
             logger.info("Execution complete!")
-            return suite
+            return window
 
 
 def main():
