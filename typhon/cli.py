@@ -4,7 +4,7 @@ import logging
 import sys
 
 import coloredlogs
-from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication, QMainWindow
 
 import typhon
 
@@ -116,7 +116,9 @@ def typhon_cli(args):
     if not args.version:
         suite = create_suite(args.devices, cfg=args.happi_cfg)
         if suite:
-            suite.show()
+            window = QMainWindow()
+            window.setCentralWidget(suite)
+            window.show()
             logger.info("Launching application ...")
             QApplication.instance().exec_()
             logger.info("Execution complete!")
