@@ -295,6 +295,9 @@ def load_suite(path, cfg=None):
         Path to file describing the ``TyphonSuite``. This needs to be of the
         format created by the :meth:`.save_suite` function.
 
+    cfg: str, optional
+        Location of happi configuration file to use to load devices. If not
+        entered the ``$HAPPI_CFG`` environment variable will be used.
     Returns
     -------
     suite: TyphonSuite
