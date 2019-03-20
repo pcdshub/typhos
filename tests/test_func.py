@@ -171,9 +171,9 @@ def test_func_docstrings(qtbot):
     # Check that all our methods made it in
     assert fp.methods['foo'].docs['summary'] == 'The function foo'
     params = fp.methods['foo'].docs['params']
-    assert params['a'].desc == ['A special A']
-    assert params['b'].desc == ['The infamous B parameter (default: False)']
-    assert params['c'].desc == ['The ill-named C parameter (default: True)']
+    assert params['a'] == ['A special A']
+    assert params['b'] == ['The infamous B parameter (default: False)']
+    assert params['c'] == ['The ill-named C parameter (default: True)']
 
     assert fp.methods['foobar'].docs['summary'] == 'docstring2'
     return fp

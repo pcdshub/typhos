@@ -153,6 +153,33 @@ class ParamLineEdit(ParamWidget):
         return val
 
 
+def parse_numpy_docstring(docstring):
+    '''
+    Parse a numpy docstring for summary and parameter information
+
+    Parameters
+    ----------
+    docstring : str
+        Docstring to parse
+
+    Returns
+    -------
+    info : dict
+        info['summary'] is a string summary.
+        info['params'] is a dictionary of parameter name to a list of
+        description lines.
+    '''
+    info = {}
+    parsed = docscrape.NumpyDocString(docstring)
+    info['summary'] = '\n'.join(parsed['Summary'])
+    params = parsed['Parameters']
+
+    # numpydoc v0.8.0 uses just a tuple for parameters, but later versions use
+    # a namedtuple.  here, only assume a tuple:
+    info['params'] = {name: lines for name, type_, lines in params}
+    return info
+
+
 class FunctionDisplay(QGroupBox):
     """
     Display controls for an annotated function in a QGroupBox
@@ -229,11 +256,7 @@ class FunctionDisplay(QGroupBox):
 
         if func.__doc__ is not None:
             try:
-                parsed = docscrape.NumpyDocString(func.__doc__)
-                self.docs['summary'] = '\n'.join(parsed['Summary'])
-                self.docs['params'] = {param.name: param
-                                       for param in parsed['Parameters']
-                                       }
+                self.docs.update(**parse_numpy_docstring(func.__doc__))
             except Exception as ex:
                 logger.warning('Unable to parse docstring for function %s: %s',
                                name, ex, exc_info=ex)
@@ -385,8 +408,8 @@ class FunctionDisplay(QGroupBox):
                 logger.debug('Parameter information is not available '
                              'for %s(%s)', self.name, name)
             else:
-                if doc_param.desc is not None:
-                    tooltip.extend(doc_param.desc)
+                 if doc_param:
+                    tooltip.extend(doc_param)
 
             # If the tooltip is just the header, remove the dashes underneath:
             if len(tooltip) == 2:
