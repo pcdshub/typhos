@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.tools.log &mdash; Typhon 0.3.0+72.gc33e358 documentation</title>
+  <title>typhon.tools.log &mdash; Typhon 0.3.0+89.gda31f75 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0+72.gc33e358
+                0.3.0+89.gda31f75
               </div>
             
           
@@ -172,7 +172,11 @@
     <span class="sd">&quot;&quot;&quot;Typhon Logging Display&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TyphonLogDisplay.__init__"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logdisplay</span> <span class="o">=</span> <span class="n">PyDMLogDisplay</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
+        <span class="c1"># Set the logname to be non-existant so that we do not attach to the</span>
+        <span class="c1"># root logger. This causes issue if this widget is closed before the</span>
+        <span class="c1"># end of the Python session. For the long term this issue will be</span>
+        <span class="c1"># resolved with https://github.com/slaclab/pydm/issues/474</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logdisplay</span> <span class="o">=</span> <span class="n">PyDMLogDisplay</span><span class="p">(</span><span class="n">logname</span><span class="o">=</span><span class="s1">&#39;not_set&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logdisplay</span><span class="p">)</span></div>
 

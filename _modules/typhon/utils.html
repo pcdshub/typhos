@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.utils &mdash; Typhon 0.3.0+72.gc33e358 documentation</title>
+  <title>typhon.utils &mdash; Typhon 0.3.0+89.gda31f75 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0+72.gc33e358
+                0.3.0+89.gda31f75
               </div>
             
           
@@ -468,7 +468,7 @@
     <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">saved_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="n">devices</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="load_suite"><a class="viewcode-back" href="../../utils.html#typhon.utils.load_suite">[docs]</a><span class="k">def</span> <span class="nf">load_suite</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="load_suite"><a class="viewcode-back" href="../../utils.html#typhon.utils.load_suite">[docs]</a><span class="k">def</span> <span class="nf">load_suite</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;&quot;</span>
 <span class="sd">    Load a file saved via Typhon</span>
 
@@ -478,6 +478,9 @@
 <span class="sd">        Path to file describing the ``TyphonSuite``. This needs to be of the</span>
 <span class="sd">        format created by the :meth:`.save_suite` function.</span>
 
+<span class="sd">    cfg: str, optional</span>
+<span class="sd">        Location of happi configuration file to use to load devices. If not</span>
+<span class="sd">        entered the ``$HAPPI_CFG`` environment variable will be used.</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    suite: TyphonSuite</span>
@@ -490,7 +493,7 @@
     <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">suite_module</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">suite_module</span><span class="p">,</span> <span class="s1">&#39;create_suite&#39;</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing create_suite method from </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">suite_module</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">suite_module</span><span class="o">.</span><span class="n">create_suite</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">suite_module</span><span class="o">.</span><span class="n">create_suite</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Imported module has no &#39;create_suite&#39; method!&quot;</span><span class="p">)</span></div>
 

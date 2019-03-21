@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utility Functions &mdash; Typhon 0.3.0+72.gc33e358 documentation</title>
+  <title>Utility Functions &mdash; Typhon 0.3.0+89.gda31f75 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.3.0+72.gc33e358
+                0.3.0+89.gda31f75
               </div>
             
           
@@ -322,19 +322,26 @@ introspection in the ophyd library. Until that day we need to check classes</p>
 
 <dl class="function">
 <dt id="typhon.utils.load_suite">
-<code class="descclassname">typhon.utils.</code><code class="descname">load_suite</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#load_suite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.load_suite" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">typhon.utils.</code><code class="descname">load_suite</code><span class="sig-paren">(</span><em>path</em>, <em>cfg=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#load_suite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.utils.load_suite" title="Permalink to this definition">¶</a></dt>
 <dd><p>”
 Load a file saved via Typhon</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to file describing the <code class="docutils literal notranslate"><span class="pre">TyphonSuite</span></code>. This needs to be of the
-format created by the <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_suite()</span></code> function.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to file describing the <code class="docutils literal notranslate"><span class="pre">TyphonSuite</span></code>. This needs to be of the
+format created by the <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_suite()</span></code> function.</li>
+<li><strong>cfg</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Location of happi configuration file to use to load devices. If not
+entered the <code class="docutils literal notranslate"><span class="pre">$HAPPI_CFG</span></code> environment variable will be used.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>suite</strong></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>suite</strong></p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="display.html#typhon.TyphonSuite" title="typhon.TyphonSuite">TyphonSuite</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="display.html#typhon.TyphonSuite" title="typhon.TyphonSuite">TyphonSuite</a></p>
+</td>
 </tr>
 </tbody>
 </table>
