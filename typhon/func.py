@@ -408,7 +408,7 @@ class FunctionDisplay(QGroupBox):
                 logger.debug('Parameter information is not available '
                              'for %s(%s)', self.name, name)
             else:
-                 if doc_param:
+                if doc_param:
                     tooltip.extend(doc_param)
 
             # If the tooltip is just the header, remove the dashes underneath:
