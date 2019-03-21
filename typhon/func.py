@@ -28,6 +28,7 @@ from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (QSizePolicy, QGroupBox, QLabel, QSpacerItem,
                             QWidget, QPushButton, QLineEdit, QCheckBox,
                             QHBoxLayout, QVBoxLayout)
+from numpydoc import docscrape
 
 ###########
 # Package #
@@ -152,6 +153,33 @@ class ParamLineEdit(ParamWidget):
         return val
 
 
+def parse_numpy_docstring(docstring):
+    '''
+    Parse a numpy docstring for summary and parameter information
+
+    Parameters
+    ----------
+    docstring : str
+        Docstring to parse
+
+    Returns
+    -------
+    info : dict
+        info['summary'] is a string summary.
+        info['params'] is a dictionary of parameter name to a list of
+        description lines.
+    '''
+    info = {}
+    parsed = docscrape.NumpyDocString(docstring)
+    info['summary'] = '\n'.join(parsed['Summary'])
+    params = parsed['Parameters']
+
+    # numpydoc v0.8.0 uses just a tuple for parameters, but later versions use
+    # a namedtuple.  here, only assume a tuple:
+    info['params'] = {name: lines for name, type_, lines in params}
+    return info
+
+
 class FunctionDisplay(QGroupBox):
     """
     Display controls for an annotated function in a QGroupBox
@@ -221,6 +249,20 @@ class FunctionDisplay(QGroupBox):
         self.param_controls = list()
         # Add our button to execute the function
         self.execute_button = QPushButton()
+
+        self.docs = {'summary': func.__doc__ or '',
+                     'params': {}
+                     }
+
+        if func.__doc__ is not None:
+            try:
+                self.docs.update(**parse_numpy_docstring(func.__doc__))
+            except Exception as ex:
+                logger.warning('Unable to parse docstring for function %s: %s',
+                               name, ex, exc_info=ex)
+
+        self.execute_button.setToolTip(self.docs['summary'])
+
         self.execute_button.setText(clean_attr(self.name))
         self.execute_button.clicked.connect(self.execute)
         self._layout.addWidget(self.execute_button)
@@ -260,6 +302,7 @@ class FunctionDisplay(QGroupBox):
             else:
                 raise TypeError("Parameter {} has an unspecified "
                                 "type".format(param.name))
+
             # Add our parameter
             self.add_parameter(param.name, _type, default=param.default)
         # Hide optional parameter widget if there are no such parameters
@@ -324,7 +367,7 @@ class FunctionDisplay(QGroupBox):
         else:
             logger.info("Operation Complete")
 
-    def add_parameter(self, name, _type, default=inspect._empty):
+    def add_parameter(self, name, _type, default=inspect._empty, tooltip=None):
         """
         Add a parameter to the function display
 
@@ -336,9 +379,43 @@ class FunctionDisplay(QGroupBox):
         _type : type
             Type of variable that we are expecting the user to input
 
-        default : optional
+        default : any, optional
             Default value for the parameter
+
+        tooltip : str, optional
+            Tooltip to use for the control widget.  If not specified, docstring
+            parameter information will be used if available to generate a
+            default.
+
+        Returns
+        -------
+        widget : QWidget
+            The generated widget
         """
+        if tooltip is None:
+            tooltip_header = f'{name} - {_type.__name__}'
+            tooltip = [
+                tooltip_header,
+                '-' * len(tooltip_header)
+            ]
+
+            if default != inspect._empty:
+                tooltip.append(f'Default: {default}')
+
+            try:
+                doc_param = self.docs['params'][name]
+            except KeyError:
+                logger.debug('Parameter information is not available '
+                             'for %s(%s)', self.name, name)
+            else:
+                if doc_param:
+                    tooltip.extend(doc_param)
+
+            # If the tooltip is just the header, remove the dashes underneath:
+            if len(tooltip) == 2:
+                tooltip = tooltip[:1]
+            tooltip = '\n'.join(tooltip)
+
         # Create our parameter control widget
         # QCheckBox field
         if _type == bool:
@@ -364,6 +441,9 @@ class FunctionDisplay(QGroupBox):
                 self.optional.show()
             # Add the control widget to our contents
             self.optional.contents.layout().addWidget(cntrl)
+
+        cntrl.param_label.setToolTip(tooltip)
+        return cntrl
 
     def sizeHint(self):
         """Suggested size"""
