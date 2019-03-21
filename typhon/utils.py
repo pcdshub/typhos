@@ -306,7 +306,7 @@ def save_suite(suite, file_or_buffer):
     handle.write(saved_template.format(devices=devices))
 
 
-def load_suite(path):
+def load_suite(path, cfg=None):
     """"
     Load a file saved via Typhon
 
@@ -316,6 +316,9 @@ def load_suite(path):
         Path to file describing the ``TyphonSuite``. This needs to be of the
         format created by the :meth:`.save_suite` function.
 
+    cfg: str, optional
+        Location of happi configuration file to use to load devices. If not
+        entered the ``$HAPPI_CFG`` environment variable will be used.
     Returns
     -------
     suite: TyphonSuite
@@ -328,7 +331,7 @@ def load_suite(path):
     spec.loader.exec_module(suite_module)
     if hasattr(suite_module, 'create_suite'):
         logger.debug("Executing create_suite method from %r", suite_module)
-        return suite_module.create_suite()
+        return suite_module.create_suite(cfg=cfg)
     else:
         raise AttributeError("Imported module has no 'create_suite' method!")
 

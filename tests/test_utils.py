@@ -79,17 +79,18 @@ def test_raise_to_operator_msg(monkeypatch, qtbot):
     assert 'ZeroDivisionError' in exc_dialog.text()
 
 
-def test_load_suite(qtbot):
+def test_load_suite(qtbot, happi_cfg):
     # Setup new saved file
-    module = saved_template.format(devices=[])
+    module = saved_template.format(devices=['test_motor'])
     module_file = str(pathlib.Path(tempfile.gettempdir()) / 'my_suite.py')
     with open(module_file, 'w+') as handle:
         handle.write(module)
 
-    suite = load_suite(module_file)
+    suite = load_suite(module_file, happi_cfg)
     qtbot.addWidget(suite)
     assert isinstance(suite, typhon.TyphonSuite)
-    assert suite.devices == []
+    assert len(suite.devices) == 1
+    assert suite.devices[0].name == 'test_motor'
     os.remove(module_file)
 
 

@@ -4,7 +4,7 @@ import logging
 import sys
 
 import coloredlogs
-from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication, QMainWindow
 
 import typhon
 
@@ -39,11 +39,11 @@ __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 def typhon_cli_setup(args):
     global app
     # Logging Level handling
+    logging.getLogger().addHandler(logging.NullHandler())
+    shown_logger = logging.getLogger('typhon')
     if args.verbose:
         level = "DEBUG"
-        shown_logger = logging.getLogger('typhon')
     else:
-        shown_logger = logging.getLogger()
         level = "INFO"
     coloredlogs.install(level=level, logger=shown_logger,
                         fmt='[%(asctime)s] - %(levelname)s -  %(message)s')
@@ -82,21 +82,31 @@ def create_suite(devices, cfg=None):
     else:
         logger.debug("Creating new happi Client from configuration")
         client = happi.Client.from_config(cfg=cfg)
-    logger.debug("Creating empty TyphonSuite ...")
-    suite = typhon.TyphonSuite()
-    logger.info("Loading Tools ...")
-    for name, tool in suite.default_tools.items():
-        suite.add_tool(name, tool())
     # Load and add each device
+    loaded_devs = list()
     for device in devices:
         logger.info("Loading %r ...", device)
         try:
             device = client.load_device(name=device)
-            suite.add_device(device)
-            suite.show_subdisplay(device)
+            loaded_devs.append(device)
         except Exception:
-            logger.exception("Unable to add %r to TyphonSuite", device)
-    return suite
+            logger.exception("Unable to load %r", device)
+    if loaded_devs or not devices:
+        logger.debug("Creating empty TyphonSuite ...")
+        suite = typhon.TyphonSuite()
+        logger.info("Loading Tools ...")
+        for name, tool in suite.default_tools.items():
+            suite.add_tool(name, tool())
+        if devices:
+            logger.info("Adding devices ...")
+        for device in loaded_devs:
+            try:
+                suite.add_device(device)
+                suite.show_subdisplay(device)
+            except Exception:
+                logger.exception("Unable to add %r to TyphonSuite",
+                                 device.name)
+        return suite
 
 
 def typhon_cli(args):
@@ -106,11 +116,13 @@ def typhon_cli(args):
     if not args.version:
         suite = create_suite(args.devices, cfg=args.happi_cfg)
         if suite:
-            suite.show()
+            window = QMainWindow()
+            window.setCentralWidget(suite)
+            window.show()
             logger.info("Launching application ...")
             QApplication.instance().exec_()
             logger.info("Execution complete!")
-            return suite
+            return window
 
 
 def main():
