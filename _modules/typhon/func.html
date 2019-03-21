@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.func &mdash; Typhon 0.3.0+65.gbdf7db8 documentation</title>
+  <title>typhon.func &mdash; Typhon 0.3.0+72.gc33e358 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.3.0+65.gbdf7db8
+                0.3.0+72.gc33e358
               </div>
             
           
@@ -190,6 +190,7 @@
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QSizePolicy</span><span class="p">,</span> <span class="n">QGroupBox</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QSpacerItem</span><span class="p">,</span>
                             <span class="n">QWidget</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QLineEdit</span><span class="p">,</span> <span class="n">QCheckBox</span><span class="p">,</span>
                             <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">numpydoc</span> <span class="k">import</span> <span class="n">docscrape</span>
 
 <span class="c1">###########</span>
 <span class="c1"># Package #</span>
@@ -314,6 +315,33 @@
         <span class="k">return</span> <span class="n">val</span>
 
 
+<span class="k">def</span> <span class="nf">parse_numpy_docstring</span><span class="p">(</span><span class="n">docstring</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parse a numpy docstring for summary and parameter information</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    docstring : str</span>
+<span class="sd">        Docstring to parse</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    info : dict</span>
+<span class="sd">        info[&#39;summary&#39;] is a string summary.</span>
+<span class="sd">        info[&#39;params&#39;] is a dictionary of parameter name to a list of</span>
+<span class="sd">        description lines.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">parsed</span> <span class="o">=</span> <span class="n">docscrape</span><span class="o">.</span><span class="n">NumpyDocString</span><span class="p">(</span><span class="n">docstring</span><span class="p">)</span>
+    <span class="n">info</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed</span><span class="p">[</span><span class="s1">&#39;Summary&#39;</span><span class="p">])</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="s1">&#39;Parameters&#39;</span><span class="p">]</span>
+
+    <span class="c1"># numpydoc v0.8.0 uses just a tuple for parameters, but later versions use</span>
+    <span class="c1"># a namedtuple.  here, only assume a tuple:</span>
+    <span class="n">info</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">lines</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">lines</span> <span class="ow">in</span> <span class="n">params</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">info</span>
+
+
 <span class="k">class</span> <span class="nc">FunctionDisplay</span><span class="p">(</span><span class="n">QGroupBox</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display controls for an annotated function in a QGroupBox</span>
@@ -383,6 +411,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">param_controls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
         <span class="c1"># Add our button to execute the function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;summary&#39;</span><span class="p">:</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="p">{}</span>
+                     <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">parse_numpy_docstring</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unable to parse docstring for function </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                               <span class="n">name</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">ex</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">])</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">clean_attr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execute_button</span><span class="p">)</span>
@@ -422,6 +464,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Parameter </span><span class="si">{}</span><span class="s2"> has an unspecified &quot;</span>
                                 <span class="s2">&quot;type&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
             <span class="c1"># Add our parameter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_parameter</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
         <span class="c1"># Hide optional parameter widget if there are no such parameters</span>
@@ -486,7 +529,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Operation Complete&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">add_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a parameter to the function display</span>
 
@@ -498,9 +541,43 @@
 <span class="sd">        _type : type</span>
 <span class="sd">            Type of variable that we are expecting the user to input</span>
 
-<span class="sd">        default : optional</span>
+<span class="sd">        default : any, optional</span>
 <span class="sd">            Default value for the parameter</span>
+
+<span class="sd">        tooltip : str, optional</span>
+<span class="sd">            Tooltip to use for the control widget.  If not specified, docstring</span>
+<span class="sd">            parameter information will be used if available to generate a</span>
+<span class="sd">            default.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        widget : QWidget</span>
+<span class="sd">            The generated widget</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tooltip_header</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{name}</span><span class="s1"> - </span><span class="si">{_type.__name__}</span><span class="s1">&#39;</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">tooltip_header</span><span class="p">,</span>
+                <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tooltip_header</span><span class="p">)</span>
+            <span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">default</span> <span class="o">!=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">_empty</span><span class="p">:</span>
+                <span class="n">tooltip</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Default: </span><span class="si">{default}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">doc_param</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Parameter information is not available &#39;</span>
+                             <span class="s1">&#39;for </span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">doc_param</span><span class="p">:</span>
+                    <span class="n">tooltip</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">doc_param</span><span class="p">)</span>
+
+            <span class="c1"># If the tooltip is just the header, remove the dashes underneath:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">tooltip</span> <span class="o">=</span> <span class="n">tooltip</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
+
         <span class="c1"># Create our parameter control widget</span>
         <span class="c1"># QCheckBox field</span>
         <span class="k">if</span> <span class="n">_type</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
@@ -526,6 +603,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
             <span class="c1"># Add the control widget to our contents</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">optional</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">cntrl</span><span class="p">)</span>
+
+        <span class="n">cntrl</span><span class="o">.</span><span class="n">param_label</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cntrl</span>
 
     <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Suggested size&quot;&quot;&quot;</span>
