@@ -442,8 +442,7 @@ class FunctionDisplay(QGroupBox):
             # Add the control widget to our contents
             self.optional.contents.layout().addWidget(cntrl)
 
-        if tooltip is not None:
-            cntrl.setToolTip(tooltip)
+        cntrl.param_label.setToolTip(tooltip)
         return cntrl
 
     def sizeHint(self):
