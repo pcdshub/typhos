@@ -8,8 +8,8 @@ import pytest
 
 import typhon
 import typhon.plugins
-from typhon.plugins.happi import HappiPlugin, HappiChannel
-
+from typhon.plugins.happi import HappiPlugin
+from typhon.widgets import HappiChannel
 
 
 def test_connection(client):

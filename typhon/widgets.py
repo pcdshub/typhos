@@ -7,18 +7,18 @@ import logging
 # External #
 ############
 import qtawesome as qta
-from qtpy.QtCore import Property, QSize, Qt, Signal, Slot
+from qtpy.QtCore import Property, QSize, Qt, Signal, Slot, QObject
 from qtpy.QtWidgets import (QAction, QPushButton, QVBoxLayout, QWidget,
                             QToolBar, QDockWidget, QDialog)
 from pydm.widgets import (PyDMLabel, PyDMEnumComboBox, PyDMLineEdit,
                           PyDMWaveformPlot, PyDMImageView)
 from pydm.widgets.base import PyDMWidget
+from pydm.widgets.channel import PyDMChannel
 from pyqtgraph.parametertree import parameterTypes as ptypes
 
 ###########
 # Package #
 ###########
-from .plugins import HappiChannel
 
 logger = logging.getLogger(__name__)
 
@@ -200,6 +200,34 @@ class SubDisplay(QDockWidget):
     def closeEvent(self, evt):
         self.closing.emit()
         super().closeEvent(evt)
+
+
+class HappiChannel(PyDMChannel, QObject):
+    """
+    PyDMChannel to transport Device Information
+
+    Parameters
+    ----------
+    tx_slot: callable
+        Slot on widget to accept a dictionary of both the device and metadata
+        information
+    """
+    def __init__(self, *, tx_slot, **kwargs):
+        super().__init__(**kwargs)
+        QObject.__init__(self)
+        self._tx_slot = tx_slot
+        self._last_md = None
+
+    @Slot(dict)
+    def tx_slot(self, value):
+        """Transmission Slot"""
+        # Do not fire twice for the same device
+        if not self._last_md or self._last_md != value['md']:
+            self._last_md = value['md']
+            self._tx_slot(value)
+        else:
+            logger.debug("HappiChannel %r received same device. "
+                         "Ignoring for now ...", self)
 
 
 class TyphonDesignerMixin(PyDMWidget):

@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 add_plugin(SignalPlugin)
 
 try:
-    from .happi import (HappiPlugin, HappiConnection, HappiChannel,
-                        register_client)
+    from .happi import HappiPlugin, HappiConnection, register_client
     add_plugin(HappiPlugin)
 except ImportError:
     logger.warning("Unable to import HappiPlugin")
