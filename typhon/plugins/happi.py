@@ -4,8 +4,7 @@ from happi import Client
 from happi.loader import from_container
 from happi.errors import SearchError
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
-from pydm.widgets.channel import PyDMChannel
-from qtpy.QtCore import Signal, Slot, QObject
+from qtpy.QtCore import Signal
 
 _client = None
 logger = logging.getLogger(__name__)
@@ -20,34 +19,6 @@ def register_client(client):
     """
     global _client
     _client = client
-
-
-class HappiChannel(PyDMChannel, QObject):
-    """
-    PyDMChannel to transport Device Information
-
-    Parameters
-    ----------
-    tx_slot: callable
-        Slot on widget to accept a dictionary of both the device and metadata
-        information
-    """
-    def __init__(self, *, tx_slot, **kwargs):
-        super().__init__(**kwargs)
-        QObject.__init__(self)
-        self._tx_slot = tx_slot
-        self._last_md = None
-
-    @Slot(dict)
-    def tx_slot(self, value):
-        """Transmission Slot"""
-        # Do not fire twice for the same device
-        if not self._last_md or self._last_md != value['md']:
-            self._last_md = value['md']
-            self._tx_slot(value)
-        else:
-            logger.debug("HappiChannel %r received same device. "
-                         "Ignoring for now ...", self)
 
 
 class HappiConnection(PyDMConnection):
