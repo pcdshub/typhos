@@ -13,7 +13,7 @@ ACTIVATE=$PREFIX/etc/conda/activate.d/typhon.sh
 DEACTIVATE=$PREFIX/etc/conda/deactivate.d/typhon.sh
 
 echo "from typhon.designer import *" >> $DESIGNER_PLUGIN
-echo "export PYQTDESIGNERPATH="$DESIGNER_PLUGIN_PATH":$PYQTDESIGNERPATH" >> $ACTIVATE
+echo "export PYQTDESIGNERPATH="$DESIGNER_PLUGIN_PATH":\$PYQTDESIGNERPATH" >> $ACTIVATE
 echo "export PYDM_DESIGNER_ONLINE=True" >> $ACTIVATE
 echo "unset PYQTDESIGNERPATH" >> $DEACTIVATE
 
