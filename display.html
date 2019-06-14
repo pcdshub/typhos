@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Display Types &mdash; Typhon 0.3.0+92.gd9b3a6e documentation</title>
+  <title>Display Types &mdash; Typhon 0.3.0+94.gfa762f3 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.3.0+92.gd9b3a6e
+                0.3.0+94.gfa762f3
               </div>
             
           
@@ -180,127 +180,107 @@ themselves when you add PVs.</p>
 <h2>TyphonSuite<a class="headerlink" href="#typhonsuite" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="typhon.TyphonSuite">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonSuite</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">typhon.</code><code class="sig-name descname">TyphonSuite</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite" title="Permalink to this definition">¶</a></dt>
 <dd><p>Complete Typhon Window</p>
 <p>This contains all the neccesities to load tools and devices into a Typhon
 window.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="typhon.TyphonSuite.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em>, <em>children=True</em>, <em>category='Devices'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">children=True</em>, <em class="sig-param">category='Devices'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a device to the <code class="docutils literal notranslate"><span class="pre">TyphonSuite</span></code></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>children</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Also add any <code class="docutils literal notranslate"><span class="pre">subdevices</span></code> of this device to the suite as well.</li>
-<li><strong>category</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Category of device. By default, all devices will just be added to
-the “Devices” group</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
+<li><p><strong>children</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Also add any <code class="docutils literal notranslate"><span class="pre">subdevices</span></code> of this device to the suite as well.</p></li>
+<li><p><strong>category</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Category of device. By default, all devices will just be added to
+the “Devices” group</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.add_subdisplay">
-<code class="descname">add_subdisplay</code><span class="sig-paren">(</span><em>name</em>, <em>display</em>, <em>category</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_subdisplay" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_subdisplay</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">display</em>, <em class="sig-param">category</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an arbitrary widget to the tree of available widgets and tools</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name to be displayed in the tree</li>
-<li><strong>display</strong> (<em>QWidget</em>) – QWidget to show in the dock when expanded.</li>
-<li><strong>category</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The top level group to place the controls under in the tree. If the
-category does not exist, a new one will be made</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name to be displayed in the tree</p></li>
+<li><p><strong>display</strong> (<em>QWidget</em>) – QWidget to show in the dock when expanded.</p></li>
+<li><p><strong>category</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The top level group to place the controls under in the tree. If the
+category does not exist, a new one will be made</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.add_tool">
-<code class="descname">add_tool</code><span class="sig-paren">(</span><em>name</em>, <em>tool</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_tool" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_tool</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">tool</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.add_tool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.add_tool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a widget to the toolbar</p>
 <p>Shortcut for:</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">suite</span><span class="o">.</span><span class="n">add_subdisplay</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;Tools&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">suite</span><span class="o">.</span><span class="n">add_subdisplay</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;Tools&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of tool to be displayed in sidebar</li>
-<li><strong>tool</strong> (<em>QWidget</em>) – Widget to be added to <code class="docutils literal notranslate"><span class="pre">.ui.subdisplay</span></code></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Name of tool to be displayed in sidebar</p></li>
+<li><p><strong>tool</strong> (<em>QWidget</em>) – Widget to be added to <code class="docutils literal notranslate"><span class="pre">.ui.subdisplay</span></code></p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.embed_subdisplay">
-<code class="descname">embed_subdisplay</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.embed_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.embed_subdisplay" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">embed_subdisplay</code><span class="sig-paren">(</span><em class="sig-param">widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.embed_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.embed_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Embed a display in the dock system</p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="typhon.TyphonSuite.from_device">
-<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em>, <em>tools={}</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.from_device" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_device</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">parent=None</em>, <em class="sig-param">tools={}</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.from_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new TyphonDeviceDisplay from an ophyd.Device</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>children</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Choice to include child Device components</li>
-<li><strong>parent</strong> (<em>QWidgets</em>) – </li>
-<li><strong>tools</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Tools to load for the object. <code class="docutils literal notranslate"><span class="pre">dict</span></code> should be name, class pairs.
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
+<li><p><strong>children</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Choice to include child Device components</p></li>
+<li><p><strong>parent</strong> (<em>QWidgets</em>) – </p></li>
+<li><p><strong>tools</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Tools to load for the object. <code class="docutils literal notranslate"><span class="pre">dict</span></code> should be name, class pairs.
 By default these will be <code class="docutils literal notranslate"><span class="pre">.default_tools</span></code>, but <code class="docutils literal notranslate"><span class="pre">None</span></code> can be
-passed to avoid tool loading completely.</li>
-<li><strong>kwargs</strong> – Passed to <a class="reference internal" href="#typhon.TyphonSuite.add_device" title="typhon.TyphonSuite.add_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonSuite.add_device()</span></code></a></li>
+passed to avoid tool loading completely.</p></li>
+<li><p><strong>kwargs</strong> – Passed to <a class="reference internal" href="#typhon.TyphonSuite.add_device" title="typhon.TyphonSuite.add_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphonSuite.add_device()</span></code></a></p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.get_subdisplay">
-<code class="descname">get_subdisplay</code><span class="sig-paren">(</span><em>display</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.get_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.get_subdisplay" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_subdisplay</code><span class="sig-paren">(</span><em class="sig-param">display</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.get_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.get_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a subdisplay by name or contained device</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>display</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>Device</em>) – Name of screen or device</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>widget</strong> – Widget that is a member of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">ui.subdisplay</span></code></td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">QWidget</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>display</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><em>Device</em>) – Name of screen or device</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>widget</strong> – Widget that is a member of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">ui.subdisplay</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>QWidget</p>
+</dd>
+</dl>
 <p class="rubric">Example</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">suite</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="n">my_device</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">suite</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="n">my_device</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
 <span class="n">suite</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="s1">&#39;My Tool&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -308,34 +288,31 @@ passed to avoid tool loading completely.</li>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.hide_subdisplay">
-<code class="descname">hide_subdisplay</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.hide_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.hide_subdisplay" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">hide_subdisplay</code><span class="sig-paren">(</span><em class="sig-param">widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.hide_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.hide_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hide a visible subdisplay</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>widget</strong> (<em>SidebarParameter</em><em> or </em><em>Subdisplay</em>) – If you give a SidebarParameter, we will find the corresponding
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>widget</strong> (<em>SidebarParameter</em><em> or </em><em>Subdisplay</em>) – If you give a SidebarParameter, we will find the corresponding
 widget and hide it. If the widget provided to us is inside a
-DockWidget we will close that, otherwise the widget is just hidden.</td>
-</tr>
-</tbody>
-</table>
+DockWidget we will close that, otherwise the widget is just hidden.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.hide_subdisplays">
-<code class="descname">hide_subdisplays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.hide_subdisplays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.hide_subdisplays" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">hide_subdisplays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.hide_subdisplays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.hide_subdisplays" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hide all open displays</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.save">
-<code class="descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the TyphonSuite to a file using <a class="reference internal" href="utils.html#typhon.utils.save_suite" title="typhon.utils.save_suite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">typhon.utils.save_suite()</span></code></a></p>
 <p>A <code class="docutils literal notranslate"><span class="pre">QFileDialog</span></code> will be used to query the user for the desired
 location of the created Python file</p>
 <p>The template will be of the form:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">typhon.cli</span>
 
 <span class="n">devices</span> <span class="o">=</span> <span class="p">{</span><span class="n">devices</span><span class="p">}</span>
@@ -351,29 +328,26 @@ location of the created Python file</p>
 
 <dl class="method">
 <dt id="typhon.TyphonSuite.show_subdisplay">
-<code class="descname">show_subdisplay</code><span class="sig-paren">(</span><em>widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.show_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.show_subdisplay" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">show_subdisplay</code><span class="sig-paren">(</span><em class="sig-param">widget</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/suite.html#TyphonSuite.show_subdisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonSuite.show_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open a display in the dock system</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>widget</strong> (<em>QWidget</em><em>, </em><em>SidebarParameter</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If given a <code class="docutils literal notranslate"><span class="pre">SidebarParameter</span></code> from the tree, the widget will be
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>widget</strong> (<em>QWidget</em><em>, </em><em>SidebarParameter</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – If given a <code class="docutils literal notranslate"><span class="pre">SidebarParameter</span></code> from the tree, the widget will be
 shown and the sidebar item update. Otherwise, the information is
-passed to <a class="reference internal" href="#typhon.TyphonSuite.get_subdisplay" title="typhon.TyphonSuite.get_subdisplay"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_subdisplay()</span></code></a></td>
-</tr>
-</tbody>
-</table>
+passed to <a class="reference internal" href="#typhon.TyphonSuite.get_subdisplay" title="typhon.TyphonSuite.get_subdisplay"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_subdisplay()</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="typhon.TyphonSuite.tools">
-<code class="descname">tools</code><a class="headerlink" href="#typhon.TyphonSuite.tools" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">tools</code><a class="headerlink" href="#typhon.TyphonSuite.tools" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tools loaded into the TyphonDeviceDisplay</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="typhon.TyphonSuite.top_level_groups">
-<code class="descname">top_level_groups</code><a class="headerlink" href="#typhon.TyphonSuite.top_level_groups" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">top_level_groups</code><a class="headerlink" href="#typhon.TyphonSuite.top_level_groups" title="Permalink to this definition">¶</a></dt>
 <dd><p>All top-level groups as name, <code class="docutils literal notranslate"><span class="pre">QGroupParameterItem</span></code> pairs</p>
 </dd></dl>
 
@@ -384,7 +358,7 @@ passed to <a class="reference internal" href="#typhon.TyphonSuite.get_subdisplay
 <h2>TyphonDeviceDisplay<a class="headerlink" href="#typhondevicedisplay" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="typhon.TyphonDeviceDisplay">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonDeviceDisplay</code><span class="sig-paren">(</span><em>parent=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDeviceDisplay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">typhon.</code><code class="sig-name descname">TyphonDeviceDisplay</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDeviceDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDeviceDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main Panel display for a signal Ophyd Device</p>
 <p>This widget lays out all of the architecture for a single Ophyd display.
 The structure matches an ophyd Device, but for this specific instantation,
@@ -399,109 +373,93 @@ do not add any methods to the main panel it will not be visible.</p>
 you would like to display, and an optional image. As with <code class="docutils literal notranslate"><span class="pre">typhon</span></code>
 convention, the base initialization sets up the widgets and the
 <code class="docutils literal notranslate"><span class="pre">.from_device</span></code> class method will automatically populate them.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Name to displayed at the top of the panel</li>
-<li><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to image file to displayed at the header</li>
-<li><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Name to displayed at the top of the panel</p></li>
+<li><p><strong>image</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Path to image file to displayed at the header</p></li>
+<li><p><strong>parent</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – </p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="class">
 <dt id="typhon.TyphonDeviceDisplay.TemplateEnum">
-<em class="property">class </em><code class="descname">TemplateEnum</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.TemplateEnum" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">TemplateEnum</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.TemplateEnum" title="Permalink to this definition">¶</a></dt>
 <dd><p>An enumeration.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonDeviceDisplay.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em>, <em>macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDeviceDisplay.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDeviceDisplay.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDeviceDisplay.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDeviceDisplay.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a Device and signals to the TyphonDeviceDisplay</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Set of macros to reload the template with. There are two fallback
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
+<li><p><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Set of macros to reload the template with. There are two fallback
 options attempted if no information is passed in. First, if the
 device has an <code class="docutils literal notranslate"><span class="pre">md</span></code> attribute after being loaded from a <code class="docutils literal notranslate"><span class="pre">happi</span></code>
 database, that information will be passed in as macros. Finally, if
 no <code class="docutils literal notranslate"><span class="pre">name</span></code> field is passed in, we ensure the <code class="docutils literal notranslate"><span class="pre">device.name</span></code> is
-entered as well.</li>
+entered as well.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="typhon.TyphonDeviceDisplay.current_template">
-<code class="descname">current_template</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.current_template" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">current_template</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.current_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current template being rendered</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="typhon.TyphonDeviceDisplay.device_class">
-<code class="descname">device_class</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.device_class" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">device_class</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.device_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>Full class with module name of loaded device</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="typhon.TyphonDeviceDisplay.device_name">
-<code class="descname">device_name</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.device_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">device_name</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.device_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of loaded device</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="typhon.TyphonDeviceDisplay.force_template">
-<code class="descname">force_template</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.force_template" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">force_template</code><a class="headerlink" href="#typhon.TyphonDeviceDisplay.force_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Force a specific template</p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="typhon.TyphonDeviceDisplay.from_device">
-<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>template=None</em>, <em>macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDeviceDisplay.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDeviceDisplay.from_device" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_device</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">template=None</em>, <em class="sig-param">macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDeviceDisplay.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDeviceDisplay.from_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new TyphonDeviceDisplay from a Device</p>
 <p>Loads the signals in to the appropriate positions and sets the title to
 a cleaned version of the device name</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Set the <code class="docutils literal notranslate"><span class="pre">display_template</span></code></li>
-<li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be placed in template</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
+<li><p><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Set the <code class="docutils literal notranslate"><span class="pre">display_template</span></code></p></li>
+<li><p><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be placed in template</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonDeviceDisplay.load_template">
-<code class="descname">load_template</code><span class="sig-paren">(</span><em>macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDeviceDisplay.load_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDeviceDisplay.load_template" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_template</code><span class="sig-paren">(</span><em class="sig-param">macros=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/display.html#TyphonDeviceDisplay.load_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonDeviceDisplay.load_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a new template</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Absolute path to template location</li>
-<li><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be made in the file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Absolute path to template location</p></li>
+<li><p><strong>macros</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><em>optional</em>) – Macro substitutions to be made in the file</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

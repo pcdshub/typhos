@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How it Works &mdash; Typhon 0.3.0+92.gd9b3a6e documentation</title>
+  <title>How it Works &mdash; Typhon 0.3.0+94.gfa762f3 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.3.0+92.gd9b3a6e
+                0.3.0+94.gfa762f3
               </div>
             
           
@@ -178,16 +178,16 @@
 <p>Typhon has three major building blocks that combine into the final display seen
 by the operator:</p>
 <ul class="simple">
-<li><strong>TyphonSuite</strong> : The overall view for a Typhon window. It allows the
-operator to view all of the loaded components and tools.</li>
-<li><strong>TyphonDeviceDisplay</strong> : This is the widget created for a standard
+<li><p><strong>TyphonSuite</strong> : The overall view for a Typhon window. It allows the
+operator to view all of the loaded components and tools.</p></li>
+<li><p><strong>TyphonDeviceDisplay</strong> : This is the widget created for a standard
 <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code>. Signals are organized based on their <code class="docutils literal notranslate"><span class="pre">Kind</span></code> and
-description.</li>
-<li><strong>typhon.tools</strong> : These are widgets that interface with external
+description.</p></li>
+<li><p><strong>typhon.tools</strong> : These are widgets that interface with external
 applications. While you may have other GUIs for these systems,
 <code class="docutils literal notranslate"><span class="pre">typhon.tools</span></code> are built especially to handle the handshaking between all
 the information stored on your device and the tool you are interfacing with.
-This saves your operator clicks and ensures consistency in use.</li>
+This saves your operator clicks and ensures consistency in use.</p></li>
 </ul>
 <p>All three of the widgets listed above share a similar API for creation.
 Instantiating the object by itself handles loading the container widgets and
@@ -199,48 +199,41 @@ have an <code class="docutils literal notranslate"><span class="pre">ophyd.Devic
 alternatively and be constructed using the <code class="docutils literal notranslate"><span class="pre">from_device</span></code> classmethod.</p>
 <dl class="class">
 <dt>
-<em class="property">class </em><code class="descclassname">typhon.utils.</code><code class="descname">TyphonBase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">typhon.utils.</code><code class="sig-name descname">TyphonBase</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Base widget for all Typhon widgets that interface with devices</p>
 <dl class="method">
 <dt>
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.add_device"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.add_device"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Add a new device to the widget</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device</strong> (<em>ophyd.Device</em>) – </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="classmethod">
-<dt>
-<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.from_device"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Create a new instance of the widget for a Device</p>
-<p>Shortcut for:</p>
-<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphonBase</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>device</strong> (<em>ophyd.Device</em>) – </li>
-<li><strong>parent</strong> (<em>QWidget</em>) – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> (<em>ophyd.Device</em>) – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt>
-<code class="descname">paintEvent</code><span class="sig-paren">(</span><em>self</em>, <em>QPaintEvent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.paintEvent"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_device</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">parent=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.from_device"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Create a new instance of the widget for a Device</p>
+<p>Shortcut for:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphonBase</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
+<li><p><strong>parent</strong> (<em>QWidget</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">paintEvent</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">QPaintEvent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/utils.html#TyphonBase.paintEvent"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -269,11 +262,11 @@ in a variety of contexts. If you do not use <code class="docutils literal notran
 your objects and displays in the same process.</p>
 <p>Here is a quick example if you wanted to get a feel for what <code class="docutils literal notranslate"><span class="pre">typhon</span></code> looks
 like with <cite>happi`</cite></p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">happi</span>
-<span class="kn">from</span> <span class="nn">typhon.plugins</span> <span class="k">import</span> <span class="n">register_client</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">happi</span>
+<span class="kn">from</span> <span class="nn">typhon.plugins</span> <span class="kn">import</span> <span class="n">register_client</span>
 
 <span class="c1"># Initialize a new JSON based client</span>
-<span class="n">client</span> <span class="o">=</span> <span class="n">happi</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;db.json&#39;</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">happi</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;db.json&#39;</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="c1"># Register this with typhon</span>
 <span class="n">register_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 <span class="c1"># Add a device to our new database</span>
@@ -287,7 +280,7 @@ like with <cite>happi`</cite></p>
 configured the <code class="docutils literal notranslate"><span class="pre">$HAPPI_CFG</span></code> environment variable such that
 <code class="docutils literal notranslate"><span class="pre">happi.Client.from_config</span></code> yields the desired client.</p>
 <p>We can now check that we can load the complete <code class="docutils literal notranslate"><span class="pre">SynAxis</span></code> object.</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">motor</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">load_device</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_motor&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">motor</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">load_device</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_motor&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -312,16 +305,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="go">                              Out[5]: </span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1553272386.3969388}),</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1560545832.4228683}),</span>
 <span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1553272386.3969378})])</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1560545832.4228666})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="go">                                                                                                                                                                                                             Out[6]: </span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1553272386.397322}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1560545832.423277}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1553272386.3973758})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1560545832.4233282})])</span>
 </pre></div>
 </div>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonSignalPanel</span></code> will render these, allowing us to select a subset
@@ -366,8 +359,8 @@ shown:</p>
 is the complete code from start to finish required to create the suite. Look at
 the <code class="docutils literal notranslate"><span class="pre">TyphonSuited.default_tools</span></code> to control which <code class="docutils literal notranslate"><span class="pre">typhon.tools</span></code> are
 loaded.</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ophyd.sim</span> <span class="k">import</span> <span class="n">motor</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ophyd.sim</span> <span class="kn">import</span> <span class="n">motor</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span>
 <span class="kn">import</span> <span class="nn">typhon</span>
 
 <span class="c1"># Create our application</span>

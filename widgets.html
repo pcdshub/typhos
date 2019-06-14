@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Widgets &mdash; Typhon 0.3.0+92.gd9b3a6e documentation</title>
+  <title>Widgets &mdash; Typhon 0.3.0+94.gfa762f3 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.3.0+92.gd9b3a6e
+                0.3.0+94.gfa762f3
               </div>
             
           
@@ -181,29 +181,25 @@ generating one. If you would just like a widget for an <code class="docutils lit
 is a function available:</p>
 <dl class="function">
 <dt id="typhon.signal.signal_widget">
-<code class="descclassname">typhon.signal.</code><code class="descname">signal_widget</code><span class="sig-paren">(</span><em>signal</em>, <em>read_only=False</em>, <em>tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/signal.html#signal_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.signal.signal_widget" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">typhon.signal.</code><code class="sig-name descname">signal_widget</code><span class="sig-paren">(</span><em class="sig-param">signal</em>, <em class="sig-param">read_only=False</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/signal.html#signal_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.signal.signal_widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory for creating a PyDMWidget from a signal</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>signal</strong> (<em>ophyd.Signal</em>) – Signal object to create widget</li>
-<li><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether this widget should be able to write back to the signal you
-provided</li>
-<li><strong>tooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Tooltip to use for the widget</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ophyd.Signal</em>) – Signal object to create widget</p></li>
+<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether this widget should be able to write back to the signal you
+provided</p></li>
+<li><p><strong>tooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Tooltip to use for the widget</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>widget</strong> – PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>widget</strong> – PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
 be able to write back to the widget and if the signal has <code class="docutils literal notranslate"><span class="pre">enum_strs</span></code></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">PyDMWidget</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>PyDMWidget</p>
+</dd>
+</dl>
 </dd></dl>
 
 <div class="section" id="panels">
@@ -212,17 +208,17 @@ be able to write back to the widget and if the signal has <code class="docutils 
 see what they need and hide one they don’t. Thefore, many of the widget
 implementations are placed in “Panels” these consist of QPushButton header that
 hides and shows the contents. Each variation in Typhon is documented below.</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.signal.SignalPanel</span></code></a>([signals])</td>
-<td>Base panel display for EPICS signals</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.signal.SignalPanel</span></code></a>([signals])</p></td>
+<td><p>Base panel display for EPICS signals</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel" title="typhon.func.FunctionPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.func.FunctionPanel</span></code></a>([methods,&nbsp;parent])</td>
-<td>Function Panel</td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel" title="typhon.func.FunctionPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.func.FunctionPanel</span></code></a>([methods, parent])</p></td>
+<td><p>Function Panel</p></td>
 </tr>
 </tbody>
 </table>
@@ -231,7 +227,7 @@ hides and shows the contents. Each variation in Typhon is documented below.</p>
 <h2>TyphonPositionerWidget<a class="headerlink" href="#typhonpositionerwidget" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="typhon.TyphonPositionerWidget">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonPositionerWidget</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">typhon.</code><code class="sig-name descname">TyphonPositionerWidget</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Widget to interact with an <code class="docutils literal notranslate"><span class="pre">ophyd.Positioner</span></code></p>
 <p>Standard positioner motion requires a large amount of context for
 operators. For most motors, it may not be enough to simply have a text
@@ -241,68 +237,68 @@ the position and behavior of a motor. The widget will work with any object
 that implements <code class="docutils literal notranslate"><span class="pre">set</span></code>, however to get other relevant information, we also
 duck-type to see if we can find other useful signals.  Below is a table of
 attributes that the widget looks for to inform screen design:</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="19%" />
-<col width="81%" />
+<col style="width: 19%" />
+<col style="width: 81%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Widget</th>
-<th class="head">Attribute Selection</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Widget</p></th>
+<th class="head"><p>Attribute Selection</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>User Readback</td>
-<td>The widget first searches for a <code class="docutils literal notranslate"><span class="pre">Signal</span></code> called
+<tbody>
+<tr class="row-even"><td><p>User Readback</p></td>
+<td><p>The widget first searches for a <code class="docutils literal notranslate"><span class="pre">Signal</span></code> called
 <code class="docutils literal notranslate"><span class="pre">user_readback</span></code>. If this is not found the
-<strong>first</strong> hint is used.</td>
+<strong>first</strong> hint is used.</p></td>
 </tr>
-<tr class="row-odd"><td>Limit Switches</td>
-<td>Attributes <code class="docutils literal notranslate"><span class="pre">low_limit_switch</span></code> and <code class="docutils literal notranslate"><span class="pre">high_limit_switch</span></code>
-are queried. If these are not found the widgets are hidden.</td>
+<tr class="row-odd"><td><p>Limit Switches</p></td>
+<td><p>Attributes <code class="docutils literal notranslate"><span class="pre">low_limit_switch</span></code> and <code class="docutils literal notranslate"><span class="pre">high_limit_switch</span></code>
+are queried. If these are not found the widgets are hidden.</p></td>
 </tr>
-<tr class="row-even"><td>Soft Limits</td>
-<td>The widget first looks for <code class="docutils literal notranslate"><span class="pre">low_limit</span></code> and <code class="docutils literal notranslate"><span class="pre">high_limit</span></code>
+<tr class="row-even"><td><p>Soft Limits</p></td>
+<td><p>The widget first looks for <code class="docutils literal notranslate"><span class="pre">low_limit</span></code> and <code class="docutils literal notranslate"><span class="pre">high_limit</span></code>
 signals. If these do not exist, we look for <code class="docutils literal notranslate"><span class="pre">limits</span></code> and
-sets the text to match the returned tuple from this method.</td>
+sets the text to match the returned tuple from this method.</p></td>
 </tr>
-<tr class="row-odd"><td>Set and Tweak</td>
-<td>Both of these methods simply use <code class="docutils literal notranslate"><span class="pre">Device.set</span></code> which is
+<tr class="row-odd"><td><p>Set and Tweak</p></td>
+<td><p>Both of these methods simply use <code class="docutils literal notranslate"><span class="pre">Device.set</span></code> which is
 expected to take a <code class="docutils literal notranslate"><span class="pre">float</span></code> and return a <code class="docutils literal notranslate"><span class="pre">status</span></code> object
-that indicates the motion completeness. Must be implemented.</td>
+that indicates the motion completeness. Must be implemented.</p></td>
 </tr>
-<tr class="row-even"><td>Stop</td>
-<td>Device.stop()</td>
+<tr class="row-even"><td><p>Stop</p></td>
+<td><p>Device.stop()</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="typhon.TyphonPositionerWidget.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a device to the widget</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonPositionerWidget.done_moving">
-<code class="descname">done_moving</code><span class="sig-paren">(</span><em>success</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.done_moving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.done_moving" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">done_moving</code><span class="sig-paren">(</span><em class="sig-param">success</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.done_moving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.done_moving" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a move is complete</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="typhon.TyphonPositionerWidget.failed_move">
-<code class="descname">failed_move</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.failed_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">failed_move</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.failed_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>The last requested move failed</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonPositionerWidget.move_changed">
-<code class="descname">move_changed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.move_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.move_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move_changed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.move_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.move_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a move is begun</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="typhon.TyphonPositionerWidget.moving">
-<code class="descname">moving</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.moving" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">moving</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.moving" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current state of widget</p>
 <p>This will lag behind the actual state of the positioner in order to
 prevent unnecessary rapid movements</p>
@@ -310,31 +306,31 @@ prevent unnecessary rapid movements</p>
 
 <dl class="method">
 <dt id="typhon.TyphonPositionerWidget.negative_tweak">
-<code class="descname">negative_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.negative_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.negative_tweak" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">negative_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.negative_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.negative_tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak negative by the amount listed in <code class="docutils literal notranslate"><span class="pre">ui.tweak_value</span></code></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonPositionerWidget.positive_tweak">
-<code class="descname">positive_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.positive_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.positive_tweak" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">positive_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.positive_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.positive_tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak positive by the amount listed in <code class="docutils literal notranslate"><span class="pre">ui.tweak_value</span></code></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonPositionerWidget.set">
-<code class="descname">set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the device to the value configured by <code class="docutils literal notranslate"><span class="pre">ui.set_value</span></code></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonPositionerWidget.stop">
-<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.stop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop device</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="typhon.TyphonPositionerWidget.successful_move">
-<code class="descname">successful_move</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.successful_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">successful_move</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.successful_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>The last requested move was successful</p>
 </dd></dl>
 
@@ -345,46 +341,43 @@ prevent unnecessary rapid movements</p>
 <h2>TyphonMethodButton<a class="headerlink" href="#typhonmethodbutton" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="typhon.TyphonMethodButton">
-<em class="property">class </em><code class="descclassname">typhon.</code><code class="descname">TyphonMethodButton</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">typhon.</code><code class="sig-name descname">TyphonMethodButton</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>QPushButton to access a method of a Device</p>
 <p>The function provided by the loaded device and the <a class="reference internal" href="#typhon.TyphonMethodButton.method_name" title="typhon.TyphonMethodButton.method_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">method_name</span></code></a>
 will be run when the button is clicked. If <code class="docutils literal notranslate"><span class="pre">use_status</span></code> is set to True,
 the button will be disabled while the <code class="docutils literal notranslate"><span class="pre">Status</span></code> object is active.</p>
 <dl class="method">
 <dt id="typhon.TyphonMethodButton.add_device">
-<code class="descname">add_device</code><span class="sig-paren">(</span><em>device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new device to the widget</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>device</strong> (<em>ophyd.Device</em>) – </td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> (<em>ophyd.Device</em>) – </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="typhon.TyphonMethodButton.execute">
-<code class="descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.execute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute the method given by <code class="docutils literal notranslate"><span class="pre">method_name</span></code></p>
 </dd></dl>
 
-<dl class="classmethod">
+<dl class="method">
 <dt id="typhon.TyphonMethodButton.from_device">
-<em class="property">classmethod </em><code class="descname">from_device</code><span class="sig-paren">(</span><em>device</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.from_device" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_device</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.from_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a TyphonMethodButton from a device</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="typhon.TyphonMethodButton.method_name">
-<code class="descname">method_name</code><a class="headerlink" href="#typhon.TyphonMethodButton.method_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">method_name</code><a class="headerlink" href="#typhon.TyphonMethodButton.method_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of method on provided Device to execute</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="typhon.TyphonMethodButton.use_status">
-<code class="descname">use_status</code><a class="headerlink" href="#typhon.TyphonMethodButton.use_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">use_status</code><a class="headerlink" href="#typhon.TyphonMethodButton.use_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the status to enable and disable the button</p>
 </dd></dl>
 

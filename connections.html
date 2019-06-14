@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Application Connections &mdash; Typhon 0.3.0+92.gd9b3a6e documentation</title>
+  <title>Application Connections &mdash; Typhon 0.3.0+94.gfa762f3 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.3.0+92.gd9b3a6e
+                0.3.0+94.gfa762f3
               </div>
             
           
@@ -186,7 +186,7 @@ that channels are specified by a string identifier. In the case of
 to avoid duplicating objects. This means the workflow for adding these has one
 more additonal step where the <code class="docutils literal notranslate"><span class="pre">Signal</span></code> is registered with the <code class="docutils literal notranslate"><span class="pre">PyDM</span></code>
 plugin.</p>
-<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typhon.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typhon.plugins</span> <span class="kn">import</span> <span class="n">register_signal</span>
 
 <span class="c1"># Create an Ophyd Signal</span>
 <span class="n">my_signal</span> <span class="o">=</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;this_signal&#39;</span><span class="p">)</span>
@@ -206,25 +206,25 @@ information can provide a richer operator experience. <code class="docutils lite
 information being available in the output of <code class="docutils literal notranslate"><span class="pre">describe</span></code> method of the signal.
 If you want your child <code class="docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> class to convey this information make
 sure that it is expressed properly in the output of <code class="docutils literal notranslate"><span class="pre">describe</span></code>.</p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="58%" />
-<col width="42%" />
+<col style="width: 58%" />
+<col style="width: 42%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Metadata</th>
-<th class="head">Description Key</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Metadata</p></th>
+<th class="head"><p>Description Key</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>Precision</td>
-<td><cite>“precision”</cite></td>
+<tbody>
+<tr class="row-even"><td><p>Precision</p></td>
+<td><p><cite>“precision”</cite></p></td>
 </tr>
-<tr class="row-odd"><td>Enumeration Strings</td>
-<td><cite>“enum_strs”</cite></td>
+<tr class="row-odd"><td><p>Enumeration Strings</p></td>
+<td><p><cite>“enum_strs”</cite></p></td>
 </tr>
-<tr class="row-even"><td>Engineering Units</td>
-<td><cite>“units”</cite></td>
+<tr class="row-even"><td><p>Engineering Units</p></td>
+<td><p><cite>“units”</cite></p></td>
 </tr>
 </tbody>
 </table>
