@@ -109,7 +109,7 @@ def signal_widget(signal, read_only=False, tooltip=None):
     widget_instance.setObjectName(name)
     if tooltip is not None:
         widget_instance.setToolTip(tooltip)
-    if dtype == 'string':
+    if dtype == 'string' and widget in (TyphonLabel, TyphonLineEdit):
         widget_instance.displayFormat = DisplayFormat.String
     return widget_instance
 
