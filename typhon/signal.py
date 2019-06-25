@@ -70,6 +70,7 @@ def signal_widget(signal, read_only=False, tooltip=None):
         desc = {}
     # Unshaped data
     shape = desc.get('shape', [])
+    dtype = desc.get('dtype', '')
     try:
         dimensions = len(shape)
     except TypeError:
@@ -108,11 +109,8 @@ def signal_widget(signal, read_only=False, tooltip=None):
     widget_instance.setObjectName(name)
     if tooltip is not None:
         widget_instance.setToolTip(tooltip)
-    try:
-        if signal.as_string:
-            widget_instance.displayFormat = DisplayFormat.String
-    except AttributeError:
-        pass
+    if dtype == 'string':
+        widget_instance.displayFormat = DisplayFormat.String
     return widget_instance
 
 
