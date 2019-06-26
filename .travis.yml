@@ -1,11 +1,12 @@
-# vi: sw=2 ts=2 sts=2 expandtab
-
+dist: xenial
 language: python
+
+services:
+    - xvfb
 
 addons:
     apt:
       packages:
-        - xvfb
         - herbstluftwm
 
 env:
@@ -23,13 +24,11 @@ matrix:
      - python: 3.6
        env: PYDM_CHANNEL=pydm-dev
      - python: 3.7
-       dist: xenial
        env:
            - PYDM_CHANNEL=pcds-tag
            - BUILD=1
   allow_failures:
      - python: 3.7
-       dist: xenial
        env:
            - PYDM_CHANNEL=pcds-tag
            - BUILD=1
@@ -60,10 +59,6 @@ install:
   - echo "PATH=$PATH"
 
 before_script:
-    #Taken from docs.travis-ci.com/user/gui-and-headless-browsers
-  - "export DISPLAY=:99.0"
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
-  - sleep 3 # give xvfb some time to start
   # Run windows manager
   - "herbstluftwm &"
   - sleep 1
