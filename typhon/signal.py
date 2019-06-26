@@ -9,6 +9,7 @@ import logging
 ############
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
+from pydm.widgets.display_format import DisplayFormat
 from qtpy.QtCore import Property, Q_ENUMS, QSize
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 
@@ -69,6 +70,7 @@ def signal_widget(signal, read_only=False, tooltip=None):
         desc = {}
     # Unshaped data
     shape = desc.get('shape', [])
+    dtype = desc.get('dtype', '')
     try:
         dimensions = len(shape)
     except TypeError:
@@ -107,6 +109,8 @@ def signal_widget(signal, read_only=False, tooltip=None):
     widget_instance.setObjectName(name)
     if tooltip is not None:
         widget_instance.setToolTip(tooltip)
+    if dtype == 'string' and widget in (TyphonLabel, TyphonLineEdit):
+        widget_instance.displayFormat = DisplayFormat.String
     return widget_instance
 
 
