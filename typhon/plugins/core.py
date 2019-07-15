@@ -1,22 +1,10 @@
-"""
-Module Docstring
-"""
-############
-# Standard #
-############
 import logging
 
-###############
-# Third Party #
-###############
 import numpy as np
 from ophyd.utils.epics_pvs import _type_map
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
 from qtpy.QtCore import Slot, Qt
 
-##########
-# Module #
-##########
 from ..utils import raise_to_operator
 
 logger = logging.getLogger(__name__)
