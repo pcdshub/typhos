@@ -60,3 +60,5 @@ class TyphonStatusThread(QThread):
         except TimeoutError:
             logger.error("Status %r did not complete in %s seconds",
                          self.status, self.timeout)
+        except RuntimeError as err:
+            logger.error(err.args[0])
