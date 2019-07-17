@@ -205,9 +205,11 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
                 macros = device.md.post()
             else:
                 macros = dict()
-        # Ensure we at least pass in the device name
+        # Ensure we at least pass in the device name and prefix
         if 'name' not in macros:
             macros['name'] = device.name
+        if 'prefix' not in macros and hasattr(device, 'prefix'):
+            macros['prefix'] = device.prefix
         # Reload template
         self.load_template(macros=macros)
 
