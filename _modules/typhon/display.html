@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.4.0a0+2.g3dc01d8 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.4.0a0+5.g67afff2 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.4.0a0+2.g3dc01d8
+                0.4.0a0+5.g67afff2
               </div>
             
           
@@ -352,8 +352,8 @@
 <span class="sd">            options attempted if no information is passed in. First, if the</span>
 <span class="sd">            device has an ``md`` attribute after being loaded from a ``happi``</span>
 <span class="sd">            database, that information will be passed in as macros. Finally, if</span>
-<span class="sd">            no ``name`` field is passed in, we ensure the ``device.name`` is</span>
-<span class="sd">            entered as well.</span>
+<span class="sd">            no ``name`` field is passed in, we ensure the ``device.name`` and</span>
+<span class="sd">            ``device.prefix`` are entered as well.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># We only allow one device at a time</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
@@ -367,9 +367,11 @@
                 <span class="n">macros</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">post</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">macros</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="c1"># Ensure we at least pass in the device name</span>
+        <span class="c1"># Ensure we at least pass in the device name and prefix</span>
         <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">macros</span><span class="p">:</span>
             <span class="n">macros</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="s1">&#39;prefix&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">macros</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;prefix&#39;</span><span class="p">):</span>
+            <span class="n">macros</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">prefix</span>
         <span class="c1"># Reload template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span></div>
 
