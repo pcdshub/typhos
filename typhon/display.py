@@ -190,8 +190,8 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             options attempted if no information is passed in. First, if the
             device has an ``md`` attribute after being loaded from a ``happi``
             database, that information will be passed in as macros. Finally, if
-            no ``name`` field is passed in, we ensure the ``device.name`` is
-            entered as well.
+            no ``name`` field is passed in, we ensure the ``device.name`` and
+            ``device.prefix`` are entered as well.
         """
         # We only allow one device at a time
         if self.devices:
@@ -205,9 +205,11 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
                 macros = device.md.post()
             else:
                 macros = dict()
-        # Ensure we at least pass in the device name
+        # Ensure we at least pass in the device name and prefix
         if 'name' not in macros:
             macros['name'] = device.name
+        if 'prefix' not in macros and hasattr(device, 'prefix'):
+            macros['prefix'] = device.prefix
         # Reload template
         self.load_template(macros=macros)
 
