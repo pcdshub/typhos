@@ -23,11 +23,14 @@ matrix:
            - PYDM_CHANNEL=pcds-tag
      - python: 3.6
        env: PYDM_CHANNEL=pydm-dev
+     - python: 3.6
+       env: PYDM_CHANNEL=None
      - python: 3.7
        env:
            - PYDM_CHANNEL=pcds-tag
            - BUILD=1
      - python: 3.7
+       env: PYDM_CHANNEL=None
 
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -37,17 +40,31 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda install conda-build anaconda-client
   - conda update -q conda conda-build
-  - conda config --add channels $PYDM_CHANNEL 
   - conda config --append channels pcds-tag
   - conda config --append channels conda-forge
   # Useful for debugging any issues with conda
   - conda info -a
-  # Grab all dependencies
-  - conda build -q conda-recipe --python=$TRAVIS_PYTHON_VERSION --output-folder bld-dir
-  - conda config --add channels "file://`pwd`/bld-dir"
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION typhon --file dev-requirements.txt
-  # Launch Conda environment
-  - source activate test-environment
+  - |
+    # Install all dependencies via CONDA
+    if [[ $PYDM_CHANNEL != "None" ]]; then
+      conda config --add channels $PYDM_CHANNEL
+      # Use the recipe contained inside the repository to build packcage
+      conda build -q conda-recipe --python=$TRAVIS_PYTHON_VERSION --output-folder bld-dir
+      # Install package with development dependencies
+      conda config --add channels "file://`pwd`/bld-dir"
+      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION typhon --file dev-requirements.txt
+      # Launch Conda environment
+      source activate test-environment
+    # Install all dependencies via PIP
+    else
+      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip
+      # Launch Conda environment
+      source activate test-environment
+      # Install package
+      python setup.py install
+      # Add our dependencies
+      pip install -r dev-requirements.txt
+    fi
   # Setup some path environment variables for epics
   - export PATH=$PATH:$EPICS_BASE/bin/$EPICS_HOST_ARCH
   - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$EPICS_BASE/lib/$EPICS_HOST_ARCH"
