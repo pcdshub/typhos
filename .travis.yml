@@ -8,7 +8,7 @@ addons:
     apt:
       packages:
         - herbstluftwm
-
+        - libxkbcommon-x11-0
 env:
   global:
     - OFFICIAL_REPO="pcdshub/typhon"
