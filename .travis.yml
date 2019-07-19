@@ -63,7 +63,7 @@ install:
       # Install package
       python setup.py install
       # Add our dependencies
-      pip install git+https://github.com/pcdshub/happi.git -r dev-requirements.txt
+      pip install git+https://github.com/pcdshub/happi.git PyQt5 -r dev-requirements.txt
     fi
   # Setup some path environment variables for epics
   - export PATH=$PATH:$EPICS_BASE/bin/$EPICS_HOST_ARCH
