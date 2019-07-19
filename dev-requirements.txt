@@ -1,7 +1,6 @@
 codecov
 doctr
 flake8
-happi
 ipython
 matplotlib
 pytest
