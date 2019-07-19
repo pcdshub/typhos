@@ -1,5 +1,6 @@
 import os
 import pathlib
+import subprocess
 import tempfile
 
 from qtpy.QtCore import QRect
@@ -7,6 +8,7 @@ from qtpy.QtGui import QPaintEvent
 from qtpy.QtWidgets import QWidget, QMessageBox
 from ophyd import Device, Component as Cpt, Kind
 import pytest
+import simplejson as json
 
 import typhon
 from typhon.utils import (use_stylesheet, clean_name, grab_kind,
@@ -48,11 +50,19 @@ def test_grab_kind(motor):
     assert len(grab_kind(motor, 'omitted')) == omitted
 
 
-conda_prefix = os.getenv("CONDA_PREFIX")
+# Check to see that we were installed via CONDA. If not, we can not expect the
+# PYQTDESIGNERPATH variable to have been configured correctly
+try:
+    channel = json.loads(subprocess.check_output(['conda',
+                                                  'list',
+                                                  'typhon',
+                                                  '--json']))[0]['channel']
+    is_conda_installed = channel != 'pypi'
+except Exception:
+    is_conda_installed = False
 
 
-@pytest.mark.skipif(not (conda_prefix and
-                         typhon.__file__.startswith(conda_prefix)),
+@pytest.mark.skipif(not is_conda_installed,
                     reason='Package not installed via CONDA')
 def test_qtdesigner_env():
     assert 'etc/typhon' in os.getenv('PYQTDESIGNERPATH', '')
