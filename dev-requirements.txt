@@ -1,7 +1,6 @@
 codecov
 doctr
 flake8
-happi
 ipython
 matplotlib
 pytest
@@ -9,3 +8,4 @@ pytest-qt
 pytest-timeout
 sphinx
 sphinx_rtd_theme
+simplejson

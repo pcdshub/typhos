@@ -45,12 +45,18 @@ environment variables will be setup in such a way that the Typhon widgets will
 immediately be available in the `QtDesigner`. Otherwise, see the
 ``typhon_env.sh`` script contained in the ``etc`` folder of this repository.
 
+`happi` is an optional dependency but is recommended. This must be installed
+manually if not using the CONDA recipe.
+
 ### Qt Installation
 There have been some observed inconsistencies between installations of `Qt`
 available on `pip`, `defaults` and `conda-forge`. It is recommended that if you
 want to use the full `typhon` feature to install via `conda-forge`. We have
 found this the most reliable, especially when it comes to using the
-`QtDesigner`.
+`QtDesigner`. It is worth noting that since this library uses `qtpy` as an
+interface layer to the various options for Qt Python bindings, the bare
+requirements will not install a specific one for you. The testing suite runs
+using `PyQt5`.
 
 ## Getting Started
 Creating your first ``typhon`` panel for an``ophyd.Device`` only takes two
