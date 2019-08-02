@@ -81,6 +81,7 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         self.layout().setContentsMargins(0, 0, 0, 0)
         # Load template
         self.load_template()
+        self._embedded_height = 150
 
     @property
     def current_template(self):
@@ -117,6 +118,34 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         if getattr(self, 'devices', []):
             return self.devices[0].name
         return ''
+
+    @Property(str)
+    def embedded_template(self):
+        """Embedded template"""
+        return self.templates[self.TemplateEnum.embedded_screen.name]
+
+    @embedded_template.setter
+    def embedded_template(self, template):
+        self._set_template(self.TemplateEnum.embedded_screen.name, template)
+
+    @Property(str)
+    def detailed_template(self):
+        """Detailed template"""
+        return self.templates[self.TemplateEnum.detailed_screen.name]
+
+    @detailed_template.setter
+    def detailed_template(self, template):
+        self._set_template(self.TemplateEnum.detailed_screen.name, template)
+
+    @Property(str)
+    def engineering_template(self):
+        """Engineering template"""
+        return self.templates[self.TemplateEnum.engineering_screen.name]
+
+    @engineering_template.setter
+    def engineering_template(self, template):
+        return self._set_template(self.TemplateEnum.engineering_screen.name,
+                                  template)
 
     def load_template(self, macros=None):
         """
@@ -253,3 +282,13 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'], macros=value['md'])
+
+    def _set_template(self, template_type, value):
+        """Helper function for template type setters"""
+        # Add our new template if valid and is different than the current
+        if value and self.templates[template_type] != value:
+            self.templates[template_type] = value
+            # If we are currently using the old template we will need to
+            # redraw with the new one
+            if self.TemplateEnum(self._display_type).name == template_type:
+                self.load_template()
