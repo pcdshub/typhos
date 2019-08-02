@@ -43,16 +43,8 @@ def test_device_display(device, motor, qtbot):
     return panel
 
 
-def test_display_without_md(motor, display):
-    # Add a generic motor
-    display.add_device(motor)
-    assert display.devices[0] == motor
-    assert display.current_template == display.templates['detailed_screen']
-
-
 def test_display_with_md(motor, display):
     display.load_template(macros={'detailed_screen': 'tst.ui'})
-    assert display.current_template == 'tst.ui'
     assert display.templates['detailed_screen'] == 'tst.ui'
 
 
@@ -99,7 +91,31 @@ def test_display_device_name_property(motor, display):
 def test_display_with_py_file(display):
     py_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                            'utils/display.py')
-    display.templates['detailed_screen'] = py_file
+    display.force_template = py_file
     display.load_template()
     assert isinstance(display._main_widget, Display)
     assert getattr(display._main_widget, 'is_from_test_file', False)
+
+
+@pytest.mark.parametrize('display_type',
+                         tuple(TyphonDeviceDisplay.TemplateEnum))
+def test_display_template_property_getters(display, display_type):
+    attr = display_type.name.replace('screen', 'template')
+    template = getattr(display, attr)
+    assert template == display.templates[display_type.name]
+
+
+@pytest.mark.parametrize('display_type',
+                         tuple(TyphonDeviceDisplay.TemplateEnum))
+def test_display_template_property_setters(display, display_type):
+    attr = display_type.name.replace('screen', 'template')
+    setattr(display, attr, 'tst.ui')
+    assert display.templates[display_type.name] == 'tst.ui'
+
+
+def test_display_template_change(display):
+    display.display_type = display.embedded_screen
+    new_template = display.templates['engineering_screen']
+    display.embedded_template = new_template
+    assert display.current_template == new_template
+    assert display._main_widget.ui_filename() == new_template
