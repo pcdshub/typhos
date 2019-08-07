@@ -1,11 +1,12 @@
 from enum import Enum
 import logging
 import os.path
+import warnings
 
 from pydm import Display
 from pydm.utilities.display_loading import load_py_file
 
-from qtpy.QtCore import Property, Slot, Q_ENUMS
+from qtpy.QtCore import Property, Slot, Q_ENUMS, QSize
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
 from .utils import (ui_dir, TyphonBase, clear_layout,
@@ -70,7 +71,8 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         self._forced_template = ''
         self._last_macros = dict()
         self._main_widget = None
-        self._display_type = DisplayTypes.detailed_screen
+        self._embedded_size = QSize(300, 300)
+        self._engineering_size = QSize(600, 600)
         self.templates = dict((_typ.name, os.path.join(ui_dir,
                                                        _typ.name + '.ui'))
                               for _typ in self.TemplateEnum)
@@ -81,7 +83,6 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         self.layout().setContentsMargins(0, 0, 0, 0)
         # Load template
         self.load_template()
-        self._embedded_height = 150
 
     @property
     def current_template(self):
@@ -89,19 +90,20 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         if self._forced_template:
             return self._forced_template
         # Search in the last macros, maybe our device told us what to do
-        template_key = self.TemplateEnum(self._display_type).name
+        template_key = self.TemplateEnum(self.display_type).name
         return self.templates[template_key]
 
-    @Property(DisplayTypes)
+    @Property(DisplayTypes, designable=False)
     def display_type(self):
-        return self._display_type
+        """Current DisplayType based on the size of the widget"""
+        return self._display_for_size(self.size())
 
     @display_type.setter
     def display_type(self, value):
-        # Store our new value
-        if self._display_type != value:
-            self._display_type = value
-            self.load_template(macros=self._last_macros)
+        warnings.warn("display_type is no longer set explicitly. Instead it "
+                      "is a funciton of the current size of the widget and "
+                      "the ``embedded_size`` and ``engineering_size`` "
+                      "properties")
 
     @Property(str, designable=False)
     def device_class(self):
@@ -253,6 +255,32 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         # Reload template
         self.load_template(macros=macros)
 
+    @Property(QSize)
+    def engineering_size(self):
+        """The minimum size to use the engineering template mode"""
+        return self._engineering_size
+
+    @engineering_size.setter
+    def engineering_size(self, value):
+        if self._engineering_size != value:
+            display_type = self.display_type
+            self._engineering_size = value
+            if display_type != self.display_type:
+                self.load_template()
+
+    @Property(QSize)
+    def embedded_size(self):
+        """The maximum size to use the embedded template mode"""
+        return self._embedded_size
+
+    @embedded_size.setter
+    def embedded_size(self, value):
+        if self._embedded_size != value:
+            display_type = self.display_type
+            self._embedded_size = value
+            if display_type != self.display_type:
+                self.load_template()
+
     @classmethod
     def from_device(cls, device, template=None, macros=None):
         """
@@ -290,5 +318,38 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             self.templates[template_type] = value
             # If we are currently using the old template we will need to
             # redraw with the new one
-            if self.TemplateEnum(self._display_type).name == template_type:
+            if self.TemplateEnum(self.display_type).name == template_type:
                 self.load_template()
+
+    def _display_for_size(self, size):
+        """Proper DisplayType for provided size"""
+        # If we have no size information assume detailed
+        if size.isEmpty():
+            return DisplayTypes.detailed_screen
+        # If the embedded size is larger than the current size
+        # Arranged to be False for empty embedded_size
+        elif (size - self._embedded_size).isEmpty():
+            return DisplayTypes.embedded_screen
+        # If we are larger than the engineering size
+        # Arranged to be False for empty engineering_size
+        elif (self._engineering_size - size).isEmpty():
+            return DisplayTypes.engineering_screen
+        else:
+            return DisplayTypes.detailed_screen
+
+    def resizeEvent(self, event):
+        """If our resizeEvent crosses a barrier of screen type, redraw"""
+        super().resizeEvent(event)
+        # Add some hysteresis based on the direction of the resizing. This is
+        # to prevent flashing screen approach the boundaries
+        hysteresis = 50
+        current_size = event.size()
+        # If our old size is larger in either direction we are shrinking
+        if (current_size - event.oldSize()).isValid():
+            current_size += QSize(hysteresis, hysteresis)
+        else:
+            current_size += QSize(-hysteresis, -hysteresis)
+        if (self._display_for_size(current_size) !=
+            self._display_for_size(event.oldSize())
+           ):
+            self.load_template()

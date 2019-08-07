@@ -1,11 +1,11 @@
 import os.path
 
 import pytest
+from qtpy.QtCore import QSize
 
 from pydm import Display
 from typhon import TyphonDeviceDisplay
 from typhon.utils import clean_attr
-
 from .conftest import show_widget
 
 
@@ -48,10 +48,16 @@ def test_display_with_md(motor, display):
     assert display.templates['detailed_screen'] == 'tst.ui'
 
 
-def test_display_type_change(display):
-    # Changing template type changes template
-    display.display_type = display.embedded_screen
-    assert display.current_template == display.templates['embedded_screen']
+def test_display_enlarge_to_engineering(display):
+    display.resize(display.engineering_size + QSize(100, 100))
+    assert display.display_type == display.engineering_screen
+    assert display.current_template == display.engineering_template
+
+
+def test_display_shrink_to_embedded_size(display):
+    display.resize(display._embedded_size - QSize(50, 50))
+    assert display.display_type == display.embedded_screen
+    assert display.current_template == display.embedded_template
 
 
 def test_display_modified_templates(display, motor):
@@ -111,11 +117,3 @@ def test_display_template_property_setters(display, display_type):
     attr = display_type.name.replace('screen', 'template')
     setattr(display, attr, 'tst.ui')
     assert display.templates[display_type.name] == 'tst.ui'
-
-
-def test_display_template_change(display):
-    display.display_type = display.embedded_screen
-    new_template = display.templates['engineering_screen']
-    display.embedded_template = new_template
-    assert display.current_template == new_template
-    assert display._main_widget.ui_filename() == new_template
