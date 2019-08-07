@@ -2,6 +2,7 @@ import os.path
 
 import pytest
 
+from pydm import Display
 from typhon import TyphonDeviceDisplay
 from typhon.utils import clean_attr
 
@@ -93,3 +94,12 @@ def test_display_device_name_property(motor, display):
     assert display.device_name == ''
     display.add_device(motor)
     assert display.device_name == motor.name
+
+
+def test_display_with_py_file(display):
+    py_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           'utils/display.py')
+    display.templates['detailed_screen'] = py_file
+    display.load_template()
+    assert isinstance(display._main_widget, Display)
+    assert getattr(display._main_widget, 'is_from_test_file', False)
