@@ -139,18 +139,16 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             logger.debug("Clearing existing layout ...")
             clear_layout(self.layout())
         # Assemble our macros
-        macros = macros or dict()
+        self._last_macros = macros or self._last_macros
         for display_type in self.templates:
-            value = macros.get(display_type)
+            value = self._last_macros.get(display_type)
             if value:
                 logger.debug("Found new template %r for %r",
                              value, display_type)
                 self.templates[display_type] = value
-        # Store macros
-        self._last_macros = macros
         try:
             self._main_widget = Display(ui_filename=self.current_template,
-                                        macros=macros)
+                                        macros=self._last_macros)
             # Add device to all children widgets
             if self.devices:
                 designer = (self._main_widget.findChildren(TyphonDesignerMixin)
