@@ -3,6 +3,8 @@ import logging
 import os.path
 
 from pydm import Display
+from pydm.utilities.display_loading import load_py_file
+
 from qtpy.QtCore import Property, Slot, Q_ENUMS
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
@@ -147,8 +149,18 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
                              value, display_type)
                 self.templates[display_type] = value
         try:
-            self._main_widget = Display(ui_filename=self.current_template,
-                                        macros=self._last_macros)
+            logger.debug("Loading %s", self.current_template)
+            ext = os.path.splitext(self.current_template)[1]
+            # Support Python files
+            if ext == '.py':
+                logger.debug("Loading as a Python file ...")
+                self._main_widget = load_py_file(self.current_template,
+                                                 macros=self._last_macros)
+            # Otherwise assume you have given use a UI file
+            else:
+                logger.debug("Loading as a Qt Designer file ...")
+                self._main_widget = Display(ui_filename=self.current_template,
+                                            macros=self._last_macros)
             # Add device to all children widgets
             if self.devices:
                 designer = (self._main_widget.findChildren(TyphonDesignerMixin)
@@ -157,7 +169,7 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
                          or [])
                 for widget in set(bases + designer):
                     widget.add_device(self.devices[0])
-        except (FileNotFoundError, IsADirectoryError):
+        except Exception:
             logger.exception("Unable to load file %r", self.current_template)
             self._main_widget = QWidget()
         finally:
