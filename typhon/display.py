@@ -153,7 +153,7 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
             ext = os.path.splitext(self.current_template)[1]
             # Support Python files
             if ext == '.py':
-                logger.debug("Loading as a Python file ...")
+                logger.debug("Loading %r as a Python file ...", self.current_template)
                 self._main_widget = load_py_file(self.current_template,
                                                  macros=self._last_macros)
             # Otherwise assume you have given use a UI file
