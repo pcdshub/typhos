@@ -22,13 +22,16 @@ from pydm import PyDMApplication
 ###########
 import typhon
 from typhon.plugins.happi import register_client
-
+from typhon.utils import TyphonBase
 
 logger = logging.getLogger(__name__)
 
 # Global testing variables
 show_widgets = False
 application = None
+
+# Path TyphonConsole on TyphonSuite
+typhon.TyphonSuite.default_tools['Console'] = TyphonBase
 
 
 def pytest_addoption(parser):
