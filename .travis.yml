@@ -25,11 +25,11 @@ matrix:
        env: PYDM_CHANNEL=pydm-dev
      - python: 3.6
        env: PYDM_CHANNEL=pip
-     - python: 3.7
+     - python: 3.7.3  # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
        env:
            - PYDM_CHANNEL=pcds-tag
            - BUILD=1
-     - python: 3.7
+     - python: 3.7.3  # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
        env: PYDM_CHANNEL=pip
 
 install:

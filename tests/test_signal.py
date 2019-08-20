@@ -57,7 +57,6 @@ def test_panel_creation(qtbot):
     panel.layout().itemAtPosition(0, 1).layout().count() == 2
     panel.layout().itemAtPosition(1, 1).layout().count() == 2
     panel.layout().itemAtPosition(3, 1).layout().count() == 2
-    return panel
 
 
 def test_panel_add_enum(qtbot):
@@ -75,7 +74,6 @@ def test_panel_add_enum(qtbot):
     but_layout = panel.layout().itemAtPosition(loc1, 1)
     assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
                       PyDMEnumComboBox)
-    return panel
 
 
 def test_add_dead_signal(qtbot):
