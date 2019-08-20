@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.4.0a0+15.gee75ca2 documentation</title>
+  <title>typhon.display &mdash; Typhon 0.4.0a0+24.g4508e66 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.4.0a0+15.gee75ca2
+                0.4.0a0+24.g4508e66
               </div>
             
           
@@ -165,6 +165,8 @@
 <span class="kn">import</span> <span class="nn">os.path</span>
 
 <span class="kn">from</span> <span class="nn">pydm</span> <span class="k">import</span> <span class="n">Display</span>
+<span class="kn">from</span> <span class="nn">pydm.utilities.display_loading</span> <span class="k">import</span> <span class="n">load_py_file</span>
+
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Q_ENUMS</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span>
 
@@ -301,18 +303,27 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing existing layout ...&quot;</span><span class="p">)</span>
             <span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span>
         <span class="c1"># Assemble our macros</span>
-        <span class="n">macros</span> <span class="o">=</span> <span class="n">macros</span> <span class="ow">or</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span> <span class="o">=</span> <span class="n">macros</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span>
         <span class="k">for</span> <span class="n">display_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">macros</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">display_type</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">display_type</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found new template </span><span class="si">%r</span><span class="s2"> for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
                              <span class="n">value</span><span class="p">,</span> <span class="n">display_type</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="c1"># Store macros</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span> <span class="o">=</span> <span class="n">macros</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span> <span class="o">=</span> <span class="n">Display</span><span class="p">(</span><span class="n">ui_filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">,</span>
-                                        <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">)</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># Support Python files</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.py&#39;</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">%r</span><span class="s2"> as a Python file ...&quot;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span> <span class="o">=</span> <span class="n">load_py_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">,</span>
+                                                 <span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">)</span>
+            <span class="c1"># Otherwise assume you have given use a UI file</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading as a Qt Designer file ...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span> <span class="o">=</span> <span class="n">Display</span><span class="p">(</span><span class="n">ui_filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">,</span>
+                                            <span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">)</span>
             <span class="c1"># Add device to all children widgets</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
                 <span class="n">designer</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphonDesignerMixin</span><span class="p">)</span>
@@ -321,7 +332,7 @@
                          <span class="ow">or</span> <span class="p">[])</span>
                 <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">bases</span> <span class="o">+</span> <span class="n">designer</span><span class="p">):</span>
                     <span class="n">widget</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">IsADirectoryError</span><span class="p">):</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to load file </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_template</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
         <span class="k">finally</span><span class="p">:</span>
