@@ -30,7 +30,8 @@ logger = logging.getLogger(__name__)
 show_widgets = False
 application = None
 
-# Path TyphonConsole on TyphonSuite
+# Patch TyphonConsole on TyphonSuite. Creation of more than one QtConsole
+# quicky in the test suite causes instabilities
 typhon.TyphonSuite.default_tools['Console'] = TyphonBase
 
 
