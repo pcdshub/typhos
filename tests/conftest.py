@@ -22,13 +22,17 @@ from pydm import PyDMApplication
 ###########
 import typhon
 from typhon.plugins.happi import register_client
-
+from typhon.utils import TyphonBase
 
 logger = logging.getLogger(__name__)
 
 # Global testing variables
 show_widgets = False
 application = None
+
+# Patch TyphonConsole on TyphonSuite. Creation of more than one QtConsole
+# quicky in the test suite causes instabilities
+typhon.TyphonSuite.default_tools['Console'] = TyphonBase
 
 
 def pytest_addoption(parser):
