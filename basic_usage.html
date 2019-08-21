@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How it Works &mdash; Typhon 0.4.0a0+24.g4508e66 documentation</title>
+  <title>How it Works &mdash; Typhon 0.4.0a0+27.ge595fb2 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.4.0a0+24.g4508e66
+                0.4.0a0+27.ge595fb2
               </div>
             
           
@@ -305,16 +305,15 @@ Out[4]: {'fields': ['motor']}
 # Important signals, all hints will be found here as well
 In [5]: motor.read()
 Out[5]: 
-OrderedDict([('motor', {'value': 0, 'timestamp': 1566317917.498479}),
-             ('motor_setpoint',
-              {'value': 0, 'timestamp': 1566317917.4984775})])
+OrderedDict([('motor', {'value': 0, 'timestamp': 1566405775.8460875}),
+             ('motor_setpoint', {'value': 0, 'timestamp': 1566405775.846086})])
 
 # Configuration information
 In [6]: motor.read_configuration()
 Out[6]: 
-OrderedDict([('motor_velocity', {'value': 1, 'timestamp': 1566317917.4988394}),
+OrderedDict([('motor_velocity', {'value': 1, 'timestamp': 1566405775.846456}),
              ('motor_acceleration',
-              {'value': 1, 'timestamp': 1566317917.498898})])</pre>
+              {'value': 1, 'timestamp': 1566405775.846518})])</pre>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonSignalPanel</span></code> will render these, allowing us to select a subset
 of the signals to display based on their kind. Below both the <code class="docutils literal notranslate"><span class="pre">QtDesigner</span></code>
 using <code class="docutils literal notranslate"><span class="pre">happi</span></code> and the corresponding <code class="docutils literal notranslate"><span class="pre">Python</span></code> code is shown as well:</p>
