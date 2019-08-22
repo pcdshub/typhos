@@ -10,7 +10,7 @@ EPICS is a flexible and powerful controls system to access to experimental
 information, however, the relation and meaning of process variables is often
 obscure. Many of the user interfaces for EPICS information reflect this, as
 walls of buttons and flashing lights bombard the user with little thought to
-structure or cohesion. 
+structure or cohesion.
 
 Typhon addresses this by providing an automated way to generate screens based
 on a provided hierarchy of devices and signals. Built using PyDM, a PyQt based
@@ -68,7 +68,7 @@ from qtpy.QtWidgets import QApplication
 import typhon
 
 # Create our application
-app = QApplication([])
+app = QApplication.instance() or QApplication([b'typhon'])
 typhon.use_stylesheet()  # Optional
 suite = typhon.TyphonSuite.from_device(motor)
 
@@ -92,7 +92,7 @@ operator to view all of the loaded components and tools
 applications. While you may have other GUIs for these systems,
 ``typhon.tools`` are built especially to handle the handshaking between all the
 information stored on your device and the tool you are interfacing with. This
-saves your operator clicks and ensures consistency in use. 
+saves your operator clicks and ensures consistency in use.
 
 ### Initialization Pattern
 All three of the widgets listed above share a similar API for creation.
@@ -103,7 +103,7 @@ arguments. The reason for this is to ensure that we can use all of the
 ``ophyd.Device`` you can always populate the screens by hand. If you do in fact
 have an ``ophyd.Device`` every class has an ``add_device`` method and
 alternatively and be constructed using the ``from_device`` classmethod.
- 
+
 ## Related Projects
 [**PyDM**](https://github.com/slaclab/pydm) - PyQT Display Manager for EPICS information
 
