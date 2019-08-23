@@ -4,7 +4,8 @@ from happi import Client
 from happi.loader import from_container
 from happi.errors import SearchError
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
-from qtpy.QtCore import Signal
+
+from pydm.data_store import DataKeys
 
 _client = None
 logger = logging.getLogger(__name__)
@@ -23,53 +24,35 @@ def register_client(client):
 
 class HappiConnection(PyDMConnection):
     """A PyDMConnection to the Happi Database"""
-    tx = Signal(dict)
 
     def __init__(self, channel, address, protocol=None, parent=None):
+        # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
-        self.add_listener(channel)
-
-    def add_listener(self, channel):
-        """Add a new channel to the existing connection"""
-        super().add_listener(channel)
-        # Connect our channel to the signal
-        self.tx.connect(channel.tx_slot)
         logger.debug("Loading %r from happi Client", channel)
-        if '.' in self.address:
-            device, child = self.address.split('.', 1)
-        else:
-            device, child = self.address, None
-        # Load the device from the Client
-        md = _client.find_device(name=device)
-        obj = from_container(md)
-        md = md.post()
-        # If we have a child grab it
-        if child:
-            logger.debug("Retrieving child %r from %r",
-                         child, obj.name)
-            obj = getattr(obj, child)
-            md = {'name': obj.name}
-        # Send the device and metdata to all of our subscribers
-        self.tx.emit({'obj': obj, 'md': md})
-
-    def remove_listener(self, channel, destroying=False, **kwargs):
-        """Remove a channel from the database connection"""
-        super().remove_listener(channel, destroying=destroying, **kwargs)
-        if not destroying:
-            self.tx.disconnect(channel.tx_slot)
-
-
-class HappiPlugin(PyDMPlugin):
-    protocol = 'happi'
-    connection_class = HappiConnection
-
-    def add_connection(self, channel):
-        # If we haven't made a Client by the time we need the Plugin. Try
-        # and load one from configuration file
-        if not _client:
-            register_client(Client.from_config())
+        # Default channel information
+        self.data = {DataKeys.CONNECTION: False,
+                     DataKeys.WRITE_ACCESS: False,
+                     'metadata': dict(),
+                     'object': None}
         try:
-            super().add_connection(channel)
+            # If we haven't made a Client by the time we need the Plugin. Try
+            # and load one from configuration file
+            if not _client:
+                register_client(Client.from_config())
+            if '.' in self.address:
+                device, child = self.address.split('.', 1)
+            else:
+                device, child = self.address, None
+            # Load the device from the Client
+            md = _client.find_device(name=device)
+            obj = from_container(md)
+            md = md.post()
+            # If we have a child grab it
+            if child:
+                logger.debug("Retrieving child %r from %r",
+                             child, obj.name)
+                obj = getattr(obj, child)
+                md = {'name': obj.name}
         except SearchError:
             logger.error("Unable to find device for %r in happi database.",
                          channel)
@@ -78,3 +61,14 @@ class HappiPlugin(PyDMPlugin):
                              exc, channel.address)
         except Exception:
             logger.exception("Unable to load %r from happi", channel.address)
+        else:
+            self.data['object'] = obj
+            self.data['metadata'] = md
+            self.data[DataKeys.CONNECTION] = True
+        finally:
+            self.send_to_channel()
+
+
+class HappiPlugin(PyDMPlugin):
+    protocol = 'happi'
+    connection_class = HappiConnection
