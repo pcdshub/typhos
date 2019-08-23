@@ -7,13 +7,12 @@ import logging
 # External #
 ############
 import qtawesome as qta
-from qtpy.QtCore import Property, QSize, Qt, Signal, Slot, QObject
+from qtpy.QtCore import Property, QSize, Qt, Signal, Slot
 from qtpy.QtWidgets import (QAction, QPushButton, QVBoxLayout, QWidget,
                             QToolBar, QDockWidget, QDialog)
 from pydm.widgets import (PyDMLabel, PyDMEnumComboBox, PyDMLineEdit,
                           PyDMWaveformPlot, PyDMImageView)
 from pydm.widgets.base import PyDMWidget
-from pydm.widgets.channel import PyDMChannel
 from pyqtgraph.parametertree import parameterTypes as ptypes
 
 ###########
@@ -202,34 +201,6 @@ class SubDisplay(QDockWidget):
         super().closeEvent(evt)
 
 
-class HappiChannel(PyDMChannel, QObject):
-    """
-    PyDMChannel to transport Device Information
-
-    Parameters
-    ----------
-    tx_slot: callable
-        Slot on widget to accept a dictionary of both the device and metadata
-        information
-    """
-    def __init__(self, *, tx_slot, **kwargs):
-        super().__init__(**kwargs)
-        QObject.__init__(self)
-        self._tx_slot = tx_slot
-        self._last_md = None
-
-    @Slot(dict)
-    def tx_slot(self, value):
-        """Transmission Slot"""
-        # Do not fire twice for the same device
-        if not self._last_md or self._last_md != value['md']:
-            self._last_md = value['md']
-            self._tx_slot(value)
-        else:
-            logger.debug("HappiChannel %r received same device. "
-                         "Ignoring for now ...", self)
-
-
 class TyphonDesignerMixin(PyDMWidget):
     # Unused properties that we don't want visible in designer
     alarmSensitiveBorder = Property(bool, designable=False)
@@ -238,35 +209,15 @@ class TyphonDesignerMixin(PyDMWidget):
     precision = Property(int, designable=False)
     showUnits = Property(bool, designable=False)
 
-    @Property(str)
-    def channel(self):
-        """The channel address to use for this widget"""
-        if self._channel:
-            return str(self._channel)
-        return None
-
-    @channel.setter
-    def channel(self, value):
-        if self._channel != value:
-            # Remove old connection
-            if self._channels:
-                self._channels.clear()
-                for channel in self._channels:
-                    if hasattr(channel, 'disconnect'):
-                        channel.disconnect()
-            # Load new channel
-            self._channel = str(value)
-            channel = HappiChannel(address=self._channel,
-                                   tx_slot=self._tx)
-            self._channels = [channel]
-            # Connect the channel to the HappiPlugin
-            if hasattr(channel, 'connect'):
-                channel.connect()
-
-    @Slot(object)
-    def _tx(self, value):
+    def _receive_data(self, data=None, introspection=None, *args, **kwargs):
         """Receive information from happi channel"""
-        self.add_device(value['obj'])
+        # Store any of the default PyDM information
+        super()._receive_data(data=data, introspection=introspection,
+                              *args, **kwargs)
+        data = data or {}
+        # If we have a device add it
+        if data.get('object') and data['object'] not in self.devices:
+            self.add_device(data['object'])
 
 
 class SignalDialogButton(QPushButton):

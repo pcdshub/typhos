@@ -5,7 +5,7 @@ import os.path
 from pydm import Display
 from pydm.utilities.display_loading import load_py_file
 
-from qtpy.QtCore import Property, Slot, Q_ENUMS
+from qtpy.QtCore import Property, Q_ENUMS
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
 from .utils import (ui_dir, TyphonBase, clear_layout,
@@ -249,7 +249,12 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
         display.add_device(device, macros=macros)
         return display
 
-    @Slot(object)
-    def _tx(self, value):
+    def _receive_data(self, data=None, introspection=None, *args, **kwargs):
         """Receive information from happi channel"""
-        self.add_device(value['obj'], macros=value['md'])
+        # Store any of the default PyDM information
+        super()._receive_data(data=data, introspection=introspection,
+                              *args, **kwargs)
+        data = data or {}
+        # If we have a device add it
+        if data.get('object') and data['object'] not in self.devices:
+            self.add_device(data['object'], macros=data.get('metadata', {}))
