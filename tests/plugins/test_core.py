@@ -1,118 +1,116 @@
 ############
 # Standard #
 ############
-
 ############
 # External #
 ############
 import numpy as np
 from ophyd import Signal
 from pydm.widgets import PyDMLineEdit
-from qtpy.QtWidgets import QWidget
+from pydm.utilities import close_widget_connections
+import pytest
 
 ###########
 # Package #
 ###########
-from ..conftest import DeadSignal, RichSignal
-from typhon.plugins.core import (SignalPlugin, SignalConnection,
-                                 register_signal)
+from typhon.plugins.core import register_signal, signal_registry
 
 
-def test_signal_connection(qapp, qtbot):
-    # Create a signal and attach our listener
-    sig = Signal(name='my_signal', value=1)
-    register_signal(sig)
+@pytest.fixture(scope='function')
+def widget_and_signal(qtbot):
+    signal = Signal(name='my_signal', value=0)
+    register_signal(signal)
+    # This is a patch to get around some issues regarding the callbacks of
+    # Signal. The software signal will never trigger connection callbacks,
+    # and initializing the signal with a  value will not trigger a callback
+    # either. It has been determined that changes need to be made to Ophyd to
+    # make this not the case and it is not Typhon's responsibility. Therefore,
+    # we patch our Signal as if it had sent out callbacks on connection and
+    # first value update
+    signal._args_cache['meta'] = ((), {'connected': True,
+                                       'write_access': True})
+    signal.put(1)
     widget = PyDMLineEdit()
     qtbot.addWidget(widget)
     widget.channel = 'sig://my_signal'
-    listener = widget.channels()[0]
-    # If PyDMChannel can not connect, we need to connect it ourselves
-    # In PyDM > 1.5.0 this will not be neccesary as the widget will be
-    # connected after we set the channel name
-    if not hasattr(listener, 'connect'):
-        qapp.establish_widget_connections(widget)
-    # Check that our widget receives the initial value
-    qapp.processEvents()
+    yield widget, signal
+    close_widget_connections(widget)
+    # Pop the signal from the registry manually as the garbage collector for
+    # some reason does not remove it between tests
+    signal_registry.pop(signal.name)
+
+
+@pytest.mark.parametrize('with_monitor', [False, True])
+def test_signal_connection(qtbot, widget_and_signal, with_monitor):
+    widget, signal = widget_and_signal
+    # If we have seen a monitor update from the Signal the code does not need
+    # to manually update. This option tests both the forced update and
+    # subscription update routes
+    if with_monitor:
+        signal.put(2)
+    qtbot.waitUntil(lambda: widget.value == signal.value, 2000)
     assert widget._write_access
     assert widget._connected
-    assert widget.value == 1
-    # Check that we can push values back to the signal which in turn causes the
-    # internal value at the widget to update
-    widget.send_value_signal[int].emit(2)
-    qapp.processEvents()
-    qapp.processEvents()  # Must be called twice. Multiple rounds of signals
-    assert sig.get() == 2
-    assert widget.value == 2
-    # Try changing types
-    qapp.processEvents()
-    qapp.processEvents()  # Must be called twice. Multiple rounds of signals
-    # In PyDM > 1.5.0 we will not need the application to disconnect the
-    # widget, but until then we have to check for the attribute
-    if hasattr(listener, 'disconnect'):
-        listener.disconnect()
-    else:
-        qapp.close_widget_connections(widget)
-    # Check that our signal is disconnected completely and maintains the same
-    # value as the signal updates in the background
-    sig.put(3)
-    qapp.processEvents()
-    assert widget.value == 2
-    widget.send_value_signal.emit(1)
-    qapp.processEvents()
-    assert sig.get() == 3
 
 
-def test_metadata(qapp, qtbot):
-    widget = PyDMLineEdit()
-    qtbot.addWidget(widget)
-    widget.channel = 'sig://md_signal'
-    listener = widget.channels()[0]
-    # Create a signal and attach our listener
-    sig = RichSignal(name='md_signal', value=1)
-    register_signal(sig)
-    sig_conn = SignalConnection(listener, 'md_signal')
-    qapp.processEvents()
-    # Check that metadata the metadata got there
+def test_repeated_connection(widget_and_signal, qtbot):
+    widget, signal = widget_and_signal
+    widget2 = PyDMLineEdit(init_channel=f'sig://{signal.name}')
+    qtbot.addWidget(widget2)
+    try:
+        assert widget2._connected
+        assert widget2._write_access
+        assert widget2.value == signal.value
+    finally:
+        close_widget_connections(widget2)
+
+def test_signal_disconnection(widget_and_signal):
+    widget, signal = widget_and_signal
+    close_widget_connections(widget)
+    assert len(signal._callbacks['value']) == 0
+    assert len(signal._callbacks['meta']) == 0
+
+
+def test_signal_widget_write_to_signal(qtbot, widget_and_signal):
+    widget, signal = widget_and_signal
+    assert widget._write_access
+    widget.write_to_channel(2)
+    qtbot.waitUntil(lambda: signal.value == 2, 2000)
+
+
+def test_signal_connection_metadata(qtbot, widget_and_signal):
+    widget, signal = widget_and_signal
+    signal._run_subs(sub_type=signal.SUB_META, connected=True,
+                     write_acccess=False, enum_strs=('a', 'b', 'c'),
+                     units='urad', precision=2, severity=1,
+                     lower_ctrl_limit=-100, upper_ctrl_limit=100)
+    qtbot.waitUntil(lambda: widget.enum_strings == ('a', 'b', 'c'), 2000)
     assert widget.enum_strings == ('a', 'b', 'c')
     assert widget._unit == 'urad'
     assert widget._prec == 2
+    assert widget._alarm_state == 1
+    assert widget._lower_ctrl_limit == -100
+    assert widget._upper_ctrl_limit == 100
 
 
-def test_disconnection(qtbot):
+def test_nonexistant_widget(qtbot):
+    signal = Signal(name='disconnected')
+    register_signal(signal)
     widget = PyDMLineEdit()
     qtbot.addWidget(widget)
-    widget.channel = 'sig://invalid'
-    listener = widget.channels()[0]
-    plugin = SignalPlugin()
-    # Non-existant signal doesn't raise an error
-    plugin.add_connection(listener)
-    # Create a signal that will raise a TimeoutError
-    sig = DeadSignal(name='broken_signal', value=1)
-    register_signal(sig)
-    listener.address = 'sig://broken_signal'
-    # This should fail on the subscribe
-    plugin.add_connection(listener)
-    # This should fail on the get
-    sig.subscribable = True
-    sig_conn = SignalConnection(listener, 'broken_signal')
+    widget.channel = 'sig://disconnected'
+    assert not widget._connected
+    # We did not connect, but we subscribed so future connections will update
+    # the user interface
+    assert not widget._connected
+    assert len(signal._callbacks['meta']) == 1
 
 
-def test_array_signal_send_value(qapp, qtbot):
-    sig = Signal(name='my_array', value=np.ones(4))
-    register_signal(sig)
-    widget = PyDMLineEdit()
-    qtbot.addWidget(widget)
-    widget.channel = 'sig://my_array'
-    qapp.processEvents()
-    assert all(widget.value == np.ones(4))
-
-
-def test_array_signal_put_value(qapp, qtbot):
-    sig = Signal(name='my_array_write', value=np.ones(4))
-    register_signal(sig)
-    widget = PyDMLineEdit()
-    qtbot.addWidget(widget)
-    widget.channel = 'sig://my_array_write'
-    widget.send_value_signal[np.ndarray].emit(np.zeros(4))
-    qapp.processEvents()
-    assert all(sig.value == np.zeros(4))
+@pytest.mark.parametrize('value', ('True', 1, 3.14, np.ones(4)))
+def test_signal_send_value_with_all_types(widget_and_signal, qtbot, value):
+    widget, signal = widget_and_signal
+    signal.put(value)
+    if type(value) is np.ndarray:
+        qtbot.waitUntil(lambda: all(widget.value == value), 3000)
+    else:
+        qtbot.waitUntil(lambda: widget.value == value, 3000)
