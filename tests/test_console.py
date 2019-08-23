@@ -17,7 +17,6 @@ def test_base_console(qtbot):
     tc.shutdown()
 
 
-@show_widget
 @pytest.mark.timeout(30)
 @pytest.mark.xfail
 def test_add_device(qapp, qtbot):
@@ -35,4 +34,4 @@ def test_add_device(qapp, qtbot):
         qapp.processEvents()
     # Smoke test not happi Device
     tc.add_device(types.SimpleNamespace(hi=3))
-    return tc
+    tc.shutdown()
