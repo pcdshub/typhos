@@ -1,52 +1,62 @@
 import importlib
 import sys
-import types
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
-from happi import Device
 import pytest
 
 import typhon
 import typhon.plugins
-from typhon.plugins.happi import HappiPlugin
-from typhon.widgets import HappiChannel
+from typhon.widgets import TyphonDesignerMixin
+from typhon.utils import TyphonBase
 
 
-def test_connection(client):
-    hp = HappiPlugin()
-    # Register a channel and check we received object and metadata
-    mock = Mock()
-    hc = HappiChannel(address='happi://test_device', tx_slot=mock)
-    hp.add_connection(hc)
-    assert mock.called
-    tx = mock.call_args[0][0]
-    assert isinstance(tx['obj'], types.SimpleNamespace)
-    assert isinstance(tx['md'], dict)
-    # Add another object and check that the connection does refire
-    mock2 = Mock()
-    hc2 = HappiChannel(address='happi://test_device', tx_slot=mock2)
-    hp.add_connection(hc2)
-    assert mock2.called
-    mock.assert_called_once()
-    # Disconnect
-    hp.remove_connection(hc)
-    hp.remove_connection(hc2)
-    assert hp.connections == {}
+class TyphonDeviceWidget(TyphonBase, TyphonDesignerMixin):
+    """Mock widget that tracks devices"""
+    def __init__(self, **kwargs):
+        self._md = list()
+        super().__init__(**kwargs)
+
+    def _receive_data(self, data=None, *args, **kwargs):
+        super()._receive_data(data=data, *args, **kwargs)
+        data = data or {}
+        if data.get('metadata'):
+            self._md.append(data['metadata'])
 
 
-def test_connection_for_child(client):
-    hp = HappiPlugin()
-    mock = Mock()
-    hc = HappiChannel(address='happi://test_motor.setpoint', tx_slot=mock)
-    hp.add_connection(hc)
-    tx = mock.call_args[0][0]
-    assert tx['obj'].name == 'test_motor_setpoint'
+def test_connection(qtbot, client):
+    widget = TyphonDeviceWidget()
+    qtbot.addWidget(widget)
+    widget.channel = 'happi://test_device'
+    qtbot.waitUntil(lambda : widget._connected, 2000)
+    assert widget.devices[0].name == 'test_device'
+    assert widget._md[0]['name'] == 'test_device'
 
 
-def test_bad_address_smoke(client):
-    hp = HappiPlugin()
-    hc = HappiChannel(address='happi://not_a_device', tx_slot=lambda x: None)
-    hp.add_connection(hc)
+def test_repeated_connection(qtbot, client):
+    widget = TyphonDeviceWidget()
+    qtbot.addWidget(widget)
+    widget.channel = 'happi://test_device'
+    widget2 = TyphonDeviceWidget()
+    qtbot.addWidget(widget2)
+    widget2.channel = 'happi://test_device'
+    assert len(widget.devices) == 1
+    assert len(widget2.devices) == 1
+
+
+def test_connection_for_child(qtbot, client):
+    widget = TyphonDeviceWidget()
+    qtbot.addWidget(widget)
+    widget.channel = 'happi://test_motor.setpoint'
+    qtbot.waitUntil(lambda : widget._connected, 2000)
+    assert widget.devices[0].name == 'test_motor_setpoint'
+    assert widget._md[0]['name'] == 'test_motor_setpoint'
+
+
+def test_bad_address(qtbot, client):
+    widget = TyphonDeviceWidget()
+    qtbot.addWidget(widget)
+    widget.channel = 'happi://not_a_device'
+    assert widget._connected == False
 
 
 def test_happi_is_optional():
