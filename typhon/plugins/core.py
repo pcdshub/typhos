@@ -1,15 +1,16 @@
+from collections.abc import Iterable
 import logging
-
+import threading
+from weakref import WeakValueDictionary
 import numpy as np
-from ophyd.utils.epics_pvs import _type_map
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
-from qtpy.QtCore import Slot, Qt
+from pydm.data_store import DataKeys
 
 from ..utils import raise_to_operator
 
 logger = logging.getLogger(__name__)
 
-signal_registry = dict()
+signal_registry = WeakValueDictionary()
 
 
 def register_signal(signal):
@@ -44,52 +45,25 @@ class SignalConnection(PyDMConnection):
     signal : ophyd.Signal
         Stored signal object
     """
-    supported_types = [int, float, str, np.ndarray]
-
     def __init__(self, channel, address, protocol=None, parent=None):
+        self._md_cid = None
+        self._val_cid = None
+        self._has_seen_value = threading.Event()
+        # Collect our signal
+        try:
+            self.signal = signal_registry[address]
+        except KeyError:
+            logger.debug("Signal with name %r not found in signal registry!",
+                         address)
+            return
         # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
-        self.signal_type = None
-        # Collect our signal
-        self.signal = signal_registry[address]
-        # Subscribe to updates from Ophyd
-        self._cid = self.signal.subscribe(self.send_new_value,
-                                          event_type=self.signal.SUB_VALUE)
-        # Add listener
-        self.add_listener(channel)
+        # Subscribe to the metadata state
+        self._md_cid = self.signal.subscribe(self.send_new_metadata,
+                                             event_type=self.signal.SUB_META,
+                                             run=True)
 
-    def cast(self, value):
-        """
-        Cast a value to the correct Python type based on ``signal_type``
-
-        If ``signal_type`` is not set, the result of ``ophyd.Signal.describe``
-        is used to determine what the correct Python type for value is. We need
-        to be aware of the correct Python type so that we can emit the value
-        through the correct signal and convert values returned by the widget to
-        the correct type before handing them to Ophyd Signal
-        """
-        # If this is the first time we are receiving a new value note the type
-        # We make the assumption that signals do not change types during a
-        # connection
-        if not self.signal_type:
-            dtype = self.signal.describe()[self.signal.name]['dtype']
-            # Only way this raises a KeyError is if ophyd is confused
-            self.signal_type = _type_map[dtype][0]
-            logger.debug("Found signal type %r for %r. Using Python type %r",
-                         dtype, self.signal.name, self.signal_type)
-
-        logger.debug("Casting %r to %r", value, self.signal_type)
-        if self.signal_type is np.ndarray:
-            value = np.asarray(value)
-        else:
-            value = self.signal_type(value)
-        return value
-
-    @Slot(int)
-    @Slot(float)
-    @Slot(str)
-    @Slot(np.ndarray)
-    def put_value(self, new_val):
+    def receive_from_channel(self, payload):
         """
         Pass a value from the UI to Signal
 
@@ -97,116 +71,83 @@ class SignalConnection(PyDMConnection):
         if they are created. We attempt to cast the received value into the
         reported type of the signal unless it is of type ``np.ndarray``
         """
-        try:
-            new_val = self.cast(new_val)
-            logger.debug("Putting value %r to %r", new_val, self.address)
-            self.signal.put(new_val)
-        except Exception as exc:
-            logger.exception("Unable to put %r to %s", new_val, self.address)
-            raise_to_operator(exc)
+        logger.debug("Putting %r to %r", payload, self.address)
+        if self.data.get(DataKeys.WRITE_ACCESS, False):
+            try:
+                new_val = payload[DataKeys.VALUE]
+                self.signal.put(new_val)
+            except Exception as exc:
+                logger.exception("Unable to put %r to %s",
+                                 payload,
+                                 self.address)
+                raise_to_operator(exc)
+        else:
+            logger.error("%r does not have write privileges",
+                         self.signal.name)
 
     def send_new_value(self, value=None, **kwargs):
         """
         Update the UI with a new value from the Signal
         """
-        try:
-            value = self.cast(value)
-            self.new_value_signal[self.signal_type].emit(value)
-        except Exception:
-            logger.exception("Unable to update %r with value %r.",
-                             self.signal.name, value)
+        # Here we make an effort to convert all arrays to be numpy arrays to
+        # ease the burden on downstream widgets
+        logger.debug("Sending value %r to %r", value, self.signal.name)
+        if isinstance(value, Iterable) and not isinstance(value, str):
+            value = np.asarray(value)
+        # Send to widget
+        self.data[DataKeys.VALUE] = value
+        self.send_to_channel()
+        self._has_seen_value.set()
 
-    def add_listener(self, channel):
-        """
-        Add a listener channel to this connection
-
-        This attaches values input by the user to the `send_new_value` function
-        in order to update the Signal object in addition to the default setup
-        performed in PyDMConnection
-        """
-        # Perform the default connection setup
-        logger.debug("Adding %r ...", channel)
-        super().add_listener(channel)
-        # Report as no-alarm state
-        self.new_severity_signal.emit(0)
-        try:
-            # Gather the current value
-            signal_val = self.signal.get()
-            # Gather metadata
-            signal_desc = self.signal.describe()[self.signal.name]
-        except Exception:
-            logger.exception("Failed to gather proper information "
-                             "from signal %r to initialize %r",
-                             self.signal.name, channel)
-            return
-        # Report as connected
-        self.write_access_signal.emit(True)
-        self.connection_state_signal.emit(True)
-        # Report metadata
-        for (field, signal) in (
-                    ('precision', self.prec_signal),
-                    ('enum_strs', self.enum_strings_signal),
-                    ('units', self.unit_signal)):
-            # Check if we have metadata to send for field
-            val = signal_desc.get(field)
-            # If so emit it to our listeners
-            if val:
-                signal.emit(val)
-        # Report new value
-        self.send_new_value(signal_val)
-        # If the channel is used for writing to PVs, hook it up to the
-        # 'put' methods.
-        if channel.value_signal is not None:
-            for _typ in self.supported_types:
-                try:
-                    val_sig = channel.value_signal[_typ]
-                    val_sig.connect(self.put_value, Qt.QueuedConnection)
-                except KeyError:
-                    logger.debug("%s has no value_signal for type %s",
-                                 channel.address, _typ)
-
-    def remove_listener(self, channel, destroying=False, **kwargs):
-        """
-        Remove a listener channel from this connection
-
-        This removes the `send_new_value` connections from the channel in
-        addition to the default disconnection performed in PyDMConnection
-        """
-        logger.debug("Removing %r ...", channel)
-        # Disconnect put_value from outgoing channel
-        if channel.value_signal is not None and not destroying:
-            for _typ in self.supported_types:
-                try:
-                    channel.value_signal[_typ].disconnect(self.put_value)
-                except (KeyError, TypeError):
-                    logger.debug("Unable to disconnect value_signal from %s "
-                                 "for type %s", channel.address, _typ)
-        # Disconnect any other signals
-        super().remove_listener(channel, destroying=destroying, **kwargs)
-        logger.debug("Successfully removed %r", channel)
+    def send_new_metadata(self, connected=False, write_access=False,
+                          severity=0, precision=0, enum_strs=None, units=None,
+                          upper_ctrl_limit=None, lower_ctrl_limit=None,
+                          **kw):
+        """Send metadata from the Signal to the widget"""
+        # We always need to send the connection and access states
+        self.data[DataKeys.CONNECTION] = connected
+        self.data[DataKeys.WRITE_ACCESS] = write_access
+        # For other keys, only send them if we see them
+        for md, key in ((severity, DataKeys.SEVERITY),
+                        (precision, DataKeys.PRECISION),
+                        (enum_strs, DataKeys.ENUM_STRINGS),
+                        (units, DataKeys.UNIT),
+                        (upper_ctrl_limit, DataKeys.UPPER_LIMIT),
+                        (lower_ctrl_limit, DataKeys.LOWER_LIMIT)):
+            # If we received a value, include in our packet
+            if md:
+                self.data[key] = md
+        # If we just connected for the first time.
+        if self._val_cid is None and connected:
+            logger.debug("Initial connection of %r, subscribing to value",
+                         self.address)
+            self._val_cid = self.signal.subscribe(
+                                            self.send_new_value,
+                                            event_type=self.signal.SUB_VALUE,
+                                            run=True)
+            # If we did not fire the callback by subscribing we need to
+            # manually ship out the information
+            if not self._has_seen_value.is_set():
+                self.send_to_channel()
+        else:
+            # Send our new metadata to the world
+            logger.debug("Sending md %r", self.data)
+            self.send_to_channel()
 
     def close(self):
         """Unsubscribe from the Ophyd signal"""
-        self.signal.unsubscribe(self._cid)
+        logger.debug("Closing all subscriptions to %r for %r",
+                     self.signal, self.address)
+        # Knock off all of the subs
+        if self._val_cid is not None:
+            self.signal.unsubscribe(self._val_cid)
+        if self._md_cid is not None:
+            self.signal.unsubscribe(self._md_cid)
+        # Perfrom basic PyDMConnection cleanup
+        super().close()
 
 
 class SignalPlugin(PyDMPlugin):
     """Plugin registered with PyDM to handle SignalConnection"""
     protocol = 'sig'
     connection_class = SignalConnection
-
-    def add_connection(self, channel):
-        """Add a connection to a channel"""
-        try:
-            # Add a PyDMConnection for the channel
-            super().add_connection(channel)
-        # There is a chance that we raise an Exception on creation. If so,
-        # don't add this to our list of good to go connections. The next
-        # attempt we try again.
-        except KeyError:
-            logger.error("Unable to find signal for %r in signal registry."
-                         "Use typhon.plugins.register_signal()",
-                         channel)
-        except Exception:
-            logger.exception("Unable to create a connection to %r",
-                             channel)
