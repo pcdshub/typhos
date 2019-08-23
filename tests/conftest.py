@@ -113,11 +113,8 @@ class RichSignal(Signal):
 class DeadSignal(Signal):
     subscribable = False
 
-    def subscribe(self, *args, **kwargs):
-        if self.subscribable:
-            pass
-        else:
-            raise TimeoutError("Timeout on subscribe")
+    def wait_for_connection(self, *args, **kwargs):
+        raise TimeoutError("Timeout on wait_for_connection")
 
     def get(self, *args, **kwargs):
         raise TimeoutError("Timeout on get")
