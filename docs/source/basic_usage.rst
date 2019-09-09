@@ -179,7 +179,7 @@ loaded.
 
     # Launch
     suite.show()
-    app._exec()
+    app.exec_()
 
 
 Using the StyleSheet
