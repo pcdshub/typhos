@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How it Works &mdash; Typhon 0.4.0a0+31.g40c9303 documentation</title>
+  <title>How it Works &mdash; Typhon 0.4.0a0+33.gacf9513 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.4.0a0+31.g40c9303
+                0.4.0a0+33.gacf9513
               </div>
             
           
@@ -305,15 +305,16 @@ Out[4]: {'fields': ['motor']}
 # Important signals, all hints will be found here as well
 In [5]: motor.read()
 Out[5]: 
-OrderedDict([('motor', {'value': 0, 'timestamp': 1566607131.5495942}),
-             ('motor_setpoint', {'value': 0, 'timestamp': 1566607131.549593})])
+OrderedDict([('motor', {'value': 0, 'timestamp': 1568063067.559753}),
+             ('motor_setpoint',
+              {'value': 0, 'timestamp': 1568063067.5597517})])
 
 # Configuration information
 In [6]: motor.read_configuration()
 Out[6]: 
-OrderedDict([('motor_velocity', {'value': 1, 'timestamp': 1566607131.549964}),
+OrderedDict([('motor_velocity', {'value': 1, 'timestamp': 1568063067.5601132}),
              ('motor_acceleration',
-              {'value': 1, 'timestamp': 1566607131.550025})])</pre>
+              {'value': 1, 'timestamp': 1568063067.5601614})])</pre>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">TyphonSignalPanel</span></code> will render these, allowing us to select a subset
 of the signals to display based on their kind. Below both the <code class="docutils literal notranslate"><span class="pre">QtDesigner</span></code>
 using <code class="docutils literal notranslate"><span class="pre">happi</span></code> and the corresponding <code class="docutils literal notranslate"><span class="pre">Python</span></code> code is shown as well:</p>
@@ -367,7 +368,7 @@ loaded.</p>
 
 <span class="c1"># Launch</span>
 <span class="n">suite</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-<span class="n">app</span><span class="o">.</span><span class="n">_exec</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
