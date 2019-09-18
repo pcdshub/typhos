@@ -63,18 +63,19 @@ Creating your first ``typhon`` panel for an``ophyd.Device`` only takes two
 lines:
 
 ```python
+import sys
 from ophyd.sim import motor
 from qtpy.QtWidgets import QApplication
 import typhon
 
 # Create our application
-app = QApplication.instance() or QApplication([b'typhon'])
+app = QApplication.instance() or QApplication(sys.argv)
 typhon.use_stylesheet()  # Optional
 suite = typhon.TyphonSuite.from_device(motor)
 
 # Launch
 suite.show()
-app._exec()
+app.exec_()
 ```
 
 ## Available Widgets
