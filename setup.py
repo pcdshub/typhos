@@ -10,7 +10,7 @@ requirements = [r for r in requirements if not r.startswith('git+')]
 print("User must install the following packages manually:\n" +
       "\n".join(f' {r}' for r in git_requirements))
 
-setup(name='typhon',
+setup(name='typhos',
       version=versioneer.get_version(),
       cmdclass=versioneer.get_cmdclass(),
       author='SLAC National Accelerator Laboratory',
@@ -18,4 +18,4 @@ setup(name='typhon',
       include_package_data=True,
       install_requires=requirements,
       description='Interface generation for ophyd devices',
-      entry_points={'console_scripts': ['typhon=typhon.cli:main']})
+      entry_points={'console_scripts': ['typhos=typhos.cli:main', 'typhon=typhos.cli:main']})
