@@ -11,7 +11,7 @@ addons:
         - libxkbcommon-x11-0
 env:
   global:
-    - OFFICIAL_REPO="pcdshub/typhon"
+    - OFFICIAL_REPO="pcdshub/typhos"
     - secure: "jizHV6LAxLhtQu2GEjUYitGYd8PLv1RSoYt9/NftBRgm958YGNQkDiI+Gw8A6QydgJUYLEHumzGm5/abqqIZkwL3eKDV4obZkuazwyDt6Ueymhp1v/Le1rCXCDGaMEvCHmIq2Bn79+9y0KOBBF7zQKqHw80LMNHbOfA4eM/vsWYfR6LOhGzte4FEeAdFtM0+cJr38v3Rk92q1ghez5EElDUQfEsphraIYGn9N/ayqjGt4TKokxITj6gG46wrIK80TXGn3N5qDgin247QlVk7stPqUDMi5bVIP8/fWDkXGtE05IJSKTzIwvxd4ngoBxVJreJ9XhDBDx3sfvImifWQYidEbszqxlq1i1k9+3TjDooEP9FrUU5+XLjbyA2EiRFypvgcFtVisE+4L+/XO5Lg6sARPJrPXCigO2geGVIH+tmrIsu2UqDV3NMCTMxF9CyDFG/JF5HKKx1bC0SmGUYjvxxvmyDbmt8g/ES5KVFavsKDO22m00WzRUXUB+5zVHdxhMNFnSBK0unrP/j1GwTIHw1bZqWdgnL0IPK3df0w1ZZ92esVVqq4HsN6j57N3DnUKBmIeBLKYEFDBRP/a7yiFB/Q2WOO2kVKcATeVcNhxiwBamd5VpEi9qoQpXPWyBVUpXxpSBq7T0LXbT85SBlspjY4e4m33K9HHjHIU5bFxW0="
 
 matrix:
@@ -52,7 +52,7 @@ install:
       conda build -q conda-recipe --python=$TRAVIS_PYTHON_VERSION --output-folder bld-dir
       # Install package with development dependencies
       conda config --add channels "file://`pwd`/bld-dir"
-      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION typhon --file dev-requirements.txt
+      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION typhos --file dev-requirements.txt
       # Launch Conda environment
       source activate test-environment
     # Install all dependencies via PIP
@@ -79,12 +79,12 @@ script:
   - coverage run run_tests.py --show-capture=no
   - coverage report -m
     #- coverage report -m
-  - flake8 typhon
+  - flake8 typhos
   # Test again but with installed version
   - mkdir notest
-  - mv typhon/*.* notest
+  - mv typhos/*.* notest
   - python run_tests.py --show-capture=no
-  - mv notest/* typhon
+  - mv notest/* typhos
   - rmdir notest
   # Build docs
   - set -e

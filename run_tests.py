@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     print('pytest arguments: {}'.format(args))
 
-    typhon_logger = logging.getLogger('typhon')
+    typhos_logger = logging.getLogger('typhos')
     pydm_logger = logging.getLogger('pydm')
     log_dir = Path(os.path.dirname(__file__)) / 'logs'
     log_file = log_dir / 'run_tests_log.txt'
@@ -41,7 +41,7 @@ if __name__ == '__main__':
                                        '%(message)s'),
                                   datefmt='%H:%M:%S')
     handler.setFormatter(formatter)
-    for log in (typhon_logger, pydm_logger):
+    for log in (typhos_logger, pydm_logger):
         log.setLevel(logging.DEBUG)
         log.addHandler(handler)
 

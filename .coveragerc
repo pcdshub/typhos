@@ -1,6 +1,6 @@
 [run]
 source =
-    typhon 
+    typhos
 [report]
 omit =
     #tests
