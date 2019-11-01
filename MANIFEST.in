@@ -1,4 +1,4 @@
 include versioneer.py
-include typhon/_version.py
-include typhon/ui/*.ui
-include typhon/ui/style.qss
+include typhos/_version.py
+include typhos/ui/*.ui
+include typhos/ui/style.qss
