@@ -1,3 +1,3 @@
-print("Importing Typhon QtDesigner plugins ...")
-from typhon.designer import *
+print("Importing Typhos QtDesigner plugins ...")
+from typhos.designer import *
 

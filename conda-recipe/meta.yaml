@@ -1,7 +1,7 @@
 {% set data = load_setup_py_data() %}
 
 package:
-    name    : typhon
+    name    : typhos
     version : {{ data.get('version') }}
 
 source:
@@ -30,12 +30,13 @@ requirements:
 
 test:
     imports:
+      - typhos
       - typhon
 
     requires: 
       - pytest
 
 about:
-  home: https://github.com/pcdshub/typhon
+  home: https://github.com/pcdshub/typhos
   license: SLAC Open License
   summary: Automatic User Interface Creation from Ophyd Devices
