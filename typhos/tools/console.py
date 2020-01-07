@@ -9,7 +9,7 @@ from qtpy.QtWidgets import QApplication, QHBoxLayout
 from qtconsole.rich_jupyter_widget import RichJupyterWidget
 from qtconsole.manager import QtKernelManager
 
-from ..utils import TyphosBase, make_identifier, warn_renamed
+from ..utils import TyphosBase, make_identifier
 
 logger = logging.getLogger(__name__)
 
@@ -121,4 +121,3 @@ except ImportError:
 
     TyphosConsole.add_device = add_device
 
-TyphonConsole = warn_renamed(TyphosConsole, 'TyphonConsole')

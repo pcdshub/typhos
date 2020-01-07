@@ -1,19 +1,18 @@
 """
 Utility functions for typhos
 """
+import collections
+import importlib.util
 ############
 # Standard #
 ############
 import io
-import importlib.util
-import pathlib
-import re
 import logging
 import os.path
+import pathlib
 import random
+import re
 import traceback
-import collections
-import warnings
 
 ############
 # External #
@@ -33,37 +32,6 @@ logger = logging.getLogger(__name__)
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
-
-
-def warn_renamed(klass, old_name):
-    """
-    Generate a subclass from `klass` with warning messages about deprecation.
-
-    Parameters
-    ----------
-    klass : type
-        The new class type
-    old_name : str
-        The deprecated class name
-
-    Returns
-    -------
-    subclass : type
-        The new class that is a subclass of `klass` and will emit warnings
-        if used.
-    """
-    def _warn_init(self, *args, **kwargs):
-        warnings.warn(f"The {old_name} class is renamed '{klass.__name__}'",
-                      DeprecationWarning, stacklevel=2)
-        super(klass, self).__init__(*args, **kwargs)
-
-    def _warn_init_subclass(cls, **kwargs):
-        warnings.warn(f"The {old_name} class is renamed '{klass.__name__}'",
-                      DeprecationWarning, stacklevel=2)
-        super(klass, cls).__init_subclass__(**kwargs)
-
-    subclass = type(old_name, (klass,), {'__init__': _warn_init, '__init_subclass__': _warn_init_subclass})
-    return subclass
 
 
 def channel_from_signal(signal):
@@ -253,7 +221,6 @@ class TyphosBase(QWidget):
         instance = cls(parent=parent, **kwargs)
         instance.add_device(device)
         return instance
-
 
 
 def make_identifier(name):

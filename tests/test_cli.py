@@ -10,7 +10,6 @@ def test_cli_version(capsys):
     typhon_cli(['--version'])
     readout = capsys.readouterr()
     assert typhon.__version__ in readout.out
-    assert typhon.__file__ in readout.out
 
 
 def test_cli_happi_cfg(monkeypatch, qtbot, happi_cfg):
@@ -34,7 +33,7 @@ def test_cli_no_entry(monkeypatch, qtbot, happi_cfg):
 def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
     with open('test.qss', 'w+') as handle:
-        handle.write("TyphonDeviceDisplay {qproperty-force_template: 'test.ui'}")
+        handle.write("TyphonDeviceDisplay, TyphosDeviceDisplay {qproperty-force_template: 'test.ui'}")
     style = qapp.styleSheet()
     window = typhon_cli(['test_motor', '--stylesheet', 'test.qss',
                         '--happi-cfg', happi_cfg])

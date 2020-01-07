@@ -1,6 +1,5 @@
 __all__ = ['SignalPlugin', 'SignalConnection', 'register_signal',
-           'HappiPlugin', 'HappiConnection', 'HappiChannel',
-           'register_client']
+           'HappiPlugin', 'HappiConnection', 'register_client']
 import logging
 
 from pydm.data_plugins import add_plugin

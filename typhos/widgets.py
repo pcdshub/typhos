@@ -20,7 +20,6 @@ from pyqtgraph.parametertree import parameterTypes as ptypes
 # Package #
 ###########
 
-from .utils import warn_renamed
 
 logger = logging.getLogger(__name__)
 
@@ -97,9 +96,6 @@ class TyphosComboBox(PyDMEnumComboBox):
         return QSize(100, 30)
 
 
-TyphonComboBox = warn_renamed(TyphosComboBox, 'TyphonComboBox')
-
-
 class TyphosLineEdit(PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
@@ -113,9 +109,6 @@ class TyphosLineEdit(PyDMLineEdit):
 
     def sizeHint(self):
         return QSize(100, 30)
-
-
-TyphonLineEdit = warn_renamed(TyphosLineEdit, 'TyphonLineEdit')
 
 
 class TyphosLabel(PyDMLabel):
@@ -132,9 +125,6 @@ class TyphosLabel(PyDMLabel):
 
     def sizeHint(self):
         return QSize(100, 30)
-
-
-TyphonLabel = warn_renamed(TyphosLabel, 'TyphonLabel')
 
 
 class TyphosSidebarItem(ptypes.ParameterItem):
@@ -202,9 +192,6 @@ class TyphosSidebarItem(ptypes.ParameterItem):
         if tree is None:
             return
         tree.setItemWidget(self, 1, self.toolbar)
-
-
-TyphonSidebarItem = warn_renamed(TyphosSidebarItem, 'TyphonSidebarItem')
 
 
 class SubDisplay(QDockWidget):
@@ -281,9 +268,6 @@ class TyphosDesignerMixin(PyDMWidget):
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'])
-
-
-TyphonDesignerMixin = warn_renamed(TyphosDesignerMixin, 'TyphonDesignerMixin')
 
 
 class SignalDialogButton(QPushButton):

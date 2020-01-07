@@ -8,8 +8,7 @@ from pydm.utilities.display_loading import load_py_file
 from qtpy.QtCore import Property, Slot, Q_ENUMS
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
-from .utils import (ui_dir, TyphosBase, clear_layout,
-                    reload_widget_stylesheet, warn_renamed)
+from .utils import (ui_dir, TyphosBase, clear_layout, reload_widget_stylesheet)
 from .widgets import TyphosDesignerMixin
 
 
@@ -253,5 +252,3 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'], macros=value['md'])
-
-TyphonDeviceDisplay = warn_renamed(TyphosDeviceDisplay, 'TyphonDeviceDisplay')

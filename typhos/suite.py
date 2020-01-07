@@ -18,7 +18,7 @@ from qtpy.QtWidgets import (QDockWidget, QHBoxLayout, QVBoxLayout, QWidget,
 ###########
 from .display import TyphosDeviceDisplay
 from .utils import (clean_name, TyphosBase, flatten_tree, raise_to_operator,
-                    save_suite, saved_template, warn_renamed)
+                    save_suite, saved_template)
 from .widgets import TyphosSidebarItem, SubDisplay
 from .tools import TyphosTimePlot, TyphosLogDisplay, TyphosConsole
 
@@ -432,5 +432,3 @@ class TyphosSuite(TyphosBase):
             parameter.sigEmbed.connect(partial(self.embed_subdisplay,
                                                parameter))
         return parameter
-
-TyphonSuite = warn_renamed(TyphosSuite, 'TyphonSuite')

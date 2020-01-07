@@ -18,8 +18,7 @@ from qtpy.QtWidgets import (QComboBox, QPushButton, QLabel, QVBoxLayout,
 ##########
 # Module #
 ##########
-from ..utils import (channel_from_signal, clean_attr, clean_name, TyphosBase,
-                     warn_renamed)
+from ..utils import (channel_from_signal, clean_attr, clean_name, TyphosBase)
 
 logger = logging.getLogger(__name__)
 
@@ -160,5 +159,3 @@ class TyphosTimePlot(TyphosBase):
                         logger.exception("Unable to add %s to "
                                          "plot-able signals",
                                          component)
-
-TyphonTimePlot = warn_renamed(TyphosTimePlot, 'TyphonTimePlot')

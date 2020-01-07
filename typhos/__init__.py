@@ -1,16 +1,16 @@
 __all__ = ['use_stylesheet', 'register_signal', 'load_suite',
-           'TyphonDeviceDisplay', 'TyphosDeviceDisplay',
-           'TyphonSuite','TyphosSuite',
-           'TyphonSignalPanel','TyphosSignalPanel',
-           'TyphonPositionerWidget','TyphosPositionerWidget',
-           'TyphonMethodButton','TyphosMethodButton'
+           'TyphosDeviceDisplay',
+           'TyphosSuite',
+           'TyphosSignalPanel',
+           'TyphosPositionerWidget',
+           'TyphosMethodButton', '__version__'
            ]
 
-from .display import TyphonDeviceDisplay, TyphosDeviceDisplay
-from .func import TyphonMethodButton, TyphosMethodButton
-from .suite import TyphonSuite, TyphosSuite
-from .signal import TyphonSignalPanel, TyphosSignalPanel
-from .positioner import TyphonPositionerWidget, TyphosPositionerWidget
+from .display import TyphosDeviceDisplay
+from .func import TyphosMethodButton
+from .suite import TyphosSuite
+from .signal import TyphosSignalPanel
+from .positioner import TyphosPositionerWidget
 from .utils import use_stylesheet, load_suite
 from .plugins import register_signal
 from ._version import get_versions

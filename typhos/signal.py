@@ -17,7 +17,7 @@ from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 #  Package  #
 #############
 from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
-                    is_signal_ro, TyphosBase, warn_renamed)
+                    is_signal_ro, TyphosBase)
 from .widgets import (TyphosLineEdit, TyphosComboBox, TyphosLabel,
                       TyphosDesignerMixin, ImageDialogButton,
                       WaveformDialogButton, SignalDialogButton)
@@ -338,4 +338,3 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         """Default SizeHint"""
         return QSize(240, 140)
 
-TyphonSignalPanel = warn_renamed(TyphosSignalPanel, 'TyphonSignalPanel')

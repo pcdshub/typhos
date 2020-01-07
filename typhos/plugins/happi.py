@@ -6,7 +6,10 @@ from happi.errors import SearchError
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
 from qtpy.QtCore import Signal
 
-_client = None
+
+class HappiClientState:
+    client = None
+
 logger = logging.getLogger(__name__)
 
 
@@ -17,8 +20,7 @@ def register_client(client):
     This is not required to be called by the user, if your environment is setup
     such that ``happi.Client.from_config`` will return the desired client
     """
-    global _client
-    _client = client
+    HappiClientState.client = client
 
 
 class HappiConnection(PyDMConnection):
@@ -40,7 +42,7 @@ class HappiConnection(PyDMConnection):
         else:
             device, child = self.address, None
         # Load the device from the Client
-        md = _client.find_device(name=device)
+        md = HappiClientState.client.find_device(name=device)
         obj = from_container(md)
         md = md.post()
         # If we have a child grab it
@@ -66,7 +68,7 @@ class HappiPlugin(PyDMPlugin):
     def add_connection(self, channel):
         # If we haven't made a Client by the time we need the Plugin. Try
         # and load one from configuration file
-        if not _client:
+        if not HappiClientState.client:
             register_client(Client.from_config())
         try:
             super().add_connection(channel)

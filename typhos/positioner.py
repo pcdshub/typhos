@@ -7,7 +7,7 @@ from qtpy.QtCore import Property, Slot
 
 from .plugins import register_signal
 from .utils import (TyphosBase, ui_dir, channel_from_signal, grab_kind,
-                    raise_to_operator, reload_widget_stylesheet, warn_renamed)
+                    raise_to_operator, reload_widget_stylesheet)
 from .status import TyphosStatusThread
 from .widgets import TyphosDesignerMixin
 
@@ -209,5 +209,3 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
                      success)
         self._last_move = success
         self.moving = False
-
-TyphonPositionerWidget = warn_renamed(TyphosPositionerWidget, 'TyphonPositionerWidget')

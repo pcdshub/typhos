@@ -76,9 +76,9 @@ def create_suite(devices, cfg=None):
     except (ImportError, ModuleNotFoundError):
         logger.exception("Unable to import happi to load devices!")
         return
-    if typhos.plugins.happi._client:
+    if typhos.plugins.happi.HappiClientState.client:
         logger.debug("Using happi Client already registered with Typhos")
-        client = typhos.plugins.happi._client
+        client = typhos.plugins.happi.HappiClientState.client
     else:
         logger.debug("Creating new happi Client from configuration")
         client = happi.Client.from_config(cfg=cfg)

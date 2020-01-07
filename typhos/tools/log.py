@@ -3,7 +3,7 @@ import logging
 from pydm.widgets.logdisplay import PyDMLogDisplay
 from qtpy.QtWidgets import QVBoxLayout
 
-from ..utils import TyphosBase, warn_renamed
+from ..utils import TyphosBase
 
 
 class TyphosLogDisplay(TyphosBase):
@@ -29,5 +29,3 @@ class TyphosLogDisplay(TyphosBase):
         else:
             device.log.setLevel(logging.NOTSET)
             device.log.addHandler(self.logdisplay.handler)
-
-TyphonLogDisplay = warn_renamed(TyphosLogDisplay, 'TyphonLogDisplay')

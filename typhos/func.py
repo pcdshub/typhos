@@ -33,7 +33,7 @@ from numpydoc import docscrape
 ###########
 # Package #
 ###########
-from .utils import clean_attr, raise_to_operator, warn_renamed
+from .utils import clean_attr, raise_to_operator
 from .widgets import TogglePanel, TyphosDesignerMixin
 from .status import TyphosStatusThread
 
@@ -610,4 +610,3 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
         instance.add_device(device)
         return instance
 
-TyphonMethodButton = warn_renamed(TyphosMethodButton, 'TyphonMethodButton')
