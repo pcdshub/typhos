@@ -1,5 +1,5 @@
 """
-Utility functions for typhon
+Utility functions for typhos
 """
 ############
 # Standard #
@@ -13,6 +13,7 @@ import os.path
 import random
 import traceback
 import collections
+import warnings
 
 ############
 # External #
@@ -32,6 +33,37 @@ logger = logging.getLogger(__name__)
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
+
+
+def warn_renamed(klass, old_name):
+    """
+    Generate a subclass from `klass` with warning messages about deprecation.
+
+    Parameters
+    ----------
+    klass : type
+        The new class type
+    old_name : str
+        The deprecated class name
+
+    Returns
+    -------
+    subclass : type
+        The new class that is a subclass of `klass` and will emit warnings
+        if used.
+    """
+    def _warn_init(self, *args, **kwargs):
+        warnings.warn(f"The {old_name} class is renamed '{klass.__name__}'",
+                      DeprecationWarning, stacklevel=2)
+        super(klass, self).__init__(*args, **kwargs)
+
+    def _warn_init_subclass(cls, **kwargs):
+        warnings.warn(f"The {old_name} class is renamed '{klass.__name__}'",
+                      DeprecationWarning, stacklevel=2)
+        super(klass, cls).__init_subclass__(**kwargs)
+
+    subclass = type(old_name, (klass,), {'__init__': _warn_init, '__init_subclass__': _warn_init_subclass})
+    return subclass
 
 
 def channel_from_signal(signal):
@@ -135,7 +167,7 @@ def clean_name(device, strip_parent=True):
 
 def use_stylesheet(dark=False, widget=None):
     """
-    Use the Typhon stylesheet
+    Use the Typhos stylesheet
 
     Parameters
     ----------
@@ -152,7 +184,7 @@ def use_stylesheet(dark=False, widget=None):
         # Load the path to the file
         style_path = os.path.join(ui_dir, 'style.qss')
         if not os.path.exists(style_path):
-            raise EnvironmentError("Unable to find Typhon stylesheet in {}"
+            raise EnvironmentError("Unable to find Typhos stylesheet in {}"
                                    "".format(style_path))
         # Load the stylesheet from the file
         with open(style_path, 'r') as handle:
@@ -173,8 +205,8 @@ def random_color():
                   random.randint(0, 255))
 
 
-class TyphonBase(QWidget):
-    """Base widget for all Typhon widgets that interface with devices"""
+class TyphosBase(QWidget):
+    """Base widget for all Typhos widgets that interface with devices"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.devices = list()
@@ -209,7 +241,7 @@ class TyphonBase(QWidget):
 
         .. code::
 
-            tool = TyphonBase(parent=parent)
+            tool = TyphosBase(parent=parent)
             tool.add_device(device)
 
         Parameters
@@ -221,6 +253,7 @@ class TyphonBase(QWidget):
         instance = cls(parent=parent, **kwargs)
         instance.add_device(device)
         return instance
+
 
 
 def make_identifier(name):
@@ -287,11 +320,11 @@ def reload_widget_stylesheet(widget, cascade=False):
 
 def save_suite(suite, file_or_buffer):
     """
-    Create a file capable of relaunching the TyphonSuite
+    Create a file capable of relaunching the TyphosSuite
 
     Parameters
     ----------
-    suite: TyphonSuite
+    suite: TyphosSuite
 
     file_or_buffer : str or file-like
         Either a path to the file or a handle that supports ``write``
@@ -301,19 +334,19 @@ def save_suite(suite, file_or_buffer):
         handle = open(file_or_buffer, 'w+')
     else:
         handle = file_or_buffer
-    logger.debug("Saving TyphonSuite contents to %r", handle)
+    logger.debug("Saving TyphosSuite contents to %r", handle)
     devices = [device.name for device in suite.devices]
     handle.write(saved_template.format(devices=devices))
 
 
 def load_suite(path, cfg=None):
     """"
-    Load a file saved via Typhon
+    Load a file saved via Typhos
 
     Parameters
     ----------
     path: str
-        Path to file describing the ``TyphonSuite``. This needs to be of the
+        Path to file describing the ``TyphosSuite``. This needs to be of the
         format created by the :meth:`.save_suite` function.
 
     cfg: str, optional
@@ -321,9 +354,9 @@ def load_suite(path, cfg=None):
         entered the ``$HAPPI_CFG`` environment variable will be used.
     Returns
     -------
-    suite: TyphonSuite
+    suite: TyphosSuite
     """
-    logger.info("Importing TyphonSuite from file %r ...", path)
+    logger.info("Importing TyphosSuite from file %r ...", path)
     module_name = pathlib.Path(path).name.replace('.py', '')
     spec = importlib.util.spec_from_file_location(module_name,
                                                   path)
@@ -338,13 +371,13 @@ def load_suite(path, cfg=None):
 
 saved_template = """\
 import sys
-import typhon.cli
+import typhos.cli
 
 devices = {devices}
 
 def create_suite(cfg=None):
-    return typhon.cli.create_suite(devices, cfg=cfg)
+    return typhos.cli.create_suite(devices, cfg=cfg)
 
 if __name__ == '__main__':
-    typhon.cli.typhon_cli(devices + sys.argv[1:])
+    typhos.cli.typhos_cli(devices + sys.argv[1:])
 """

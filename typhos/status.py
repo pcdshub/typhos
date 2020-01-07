@@ -5,11 +5,12 @@ from qtpy.QtCore import QThread, Signal
 
 from ophyd.status import wait as status_wait
 
+from .utils import warn_renamed
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonStatusThread(QThread):
+class TyphosStatusThread(QThread):
     """
     Parameters
     ----------
@@ -62,3 +63,5 @@ class TyphonStatusThread(QThread):
                          self.status, self.timeout)
         except RuntimeError as err:
             logger.error(err.args[0])
+
+TyphonStatusThread = warn_renamed(TyphosStatusThread, 'TyphonStatusThread')

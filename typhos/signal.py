@@ -17,9 +17,9 @@ from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 #  Package  #
 #############
 from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
-                    is_signal_ro, TyphonBase)
-from .widgets import (TyphonLineEdit, TyphonComboBox, TyphonLabel,
-                      TyphonDesignerMixin, ImageDialogButton,
+                    is_signal_ro, TyphosBase, warn_renamed)
+from .widgets import (TyphosLineEdit, TyphosComboBox, TyphosLabel,
+                      TyphosDesignerMixin, ImageDialogButton,
                       WaveformDialogButton, SignalDialogButton)
 from .plugins import register_signal
 
@@ -79,18 +79,18 @@ def signal_widget(signal, read_only=False, tooltip=None):
         # Check for enum_strs, if so create a QCombobox
         if read_only:
             logger.debug("Creating Label for %s", signal.name)
-            widget = TyphonLabel
+            widget = TyphosLabel
             name = signal.name + '_label'
         else:
             # Create a QCombobox if the widget has enum_strs
             if 'enum_strs' in desc:
                 logger.debug("Creating Combobox for %s", signal.name)
-                widget = TyphonComboBox
+                widget = TyphosComboBox
                 name = signal.name + '_combo'
             # Otherwise a LineEdit will suffice
             else:
                 logger.debug("Creating LineEdit for %s", signal.name)
-                widget = TyphonLineEdit
+                widget = TyphosLineEdit
                 name = signal.name + '_edit'
     # Waveform
     elif len(desc.get('shape')) == 1:
@@ -109,7 +109,7 @@ def signal_widget(signal, read_only=False, tooltip=None):
     widget_instance.setObjectName(name)
     if tooltip is not None:
         widget_instance.setToolTip(tooltip)
-    if dtype == 'string' and widget in (TyphonLabel, TyphonLineEdit):
+    if dtype == 'string' and widget in (TyphosLabel, TyphosLineEdit):
         widget_instance.displayFormat = DisplayFormat.String
     return widget_instance
 
@@ -231,7 +231,7 @@ class SignalOrder:
     byName = 1
 
 
-class TyphonSignalPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
+class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     """
     Panel of Signals for Device
     """
@@ -337,3 +337,5 @@ class TyphonSignalPanel(TyphonBase, TyphonDesignerMixin, SignalOrder):
     def sizeHint(self):
         """Default SizeHint"""
         return QSize(240, 140)
+
+TyphonSignalPanel = warn_renamed(TyphosSignalPanel, 'TyphonSignalPanel')

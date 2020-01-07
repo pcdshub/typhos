@@ -8,9 +8,9 @@ from pydm.utilities.display_loading import load_py_file
 from qtpy.QtCore import Property, Slot, Q_ENUMS
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
-from .utils import (ui_dir, TyphonBase, clear_layout,
-                    reload_widget_stylesheet)
-from .widgets import TyphonDesignerMixin
+from .utils import (ui_dir, TyphosBase, clear_layout,
+                    reload_widget_stylesheet, warn_renamed)
+from .widgets import TyphosDesignerMixin
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class DisplayTypes:
         return Enum('TemplateEnum', entries)
 
 
-class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
+class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -47,7 +47,7 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     do not add any methods to the main panel it will not be visible.
 
     This contains the widgets for all of the root devices signals, any methods
-    you would like to display, and an optional image. As with ``typhon``
+    you would like to display, and an optional image. As with ``typhos``
     convention, the base initialization sets up the widgets and the
     ``.from_device`` class method will automatically populate them.
 
@@ -164,9 +164,9 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
                                             macros=self._last_macros)
             # Add device to all children widgets
             if self.devices:
-                designer = (self._main_widget.findChildren(TyphonDesignerMixin)
+                designer = (self._main_widget.findChildren(TyphosDesignerMixin)
                             or [])
-                bases = (self._main_widget.findChildren(TyphonBase)
+                bases = (self._main_widget.findChildren(TyphosBase)
                          or [])
                 for widget in set(bases + designer):
                     widget.add_device(self.devices[0])
@@ -190,7 +190,7 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
 
     def add_device(self, device, macros=None):
         """
-        Add a Device and signals to the TyphonDeviceDisplay
+        Add a Device and signals to the TyphosDeviceDisplay
 
         Parameters
         ----------
@@ -227,7 +227,7 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     @classmethod
     def from_device(cls, device, template=None, macros=None):
         """
-        Create a new TyphonDeviceDisplay from a Device
+        Create a new TyphosDeviceDisplay from a Device
 
         Loads the signals in to the appropriate positions and sets the title to
         a cleaned version of the device name
@@ -253,3 +253,5 @@ class TyphonDeviceDisplay(TyphonBase, TyphonDesignerMixin, DisplayTypes):
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'], macros=value['md'])
+
+TyphonDeviceDisplay = warn_renamed(TyphosDeviceDisplay, 'TyphonDeviceDisplay')

@@ -33,9 +33,9 @@ from numpydoc import docscrape
 ###########
 # Package #
 ###########
-from .utils import clean_attr, raise_to_operator
-from .widgets import TogglePanel, TyphonDesignerMixin
-from .status import TyphonStatusThread
+from .utils import clean_attr, raise_to_operator, warn_renamed
+from .widgets import TogglePanel, TyphosDesignerMixin
+from .status import TyphosStatusThread
 
 
 logger = logging.getLogger(__name__)
@@ -508,7 +508,7 @@ class FunctionPanel(TogglePanel):
                                             widget)
 
 
-class TyphonMethodButton(QPushButton, TyphonDesignerMixin):
+class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
     """
     QPushButton to access a method of a Device
 
@@ -583,11 +583,11 @@ class TyphonMethodButton(QPushButton, TyphonDesignerMixin):
                 # button should be disabled while the status object is not
                 # done. However, it is good to catch this to make sure that we
                 # only have one active thread at a time
-                logger.debug("Removing running TyphonStatusThread!")
+                logger.debug("Removing running TyphosStatusThread!")
                 self._status_thread.terminate()
             self._status_thread = None
             logger.debug("Setting up new status thread ...")
-            self._status_thread = TyphonStatusThread(
+            self._status_thread = TyphosStatusThread(
                                           status,
                                           lag=self._min_visible_operation,
                                           timeout=self._max_allowed_operation)
@@ -600,12 +600,14 @@ class TyphonMethodButton(QPushButton, TyphonDesignerMixin):
             # be ended by the status_finished signal
             self._status_thread.finished.connect(partial(self.setEnabled,
                                                          True))
-            logger.debug("Starting TyphonStatusThread ...")
+            logger.debug("Starting TyphosStatusThread ...")
             self._status_thread.start()
 
     @classmethod
     def from_device(cls, device, parent=None):
-        """Create a TyphonMethodButton from a device"""
+        """Create a TyphosMethodButton from a device"""
         instance = cls(parent=parent)
         instance.add_device(device)
         return instance
+
+TyphonMethodButton = warn_renamed(TyphosMethodButton, 'TyphonMethodButton')

@@ -13,7 +13,7 @@ import simplejson as json
 import typhon
 from typhon.utils import (use_stylesheet, clean_name, grab_kind,
                           TyphonBase, raise_to_operator, load_suite,
-                          saved_template)
+                          saved_template, warn_renamed)
 
 class NestedDevice(Device):
     phi = Cpt(Device)
@@ -107,3 +107,32 @@ def test_load_suite(qtbot, happi_cfg):
 def test_load_suite_with_bad_py_file():
     with pytest.raises(AttributeError):
         suite = load_suite(typhon.utils.__file__)
+
+
+def test_warn_renamed():
+    class Bar:
+        ...
+
+    Foo = warn_renamed(Bar, 'Foo')
+
+    with pytest.warns(None) as record:
+        b = Bar()
+        assert len(record) == 0
+
+        assert isinstance(b, Bar)
+
+        f = Foo()
+        assert len(record) == 1
+        assert isinstance(f, Bar)
+        assert isinstance(f, Foo)
+
+        class NewClass(Foo):
+            ...
+
+        n = NewClass()
+        assert isinstance(n, NewClass)
+        assert isinstance(n, Bar)
+        assert isinstance(n, Foo)
+
+        # 3 because of the class up there and the instance below so 1+2 ;)
+        assert len(record) == 3

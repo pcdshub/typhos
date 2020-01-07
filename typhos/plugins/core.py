@@ -217,7 +217,7 @@ class SignalPlugin(PyDMPlugin):
         # attempt we try again.
         except KeyError:
             logger.error("Unable to find signal for %r in signal registry."
-                         "Use typhon.plugins.register_signal()",
+                         "Use typhos.plugins.register_signal()",
                          channel)
         except Exception:
             logger.exception("Unable to create a connection to %r",

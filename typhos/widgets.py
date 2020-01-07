@@ -20,6 +20,8 @@ from pyqtgraph.parametertree import parameterTypes as ptypes
 # Package #
 ###########
 
+from .utils import warn_renamed
+
 logger = logging.getLogger(__name__)
 
 
@@ -87,7 +89,7 @@ class TogglePanel(QWidget):
                 self.contents.hide()
 
 
-class TyphonComboBox(PyDMEnumComboBox):
+class TyphosComboBox(PyDMEnumComboBox):
     """
     Reimplementation of PyDMEnumComboBox to set some custom defaults
     """
@@ -95,7 +97,10 @@ class TyphonComboBox(PyDMEnumComboBox):
         return QSize(100, 30)
 
 
-class TyphonLineEdit(PyDMLineEdit):
+TyphonComboBox = warn_renamed(TyphosComboBox, 'TyphonComboBox')
+
+
+class TyphosLineEdit(PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
     """
@@ -110,7 +115,10 @@ class TyphonLineEdit(PyDMLineEdit):
         return QSize(100, 30)
 
 
-class TyphonLabel(PyDMLabel):
+TyphonLineEdit = warn_renamed(TyphosLineEdit, 'TyphonLineEdit')
+
+
+class TyphosLabel(PyDMLabel):
     """
     Reimplemtation of PyDMLabel to set some custom defaults
     """
@@ -126,7 +134,10 @@ class TyphonLabel(PyDMLabel):
         return QSize(100, 30)
 
 
-class TyphonSidebarItem(ptypes.ParameterItem):
+TyphonLabel = warn_renamed(TyphosLabel, 'TyphonLabel')
+
+
+class TyphosSidebarItem(ptypes.ParameterItem):
     """
     Class to display a Device or Tool in the sidebar
     """
@@ -193,6 +204,9 @@ class TyphonSidebarItem(ptypes.ParameterItem):
         tree.setItemWidget(self, 1, self.toolbar)
 
 
+TyphonSidebarItem = warn_renamed(TyphosSidebarItem, 'TyphonSidebarItem')
+
+
 class SubDisplay(QDockWidget):
     """QDockWidget modified to emit a signal when closed"""
     closing = Signal()
@@ -230,7 +244,7 @@ class HappiChannel(PyDMChannel, QObject):
                          "Ignoring for now ...", self)
 
 
-class TyphonDesignerMixin(PyDMWidget):
+class TyphosDesignerMixin(PyDMWidget):
     # Unused properties that we don't want visible in designer
     alarmSensitiveBorder = Property(bool, designable=False)
     alarmSensitiveContent = Property(bool, designable=False)
@@ -267,6 +281,9 @@ class TyphonDesignerMixin(PyDMWidget):
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'])
+
+
+TyphonDesignerMixin = warn_renamed(TyphosDesignerMixin, 'TyphonDesignerMixin')
 
 
 class SignalDialogButton(QPushButton):

@@ -65,3 +65,20 @@ TyphonPositionerWidget[moving="false"][successful_move="true"] .QFrame {
 TyphonPositionerWidget[moving="false"][failed_move="true"] .QFrame {
     border: 2px solid red;
 }
+
+
+TyphosPositionerWidget[moving="true"] .QFrame {
+    border: 2px solid yellow;
+}
+
+TyphosPositionerWidget[moving="false"] .QFrame {
+    border: 2px solid transparent;
+}
+
+TyphosPositionerWidget[moving="false"][successful_move="true"] .QFrame {
+    border: 2px solid green;
+}
+
+TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
+    border: 2px solid red;
+}

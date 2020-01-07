@@ -1,5 +1,5 @@
 """
-Typhon Plotting Interface
+Typhos Plotting Interface
 """
 ############
 # Standard #
@@ -18,12 +18,13 @@ from qtpy.QtWidgets import (QComboBox, QPushButton, QLabel, QVBoxLayout,
 ##########
 # Module #
 ##########
-from ..utils import channel_from_signal, clean_attr, clean_name, TyphonBase
+from ..utils import (channel_from_signal, clean_attr, clean_name, TyphosBase,
+                     warn_renamed)
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonTimePlot(TyphonBase):
+class TyphosTimePlot(TyphosBase):
     """
     Generalized widget for plotting Ophyd signals
 
@@ -111,7 +112,7 @@ class TyphonTimePlot(TyphonBase):
             Name of the curve to remove. This should match the name given
             during the call of :meth:`.add_curve`
         """
-        logger.debug("Removing %s from TyphonTimePlot ...", name)
+        logger.debug("Removing %s from TyphosTimePlot ...", name)
         self.timechart.remove_curve(name)
 
     @Slot()
@@ -159,3 +160,5 @@ class TyphonTimePlot(TyphonBase):
                         logger.exception("Unable to add %s to "
                                          "plot-able signals",
                                          component)
+
+TyphonTimePlot = warn_renamed(TyphosTimePlot, 'TyphonTimePlot')

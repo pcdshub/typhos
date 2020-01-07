@@ -6,16 +6,16 @@ from qtpy import uic
 from qtpy.QtCore import Property, Slot
 
 from .plugins import register_signal
-from .utils import (TyphonBase, ui_dir, channel_from_signal, grab_kind,
-                    raise_to_operator, reload_widget_stylesheet)
-from .status import TyphonStatusThread
-from .widgets import TyphonDesignerMixin
+from .utils import (TyphosBase, ui_dir, channel_from_signal, grab_kind,
+                    raise_to_operator, reload_widget_stylesheet, warn_renamed)
+from .status import TyphosStatusThread
+from .widgets import TyphosDesignerMixin
 
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
+class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
     """
     Widget to interact with an ``ophyd.Positioner``
 
@@ -84,7 +84,7 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
             logger.debug("Setting device %r to %r", self.devices[0], value)
             status = self.devices[0].set(float(value))
             logger.debug("Setting up new status thread ...")
-            self._status_thread = TyphonStatusThread(
+            self._status_thread = TyphosStatusThread(
                                         status,
                                         lag=self._min_visible_operation)
             self._status_thread.status_started.connect(self.move_changed)
@@ -200,12 +200,14 @@ class TyphonPositionerWidget(TyphonBase, TyphonDesignerMixin):
 
     def move_changed(self):
         """Called when a move is begun"""
-        logger.debug("Begin showing move in TyphonPositionerWidget")
+        logger.debug("Begin showing move in TyphosPositionerWidget")
         self.moving = True
 
     def done_moving(self, success):
         """Called when a move is complete"""
-        logger.debug("Completed move in TyphonPositionerWidget (success=%s)",
+        logger.debug("Completed move in TyphosPositionerWidget (success=%s)",
                      success)
         self._last_move = success
         self.moving = False
+
+TyphonPositionerWidget = warn_renamed(TyphosPositionerWidget, 'TyphonPositionerWidget')

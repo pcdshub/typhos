@@ -9,14 +9,14 @@ from qtpy.QtWidgets import QApplication, QHBoxLayout
 from qtconsole.rich_jupyter_widget import RichJupyterWidget
 from qtconsole.manager import QtKernelManager
 
-from ..utils import TyphonBase, make_identifier
+from ..utils import TyphosBase, make_identifier, warn_renamed
 
 logger = logging.getLogger(__name__)
 
 
-class TyphonConsole(TyphonBase):
+class TyphosConsole(TyphosBase):
     """
-    IPython Widget for Typhon Display
+    IPython Widget for Typhos Display
 
     This widget handles starting a ``JupyterKernel`` and connecting an IPython
     console in which the user can type Python commands. It is important to note
@@ -79,7 +79,7 @@ try:
         # Needs metadata
         if not hasattr(device, 'md'):
             logger.error("Device %r has no stored metadata. "
-                         "Unable to load in TyphonConsole",
+                         "Unable to load in TyphosConsole",
                          device)
             return
         # Create a temporary file
@@ -101,22 +101,24 @@ try:
             # Execute the script
             obj.kernel.kernel_client.execute(load_script, silent=True)
         except Exception:
-            logger.exception("Unable to add device %r to TyphonConsole.",
+            logger.exception("Unable to add device %r to TyphosConsole.",
                              device.md.name)
             # Cleanup after ourselves
             if os.path.exists(name):
                 os.remove(name)
 
-    # Set the TyphonConsole up to load devices
-    TyphonConsole.add_device = add_device
+    # Set the TyphosConsole up to load devices
+    TyphosConsole.add_device = add_device
 
 except ImportError:
     logger.info("Unable to import ``happi``. Devices will not be added "
-                "to the ``TyphonConsole`` unless ``TyphonConsole.add_device`` "
+                "to the ``TyphosConsole`` unless ``TyphosConsole.add_device`` "
                 "is implemented.")
 
     # Dummy pass-through function
     def add_device(obj, x):
         pass
 
-    TyphonConsole.add_device = add_device
+    TyphosConsole.add_device = add_device
+
+TyphonConsole = warn_renamed(TyphosConsole, 'TyphonConsole')

@@ -16,11 +16,11 @@ from qtpy.QtWidgets import (QDockWidget, QHBoxLayout, QVBoxLayout, QWidget,
 ###########
 # Package #
 ###########
-from .display import TyphonDeviceDisplay
-from .utils import (clean_name, TyphonBase, flatten_tree, raise_to_operator,
-                    save_suite, saved_template)
-from .widgets import TyphonSidebarItem, SubDisplay
-from .tools import TyphonTimePlot, TyphonLogDisplay, TyphonConsole
+from .display import TyphosDeviceDisplay
+from .utils import (clean_name, TyphosBase, flatten_tree, raise_to_operator,
+                    save_suite, saved_template, warn_renamed)
+from .widgets import TyphosSidebarItem, SubDisplay
+from .tools import TyphosTimePlot, TyphosLogDisplay, TyphosConsole
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class SidebarParameter(ptypes.Parameter):
     """
     Parameter to hold information for the sidebar
     """
-    itemClass = TyphonSidebarItem
+    itemClass = TyphosSidebarItem
     sigOpen = Signal(object)
     sigHide = Signal(object)
     sigEmbed = Signal(object)
@@ -41,7 +41,7 @@ class SidebarParameter(ptypes.Parameter):
 
 class DeviceParameter(SidebarParameter):
     """Parameter to hold information Ophyd Device"""
-    itemClass = TyphonSidebarItem
+    itemClass = TyphosSidebarItem
 
     def __init__(self, device, subdevices=True, **opts):
         # Set options for parameter
@@ -61,30 +61,30 @@ class DeviceParameter(SidebarParameter):
                 else:
                     child_name = clean_name(subdevice,
                                             strip_parent=subdevice.root)
-                    child_display = TyphonDeviceDisplay.from_device(subdevice)
+                    child_display = TyphosDeviceDisplay.from_device(subdevice)
                     children.append(SidebarParameter(value=child_display,
                                                      name=child_name,
                                                      embeddable=True))
         opts['children'] = children
-        super().__init__(value=TyphonDeviceDisplay.from_device(device),
+        super().__init__(value=TyphosDeviceDisplay.from_device(device),
                          embeddable=opts.pop('embeddable', True),
                          **opts)
 
 
-class TyphonSuite(TyphonBase):
+class TyphosSuite(TyphosBase):
     """
-    Complete Typhon Window
+    Complete Typhos Window
 
-    This contains all the neccesities to load tools and devices into a Typhon
+    This contains all the neccesities to load tools and devices into a Typhos
     window.
 
     Parameters
     ----------
     parent : QWidget, optional
     """
-    default_tools = {'Log': TyphonLogDisplay,
-                     'StripTool': TyphonTimePlot,
-                     'Console': TyphonConsole}
+    default_tools = {'Log': TyphosLogDisplay,
+                     'StripTool': TyphosTimePlot,
+                     'Console': TyphosConsole}
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -288,7 +288,7 @@ class TyphonSuite(TyphonBase):
 
     @property
     def tools(self):
-        """Tools loaded into the TyphonDeviceDisplay"""
+        """Tools loaded into the TyphosDeviceDisplay"""
         if 'Tools' in self.top_level_groups:
             return [param.value()
                     for param in self.top_level_groups['Tools'].childs]
@@ -296,7 +296,7 @@ class TyphonSuite(TyphonBase):
 
     def add_device(self, device, children=True, category='Devices'):
         """
-        Add a device to the ``TyphonSuite``
+        Add a device to the ``TyphosSuite``
 
         Parameters
         ----------
@@ -328,7 +328,7 @@ class TyphonSuite(TyphonBase):
     def from_device(cls, device, parent=None,
                     tools=dict(), **kwargs):
         """
-        Create a new TyphonDeviceDisplay from an ophyd.Device
+        Create a new TyphosDeviceDisplay from an ophyd.Device
 
         Parameters
         ----------
@@ -345,12 +345,12 @@ class TyphonSuite(TyphonBase):
             passed to avoid tool loading completely.
 
         kwargs:
-            Passed to :meth:`TyphonSuite.add_device`
+            Passed to :meth:`TyphosSuite.add_device`
         """
         display = cls(parent=parent)
         if tools is not None:
             if not tools:
-                logger.debug("Using default TyphonSuite tools ...")
+                logger.debug("Using default TyphosSuite tools ...")
                 tools = cls.default_tools
                 for name, tool in tools.items():
                     try:
@@ -363,7 +363,7 @@ class TyphonSuite(TyphonBase):
 
     def save(self):
         """
-        Save the TyphonSuite to a file using :meth:`typhon.utils.save_suite`
+        Save the TyphosSuite to a file using :meth:`typhos.utils.save_suite`
 
         A ``QFileDialog`` will be used to query the user for the desired
         location of the created Python file
@@ -372,16 +372,16 @@ class TyphonSuite(TyphonBase):
 
         .. code::
         """
-        logger.debug("Requesting file location for saved TyphonSuite")
+        logger.debug("Requesting file location for saved TyphosSuite")
         root_dir = os.getcwd()
-        filename = QFileDialog.getSaveFileName(self, 'Save TyphonSuite',
+        filename = QFileDialog.getSaveFileName(self, 'Save TyphosSuite',
                                                root_dir, "Python (*.py)")
         if filename:
             try:
                 with open(filename[0], 'w+') as handle:
                     save_suite(self, handle)
             except Exception as exc:
-                logger.exception("Failed to save TyphonSuite")
+                logger.exception("Failed to save TyphosSuite")
                 raise_to_operator(exc)
         else:
             logger.debug("No filename chosen")
@@ -432,3 +432,5 @@ class TyphonSuite(TyphonBase):
             parameter.sigEmbed.connect(partial(self.embed_subdisplay,
                                                parameter))
         return parameter
+
+TyphonSuite = warn_renamed(TyphosSuite, 'TyphonSuite')

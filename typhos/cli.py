@@ -1,4 +1,4 @@
-"""This module defines the ``typhon`` command line utility"""
+"""This module defines the ``typhos`` command line utility"""
 import argparse
 import logging
 import sys
@@ -6,28 +6,28 @@ import sys
 import coloredlogs
 from qtpy.QtWidgets import QApplication, QMainWindow
 
-import typhon
+import typhos
 
 logger = logging.getLogger(__name__)
 app = None
 
 # Argument Parser Setup
-parser = argparse.ArgumentParser(description='Create a TyphonSuite for '
+parser = argparse.ArgumentParser(description='Create a TyphosSuite for '
                                              'device/s stored in a Happi '
                                              'Database')
 
 parser.add_argument('devices', nargs='*',
-                    help='Device names to load in the TyphonSuite')
+                    help='Device names to load in the TyphosSuite')
 parser.add_argument('--happi-cfg',
                     help='Location of happi configuration file '
                          'if not specified by $HAPPI_CFG environment variable')
 parser.add_argument('--version', '-V', action='store_true',
                     help='Current version and location '
-                         'of Typhon installation.')
+                         'of Typhos installation.')
 parser.add_argument('--verbose', '-v', action='store_true',
                     help='Show the debug logging stream')
 parser.add_argument('--dark', action='store_true',
-                    help='Use the QDarkStyleSheet shipped with typhon')
+                    help='Use the QDarkStyleSheet shipped with Typhos')
 parser.add_argument('--stylesheet',
                     help='Additional stylesheet options')
 
@@ -36,11 +36,11 @@ parser.add_argument('--stylesheet',
 __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 
 
-def typhon_cli_setup(args):
+def typhos_cli_setup(args):
     global app
     # Logging Level handling
     logging.getLogger().addHandler(logging.NullHandler())
-    shown_logger = logging.getLogger('typhon')
+    shown_logger = logging.getLogger('typhos')
     if args.verbose:
         level = "DEBUG"
     else:
@@ -51,7 +51,7 @@ def typhon_cli_setup(args):
 
     # Version endpoint
     if args.version:
-        print(f'Typhon: Version {typhon.__version__} from {typhon.__file__}')
+        print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
         return
 
     # Deal with stylesheet
@@ -60,7 +60,7 @@ def typhon_cli_setup(args):
         app = QApplication([])
 
     logger.debug("Applying stylesheet ...")
-    typhon.use_stylesheet(dark=args.dark)
+    typhos.use_stylesheet(dark=args.dark)
     if args.stylesheet:
         logger.info("Loading QSS file %r ...", args.stylesheet)
         with open(args.stylesheet, 'r') as handle:
@@ -68,17 +68,17 @@ def typhon_cli_setup(args):
 
 
 def create_suite(devices, cfg=None):
-    """Create a TyphonSuite from a list of device names"""
+    """Create a TyphosSuite from a list of device names"""
     logger.debug("Accessing Happi Client ...")
     try:
         import happi
-        import typhon.plugins.happi
+        import typhos.plugins.happi
     except (ImportError, ModuleNotFoundError):
         logger.exception("Unable to import happi to load devices!")
         return
-    if typhon.plugins.happi._client:
-        logger.debug("Using happi Client already registered with Typhon")
-        client = typhon.plugins.happi._client
+    if typhos.plugins.happi._client:
+        logger.debug("Using happi Client already registered with Typhos")
+        client = typhos.plugins.happi._client
     else:
         logger.debug("Creating new happi Client from configuration")
         client = happi.Client.from_config(cfg=cfg)
@@ -92,8 +92,8 @@ def create_suite(devices, cfg=None):
         except Exception:
             logger.exception("Unable to load %r", device)
     if loaded_devs or not devices:
-        logger.debug("Creating empty TyphonSuite ...")
-        suite = typhon.TyphonSuite()
+        logger.debug("Creating empty TyphosSuite ...")
+        suite = typhos.TyphosSuite()
         logger.info("Loading Tools ...")
         for name, tool in suite.default_tools.items():
             suite.add_tool(name, tool())
@@ -104,15 +104,15 @@ def create_suite(devices, cfg=None):
                 suite.add_device(device)
                 suite.show_subdisplay(device)
             except Exception:
-                logger.exception("Unable to add %r to TyphonSuite",
+                logger.exception("Unable to add %r to TyphosSuite",
                                  device.name)
         return suite
 
 
-def typhon_cli(args):
-    """Command Line Application for Typhon"""
+def typhos_cli(args):
+    """Command Line Application for Typhos"""
     args = parser.parse_args(args)
-    typhon_cli_setup(args)
+    typhos_cli_setup(args)
     if not args.version:
         suite = create_suite(args.devices, cfg=args.happi_cfg)
         if suite:
@@ -126,5 +126,5 @@ def typhon_cli(args):
 
 
 def main():
-    """Execute the ``typhon_cli`` with command line arguments"""
-    typhon_cli(sys.argv[1:])
+    """Execute the ``typhos_cli`` with command line arguments"""
+    typhos_cli(sys.argv[1:])
