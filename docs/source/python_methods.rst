@@ -5,7 +5,7 @@ Including Python Code
 
 Adding Methods
 ==============
-Each :class:`.TyphonDeviceDisplay` has an :attr:`.method_panel`. You can add methods
+Each :class:`.TyphosDeviceDisplay` has an :attr:`.method_panel`. You can add methods
 manually or pass them in via the constructor. In order to make the appropriate
 widgets,  the function signature is examined. For example lets make a mock
 function:
@@ -37,7 +37,7 @@ the user unless they choose to expand the tab. Using
    :width: 40 %
 
 
-If you don't want to annotate your function as above, Typhon will attempt to
+If you don't want to annotate your function as above, Typhos will attempt to
 guess the type of optional variables via their default value. You can also pass
 in an `annotations` dictionary that fulfills the indicates the type of each
 variable.

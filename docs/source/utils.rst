@@ -2,5 +2,5 @@
 Utility Functions
 #################
 
-.. automodule:: typhon.utils
+.. automodule:: typhos.utils
    :members:
