@@ -3,9 +3,9 @@ import qtawesome as qta
 from qtpy.QtWidgets import QWidget
 from qtpy.QtGui import QIcon
 
-from typhon.widgets import (TyphonSidebarItem, SignalDialogButton, QDialog,
+from typhos.widgets import (TyphosSidebarItem, SignalDialogButton, QDialog,
                             ImageDialogButton, WaveformDialogButton)
-from typhon.suite import SidebarParameter
+from typhos.suite import SidebarParameter
 
 
 class DialogButton(SignalDialogButton):
@@ -26,7 +26,7 @@ def widget_button(qtbot, monkeypatch):
 
 def test_sidebar_item(qtbot):
     param = SidebarParameter(name='test', embeddable=True)
-    item = TyphonSidebarItem(param, 0)
+    item = TyphosSidebarItem(param, 0)
     qtbot.addWidget(item)
     assert len(item.toolbar.actions()) == 3
     assert item.open_action.isEnabled()

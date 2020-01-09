@@ -4,7 +4,7 @@ from ophyd.status import Status
 import pytest
 from qtpy.QtWidgets import QWidget
 
-from typhon.status import TyphonStatusThread
+from typhos.status import TyphosStatusThread
 
 
 class Listener(QWidget):
@@ -19,7 +19,7 @@ class Listener(QWidget):
 def threaded_status(qtbot):
     status = Status()
     listener = Listener()
-    thread = TyphonStatusThread(status)
+    thread = TyphosStatusThread(status)
     qtbot.addWidget(listener)
     thread.status_started.connect(listener.started)
     thread.status_finished.connect(listener.finished)

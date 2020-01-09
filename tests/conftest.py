@@ -20,9 +20,9 @@ from pydm import PyDMApplication
 ###########
 # Package #
 ###########
-import typhon
-from typhon.plugins.happi import register_client
-from typhon.utils import TyphonBase
+import typhos
+from typhos.plugins.happi import register_client
+from typhos.utils import TyphosBase
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +30,9 @@ logger = logging.getLogger(__name__)
 show_widgets = False
 application = None
 
-# Patch TyphonConsole on TyphonSuite. Creation of more than one QtConsole
+# Patch TyphosConsole on TyphosSuite. Creation of more than one QtConsole
 # quicky in the test suite causes instabilities
-typhon.TyphonSuite.default_tools['Console'] = TyphonBase
+typhos.TyphosSuite.default_tools['Console'] = TyphosBase
 
 
 def pytest_addoption(parser):
@@ -58,7 +58,7 @@ def qapp(pytestconfig):
         pass
     else:
         application = PyDMApplication(use_main_window=False)
-        typhon.use_stylesheet(pytestconfig.getoption('--dark'))
+        typhos.use_stylesheet(pytestconfig.getoption('--dark'))
     return application
 
 
@@ -88,7 +88,7 @@ def show_widget(func):
 def motor():
     # Register all signals
     for sig in ophyd.sim.motor.component_names:
-        typhon.register_signal(getattr(ophyd.sim.motor, sig))
+        typhos.register_signal(getattr(ophyd.sim.motor, sig))
     return ophyd.sim.motor
 
 

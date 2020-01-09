@@ -16,7 +16,7 @@ from unittest.mock import Mock
 # Package #
 ###########
 from .conftest import show_widget
-from typhon.func import FunctionPanel, FunctionDisplay, TyphonMethodButton
+from typhos.func import FunctionPanel, FunctionDisplay, TyphosMethodButton
 
 kwargs = dict()
 
@@ -56,7 +56,7 @@ class MyDevice(Device):
 @pytest.fixture(scope='function')
 def method_button(qtbot):
     dev = MyDevice(name='test')
-    button = TyphonMethodButton.from_device(dev)
+    button = TyphosMethodButton.from_device(dev)
     qtbot.addWidget(button)
     button.method_name = 'my_method'
     return button

@@ -1,5 +1,5 @@
-from typhon.designer import TyphonSignalPanelPlugin
+from typhos.designer import TyphosSignalPanelPlugin
 
 
-def test_typhon_panel_plugin_smoke():
-    tpp = TyphonSignalPanelPlugin()
+def test_typhos_panel_plugin_smoke():
+    tpp = TyphosSignalPanelPlugin()
