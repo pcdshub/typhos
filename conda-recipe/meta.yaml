@@ -28,15 +28,6 @@ requirements:
       - timechart
       - numpydoc
 
-test:
-    imports:
-      - typhos
-      - typhon
-
-    requires: 
-      - python <3.7.6
-      - pytest
-
 about:
   home: https://github.com/pcdshub/typhos
   license: SLAC Open License
