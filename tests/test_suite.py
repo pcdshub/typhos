@@ -16,16 +16,16 @@ from qtpy.QtWidgets import QDockWidget
 ###########
 # Package #
 ###########
-import typhon.suite
-from typhon.utils import clean_name, save_suite
-from typhon.suite import TyphonSuite, DeviceParameter
-from typhon.display import TyphonDeviceDisplay
+import typhos.suite
+from typhos.utils import clean_name, save_suite
+from typhos.suite import TyphosSuite, DeviceParameter
+from typhos.display import TyphosDeviceDisplay
 from .conftest import show_widget
 
 
 @pytest.fixture(scope='function')
 def suite(qtbot, device):
-    suite = TyphonSuite.from_device(device, tools=None)
+    suite = TyphosSuite.from_device(device, tools=None)
     qtbot.addWidget(suite)
     return suite
 
@@ -39,7 +39,7 @@ def test_suite_with_child_devices(suite, device):
     return suite
 
 def test_suite_without_children(device, qtbot):
-    childless = TyphonSuite.from_device(device, children=False)
+    childless = TyphosSuite.from_device(device, children=False)
     qtbot.addWidget(childless)
     device_group = childless.top_level_groups['Devices']
     childless_displays = device_group.childs[0].childs
@@ -47,7 +47,7 @@ def test_suite_without_children(device, qtbot):
 
 
 def test_suite_tools(device, qtbot):
-    suite = TyphonSuite.from_device(device)
+    suite = TyphosSuite.from_device(device)
     qtbot.addWidget(suite)
     assert len(suite.tools) == 3
     assert len(suite.tools[0].devices) == 1
@@ -59,7 +59,7 @@ def test_suite_get_subdisplay_by_device(suite, device):
 
 def test_suite_subdisplay_parentage(suite, device):
     display = suite.get_subdisplay(device)
-    assert display in suite.findChildren(TyphonDeviceDisplay)
+    assert display in suite.findChildren(TyphosDeviceDisplay)
 
 def test_suite_get_subdisplay_by_name(suite, device):
     display = suite.get_subdisplay(device.name)
@@ -155,7 +155,7 @@ def test_suite_save_util(suite, device):
 
 def test_suite_save(suite, monkeypatch):
     tfile = Path(tempfile.gettempdir()) / 'test.py'
-    monkeypatch.setattr(typhon.suite.QFileDialog,
+    monkeypatch.setattr(typhos.suite.QFileDialog,
                         'getSaveFileName',
                         lambda *args: (str(tfile), str(tfile)))
     suite.save()
@@ -166,7 +166,7 @@ def test_suite_save(suite, monkeypatch):
 
 
 def test_suite_save_cancel_smoke(suite, monkeypatch):
-    monkeypatch.setattr(typhon.suite.QFileDialog,
+    monkeypatch.setattr(typhos.suite.QFileDialog,
                         'getSaveFileName',
                         lambda *args: None)
     suite.save()

@@ -1,13 +1,23 @@
-__all__ = ['TyphonDeviceDisplay', 'use_stylesheet',
-           'register_signal', 'TyphonSuite', 'TyphonSignalPanel',
-           'TyphonPositionerWidget', 'TyphonMethodButton', 'load_suite']
+import warnings
+
+from typhos import *
+
+__all__ = ['use_stylesheet', 'register_signal', 'load_suite',
+           'TyphonDeviceDisplay',
+           'TyphonSuite',
+           'TyphonSignalPanel',
+           'TyphonPositionerWidget',
+           'TyphonMethodButton'
+           ]
+
 from .display import TyphonDeviceDisplay
 from .func import TyphonMethodButton
 from .suite import TyphonSuite
 from .signal import TyphonSignalPanel
 from .positioner import TyphonPositionerWidget
 from .utils import use_stylesheet, load_suite
-from .plugins import register_signal
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
+
+deprecation_message = "WARNING: typhon was renamed to typhos along with all " \
+                      "classes and methods that started with typhon or Typhon."
+
+warnings.warn(deprecation_message, DeprecationWarning, stacklevel=2)

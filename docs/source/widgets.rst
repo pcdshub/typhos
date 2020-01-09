@@ -1,36 +1,36 @@
 =======
 Widgets
 =======
-Typhon uses a few custom widgets to create a clean and concise user interface.
+Typhos uses a few custom widgets to create a clean and concise user interface.
 While most users should not be interacting with these directly, there may be a
 need if a user opts to create their display by hand instead of automatically
 generating one. If you would just like a widget for an ``ophyd.Signal``, there
 is a function available:
 
-.. autofunction:: typhon.signal.signal_widget
+.. autofunction:: typhos.signal.signal_widget
 
 Panels
 ======
-One of the major design principles of Typhon is that users should be able to
+One of the major design principles of Typhos is that users should be able to
 see what they need and hide one they don't. Thefore, many of the widget
 implementations are placed in "Panels" these consist of QPushButton header that
-hides and shows the contents. Each variation in Typhon is documented below. 
+hides and shows the contents. Each variation in Typhos is documented below. 
 
 .. autosummary::
    :toctree: generated
 
-   typhon.signal.SignalPanel
-   typhon.func.FunctionPanel
+   typhos.signal.SignalPanel
+   typhos.func.FunctionPanel
 
 
-TyphonPositionerWidget
+TyphosPositionerWidget
 ======================
 
-.. autoclass:: typhon.TyphonPositionerWidget
+.. autoclass:: typhos.TyphosPositionerWidget
    :members:
 
 
-TyphonMethodButton
+TyphosMethodButton
 ==================
-.. autoclass:: typhon.TyphonMethodButton
+.. autoclass:: typhos.TyphosMethodButton
    :members:

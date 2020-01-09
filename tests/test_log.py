@@ -2,12 +2,12 @@ import logging
 
 from ophyd import Device
 
-from typhon.tools import TyphonLogDisplay
+from typhos.tools import TyphosLogDisplay
 
 
 def test_log_display(qtbot):
     dev = Device(name='test')
-    log_tool = TyphonLogDisplay.from_device(dev)
+    log_tool = TyphosLogDisplay.from_device(dev)
     qtbot.addWidget(log_tool)
     dev.log.error(dev.name)
     assert log_tool.logdisplay.handler in dev.log.handlers

@@ -14,7 +14,7 @@ from qtpy.QtWidgets import QWidget
 # Package #
 ###########
 from ..conftest import DeadSignal, RichSignal
-from typhon.plugins.core import (SignalPlugin, SignalConnection,
+from typhos.plugins.core import (SignalPlugin, SignalConnection,
                                  register_signal)
 
 

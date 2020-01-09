@@ -10,9 +10,9 @@ from ophyd import Device, Component as Cpt, Kind
 import pytest
 import simplejson as json
 
-import typhon
-from typhon.utils import (use_stylesheet, clean_name, grab_kind,
-                          TyphonBase, raise_to_operator, load_suite,
+import typhos
+from typhos.utils import (use_stylesheet, clean_name, grab_kind,
+                          TyphosBase, raise_to_operator, load_suite,
                           saved_template)
 
 class NestedDevice(Device):
@@ -55,7 +55,7 @@ def test_grab_kind(motor):
 try:
     channel = json.loads(subprocess.check_output(['conda',
                                                   'list',
-                                                  'typhon',
+                                                  'typhos',
                                                   '--json']))[0]['channel']
     is_conda_installed = channel != 'pypi'
 except Exception:
@@ -65,11 +65,11 @@ except Exception:
 @pytest.mark.skipif(not is_conda_installed,
                     reason='Package not installed via CONDA')
 def test_qtdesigner_env():
-    assert 'etc/typhon' in os.getenv('PYQTDESIGNERPATH', '')
+    assert 'etc/typhos' in os.getenv('PYQTDESIGNERPATH', '')
 
 
-def test_typhonbase_repaint_smoke(qtbot):
-    tp = TyphonBase()
+def test_typhosbase_repaint_smoke(qtbot):
+    tp = TyphosBase()
     qtbot.addWidget(tp)
     pe = QPaintEvent(QRect(1, 2, 3, 4))
     tp.paintEvent(pe)
@@ -98,7 +98,7 @@ def test_load_suite(qtbot, happi_cfg):
 
     suite = load_suite(module_file, happi_cfg)
     qtbot.addWidget(suite)
-    assert isinstance(suite, typhon.TyphonSuite)
+    assert isinstance(suite, typhos.TyphosSuite)
     assert len(suite.devices) == 1
     assert suite.devices[0].name == 'test_motor'
     os.remove(module_file)
@@ -106,4 +106,4 @@ def test_load_suite(qtbot, happi_cfg):
 
 def test_load_suite_with_bad_py_file():
     with pytest.raises(AttributeError):
-        suite = load_suite(typhon.utils.__file__)
+        suite = load_suite(typhos.utils.__file__)

@@ -3,13 +3,11 @@ import types
 import happi
 from happi.loader import from_container
 import pytest
-from typhon.tools import TyphonConsole
-
-from .conftest import show_widget
+from typhos.tools import TyphosConsole
 
 
 def test_base_console(qtbot):
-    tc = TyphonConsole()
+    tc = TyphosConsole()
     qtbot.addWidget(tc)
     assert tc.kernel.kernel_manager.is_alive()
     tc.shutdown()
@@ -26,7 +24,7 @@ def test_add_device(qapp, qtbot):
                       kwargs={'here': 'very unique text'})
     device = from_container(md)
     # Add the device to the Console
-    tc = TyphonConsole.from_device(device)
+    tc = TyphosConsole.from_device(device)
     qtbot.addWidget(tc)
     # Check that we created the object in the shell
     tc.kernel.kernel_client.execute('print(test_this.here)', silent=False)

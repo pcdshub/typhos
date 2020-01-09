@@ -1,5 +1,4 @@
-"""Module for all insertable Typhon tools"""
-__all__ = ['TyphonConsole', 'TyphonLogDisplay', 'TyphonTimePlot']
+from typhos.tools import *
 
 from .console import TyphonConsole
 from .plot import TyphonTimePlot

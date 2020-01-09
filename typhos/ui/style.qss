@@ -1,0 +1,84 @@
+QWidget{
+   background-color: #ffffff;
+   color: black;
+   font: bold;
+}
+
+PyDMLineEdit {
+    color: #A9A9A9;
+}
+
+PyDMLineEdit:focus {
+    border-color: blue;
+    color: black;
+}
+
+PyDMLabel {
+    color: white;
+    background-color: #0b3ae8;
+    border-radius: 5px;
+}
+
+QComboBox {
+    border-radius 10px;
+    color: #A9A9A9;
+}
+
+QComboBox:on {
+    color: black;
+}
+
+QComboBox QAbstractItemView {
+    border: 2px solid #0b3ae8;
+    border-radius 10px;
+}
+
+QComboBox:hover {
+    border: 2px solid #0b3ae8;
+}
+
+QListWidget::item:selected {
+    background-color: #0b3ae8;;
+    color: white;
+}
+
+QListWidget::item:!selected:hover {
+    background-color: #A9A9A9;
+}
+
+PyDMLogDisplay > QPlainTextEdit {
+    font: 10px normal;
+}
+
+TyphonPositionerWidget[moving="true"] .QFrame {
+    border: 2px solid yellow;
+}
+
+TyphonPositionerWidget[moving="false"] .QFrame {
+    border: 2px solid transparent;
+}
+
+TyphonPositionerWidget[moving="false"][successful_move="true"] .QFrame {
+    border: 2px solid green;
+}
+
+TyphonPositionerWidget[moving="false"][failed_move="true"] .QFrame {
+    border: 2px solid red;
+}
+
+
+TyphosPositionerWidget[moving="true"] .QFrame {
+    border: 2px solid yellow;
+}
+
+TyphosPositionerWidget[moving="false"] .QFrame {
+    border: 2px solid transparent;
+}
+
+TyphosPositionerWidget[moving="false"][successful_move="true"] .QFrame {
+    border: 2px solid green;
+}
+
+TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
+    border: 2px solid red;
+}

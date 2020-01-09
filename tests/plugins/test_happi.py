@@ -6,10 +6,10 @@ from unittest.mock import Mock, patch
 from happi import Device
 import pytest
 
-import typhon
-import typhon.plugins
-from typhon.plugins.happi import HappiPlugin
-from typhon.widgets import HappiChannel
+import typhos
+import typhos.plugins
+from typhos.plugins.happi import HappiPlugin
+from typhos.widgets import HappiChannel
 
 
 def test_connection(client):
@@ -51,6 +51,6 @@ def test_bad_address_smoke(client):
 
 def test_happi_is_optional():
     with patch.dict(sys.modules, {'happi': None}):
-        importlib.reload(typhon.plugins)
-        importlib.reload(typhon)
+        importlib.reload(typhos.plugins)
+        importlib.reload(typhos)
         assert sys.modules['happi'] is None

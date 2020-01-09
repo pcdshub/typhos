@@ -1,3 +1,5 @@
+.idea
+
 # Ignore test generated log files
 logs/*
 

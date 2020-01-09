@@ -16,8 +16,8 @@ from qtpy.QtWidgets import QWidget
 ###########
 # Package #
 ###########
-from typhon.signal import SignalPanel, TyphonSignalPanel, signal_widget
-from typhon.widgets import ImageDialogButton, WaveformDialogButton
+from typhos.signal import SignalPanel, TyphosSignalPanel, signal_widget
+from typhos.widgets import ImageDialogButton, WaveformDialogButton
 from .conftest import show_widget, RichSignal, DeadSignal
 
 
@@ -99,8 +99,8 @@ def test_add_pv(qtbot):
 
 
 @show_widget
-def test_typhon_panel(qapp, client, qtbot):
-    panel = TyphonSignalPanel()
+def test_typhos_panel(qapp, client, qtbot):
+    panel = TyphosSignalPanel()
     qtbot.addWidget(panel)
     # Setting Kind without device doesn't explode
     panel.showConfig = False
@@ -132,8 +132,8 @@ def test_typhon_panel(qapp, client, qtbot):
 
 
 @show_widget
-def test_typhon_panel_sorting(qapp, client, qtbot):
-    panel = TyphonSignalPanel()
+def test_typhos_panel_sorting(qapp, client, qtbot):
+    panel = TyphosSignalPanel()
     qtbot.addWidget(panel)
     # Sort by name
     panel.sortBy = panel.SignalOrder.byName

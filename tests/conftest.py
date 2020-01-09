@@ -13,16 +13,35 @@ from happi import Client
 import numpy as np
 import ophyd.sim
 from ophyd import Device, Component as C, FormattedComponent as FC
-from ophyd.sim import SynAxis, Signal, SynPeriodicSignal, SignalRO
+from ophyd.sim import SynAxis, Signal, SynPeriodicSignal
+try:
+    from ophyd.sim import SignalRO
+except ImportError:
+    from ophyd.utils import ReadOnlyError
+
+    class SignalRO(ophyd.sim.Signal):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._metadata.update(
+                connected=True,
+                write_access=False,
+            )
+
+        def put(self, value, *, timestamp=None, force=False):
+            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+
+        def set(self, value, *, timestamp=None, force=False):
+            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+
 import pytest
 from pydm import PyDMApplication
 
 ###########
 # Package #
 ###########
-import typhon
-from typhon.plugins.happi import register_client
-from typhon.utils import TyphonBase
+import typhos
+from typhos.plugins.happi import register_client
+from typhos.utils import TyphosBase
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +49,9 @@ logger = logging.getLogger(__name__)
 show_widgets = False
 application = None
 
-# Patch TyphonConsole on TyphonSuite. Creation of more than one QtConsole
+# Patch TyphosConsole on TyphosSuite. Creation of more than one QtConsole
 # quicky in the test suite causes instabilities
-typhon.TyphonSuite.default_tools['Console'] = TyphonBase
+typhos.TyphosSuite.default_tools['Console'] = TyphosBase
 
 
 def pytest_addoption(parser):
@@ -58,7 +77,7 @@ def qapp(pytestconfig):
         pass
     else:
         application = PyDMApplication(use_main_window=False)
-        typhon.use_stylesheet(pytestconfig.getoption('--dark'))
+        typhos.use_stylesheet(pytestconfig.getoption('--dark'))
     return application
 
 
@@ -88,7 +107,7 @@ def show_widget(func):
 def motor():
     # Register all signals
     for sig in ophyd.sim.motor.component_names:
-        typhon.register_signal(getattr(ophyd.sim.motor, sig))
+        typhos.register_signal(getattr(ophyd.sim.motor, sig))
     return ophyd.sim.motor
 
 

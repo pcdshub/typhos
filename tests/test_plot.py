@@ -17,9 +17,9 @@ from qtpy.QtGui import QColor
 ##########
 # Module #
 ##########
-from typhon import register_signal
-from typhon.tools.plot import TyphonTimePlot
-from typhon.utils import channel_from_signal
+from typhos import register_signal
+from typhos.tools.plot import TyphosTimePlot
+from typhos.utils import channel_from_signal
 
 
 @pytest.fixture(scope='session')
@@ -33,7 +33,7 @@ def test_add_signal(qtbot,sim_signal):
     # Create Signals
     epics_sig = EpicsSignal('Tst:This')
     # Create empty plot
-    ttp = TyphonTimePlot()
+    ttp = TyphosTimePlot()
     qtbot.addWidget(ttp)
     # Add to list of available signals
     ttp.add_available_signal(epics_sig, 'Epics Signal')
@@ -45,7 +45,7 @@ def test_add_signal(qtbot,sim_signal):
 
 
 def test_curve_methods(qtbot, sim_signal):
-    ttp = TyphonTimePlot()
+    ttp = TyphosTimePlot()
     qtbot.addWidget(ttp)
     ttp.add_curve('sig://' + sim_signal.name, name=sim_signal.name)
     # Check that our signal is stored in the mapping
@@ -60,7 +60,7 @@ def test_curve_methods(qtbot, sim_signal):
     assert len(ttp.timechart.chart.curves) == 0
 
 def test_curve_creation_button(qtbot, sim_signal):
-    ttp = TyphonTimePlot()
+    ttp = TyphosTimePlot()
     qtbot.addWidget(ttp)
     ttp.add_available_signal(sim_signal, 'Sim Signal')
     ttp.creation_requested()
@@ -69,7 +69,7 @@ def test_curve_creation_button(qtbot, sim_signal):
     assert len(ttp.timechart.chart.curves) == 1
 
 def test_device_plot(motor, qtbot):
-    dtp = TyphonTimePlot.from_device(motor)
+    dtp = TyphosTimePlot.from_device(motor)
     qtbot.addWidget(dtp)
     # Add the hint
     assert len(dtp.timechart.chart.curves) == 1

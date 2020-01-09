@@ -4,7 +4,7 @@ Application Connections
 
 Ophyd Signals
 =============
-Typhon takes advantage of the flexible data plugin system contained within
+Typhos takes advantage of the flexible data plugin system contained within
 ``PyDM`` and the abstraction of the "control layer" within ``Ophyd``. In the
 :class:`.SignalPanel`, objects signals are queried for their type. If these are
 determined to be coming from ``EPICS`` the data plugin configured within
@@ -19,7 +19,7 @@ plugin.
 
 .. code:: python
 
-   from typhon.plugins import register_signal
+   from typhos.plugins import register_signal
 
    # Create an Ophyd Signal
    my_signal = ophyd.Signal(name='this_signal')
@@ -35,7 +35,7 @@ Inclusion of Metadata
 ---------------------
 In many cases just knowing the value of a signal is not enough to accurately
 display it. Extra pieces of information such as the units and precision of
-information can provide a richer operator experience. ``Typhon`` counts on this
+information can provide a richer operator experience. ``Typhos`` counts on this
 information being available in the output of ``describe`` method of the signal.
 If you want your child ``ophyd.Signal`` class to convey this information make
 sure that it is expressed properly in the output of ``describe``.

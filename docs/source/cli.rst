@@ -1,5 +1,5 @@
 Command Line Utilities
 ======================
 
-.. automodule:: typhon.cli 
+.. automodule:: typhos.cli 
 

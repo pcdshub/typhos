@@ -2,9 +2,29 @@ from unittest.mock import Mock
 
 import pytest
 from ophyd import Component as Cpt, Signal
-from ophyd.sim import SynAxis, SignalRO
+from ophyd.sim import SynAxis
+try:
+    from ophyd.sim import SignalRO
+except ImportError:
+    import ophyd.sim
+    from ophyd.utils import ReadOnlyError
 
-from typhon.positioner import TyphonPositionerWidget
+    class SignalRO(ophyd.sim.Signal):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._metadata.update(
+                connected=True,
+                write_access=False,
+            )
+
+        def put(self, value, *, timestamp=None, force=False):
+            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+
+        def set(self, value, *, timestamp=None, force=False):
+            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+
+
+from typhos.positioner import TyphosPositionerWidget
 
 from .conftest import show_widget
 
@@ -23,7 +43,7 @@ class SimMotor(SynAxis):
 @pytest.fixture(scope='function')
 def motor_widget(qtbot):
     motor = SimMotor(name='test')
-    setwidget = TyphonPositionerWidget.from_device(motor)
+    setwidget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(setwidget)
     yield motor, setwidget
     if setwidget._status_thread and setwidget._status_thread.isRunning():
@@ -31,7 +51,7 @@ def motor_widget(qtbot):
 
 
 def test_positioner_widget_no_limits(qtbot, motor):
-    setwidget = TyphonPositionerWidget.from_device(motor)
+    setwidget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(setwidget)
     for widget in ('low_limit', 'low_limit_switch',
                    'high_limit', 'high_limit_switch'):
@@ -40,7 +60,7 @@ def test_positioner_widget_no_limits(qtbot, motor):
 
 def test_positioner_widget_fixed_limits(qtbot, motor):
     motor.limits = (-10, 10)
-    widget = TyphonPositionerWidget.from_device(motor)
+    widget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(widget)
     assert widget.ui.low_limit.text() == '-10'
     assert widget.ui.high_limit.text() == '10'
