@@ -4,7 +4,7 @@ import numpy as np
 from ophyd import Device, Component as Cpt, Signal
 from ophyd.sim import SignalRO
 from qtpy.QtWidgets import QApplication
-import typhon
+import typhos
 
 
 class Sample(Device):
@@ -21,9 +21,9 @@ sample = Sample('', name='sample')
 if __name__ == '__main__':
     # Create my application
     app = QApplication(sys.argv)
-    typhon.use_stylesheet()
+    typhos.use_stylesheet()
     # Create my panel
-    panel = typhon.TyphonSignalPanel.from_device(sample)
+    panel = typhos.TyphonSignalPanel.from_device(sample)
     panel.sortBy = panel.byName
     # Execute
     panel.show()
