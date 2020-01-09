@@ -31,6 +31,8 @@ matrix:
            - BUILD=1
      - python: 3.7.3  # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
        env: PYDM_CHANNEL=pip
+  allow_failures:
+      - env: PYDM_CHANNEL=pip
 
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
