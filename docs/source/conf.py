@@ -176,7 +176,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'Typhos', 'Typhos Documentation',
-     author, 'Typhos', 'One line description of project.',
+     author, 'Typhos', 'Typhos Documentation',
      'Miscellaneous'),
 ]
 
