@@ -4,7 +4,7 @@ $PYTHON setup.py install --single-version-externally-managed --record=record.txt
 # Create auxillary
 mkdir -p $PREFIX/etc/conda/activate.d
 mkdir -p $PREFIX/etc/conda/deactivate.d
-mkdir -p $PREFIX/etc/typhon
+mkdir -p $PREFIX/etc/typhos
 
 # Create auxiliary vars
 DESIGNER_PLUGIN_PATH=$PREFIX/etc/typhos
