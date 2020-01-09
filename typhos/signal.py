@@ -337,4 +337,3 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     def sizeHint(self):
         """Default SizeHint"""
         return QSize(240, 140)
-

@@ -10,6 +10,7 @@ from qtpy.QtCore import Signal
 class HappiClientState:
     client = None
 
+
 logger = logging.getLogger(__name__)
 
 

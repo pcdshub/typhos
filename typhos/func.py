@@ -609,4 +609,3 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
         instance = cls(parent=parent)
         instance.add_device(device)
         return instance
-

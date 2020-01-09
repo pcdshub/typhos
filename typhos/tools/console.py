@@ -120,4 +120,3 @@ except ImportError:
         pass
 
     TyphosConsole.add_device = add_device
-
