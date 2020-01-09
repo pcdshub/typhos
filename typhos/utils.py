@@ -19,7 +19,25 @@ import traceback
 ############
 from ophyd import Kind, Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
-from ophyd.sim import SignalRO
+try:
+    from ophyd.sim import SignalRO
+except ImportError:
+    import ophyd.sim
+    from ophyd.utils import ReadOnlyError
+
+    class SignalRO(ophyd.sim.Signal):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._metadata.update(
+                connected=True,
+                write_access=False,
+            )
+
+        def put(self, value, *, timestamp=None, force=False):
+            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+
+        def set(self, value, *, timestamp=None, force=False):
+            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
 from qtpy.QtGui import QColor, QPainter
 from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
                             QWidget, QMessageBox)

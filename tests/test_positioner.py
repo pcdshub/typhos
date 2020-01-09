@@ -2,7 +2,27 @@ from unittest.mock import Mock
 
 import pytest
 from ophyd import Component as Cpt, Signal
-from ophyd.sim import SynAxis, SignalRO
+from ophyd.sim import SynAxis
+try:
+    from ophyd.sim import SignalRO
+except ImportError:
+    import ophyd.sim
+    from ophyd.utils import ReadOnlyError
+
+    class SignalRO(ophyd.sim.Signal):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._metadata.update(
+                connected=True,
+                write_access=False,
+            )
+
+        def put(self, value, *, timestamp=None, force=False):
+            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+
+        def set(self, value, *, timestamp=None, force=False):
+            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+
 
 from typhos.positioner import TyphosPositionerWidget
 
