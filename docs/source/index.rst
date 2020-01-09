@@ -2,6 +2,18 @@
 Typhos
 ======
 
+.. warning::
+
+    **This package was renamed.**
+
+    The previous name Typhon was renamed as Typhos due to PyPI name collision.
+    For now we offer backwards compatibility but it is strongly recommended
+    that you update all references in your code.
+
+    The compatibility layer will be dropped soon after two releases of this
+    package.
+
+
 EPICS is a flexible and powerful controls system to access to experimental
 information, however, the relation and meaning of process variables is often
 obscure. Many of the user interfaces for EPICS information reflect this, as
