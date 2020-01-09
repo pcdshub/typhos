@@ -1,7 +1,7 @@
-typhon.signal.SignalPanel
+typhos.signal.SignalPanel
 =========================
 
-.. currentmodule:: typhon.signal
+.. currentmodule:: typhos.signal
 
 .. autoclass:: SignalPanel
 

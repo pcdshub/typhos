@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.tools.console &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>typhos.tools.console &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> Typhon
+            <a href="../../../index.html" class="icon icon-home"> Typhos
           
 
           
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -95,7 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhos Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utility Functions</a></li>
 </ul>
 
@@ -111,7 +111,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Typhon</a>
+          <a href="../../../index.html">Typhos</a>
         
       </nav>
 
@@ -144,7 +144,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>typhon.tools.console</li>
+      <li>typhos.tools.console</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,26 +159,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for typhon.tools.console</h1><div class="highlight"><pre>
+  <h1>Source code for typhos.tools.console</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">localtime</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">localtime</span>
 
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QHBoxLayout</span>
-<span class="kn">from</span> <span class="nn">qtconsole.rich_jupyter_widget</span> <span class="k">import</span> <span class="n">RichJupyterWidget</span>
-<span class="kn">from</span> <span class="nn">qtconsole.manager</span> <span class="k">import</span> <span class="n">QtKernelManager</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QHBoxLayout</span>
+<span class="kn">from</span> <span class="nn">qtconsole.rich_jupyter_widget</span> <span class="kn">import</span> <span class="n">RichJupyterWidget</span>
+<span class="kn">from</span> <span class="nn">qtconsole.manager</span> <span class="kn">import</span> <span class="n">QtKernelManager</span>
 
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">TyphonBase</span><span class="p">,</span> <span class="n">make_identifier</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">TyphosBase</span><span class="p">,</span> <span class="n">make_identifier</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TyphonConsole"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonConsole.html#typhon.tools.TyphonConsole">[docs]</a><span class="k">class</span> <span class="nc">TyphonConsole</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosConsole"><a class="viewcode-back" href="../../../generated/typhos.tools.TyphosConsole.html#typhos.tools.TyphosConsole">[docs]</a><span class="k">class</span> <span class="nc">TyphosConsole</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    IPython Widget for Typhon Display</span>
+<span class="sd">    IPython Widget for Typhos Display</span>
 
 <span class="sd">    This widget handles starting a ``JupyterKernel`` and connecting an IPython</span>
 <span class="sd">    console in which the user can type Python commands. It is important to note</span>
@@ -191,7 +191,7 @@
 <span class="sd">    is not installed, users will need to create a custom ``add_device`` method</span>
 <span class="sd">    if they want their devices loaded in both the GUI and console.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="TyphonConsole.__init__"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonConsole.html#typhon.tools.TyphonConsole.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosConsole.__init__"><a class="viewcode-back" href="../../../generated/typhos.tools.TyphosConsole.html#typhos.tools.TyphosConsole.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="c1"># Setup widget</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">RichJupyterWidget</span><span class="p">()</span>
@@ -241,7 +241,7 @@
         <span class="c1"># Needs metadata</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Device </span><span class="si">%r</span><span class="s2"> has no stored metadata. &quot;</span>
-                         <span class="s2">&quot;Unable to load in TyphonConsole&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;Unable to load in TyphosConsole&quot;</span><span class="p">,</span>
                          <span class="n">device</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="c1"># Create a temporary file</span>
@@ -255,33 +255,33 @@
             <span class="n">python_name</span> <span class="o">=</span> <span class="n">make_identifier</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="c1"># Create the script to load the device</span>
             <span class="n">load_script</span> <span class="o">=</span> <span class="p">(</span>
-                       <span class="n">f</span><span class="s1">&#39;import happi; &#39;</span>
-                       <span class="n">f</span><span class="s1">&#39;from happi.loader import from_container; &#39;</span>
-                       <span class="n">f</span><span class="s1">&#39;client = happi.Client(path=&quot;</span><span class="si">{name}</span><span class="s1">&quot;); &#39;</span>
-                       <span class="n">f</span><span class="s1">&#39;md = client.find_device(name=&quot;</span><span class="si">{device.md.name}</span><span class="s1">&quot;); &#39;</span>
-                       <span class="n">f</span><span class="s1">&#39;</span><span class="si">{python_name}</span><span class="s1"> = from_container(md)&#39;</span><span class="p">)</span>
+                       <span class="sa">f</span><span class="s1">&#39;import happi; &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;from happi.loader import from_container; &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;client = happi.Client(path=&quot;</span><span class="si">{name}</span><span class="s1">&quot;); &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;md = client.find_device(name=&quot;</span><span class="si">{device.md.name}</span><span class="s1">&quot;); &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{python_name}</span><span class="s1"> = from_container(md)&#39;</span><span class="p">)</span>
             <span class="c1"># Execute the script</span>
             <span class="n">obj</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">kernel_client</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">load_script</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add device </span><span class="si">%r</span><span class="s2"> to TyphonConsole.&quot;</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add device </span><span class="si">%r</span><span class="s2"> to TyphosConsole.&quot;</span><span class="p">,</span>
                              <span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="c1"># Cleanup after ourselves</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
-    <span class="c1"># Set the TyphonConsole up to load devices</span>
-    <span class="n">TyphonConsole</span><span class="o">.</span><span class="n">add_device</span> <span class="o">=</span> <span class="n">add_device</span>
+    <span class="c1"># Set the TyphosConsole up to load devices</span>
+    <span class="n">TyphosConsole</span><span class="o">.</span><span class="n">add_device</span> <span class="o">=</span> <span class="n">add_device</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Unable to import ``happi``. Devices will not be added &quot;</span>
-                <span class="s2">&quot;to the ``TyphonConsole`` unless ``TyphonConsole.add_device`` &quot;</span>
+                <span class="s2">&quot;to the ``TyphosConsole`` unless ``TyphosConsole.add_device`` &quot;</span>
                 <span class="s2">&quot;is implemented.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Dummy pass-through function</span>
     <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="n">TyphonConsole</span><span class="o">.</span><span class="n">add_device</span> <span class="o">=</span> <span class="n">add_device</span>
+    <span class="n">TyphosConsole</span><span class="o">.</span><span class="n">add_device</span> <span class="o">=</span> <span class="n">add_device</span>
 </pre></div>
 
            </div>

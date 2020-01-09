@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Typhon Plugins &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>Typhos Plugins &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Utility Functions" href="utils.html" />
-    <link rel="prev" title="typhon.func.FunctionPanel" href="generated/typhon.func.FunctionPanel.html" /> 
+    <link rel="prev" title="typhos.func.FunctionPanel" href="generated/typhos.func.FunctionPanel.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -50,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Typhon
+            <a href="index.html" class="icon icon-home"> Typhos
           
 
           
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -97,7 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Typhon Plugins</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Typhos Plugins</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#signalplugin">SignalPlugin</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#happiplugin">HappiPlugin</a></li>
 </ul>
@@ -117,7 +117,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Typhon</a>
+          <a href="index.html">Typhos</a>
         
       </nav>
 
@@ -148,7 +148,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Typhon Plugins</li>
+      <li>Typhos Plugins</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -167,22 +167,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="typhon-plugins">
-<h1>Typhon Plugins<a class="headerlink" href="#typhon-plugins" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="typhos-plugins">
+<h1>Typhos Plugins<a class="headerlink" href="#typhos-plugins" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="signalplugin">
 <h2>SignalPlugin<a class="headerlink" href="#signalplugin" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="typhon.plugins.register_signal">
-<code class="sig-prename descclassname">typhon.plugins.</code><code class="sig-name descname">register_signal</code><span class="sig-paren">(</span><em class="sig-param">signal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#register_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.register_signal" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.register_signal">
+<code class="sig-prename descclassname">typhos.plugins.</code><code class="sig-name descname">register_signal</code><span class="sig-paren">(</span><em class="sig-param">signal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#register_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.register_signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new Signal to the registry</p>
 <p>The Signal object is kept within <code class="docutils literal notranslate"><span class="pre">signal_registry</span></code> for reference by name
-in the <a class="reference internal" href="#typhon.plugins.SignalConnection" title="typhon.plugins.SignalConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalConnection</span></code></a>. Signals can be added multiple times and
+in the <a class="reference internal" href="#typhos.plugins.SignalConnection" title="typhos.plugins.SignalConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalConnection</span></code></a>. Signals can be added multiple times and
 overwritten but a warning will be emitted.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="typhon.plugins.SignalConnection">
-<em class="property">class </em><code class="sig-prename descclassname">typhon.plugins.</code><code class="sig-name descname">SignalConnection</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">address</em>, <em class="sig-param">protocol=None</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalConnection">
+<em class="property">class </em><code class="sig-prename descclassname">typhos.plugins.</code><code class="sig-name descname">SignalConnection</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">address</em>, <em class="sig-param">protocol=None</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.SignalConnection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Connection to monitor an Ophyd Signal</p>
 <p>This is meant as a generalized connection to any type of Ophyd Signal. It
 handles reporting updates to listeners as well as pushing new values that
@@ -191,8 +191,8 @@ users request in the PyDM interface back to the underlying signal</p>
 signal will expect and emit. It is expected that this type is static
 through the execution of the application</p>
 <dl class="attribute">
-<dt id="typhon.plugins.SignalConnection.signal">
-<code class="sig-name descname">signal</code><a class="headerlink" href="#typhon.plugins.SignalConnection.signal" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalConnection.signal">
+<code class="sig-name descname">signal</code><a class="headerlink" href="#typhos.plugins.SignalConnection.signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stored signal object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -202,8 +202,8 @@ through the execution of the application</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.plugins.SignalConnection.add_listener">
-<code class="sig-name descname">add_listener</code><span class="sig-paren">(</span><em class="sig-param">channel</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.add_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.add_listener" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalConnection.add_listener">
+<code class="sig-name descname">add_listener</code><span class="sig-paren">(</span><em class="sig-param">channel</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.add_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.add_listener" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a listener channel to this connection</p>
 <p>This attaches values input by the user to the <cite>send_new_value</cite> function
 in order to update the Signal object in addition to the default setup
@@ -211,8 +211,8 @@ performed in PyDMConnection</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.plugins.SignalConnection.cast">
-<code class="sig-name descname">cast</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.cast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.cast" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalConnection.cast">
+<code class="sig-name descname">cast</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.cast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.cast" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cast a value to the correct Python type based on <code class="docutils literal notranslate"><span class="pre">signal_type</span></code></p>
 <p>If <code class="docutils literal notranslate"><span class="pre">signal_type</span></code> is not set, the result of <code class="docutils literal notranslate"><span class="pre">ophyd.Signal.describe</span></code>
 is used to determine what the correct Python type for value is. We need
@@ -222,14 +222,14 @@ the correct type before handing them to Ophyd Signal</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.plugins.SignalConnection.close">
-<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.close" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalConnection.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unsubscribe from the Ophyd signal</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.plugins.SignalConnection.put_value">
-<code class="sig-name descname">put_value</code><span class="sig-paren">(</span><em class="sig-param">new_val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.put_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.put_value" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalConnection.put_value">
+<code class="sig-name descname">put_value</code><span class="sig-paren">(</span><em class="sig-param">new_val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.put_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.put_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pass a value from the UI to Signal</p>
 <p>We are not guaranteed that this signal is writeable so catch exceptions
 if they are created. We attempt to cast the received value into the
@@ -237,24 +237,24 @@ reported type of the signal unless it is of type <code class="docutils literal n
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.plugins.SignalConnection.remove_listener">
-<code class="sig-name descname">remove_listener</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">destroying=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.remove_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.remove_listener" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalConnection.remove_listener">
+<code class="sig-name descname">remove_listener</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">destroying=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.remove_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.remove_listener" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a listener channel from this connection</p>
 <p>This removes the <cite>send_new_value</cite> connections from the channel in
 addition to the default disconnection performed in PyDMConnection</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.plugins.SignalConnection.send_new_value">
-<code class="sig-name descname">send_new_value</code><span class="sig-paren">(</span><em class="sig-param">value=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalConnection.send_new_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalConnection.send_new_value" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalConnection.send_new_value">
+<code class="sig-name descname">send_new_value</code><span class="sig-paren">(</span><em class="sig-param">value=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.send_new_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.send_new_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the UI with a new value from the Signal</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="typhon.plugins.SignalPlugin">
-<em class="property">class </em><code class="sig-prename descclassname">typhon.plugins.</code><code class="sig-name descname">SignalPlugin</code><a class="reference internal" href="_modules/typhon/plugins/core.html#SignalPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.SignalPlugin" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.SignalPlugin">
+<em class="property">class </em><code class="sig-prename descclassname">typhos.plugins.</code><code class="sig-name descname">SignalPlugin</code><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.SignalPlugin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plugin registered with PyDM to handle SignalConnection</p>
 </dd></dl>
 
@@ -264,34 +264,34 @@ addition to the default disconnection performed in PyDMConnection</p>
 <p>These functions will not be imported if <code class="docutils literal notranslate"><span class="pre">happi</span></code> is not installed in the
 current Python environment</p>
 <dl class="function">
-<dt id="typhon.plugins.register_client">
-<code class="sig-prename descclassname">typhon.plugins.</code><code class="sig-name descname">register_client</code><span class="sig-paren">(</span><em class="sig-param">client</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/happi.html#register_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.register_client" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.register_client">
+<code class="sig-prename descclassname">typhos.plugins.</code><code class="sig-name descname">register_client</code><span class="sig-paren">(</span><em class="sig-param">client</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/happi.html#register_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.register_client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a Happi Client to be used with the DataPlugin</p>
 <p>This is not required to be called by the user, if your environment is setup
 such that <code class="docutils literal notranslate"><span class="pre">happi.Client.from_config</span></code> will return the desired client</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="typhon.plugins.HappiConnection">
-<em class="property">class </em><code class="sig-prename descclassname">typhon.plugins.</code><code class="sig-name descname">HappiConnection</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">address</em>, <em class="sig-param">protocol=None</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/happi.html#HappiConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.HappiConnection" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.HappiConnection">
+<em class="property">class </em><code class="sig-prename descclassname">typhos.plugins.</code><code class="sig-name descname">HappiConnection</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">address</em>, <em class="sig-param">protocol=None</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/happi.html#HappiConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.HappiConnection" title="Permalink to this definition">¶</a></dt>
 <dd><p>A PyDMConnection to the Happi Database</p>
 <dl class="method">
-<dt id="typhon.plugins.HappiConnection.add_listener">
-<code class="sig-name descname">add_listener</code><span class="sig-paren">(</span><em class="sig-param">channel</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/happi.html#HappiConnection.add_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.HappiConnection.add_listener" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.HappiConnection.add_listener">
+<code class="sig-name descname">add_listener</code><span class="sig-paren">(</span><em class="sig-param">channel</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/happi.html#HappiConnection.add_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.HappiConnection.add_listener" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new channel to the existing connection</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.plugins.HappiConnection.remove_listener">
-<code class="sig-name descname">remove_listener</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">destroying=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/plugins/happi.html#HappiConnection.remove_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.HappiConnection.remove_listener" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.HappiConnection.remove_listener">
+<code class="sig-name descname">remove_listener</code><span class="sig-paren">(</span><em class="sig-param">channel</em>, <em class="sig-param">destroying=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/happi.html#HappiConnection.remove_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.HappiConnection.remove_listener" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove a channel from the database connection</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="typhon.plugins.HappiPlugin">
-<em class="property">class </em><code class="sig-prename descclassname">typhon.plugins.</code><code class="sig-name descname">HappiPlugin</code><a class="reference internal" href="_modules/typhon/plugins/happi.html#HappiPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.plugins.HappiPlugin" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.plugins.HappiPlugin">
+<em class="property">class </em><code class="sig-prename descclassname">typhos.plugins.</code><code class="sig-name descname">HappiPlugin</code><a class="reference internal" href="_modules/typhos/plugins/happi.html#HappiPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.plugins.HappiPlugin" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -308,7 +308,7 @@ such that <code class="docutils literal notranslate"><span class="pre">happi.Cli
         <a href="utils.html" class="btn btn-neutral float-right" title="Utility Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="generated/typhon.func.FunctionPanel.html" class="btn btn-neutral float-left" title="typhon.func.FunctionPanel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="generated/typhos.func.FunctionPanel.html" class="btn btn-neutral float-left" title="typhos.func.FunctionPanel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

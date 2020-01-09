@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.tools.log &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>typhos.tools.log &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> Typhon
+            <a href="../../../index.html" class="icon icon-home"> Typhos
           
 
           
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -95,7 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhos Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utility Functions</a></li>
 </ul>
 
@@ -111,7 +111,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Typhon</a>
+          <a href="../../../index.html">Typhos</a>
         
       </nav>
 
@@ -144,7 +144,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>typhon.tools.log</li>
+      <li>typhos.tools.log</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,18 +159,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for typhon.tools.log</h1><div class="highlight"><pre>
+  <h1>Source code for typhos.tools.log</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">pydm.widgets.logdisplay</span> <span class="k">import</span> <span class="n">PyDMLogDisplay</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QVBoxLayout</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.logdisplay</span> <span class="kn">import</span> <span class="n">PyDMLogDisplay</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QVBoxLayout</span>
 
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">TyphonBase</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">TyphosBase</span>
 
 
-<div class="viewcode-block" id="TyphonLogDisplay"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphonLogDisplay</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Typhon Logging Display&quot;&quot;&quot;</span>
-<div class="viewcode-block" id="TyphonLogDisplay.__init__"><a class="viewcode-back" href="../../../generated/typhon.tools.TyphonLogDisplay.html#typhon.tools.TyphonLogDisplay.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosLogDisplay"><a class="viewcode-back" href="../../../generated/typhos.tools.TyphosLogDisplay.html#typhos.tools.TyphosLogDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphosLogDisplay</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Typhos Logging Display&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TyphosLogDisplay.__init__"><a class="viewcode-back" href="../../../generated/typhos.tools.TyphosLogDisplay.html#typhos.tools.TyphosLogDisplay.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="c1"># Set the logname to be non-existant so that we do not attach to the</span>
         <span class="c1"># root logger. This causes issue if this widget is closed before the</span>

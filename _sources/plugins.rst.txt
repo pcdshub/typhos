@@ -1,15 +1,15 @@
 ==============
-Typhon Plugins
+Typhos Plugins
 ==============
 
 SignalPlugin
 ============
-.. autofunction:: typhon.plugins.register_signal
+.. autofunction:: typhos.plugins.register_signal
 
-.. autoclass:: typhon.plugins.SignalConnection
+.. autoclass:: typhos.plugins.SignalConnection
    :members:
 
-.. autoclass:: typhon.plugins.SignalPlugin
+.. autoclass:: typhos.plugins.SignalPlugin
 
 
 HappiPlugin
@@ -17,9 +17,9 @@ HappiPlugin
 These functions will not be imported if ``happi`` is not installed in the
 current Python environment
 
-.. autofunction:: typhon.plugins.register_client
+.. autofunction:: typhos.plugins.register_client
 
-.. autoclass:: typhon.plugins.HappiConnection
+.. autoclass:: typhos.plugins.HappiConnection
    :members:
 
-.. autoclass:: typhon.plugins.HappiPlugin
+.. autoclass:: typhos.plugins.HappiPlugin

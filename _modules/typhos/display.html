@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.display &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>typhos.display &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Typhon
+            <a href="../../index.html" class="icon icon-home"> Typhos
           
 
           
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -95,7 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
 </ul>
 
@@ -111,7 +111,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Typhon</a>
+          <a href="../../index.html">Typhos</a>
         
       </nav>
 
@@ -144,7 +144,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>typhon.display</li>
+      <li>typhos.display</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,20 +159,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for typhon.display</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
+  <h1>Source code for typhos.display</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 
-<span class="kn">from</span> <span class="nn">pydm</span> <span class="k">import</span> <span class="n">Display</span>
-<span class="kn">from</span> <span class="nn">pydm.utilities.display_loading</span> <span class="k">import</span> <span class="n">load_py_file</span>
+<span class="kn">from</span> <span class="nn">pydm</span> <span class="kn">import</span> <span class="n">Display</span>
+<span class="kn">from</span> <span class="nn">pydm.utilities.display_loading</span> <span class="kn">import</span> <span class="n">load_py_file</span>
 
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Q_ENUMS</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Slot</span><span class="p">,</span> <span class="n">Q_ENUMS</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">,</span> <span class="n">clear_layout</span><span class="p">,</span>
-                    <span class="n">reload_widget_stylesheet</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonDesignerMixin</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="n">TyphosBase</span><span class="p">,</span> <span class="n">clear_layout</span><span class="p">,</span> <span class="n">reload_widget_stylesheet</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">TyphosDesignerMixin</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -194,7 +193,7 @@
         <span class="k">return</span> <span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;TemplateEnum&#39;</span><span class="p">,</span> <span class="n">entries</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TyphonDeviceDisplay"><a class="viewcode-back" href="../../display.html#typhon.TyphonDeviceDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphonDeviceDisplay</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">TyphonDesignerMixin</span><span class="p">,</span> <span class="n">DisplayTypes</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosDeviceDisplay"><a class="viewcode-back" href="../../display.html#typhos.TyphosDeviceDisplay">[docs]</a><span class="k">class</span> <span class="nc">TyphosDeviceDisplay</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">TyphosDesignerMixin</span><span class="p">,</span> <span class="n">DisplayTypes</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main Panel display for a signal Ophyd Device</span>
 
@@ -209,7 +208,7 @@
 <span class="sd">    do not add any methods to the main panel it will not be visible.</span>
 
 <span class="sd">    This contains the widgets for all of the root devices signals, any methods</span>
-<span class="sd">    you would like to display, and an optional image. As with ``typhon``</span>
+<span class="sd">    you would like to display, and an optional image. As with ``typhos``</span>
 <span class="sd">    convention, the base initialization sets up the widgets and the</span>
 <span class="sd">    ``.from_device`` class method will automatically populate them.</span>
 
@@ -227,7 +226,7 @@
     <span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">DisplayTypes</span><span class="p">)</span>
     <span class="n">TemplateEnum</span> <span class="o">=</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">to_enum</span><span class="p">()</span>  <span class="c1"># For convenience</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Intialize background variable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_forced_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -280,7 +279,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 
-<div class="viewcode-block" id="TyphonDeviceDisplay.load_template"><a class="viewcode-back" href="../../display.html#typhon.TyphonDeviceDisplay.load_template">[docs]</a>    <span class="k">def</span> <span class="nf">load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosDeviceDisplay.load_template"><a class="viewcode-back" href="../../display.html#typhos.TyphosDeviceDisplay.load_template">[docs]</a>    <span class="k">def</span> <span class="nf">load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a new template</span>
 
@@ -326,9 +325,9 @@
                                             <span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">)</span>
             <span class="c1"># Add device to all children widgets</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
-                <span class="n">designer</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphonDesignerMixin</span><span class="p">)</span>
+                <span class="n">designer</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphosDesignerMixin</span><span class="p">)</span>
                             <span class="ow">or</span> <span class="p">[])</span>
-                <span class="n">bases</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">)</span>
+                <span class="n">bases</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_main_widget</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">)</span>
                          <span class="ow">or</span> <span class="p">[])</span>
                 <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">bases</span> <span class="o">+</span> <span class="n">designer</span><span class="p">):</span>
                     <span class="n">widget</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -350,9 +349,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_forced_template</span> <span class="o">=</span> <span class="n">value</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_macros</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TyphonDeviceDisplay.add_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDeviceDisplay.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosDeviceDisplay.add_device"><a class="viewcode-back" href="../../display.html#typhos.TyphosDeviceDisplay.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a Device and signals to the TyphonDeviceDisplay</span>
+<span class="sd">        Add a Device and signals to the TyphosDeviceDisplay</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -386,10 +385,10 @@
         <span class="c1"># Reload template</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_template</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TyphonDeviceDisplay.from_device"><a class="viewcode-back" href="../../display.html#typhon.TyphonDeviceDisplay.from_device">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TyphosDeviceDisplay.from_device"><a class="viewcode-back" href="../../display.html#typhos.TyphosDeviceDisplay.from_device">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a new TyphonDeviceDisplay from a Device</span>
+<span class="sd">        Create a new TyphosDeviceDisplay from a Device</span>
 
 <span class="sd">        Loads the signals in to the appropriate positions and sets the title to</span>
 <span class="sd">        a cleaned version of the device name</span>

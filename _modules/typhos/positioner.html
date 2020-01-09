@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.positioner &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>typhos.positioner &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Typhon
+            <a href="../../index.html" class="icon icon-home"> Typhos
           
 
           
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -95,7 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
 </ul>
 
@@ -111,7 +111,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Typhon</a>
+          <a href="../../index.html">Typhos</a>
         
       </nav>
 
@@ -144,7 +144,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>typhon.positioner</li>
+      <li>typhos.positioner</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,25 +159,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for typhon.positioner</h1><div class="highlight"><pre>
+  <h1>Source code for typhos.positioner</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">ophyd</span> <span class="k">import</span> <span class="n">Device</span>
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="k">import</span> <span class="n">uic</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Device</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">uic</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Slot</span>
 
-<span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">channel_from_signal</span><span class="p">,</span> <span class="n">grab_kind</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">.plugins</span> <span class="kn">import</span> <span class="n">register_signal</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">ui_dir</span><span class="p">,</span> <span class="n">channel_from_signal</span><span class="p">,</span> <span class="n">grab_kind</span><span class="p">,</span>
                     <span class="n">raise_to_operator</span><span class="p">,</span> <span class="n">reload_widget_stylesheet</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.status</span> <span class="k">import</span> <span class="n">TyphonStatusThread</span>
-<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="n">TyphonDesignerMixin</span>
+<span class="kn">from</span> <span class="nn">.status</span> <span class="kn">import</span> <span class="n">TyphosStatusThread</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">TyphosDesignerMixin</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TyphonPositionerWidget"><a class="viewcode-back" href="../../widgets.html#typhon.TyphonPositionerWidget">[docs]</a><span class="k">class</span> <span class="nc">TyphonPositionerWidget</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">TyphonDesignerMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosPositionerWidget"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget">[docs]</a><span class="k">class</span> <span class="nc">TyphosPositionerWidget</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">TyphosDesignerMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Widget to interact with an ``ophyd.Positioner``</span>
 
@@ -214,7 +214,7 @@
     <span class="n">ui_template</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;positioner.ui&#39;</span><span class="p">)</span>
     <span class="n">_min_visible_operation</span> <span class="o">=</span> <span class="mf">0.1</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_moving</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
@@ -228,7 +228,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="TyphonPositionerWidget.set"><a class="viewcode-back" href="../../widgets.html#typhon.TyphonPositionerWidget.set">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="TyphosPositionerWidget.set"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.set">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set the device to the value configured by ``ui.set_value``&quot;&quot;&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
@@ -246,7 +246,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting device </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
             <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting up new status thread ...&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="n">TyphonStatusThread</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="n">TyphosStatusThread</span><span class="p">(</span>
                                         <span class="n">status</span><span class="p">,</span>
                                         <span class="n">lag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_visible_operation</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span><span class="o">.</span><span class="n">status_started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">move_changed</span><span class="p">)</span>
@@ -259,21 +259,21 @@
             <span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">raise_to_operator</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TyphonPositionerWidget.positive_tweak"><a class="viewcode-back" href="../../widgets.html#typhon.TyphonPositionerWidget.positive_tweak">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="TyphosPositionerWidget.positive_tweak"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.positive_tweak">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">positive_tweak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Tweak positive by the amount listed in ``ui.tweak_value``&quot;&quot;&quot;</span>
         <span class="n">setpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_position</span><span class="p">()</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tweak_value</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">setpoint</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TyphonPositionerWidget.negative_tweak"><a class="viewcode-back" href="../../widgets.html#typhon.TyphonPositionerWidget.negative_tweak">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="TyphosPositionerWidget.negative_tweak"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.negative_tweak">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">negative_tweak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Tweak negative by the amount listed in ``ui.tweak_value``&quot;&quot;&quot;</span>
         <span class="n">setpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_position</span><span class="p">()</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tweak_value</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">setpoint</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TyphonPositionerWidget.stop"><a class="viewcode-back" href="../../widgets.html#typhon.TyphonPositionerWidget.stop">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="TyphosPositionerWidget.stop"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.stop">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Stop device&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
@@ -284,7 +284,7 @@
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No Device configured for widget!&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
-<div class="viewcode-block" id="TyphonPositionerWidget.add_device"><a class="viewcode-back" href="../../widgets.html#typhon.TyphonPositionerWidget.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosPositionerWidget.add_device"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add a device to the widget&quot;&quot;&quot;</span>
         <span class="c1"># Add device to cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># only one device allowed</span>
@@ -360,14 +360,14 @@
         <span class="sd">&quot;&quot;&quot;The last requested move failed&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="ow">is</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="TyphonPositionerWidget.move_changed"><a class="viewcode-back" href="../../widgets.html#typhon.TyphonPositionerWidget.move_changed">[docs]</a>    <span class="k">def</span> <span class="nf">move_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosPositionerWidget.move_changed"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.move_changed">[docs]</a>    <span class="k">def</span> <span class="nf">move_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called when a move is begun&quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Begin showing move in TyphonPositionerWidget&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Begin showing move in TyphosPositionerWidget&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="TyphonPositionerWidget.done_moving"><a class="viewcode-back" href="../../widgets.html#typhon.TyphonPositionerWidget.done_moving">[docs]</a>    <span class="k">def</span> <span class="nf">done_moving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosPositionerWidget.done_moving"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.done_moving">[docs]</a>    <span class="k">def</span> <span class="nf">done_moving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">success</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called when a move is complete&quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed move in TyphonPositionerWidget (success=</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed move in TyphosPositionerWidget (success=</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
                      <span class="n">success</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="n">success</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span></div></div>

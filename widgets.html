@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Widgets &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>Widgets &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="typhon.signal.SignalPanel" href="generated/typhon.signal.SignalPanel.html" />
+    <link rel="next" title="typhos.signal.SignalPanel" href="generated/typhos.signal.SignalPanel.html" />
     <link rel="prev" title="Display Types" href="display.html" /> 
 </head>
 
@@ -50,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Typhon
+            <a href="index.html" class="icon icon-home"> Typhos
           
 
           
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -98,15 +98,15 @@
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Widgets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#panels">Panels</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/typhon.signal.SignalPanel.html">typhon.signal.SignalPanel</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generated/typhon.func.FunctionPanel.html">typhon.func.FunctionPanel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhos.signal.SignalPanel.html">typhos.signal.SignalPanel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/typhos.func.FunctionPanel.html">typhos.func.FunctionPanel</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#typhonpositionerwidget">TyphonPositionerWidget</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#typhonmethodbutton">TyphonMethodButton</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#typhospositionerwidget">TyphosPositionerWidget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#typhosmethodbutton">TyphosMethodButton</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
 </ul>
 
@@ -122,7 +122,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Typhon</a>
+          <a href="index.html">Typhos</a>
         
       </nav>
 
@@ -174,22 +174,22 @@
             
   <div class="section" id="widgets">
 <h1>Widgets<a class="headerlink" href="#widgets" title="Permalink to this headline">¶</a></h1>
-<p>Typhon uses a few custom widgets to create a clean and concise user interface.
+<p>Typhos uses a few custom widgets to create a clean and concise user interface.
 While most users should not be interacting with these directly, there may be a
 need if a user opts to create their display by hand instead of automatically
 generating one. If you would just like a widget for an <code class="docutils literal notranslate"><span class="pre">ophyd.Signal</span></code>, there
 is a function available:</p>
 <dl class="function">
-<dt id="typhon.signal.signal_widget">
-<code class="sig-prename descclassname">typhon.signal.</code><code class="sig-name descname">signal_widget</code><span class="sig-paren">(</span><em class="sig-param">signal</em>, <em class="sig-param">read_only=False</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/signal.html#signal_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.signal.signal_widget" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.signal.signal_widget">
+<code class="sig-prename descclassname">typhos.signal.</code><code class="sig-name descname">signal_widget</code><span class="sig-paren">(</span><em class="sig-param">signal</em>, <em class="sig-param">read_only=False</em>, <em class="sig-param">tooltip=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/signal.html#signal_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.signal.signal_widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory for creating a PyDMWidget from a signal</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal</strong> (<em>ophyd.Signal</em>) – Signal object to create widget</p></li>
-<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether this widget should be able to write back to the signal you
+<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether this widget should be able to write back to the signal you
 provided</p></li>
-<li><p><strong>tooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><em>optional</em>) – Tooltip to use for the widget</p></li>
+<li><p><strong>tooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – Tooltip to use for the widget</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -204,30 +204,30 @@ be able to write back to the widget and if the signal has <code class="docutils 
 
 <div class="section" id="panels">
 <h2>Panels<a class="headerlink" href="#panels" title="Permalink to this headline">¶</a></h2>
-<p>One of the major design principles of Typhon is that users should be able to
+<p>One of the major design principles of Typhos is that users should be able to
 see what they need and hide one they don’t. Thefore, many of the widget
 implementations are placed in “Panels” these consist of QPushButton header that
-hides and shows the contents. Each variation in Typhon is documented below.</p>
+hides and shows the contents. Each variation in Typhos is documented below.</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.signal.SignalPanel</span></code></a>([signals])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/typhos.signal.SignalPanel.html#typhos.signal.SignalPanel" title="typhos.signal.SignalPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhos.signal.SignalPanel</span></code></a>([signals])</p></td>
 <td><p>Base panel display for EPICS signals</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/typhon.func.FunctionPanel.html#typhon.func.FunctionPanel" title="typhon.func.FunctionPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhon.func.FunctionPanel</span></code></a>([methods, parent])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/typhos.func.FunctionPanel.html#typhos.func.FunctionPanel" title="typhos.func.FunctionPanel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">typhos.func.FunctionPanel</span></code></a>([methods, parent])</p></td>
 <td><p>Function Panel</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="typhonpositionerwidget">
-<h2>TyphonPositionerWidget<a class="headerlink" href="#typhonpositionerwidget" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="typhospositionerwidget">
+<h2>TyphosPositionerWidget<a class="headerlink" href="#typhospositionerwidget" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="typhon.TyphonPositionerWidget">
-<em class="property">class </em><code class="sig-prename descclassname">typhon.</code><code class="sig-name descname">TyphonPositionerWidget</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget">
+<em class="property">class </em><code class="sig-prename descclassname">typhos.</code><code class="sig-name descname">TyphosPositionerWidget</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Widget to interact with an <code class="docutils literal notranslate"><span class="pre">ophyd.Positioner</span></code></p>
 <p>Standard positioner motion requires a large amount of context for
 operators. For most motors, it may not be enough to simply have a text
@@ -273,82 +273,82 @@ that indicates the motion completeness. Must be implemented.</p></td>
 </tbody>
 </table>
 <dl class="method">
-<dt id="typhon.TyphonPositionerWidget.add_device">
-<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.add_device" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.add_device">
+<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a device to the widget</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonPositionerWidget.done_moving">
-<code class="sig-name descname">done_moving</code><span class="sig-paren">(</span><em class="sig-param">success</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.done_moving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.done_moving" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.done_moving">
+<code class="sig-name descname">done_moving</code><span class="sig-paren">(</span><em class="sig-param">success</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.done_moving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.done_moving" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a move is complete</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="typhon.TyphonPositionerWidget.failed_move">
-<code class="sig-name descname">failed_move</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.failed_move" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.failed_move">
+<code class="sig-name descname">failed_move</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.failed_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>The last requested move failed</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonPositionerWidget.move_changed">
-<code class="sig-name descname">move_changed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.move_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.move_changed" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.move_changed">
+<code class="sig-name descname">move_changed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.move_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.move_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a move is begun</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="typhon.TyphonPositionerWidget.moving">
-<code class="sig-name descname">moving</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.moving" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.moving">
+<code class="sig-name descname">moving</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.moving" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current state of widget</p>
 <p>This will lag behind the actual state of the positioner in order to
 prevent unnecessary rapid movements</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonPositionerWidget.negative_tweak">
-<code class="sig-name descname">negative_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.negative_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.negative_tweak" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.negative_tweak">
+<code class="sig-name descname">negative_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.negative_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.negative_tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak negative by the amount listed in <code class="docutils literal notranslate"><span class="pre">ui.tweak_value</span></code></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonPositionerWidget.positive_tweak">
-<code class="sig-name descname">positive_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.positive_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.positive_tweak" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.positive_tweak">
+<code class="sig-name descname">positive_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.positive_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.positive_tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak positive by the amount listed in <code class="docutils literal notranslate"><span class="pre">ui.tweak_value</span></code></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonPositionerWidget.set">
-<code class="sig-name descname">set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.set" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the device to the value configured by <code class="docutils literal notranslate"><span class="pre">ui.set_value</span></code></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonPositionerWidget.stop">
-<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/positioner.html#TyphonPositionerWidget.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonPositionerWidget.stop" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.stop">
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop device</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="typhon.TyphonPositionerWidget.successful_move">
-<code class="sig-name descname">successful_move</code><a class="headerlink" href="#typhon.TyphonPositionerWidget.successful_move" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosPositionerWidget.successful_move">
+<code class="sig-name descname">successful_move</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.successful_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>The last requested move was successful</p>
 </dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="typhonmethodbutton">
-<h2>TyphonMethodButton<a class="headerlink" href="#typhonmethodbutton" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="typhosmethodbutton">
+<h2>TyphosMethodButton<a class="headerlink" href="#typhosmethodbutton" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="typhon.TyphonMethodButton">
-<em class="property">class </em><code class="sig-prename descclassname">typhon.</code><code class="sig-name descname">TyphonMethodButton</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosMethodButton">
+<em class="property">class </em><code class="sig-prename descclassname">typhos.</code><code class="sig-name descname">TyphosMethodButton</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosMethodButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>QPushButton to access a method of a Device</p>
-<p>The function provided by the loaded device and the <a class="reference internal" href="#typhon.TyphonMethodButton.method_name" title="typhon.TyphonMethodButton.method_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">method_name</span></code></a>
+<p>The function provided by the loaded device and the <a class="reference internal" href="#typhos.TyphosMethodButton.method_name" title="typhos.TyphosMethodButton.method_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">method_name</span></code></a>
 will be run when the button is clicked. If <code class="docutils literal notranslate"><span class="pre">use_status</span></code> is set to True,
 the button will be disabled while the <code class="docutils literal notranslate"><span class="pre">Status</span></code> object is active.</p>
 <dl class="method">
-<dt id="typhon.TyphonMethodButton.add_device">
-<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.add_device" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosMethodButton.add_device">
+<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param">device</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosMethodButton.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new device to the widget</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -358,26 +358,26 @@ the button will be disabled while the <code class="docutils literal notranslate"
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonMethodButton.execute">
-<code class="sig-name descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.execute" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosMethodButton.execute">
+<code class="sig-name descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosMethodButton.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute the method given by <code class="docutils literal notranslate"><span class="pre">method_name</span></code></p>
 </dd></dl>
 
 <dl class="method">
-<dt id="typhon.TyphonMethodButton.from_device">
-<em class="property">classmethod </em><code class="sig-name descname">from_device</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhon/func.html#TyphonMethodButton.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhon.TyphonMethodButton.from_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a TyphonMethodButton from a device</p>
+<dt id="typhos.TyphosMethodButton.from_device">
+<em class="property">classmethod </em><code class="sig-name descname">from_device</code><span class="sig-paren">(</span><em class="sig-param">device</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosMethodButton.from_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a TyphosMethodButton from a device</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="typhon.TyphonMethodButton.method_name">
-<code class="sig-name descname">method_name</code><a class="headerlink" href="#typhon.TyphonMethodButton.method_name" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosMethodButton.method_name">
+<code class="sig-name descname">method_name</code><a class="headerlink" href="#typhos.TyphosMethodButton.method_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of method on provided Device to execute</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="typhon.TyphonMethodButton.use_status">
-<code class="sig-name descname">use_status</code><a class="headerlink" href="#typhon.TyphonMethodButton.use_status" title="Permalink to this definition">¶</a></dt>
+<dt id="typhos.TyphosMethodButton.use_status">
+<code class="sig-name descname">use_status</code><a class="headerlink" href="#typhos.TyphosMethodButton.use_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the status to enable and disable the button</p>
 </dd></dl>
 
@@ -394,7 +394,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generated/typhon.signal.SignalPanel.html" class="btn btn-neutral float-right" title="typhon.signal.SignalPanel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generated/typhos.signal.SignalPanel.html" class="btn btn-neutral float-right" title="typhos.signal.SignalPanel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="display.html" class="btn btn-neutral float-left" title="Display Types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

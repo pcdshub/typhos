@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Application Connections &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>Application Connections &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -50,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Typhon
+            <a href="index.html" class="icon icon-home"> Typhos
           
 
           
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -104,7 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
 </ul>
 
@@ -120,7 +120,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Typhon</a>
+          <a href="index.html">Typhos</a>
         
       </nav>
 
@@ -174,19 +174,19 @@
 <h1>Application Connections<a class="headerlink" href="#application-connections" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="ophyd-signals">
 <h2>Ophyd Signals<a class="headerlink" href="#ophyd-signals" title="Permalink to this headline">¶</a></h2>
-<p>Typhon takes advantage of the flexible data plugin system contained within
+<p>Typhos takes advantage of the flexible data plugin system contained within
 <code class="docutils literal notranslate"><span class="pre">PyDM</span></code> and the abstraction of the “control layer” within <code class="docutils literal notranslate"><span class="pre">Ophyd</span></code>. In the
-<a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, objects signals are queried for their type. If these are
+<a class="reference internal" href="generated/typhos.signal.SignalPanel.html#typhos.signal.SignalPanel" title="typhos.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, objects signals are queried for their type. If these are
 determined to be coming from <code class="docutils literal notranslate"><span class="pre">EPICS</span></code> the data plugin configured within
 <code class="docutils literal notranslate"><span class="pre">PyDM</span></code> is used directly, any other kind of signal goes through the generic
-<a class="reference internal" href="plugins.html#typhon.plugins.SignalPlugin" title="typhon.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a>. This uses the subscription system contained within
+<a class="reference internal" href="plugins.html#typhos.plugins.SignalPlugin" title="typhos.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a>. This uses the subscription system contained within
 <code class="docutils literal notranslate"><span class="pre">Ophyd</span></code> to keep widgets values updated. One caveat is that <code class="docutils literal notranslate"><span class="pre">PyDM</span></code> requires
 that channels are specified by a string identifier. In the case of
 <code class="docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> objects we want to ensure that these are passed by reference
 to avoid duplicating objects. This means the workflow for adding these has one
 more additonal step where the <code class="docutils literal notranslate"><span class="pre">Signal</span></code> is registered with the <code class="docutils literal notranslate"><span class="pre">PyDM</span></code>
 plugin.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typhon.plugins</span> <span class="kn">import</span> <span class="n">register_signal</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typhos.plugins</span> <span class="kn">import</span> <span class="n">register_signal</span>
 
 <span class="c1"># Create an Ophyd Signal</span>
 <span class="n">my_signal</span> <span class="o">=</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;this_signal&#39;</span><span class="p">)</span>
@@ -196,13 +196,13 @@ plugin.</p>
 <span class="n">PyDMWidget</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s1">&#39;sig://this_signal&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Note that this is all done for you if you use the <a class="reference internal" href="generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel" title="typhon.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, but
-maybe useful if you would like to use the <a class="reference internal" href="plugins.html#typhon.plugins.SignalPlugin" title="typhon.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a> directly.</p>
+<p>Note that this is all done for you if you use the <a class="reference internal" href="generated/typhos.signal.SignalPanel.html#typhos.signal.SignalPanel" title="typhos.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, but
+maybe useful if you would like to use the <a class="reference internal" href="plugins.html#typhos.plugins.SignalPlugin" title="typhos.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a> directly.</p>
 <div class="section" id="inclusion-of-metadata">
 <h3>Inclusion of Metadata<a class="headerlink" href="#inclusion-of-metadata" title="Permalink to this headline">¶</a></h3>
 <p>In many cases just knowing the value of a signal is not enough to accurately
 display it. Extra pieces of information such as the units and precision of
-information can provide a richer operator experience. <code class="docutils literal notranslate"><span class="pre">Typhon</span></code> counts on this
+information can provide a richer operator experience. <code class="docutils literal notranslate"><span class="pre">Typhos</span></code> counts on this
 information being available in the output of <code class="docutils literal notranslate"><span class="pre">describe</span></code> method of the signal.
 If you want your child <code class="docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> class to convey this information make
 sure that it is expressed properly in the output of <code class="docutils literal notranslate"><span class="pre">describe</span></code>.</p>
@@ -233,7 +233,7 @@ sure that it is expressed properly in the output of <code class="docutils litera
 <div class="section" id="happi-plugin">
 <h2>Happi Plugin<a class="headerlink" href="#happi-plugin" title="Permalink to this headline">¶</a></h2>
 <p>The PyDM Plugin interface makes no mandate about the type of signals that we
-connect to our widgets. The <a class="reference internal" href="plugins.html#typhon.plugins.HappiPlugin" title="typhon.plugins.HappiPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">HappiPlugin</span></code></a> and corresponding
+connect to our widgets. The <a class="reference internal" href="plugins.html#typhos.plugins.HappiPlugin" title="typhos.plugins.HappiPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">HappiPlugin</span></code></a> and corresponding
 <code class="docutils literal notranslate"><span class="pre">HappiChannel</span></code> contains alternative signals in order to send entire <code class="docutils literal notranslate"><span class="pre">ophyd</span></code>
 objects from a stored database to our widgets. This is useful where we want to
 populate a template with an entire devices signals instead of connecting

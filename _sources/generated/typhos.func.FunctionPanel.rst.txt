@@ -1,7 +1,7 @@
-typhon.func.FunctionPanel
+typhos.func.FunctionPanel
 =========================
 
-.. currentmodule:: typhon.func
+.. currentmodule:: typhos.func
 
 .. autoclass:: FunctionPanel
 

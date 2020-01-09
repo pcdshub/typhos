@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Typhon &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>Typhos &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> Typhon
+            <a href="#" class="icon icon-home"> Typhos
           
 
           
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -96,7 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
 </ul>
 
@@ -112,7 +112,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">Typhon</a>
+          <a href="#">Typhos</a>
         
       </nav>
 
@@ -143,7 +143,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Typhon</li>
+      <li>Typhos</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -162,29 +162,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="typhon">
-<h1>Typhon<a class="headerlink" href="#typhon" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="typhos">
+<h1>Typhos<a class="headerlink" href="#typhos" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>This package was renamed.</strong></p>
+<p>The previous name Typhon was renamed as Typhos due to PyPI name collision.
+For now we offer backwards compatibility but it is strongly recommended
+that you update all references in your code.</p>
+<p>The compatibility layer will be dropped soon after two releases of this
+package.</p>
+</div>
 <p>EPICS is a flexible and powerful controls system to access to experimental
 information, however, the relation and meaning of process variables is often
 obscure. Many of the user interfaces for EPICS information reflect this, as
 walls of buttons and flashing lights bombard the user with little thought to
 structure or cohesion.</p>
-<p>Typhon addresses this by providing an automated way to generate screens based
+<p>Typhos addresses this by providing an automated way to generate screens based
 on a provided hierarchy of devices and signals. Built using PyDM, a PyQt based
-display manager developed at SLAC National Laboratory, Typhon utilizes a large
+display manager developed at SLAC National Laboratory, Typhos utilizes a large
 toolkit of widgets to display EPICS information. For each process variable, a
 corresponding widget is created based on; the importance to the average
 operator, the type of value the EPICS PV will return, and whether a user should
 be allowed to write to the variable. These widgets are then placed in a
 convenient tab-based system to only show the necessary information for basic
 function, but still allow access to more advanced signals.</p>
-<p>Instead of reinventing a new way to specify device structures, Typhon uses
+<p>Instead of reinventing a new way to specify device structures, Typhos uses
 <cite>Ophyd</cite>, a library to abstract EPICS information into consistently structured
 Python objects. Originally built for scripting experimental procedures at
 NSLSII, Ophyd represents devices as combinations of components which are
 either signals or nested devices. Then, either at runtime or by using the
 defaults of the representative Python class, these signals are sorted into
-different categories based on their relevance to operators. Typhon uses this
+different categories based on their relevance to operators. Typhos uses this
 information to craft user interfaces.</p>
 <div class="section" id="related-projects">
 <h2>Related Projects<a class="headerlink" href="#related-projects" title="Permalink to this headline">¶</a></h2>

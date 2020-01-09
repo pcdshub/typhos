@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhon.signal &mdash; Typhon 0.4.0a0+35.g29ed10b documentation</title>
+  <title>typhos.signal &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
   
 
   
@@ -48,7 +48,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Typhon
+            <a href="../../index.html" class="icon icon-home"> Typhos
           
 
           
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.4.0a0+35.g29ed10b
+                0.5.0+28.gf69532a
               </div>
             
           
@@ -95,7 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../display.html">Display Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhon Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Plugins</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
 </ul>
 
@@ -111,7 +111,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Typhon</a>
+          <a href="../../index.html">Typhos</a>
         
       </nav>
 
@@ -144,7 +144,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>typhon.signal</li>
+      <li>typhos.signal</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,37 +159,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for typhon.signal</h1><div class="highlight"><pre>
+  <h1>Source code for typhos.signal</h1><div class="highlight"><pre>
 <span></span><span class="c1">############</span>
 <span class="c1"># Standard #</span>
 <span class="c1">############</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="c1">############</span>
 <span class="c1"># External #</span>
 <span class="c1">############</span>
-<span class="kn">from</span> <span class="nn">ophyd</span> <span class="k">import</span> <span class="n">Kind</span>
-<span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="k">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
-<span class="kn">from</span> <span class="nn">pydm.widgets.display_format</span> <span class="k">import</span> <span class="n">DisplayFormat</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="k">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">QSize</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Kind</span>
+<span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.display_format</span> <span class="kn">import</span> <span class="n">DisplayFormat</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">QSize</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QGridLayout</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">)</span>
 
 <span class="c1">#############</span>
 <span class="c1">#  Package  #</span>
 <span class="c1">#############</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">clear_layout</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">grab_kind</span><span class="p">,</span>
-                    <span class="n">is_signal_ro</span><span class="p">,</span> <span class="n">TyphonBase</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.widgets</span> <span class="k">import</span> <span class="p">(</span><span class="n">TyphonLineEdit</span><span class="p">,</span> <span class="n">TyphonComboBox</span><span class="p">,</span> <span class="n">TyphonLabel</span><span class="p">,</span>
-                      <span class="n">TyphonDesignerMixin</span><span class="p">,</span> <span class="n">ImageDialogButton</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">channel_name</span><span class="p">,</span> <span class="n">clear_layout</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">grab_kind</span><span class="p">,</span>
+                    <span class="n">is_signal_ro</span><span class="p">,</span> <span class="n">TyphosBase</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TyphosLineEdit</span><span class="p">,</span> <span class="n">TyphosComboBox</span><span class="p">,</span> <span class="n">TyphosLabel</span><span class="p">,</span>
+                      <span class="n">TyphosDesignerMixin</span><span class="p">,</span> <span class="n">ImageDialogButton</span><span class="p">,</span>
                       <span class="n">WaveformDialogButton</span><span class="p">,</span> <span class="n">SignalDialogButton</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.plugins</span> <span class="k">import</span> <span class="n">register_signal</span>
+<span class="kn">from</span> <span class="nn">.plugins</span> <span class="kn">import</span> <span class="n">register_signal</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="signal_widget"><a class="viewcode-back" href="../../widgets.html#typhon.signal.signal_widget">[docs]</a><span class="k">def</span> <span class="nf">signal_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="signal_widget"><a class="viewcode-back" href="../../widgets.html#typhos.signal.signal_widget">[docs]</a><span class="k">def</span> <span class="nf">signal_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Factory for creating a PyDMWidget from a signal</span>
 
@@ -241,18 +241,18 @@
         <span class="c1"># Check for enum_strs, if so create a QCombobox</span>
         <span class="k">if</span> <span class="n">read_only</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Label for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonLabel</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphosLabel</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_label&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Create a QCombobox if the widget has enum_strs</span>
             <span class="k">if</span> <span class="s1">&#39;enum_strs&#39;</span> <span class="ow">in</span> <span class="n">desc</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Combobox for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonComboBox</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphosComboBox</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_combo&#39;</span>
             <span class="c1"># Otherwise a LineEdit will suffice</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating LineEdit for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphonLineEdit</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="n">TyphosLineEdit</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_edit&#39;</span>
     <span class="c1"># Waveform</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shape&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -265,18 +265,18 @@
         <span class="n">widget</span> <span class="o">=</span> <span class="n">ImageDialogButton</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_image_button&#39;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unable to create widget for widget of &quot;</span>
-                         <span class="n">f</span><span class="s2">&quot;shape {len(desc.get(&#39;shape&#39;))} from </span><span class="si">{signal.name}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to create widget for widget of &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;shape {len(desc.get(&#39;shape&#39;))} from </span><span class="si">{signal.name}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">widget_instance</span> <span class="o">=</span> <span class="n">widget</span><span class="p">(</span><span class="n">init_channel</span><span class="o">=</span><span class="n">chan</span><span class="p">)</span>
     <span class="n">widget_instance</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">widget_instance</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span> <span class="ow">and</span> <span class="n">widget</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TyphonLabel</span><span class="p">,</span> <span class="n">TyphonLineEdit</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span> <span class="ow">and</span> <span class="n">widget</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TyphosLabel</span><span class="p">,</span> <span class="n">TyphosLineEdit</span><span class="p">):</span>
         <span class="n">widget_instance</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">=</span> <span class="n">DisplayFormat</span><span class="o">.</span><span class="n">String</span>
     <span class="k">return</span> <span class="n">widget_instance</span></div>
 
 
-<div class="viewcode-block" id="SignalPanel"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel">[docs]</a><span class="k">class</span> <span class="nc">SignalPanel</span><span class="p">(</span><span class="n">QGridLayout</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalPanel"><a class="viewcode-back" href="../../generated/typhos.signal.SignalPanel.html#typhos.signal.SignalPanel">[docs]</a><span class="k">class</span> <span class="nc">SignalPanel</span><span class="p">(</span><span class="n">QGridLayout</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base panel display for EPICS signals</span>
 
@@ -286,7 +286,7 @@
 <span class="sd">        Signals to include in the panel</span>
 <span class="sd">        Parent of panel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="SignalPanel.__init__"><a class="viewcode-back" href="../../generated/typhon.signal.SignalPanel.html#typhon.signal.SignalPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalPanel.__init__"><a class="viewcode-back" href="../../generated/typhos.signal.SignalPanel.html#typhos.signal.SignalPanel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="c1"># Store signal information</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -393,7 +393,7 @@
     <span class="n">byName</span> <span class="o">=</span> <span class="mi">1</span>
 
 
-<span class="k">class</span> <span class="nc">TyphonSignalPanel</span><span class="p">(</span><span class="n">TyphonBase</span><span class="p">,</span> <span class="n">TyphonDesignerMixin</span><span class="p">,</span> <span class="n">SignalOrder</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">TyphosSignalPanel</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">TyphosDesignerMixin</span><span class="p">,</span> <span class="n">SignalOrder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Panel of Signals for Device</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -403,7 +403,7 @@
     <span class="n">kind_order</span> <span class="o">=</span> <span class="p">(</span><span class="n">Kind</span><span class="o">.</span><span class="n">hinted</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
                   <span class="n">Kind</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">omitted</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="c1"># Create a SignalPanel layout to be modified later</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">SignalPanel</span><span class="p">())</span>
