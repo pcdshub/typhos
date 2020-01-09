@@ -76,7 +76,7 @@
     </widget>
    </item>
    <item>
-    <widget class="TyphonSignalPanel" name="read_panel">
+    <widget class="TyphosSignalPanel" name="read_panel">
      <property name="toolTip">
       <string/>
      </property>
@@ -187,7 +187,7 @@
             <number>2</number>
            </property>
            <item>
-            <widget class="TyphonSignalPanel" name="config_panel">
+            <widget class="TyphosSignalPanel" name="config_panel">
              <property name="toolTip">
               <string/>
              </property>
@@ -264,7 +264,7 @@
             <number>2</number>
            </property>
            <item>
-            <widget class="TyphonSignalPanel" name="misc_panel">
+            <widget class="TyphosSignalPanel" name="misc_panel">
              <property name="toolTip">
               <string/>
              </property>
@@ -296,9 +296,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphonSignalPanel</class>
+   <class>TyphosSignalPanel</class>
    <extends>QWidget</extends>
-   <header>typhon.signal</header>
+   <header>typhos.signal</header>
   </customwidget>
  </customwidgets>
  <resources/>

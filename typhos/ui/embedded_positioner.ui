@@ -142,7 +142,7 @@
     </widget>
    </item>
    <item>
-    <widget class="TyphonPositionerWidget" name="TyphonPositionerWidget">
+    <widget class="TyphosPositionerWidget" name="TyphosPositionerWidget">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -171,9 +171,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphonPositionerWidget</class>
+   <class>TyphosPositionerWidget</class>
    <extends>QWidget</extends>
-   <header>typhon.positioner</header>
+   <header>typhos.positioner</header>
   </customwidget>
  </customwidgets>
  <resources/>
