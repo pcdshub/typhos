@@ -8,16 +8,16 @@ import logging
 # External #
 ############
 from ophyd import Kind
-from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
+from ophyd.signal import Signal, EpicsSignal, EpicsSignalBase, EpicsSignalRO
 from pydm.widgets.display_format import DisplayFormat
-from qtpy.QtCore import Property, Q_ENUMS, QSize
+from qtpy.QtCore import Property, Q_ENUMS, QSize, QTimer
 from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 
 #############
 #  Package  #
 #############
 from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
-                    is_signal_ro, TyphosBase)
+                    is_signal_ro, TyphosBase, TyphosLoading)
 from .widgets import (TyphosLineEdit, TyphosComboBox, TyphosLabel,
                       TyphosDesignerMixin, ImageDialogButton,
                       WaveformDialogButton, SignalDialogButton)
@@ -133,6 +133,33 @@ class SignalPanel(QGridLayout):
             for name, sig in signals.items():
                 self.add_signal(sig, name)
 
+    def _add_devices_cb(self, name, index, signal):
+        # Create the read-only signal
+        read = signal_widget(signal, read_only=True)
+        # Create the write signal
+        if (not is_signal_ro(signal) and not isinstance(read,
+                                                        SignalDialogButton)):
+            write = signal_widget(signal)
+        else:
+            write = None
+
+        # Add readback
+        val_display = self.itemAtPosition(index, 1)
+        loading_widget = val_display.itemAt(0).widget()
+        if isinstance(loading_widget, TyphosLoading):
+            val_display.removeWidget(loading_widget)
+            loading_widget.deleteLater()
+        val_display.addWidget(read)
+        # Add our write_pv if available
+        if write is not None:
+            # Add our control widget to layout
+            val_display.addWidget(write)
+            # Make sure they share space evenly
+            val_display.setStretch(0, 1)
+            val_display.setStretch(1, 1)
+
+        self.signals[name] = (read, write)
+
     def add_signal(self, signal, name, *, tooltip=None):
         """
         Add a signal to the panel
@@ -154,17 +181,48 @@ class SignalPanel(QGridLayout):
             Row number that the signal information was added to in the
             `SignalPanel.layout()``
         """
+        def _device_meta_cb(*args, **kwargs):
+            connected = kwargs.get('connected', False)
+            if connected:
+                cid = None
+                for id, func in signal._callbacks[Signal.SUB_META].items():
+                    if func.__name__ == '_device_meta_cb':
+                        cid = id
+                        break
+
+                if cid is not None:
+                    signal.unsubscribe(cid)
+
+                # Maybe a HACK to get the _add_devices_cb to happen at the
+                # main thread.
+                method = partial(self._add_devices_cb, name, loc, signal)
+                QTimer.singleShot(0, method)
+
         logger.debug("Adding signal %s", name)
-        # Create the read-only signal
-        read = signal_widget(signal, read_only=True)
-        # Create the write signal
-        if (not is_signal_ro(signal) and not isinstance(read,
-                                                        SignalDialogButton)):
-            write = signal_widget(signal)
-        else:
-            write = None
+
         # Add to the layout
-        return self._add_row(read, name, write=write, tooltip=tooltip)
+
+        # Create label
+        label = QLabel()
+        label.setText(name)
+        if tooltip is not None:
+            label.setToolTip(tooltip)
+        # Create signal display
+        val_display = QHBoxLayout()
+
+        # Add displays to panel
+        loc = len(self.signals)
+
+        val_display.addWidget(TyphosLoading())
+
+        self.addWidget(label, loc, 0)
+        self.addLayout(val_display, loc, 1)
+        # Store signal
+        self.signals[name] = (None, None)
+
+        signal.subscribe(_device_meta_cb, Signal.SUB_META, run=True)
+
+        return loc
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
@@ -198,31 +256,6 @@ class SignalPanel(QGridLayout):
         logger.debug("Clearing layout %r ...", self)
         clear_layout(self)
         self.signals.clear()
-
-    def _add_row(self, read, name, write=None, tooltip=None):
-        # Create label
-        label = QLabel()
-        label.setText(name)
-        if tooltip is not None:
-            label.setToolTip(tooltip)
-        # Create signal display
-        val_display = QHBoxLayout()
-        # Add readback
-        val_display.addWidget(read)
-        # Add our write_pv if available
-        if write is not None:
-            # Add our control widget to layout
-            val_display.addWidget(write)
-            # Make sure they share space evenly
-            val_display.setStretch(0, 1)
-            val_display.setStretch(1, 1)
-        # Add displays to panel
-        loc = len(self.signals)
-        self.addWidget(label, loc, 0)
-        self.addLayout(val_display, loc, 1)
-        # Store signal
-        self.signals[name] = (read, write)
-        return loc
 
 
 class SignalOrder:
