@@ -220,7 +220,10 @@ class SignalPanel(QGridLayout):
         # Store signal
         self.signals[name] = (None, None)
 
-        signal.subscribe(_device_meta_cb, Signal.SUB_META, run=True)
+        if signal.connected:
+            self._add_devices_cb(name, loc, signal)
+        else:
+            signal.subscribe(_device_meta_cb, Signal.SUB_META, run=True)
 
         return loc
 
