@@ -356,7 +356,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
             # Sort by kind
             def sorter(x):
-                return self.kind_order.index(x[1].kind)
+                return (self.kind_order.index(x[1].kind), x[0])
 
         elif self._signal_order == SignalOrder.byName:
 
