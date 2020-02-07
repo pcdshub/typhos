@@ -215,9 +215,11 @@ class TyphosLoading(QLabel):
         self.setMovie(self._animation)
         self._animation.start()
 
+    @property
     def iconSize(self):
         return self._icon_size
 
+    @iconSize.setter
     def iconSize(self, size):
         self._icon_size = size
         self._animation.setScaledSize(self._icon_size)
