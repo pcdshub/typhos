@@ -95,7 +95,8 @@ def test_add_pv(qtbot):
     assert 'Read Only' in panel.signals
     assert panel.layout().itemAtPosition(0, 1).count() == 1
     panel.add_pv('Tst:A', "Write", write_pv='Tst:B')
-    assert panel.layout().itemAtPosition(1, 1).count() == 2
+    # Since it is not connected, it should show just the loading widget
+    assert panel.layout().itemAtPosition(1, 1).count() == 1
 
 
 @show_widget

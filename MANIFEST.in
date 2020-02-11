@@ -2,3 +2,4 @@ include versioneer.py
 include typhos/_version.py
 include typhos/ui/*.ui
 include typhos/ui/style.qss
+include typhos/ui/loading.gif

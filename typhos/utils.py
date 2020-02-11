@@ -38,9 +38,10 @@ except ImportError:
 
         def set(self, value, *, timestamp=None, force=False):
             raise ReadOnlyError("The signal {} is readonly.".format(self.name))
-from qtpy.QtGui import QColor, QPainter
+from qtpy.QtCore import QSize
+from qtpy.QtGui import QColor, QPainter, QMovie
 from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
-                            QWidget, QMessageBox)
+                            QWidget, QMessageBox, QLabel)
 
 #############
 #  Package  #
@@ -102,12 +103,23 @@ def grab_kind(device, kind):
                                 device.configuration_attrs]}[kind]
     # Return that kind filtered for devices
     signals = collections.OrderedDict()
-    device_class = device.__class__
     for attr in kind_attr:
-        signal = getattr(device, attr)
+        if '.' in attr:
+            hierarchy = attr.split('.')
+            attr_name = hierarchy.pop()
+            dev = device
+            for dev_name in hierarchy:
+                dev = getattr(dev, dev_name)
+        else:
+            dev = device
+            attr_name = attr
+
+        signal = getattr(dev, attr_name)
+        klass = dev.__class__
+
         if signal.kind >= kind and not isinstance(signal, Device):
-            cpt = getattr(device_class, attr)
-            signals[attr] = GrabKindItem(attr=attr, component=cpt,
+            cpt = getattr(klass, attr_name)
+            signals[attr] = GrabKindItem(attr=attr_name, component=cpt,
                                          signal=signal)
     return signals
 
@@ -180,6 +192,7 @@ def use_stylesheet(dark=False, widget=None):
     # We can set Fusion style if it is an application
     if isinstance(widget, QApplication):
         widget.setStyle(QStyleFactory.create('Fusion'))
+
     # Set Stylesheet
     widget.setStyleSheet(style)
 
@@ -189,6 +202,27 @@ def random_color():
     return QColor(random.randint(0, 255),
                   random.randint(0, 255),
                   random.randint(0, 255))
+
+
+class TyphosLoading(QLabel):
+    """Simple widget that displays a loading GIF"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._icon_size = QSize(32, 32)
+        loading_path = os.path.join(ui_dir, 'loading.gif')
+        self._animation = QMovie(loading_path)
+        self._animation.setScaledSize(self._icon_size)
+        self.setMovie(self._animation)
+        self._animation.start()
+
+    @property
+    def iconSize(self):
+        return self._icon_size
+
+    @iconSize.setter
+    def iconSize(self, size):
+        self._icon_size = size
+        self._animation.setScaledSize(self._icon_size)
 
 
 class TyphosBase(QWidget):
