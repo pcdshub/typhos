@@ -56,7 +56,8 @@ class DeviceParameter(SidebarParameter):
                 # If that device has children, make sure they are also
                 # displayed further in the tree
                 if subdevice._sub_devices:
-                    children.append(DeviceParameter(subdevice))
+                    children.append(
+                        DeviceParameter(subdevice, subdevices=False))
                 # Otherwise just make a regular parameter out of it
                 else:
                     child_name = clean_name(subdevice,

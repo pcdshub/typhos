@@ -205,12 +205,15 @@ def random_color():
 
 
 class TyphosLoading(QLabel):
+    loading_gif = None
     """Simple widget that displays a loading GIF"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._icon_size = QSize(32, 32)
-        loading_path = os.path.join(ui_dir, 'loading.gif')
-        self._animation = QMovie(loading_path)
+        if TyphosLoading.loading_gif is None:
+            loading_path = os.path.join(ui_dir, 'loading.gif')
+            TyphosLoading.loading_gif = QMovie(loading_path)
+        self._animation = TyphosLoading.loading_gif
         self._animation.setScaledSize(self._icon_size)
         self.setMovie(self._animation)
         self._animation.start()
