@@ -16,3 +16,6 @@ from .plugins import register_signal
 from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
+
+from ophyd import Device
+Device.lazy_wait_for_connection = False
