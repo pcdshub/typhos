@@ -1,84 +1,84 @@
-QWidget{
+TyphosBase {
    background-color: #ffffff;
    color: black;
    font: bold;
 }
 
-PyDMLineEdit {
+TyphosBase PyDMLineEdit {
     color: #A9A9A9;
 }
 
-PyDMLineEdit:focus {
+TyphosBase PyDMLineEdit:focus {
     border-color: blue;
     color: black;
 }
 
-PyDMLabel {
+TyphosBase PyDMLabel {
     color: white;
     background-color: #0b3ae8;
     border-radius: 5px;
 }
 
-QComboBox {
+TyphosBase QComboBox {
     border-radius 10px;
     color: #A9A9A9;
 }
 
-QComboBox:on {
+TyphosBase QComboBox:on {
     color: black;
 }
 
-QComboBox QAbstractItemView {
+TyphosBase QComboBox QAbstractItemView {
     border: 2px solid #0b3ae8;
     border-radius 10px;
 }
 
-QComboBox:hover {
+TyphosBase QComboBox:hover {
     border: 2px solid #0b3ae8;
 }
 
-QListWidget::item:selected {
+TyphosBase QListWidget::item:selected {
     background-color: #0b3ae8;;
     color: white;
 }
 
-QListWidget::item:!selected:hover {
+TyphosBase QListWidget::item:!selected:hover {
     background-color: #A9A9A9;
 }
 
-PyDMLogDisplay > QPlainTextEdit {
+TyphosBase PyDMLogDisplay > QPlainTextEdit {
     font: 10px normal;
 }
 
-TyphonPositionerWidget[moving="true"] .QFrame {
+TyphosBase TyphonPositionerWidget[moving="true"] .QFrame {
     border: 2px solid yellow;
 }
 
-TyphonPositionerWidget[moving="false"] .QFrame {
+TyphosBase TyphonPositionerWidget[moving="false"] .QFrame {
     border: 2px solid transparent;
 }
 
-TyphonPositionerWidget[moving="false"][successful_move="true"] .QFrame {
+TyphosBase TyphonPositionerWidget[moving="false"][successful_move="true"] .QFrame {
     border: 2px solid green;
 }
 
-TyphonPositionerWidget[moving="false"][failed_move="true"] .QFrame {
+TyphosBase TyphonPositionerWidget[moving="false"][failed_move="true"] .QFrame {
     border: 2px solid red;
 }
 
 
-TyphosPositionerWidget[moving="true"] .QFrame {
+TyphosBase TyphosPositionerWidget[moving="true"] .QFrame {
     border: 2px solid yellow;
 }
 
-TyphosPositionerWidget[moving="false"] .QFrame {
+TyphosBase TyphosPositionerWidget[moving="false"] .QFrame {
     border: 2px solid transparent;
 }
 
-TyphosPositionerWidget[moving="false"][successful_move="true"] .QFrame {
+TyphosBase TyphosPositionerWidget[moving="false"][successful_move="true"] .QFrame {
     border: 2px solid green;
 }
 
-TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
+TyphosBase TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
     border: 2px solid red;
 }
