@@ -23,6 +23,8 @@ from pyqtgraph.parametertree import parameterTypes as ptypes
 
 logger = logging.getLogger(__name__)
 
+EXPONENTIAL_UNITS = ['mtorr', 'torr', 'kpa', 'pa']
+
 
 class TogglePanel(QWidget):
     """
@@ -110,6 +112,23 @@ class TyphosLineEdit(PyDMLineEdit):
     def sizeHint(self):
         return QSize(100, 30)
 
+    def unit_changed(self, new_unit):
+        """
+        Callback invoked when the Channel has new unit value.
+        This callback also triggers an update_format_string call so the
+        new unit value is considered if ```showUnits``` is set.
+
+        Parameters
+        ----------
+        new_unit : str
+            The new unit
+        """
+        if self._unit != new_unit:
+            super().unit_changed(new_unit)
+            if new_unit.lower() in EXPONENTIAL_UNITS \
+                    and self.displayFormat == PyDMLabel.DisplayFormat.Default:
+                self.displayFormat = PyDMLabel.DisplayFormat.Exponential
+
 
 class TyphosLabel(PyDMLabel):
     """
@@ -125,6 +144,23 @@ class TyphosLabel(PyDMLabel):
 
     def sizeHint(self):
         return QSize(100, 30)
+
+    def unit_changed(self, new_unit):
+        """
+        Callback invoked when the Channel has new unit value.
+        This callback also triggers an update_format_string call so the
+        new unit value is considered if ```showUnits``` is set.
+
+        Parameters
+        ----------
+        new_unit : str
+            The new unit
+        """
+        if self._unit != new_unit:
+            super().unit_changed(new_unit)
+            if new_unit.lower() in EXPONENTIAL_UNITS \
+                    and self.displayFormat == PyDMLabel.DisplayFormat.Default:
+                self.displayFormat = PyDMLabel.DisplayFormat.Exponential
 
 
 class TyphosSidebarItem(ptypes.ParameterItem):
