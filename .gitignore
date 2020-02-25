@@ -1,7 +1,8 @@
 .idea
 
-# Ignore test generated log files
+# Ignore test generated log files + artifacts
 logs/*
+tests/artifacts/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

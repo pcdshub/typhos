@@ -4,6 +4,7 @@
 import os.path
 import pathlib
 import logging
+import time
 from functools import wraps
 
 ############
@@ -34,6 +35,8 @@ except ImportError:
             raise ReadOnlyError("The signal {} is readonly.".format(self.name))
 
 import pytest
+import qtpy
+from qtpy import QtGui, QtWidgets
 from pydm import PyDMApplication
 
 ###########
@@ -48,6 +51,9 @@ logger = logging.getLogger(__name__)
 # Global testing variables
 show_widgets = False
 application = None
+
+MODULE_PATH = pathlib.Path(__file__).parent
+
 
 # Patch TyphosConsole on TyphosSuite. Creation of more than one QtConsole
 # quicky in the test suite causes instabilities
@@ -87,6 +93,37 @@ def test_images():
             os.path.join(os.path.dirname(__file__), 'utils/python.png'))
 
 
+def save_image(widget, name, delay=0.5):
+    '''
+    Save `widget` to typhos/tests/artifacts/{name}.png after `delay` seconds.
+    '''
+    widget.show()
+
+    app = QtWidgets.QApplication.instance()
+
+    end_time = time.time() + delay
+    while time.time() < end_time:
+        app.processEvents()
+        time.sleep(0.1)
+
+    image = QtGui.QImage(widget.width(), widget.height(),
+                         QtGui.QImage.Format_ARGB32_Premultiplied)
+
+    image.fill(qtpy.QtCore.Qt.transparent)
+    pixmap = QtGui.QPixmap(image)
+
+    painter = QtGui.QPainter(pixmap)
+    widget.render(image)
+    painter.end()
+
+    artifacts_path = MODULE_PATH / 'artifacts'
+    artifacts_path.mkdir(exist_ok=True)
+
+    path = str(artifacts_path / f'{name}.png')
+    image.save(path)
+    logger.debug('saved image to %s', path)
+
+
 def show_widget(func):
     """
     Show a widget returned from arbitrary `func`
@@ -95,6 +132,8 @@ def show_widget(func):
     def func_wrapper(*args, **kwargs):
         # Run function grab widget
         widget = func(*args, **kwargs)
+        if widget is not None:
+            save_image(widget, func.__name__)
         if show_widgets:
             # Display the widget
             widget.show()
