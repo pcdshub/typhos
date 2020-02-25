@@ -13,7 +13,7 @@ import simplejson as json
 import typhos
 from typhos.utils import (use_stylesheet, clean_name, grab_kind,
                           TyphosBase, raise_to_operator, load_suite,
-                          saved_template)
+                          saved_template, no_device_lazy_load)
 
 class NestedDevice(Device):
     phi = Cpt(Device)
@@ -107,3 +107,25 @@ def test_load_suite(qtbot, happi_cfg):
 def test_load_suite_with_bad_py_file():
     with pytest.raises(AttributeError):
         suite = load_suite(typhos.utils.__file__)
+
+
+def test_no_device_lazy_load():
+    class TestDevice(Device):
+        c = Cpt(Device, suffix='Test')
+
+    dev = TestDevice(name='foo')
+
+    old_val = Device.lazy_wait_for_connection
+    assert dev.lazy_wait_for_connection is old_val
+    assert dev.c.lazy_wait_for_connection is old_val
+
+    with no_device_lazy_load():
+        dev2 = TestDevice(name='foo')
+
+        assert Device.lazy_wait_for_connection is False
+        assert dev2.lazy_wait_for_connection is False
+        assert dev2.c.lazy_wait_for_connection is False
+
+    assert Device.lazy_wait_for_connection is old_val
+    assert dev.lazy_wait_for_connection is old_val
+    assert dev.c.lazy_wait_for_connection is old_val
