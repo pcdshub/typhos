@@ -1,6 +1,7 @@
 """
 Utility functions for typhos
 """
+import contextlib
 import collections
 import importlib.util
 ############
@@ -403,3 +404,17 @@ def create_suite(cfg=None):
 if __name__ == '__main__':
     typhos.cli.typhos_cli(devices + sys.argv[1:])
 """
+
+
+@contextlib.contextmanager
+def no_device_lazy_load():
+    '''
+    Context manager which disables the ophyd.device.Device
+    `lazy_wait_for_connection` behavior and later restore its value.
+    '''
+    old_val = Device.lazy_wait_for_connection
+    try:
+        Device.lazy_wait_for_connection = False
+        yield
+    finally:
+        Device.lazy_wait_for_connection = old_val
