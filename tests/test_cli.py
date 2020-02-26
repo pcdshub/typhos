@@ -46,3 +46,20 @@ def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
     assert dev_display.force_template == 'test.ui'
     qapp.setStyleSheet(style)
     os.remove('test.qss')
+
+
+@pytest.mark.parametrize('klass, name', [
+    ("ophyd.sim.SynAxis[]", "device"),
+    ("ophyd.sim.SynAxis[{'name':'foo'}]", "foo")
+])
+def test_cli_class(monkeypatch, qapp, qtbot, klass, name):
+    monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
+    window = typhos_cli([klass])
+    qtbot.addWidget(window)
+    assert window.isVisible()
+    assert name == window.centralWidget().devices[0].name
+
+
+def test_cli_class_invalid(qtbot):
+    window = typhos_cli(["non.Valid.ClassName[]"])
+    assert window is None

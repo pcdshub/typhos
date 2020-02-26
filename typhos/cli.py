@@ -2,10 +2,13 @@
 import argparse
 import logging
 import sys
+import re
+import ast
 
 import coloredlogs
 from qtpy.QtWidgets import QApplication, QMainWindow
 
+import pcdsutils
 import typhos
 
 logger = logging.getLogger(__name__)
@@ -17,7 +20,9 @@ parser = argparse.ArgumentParser(description='Create a TyphosSuite for '
                                              'Database')
 
 parser.add_argument('devices', nargs='*',
-                    help='Device names to load in the TyphosSuite')
+                    help='Device names to load in the TyphosSuite or '
+                         'class name with parameters on the format: '
+                         'package.ClassName[{"param1":"val1",...}]')
 parser.add_argument('--happi-cfg',
                     help='Location of happi configuration file '
                          'if not specified by $HAPPI_CFG environment variable')
@@ -70,32 +75,62 @@ def typhos_cli_setup(args):
 def create_suite(devices, cfg=None):
     """Create a TyphosSuite from a list of device names"""
     logger.debug("Accessing Happi Client ...")
+    happi_enabled = False
     try:
         import happi
         import typhos.plugins.happi
+        happi_enabled = True
     except (ImportError, ModuleNotFoundError):
         logger.exception("Unable to import happi to load devices!")
-        return
-    if typhos.plugins.happi.HappiClientState.client:
-        logger.debug("Using happi Client already registered with Typhos")
-        client = typhos.plugins.happi.HappiClientState.client
-    else:
-        logger.debug("Creating new happi Client from configuration")
-        client = happi.Client.from_config(cfg=cfg)
+
+    if happi_enabled:
+        if typhos.plugins.happi.HappiClientState.client:
+            logger.debug("Using happi Client already registered with Typhos")
+            client = typhos.plugins.happi.HappiClientState.client
+        else:
+            logger.debug("Creating new happi Client from configuration")
+            client = happi.Client.from_config(cfg=cfg)
+
     # Load and add each device
     loaded_devs = list()
+
+    klass_regex = re.compile(
+        r'([a-zA-Z][a-zA-Z\.\_]*)\[(\{.+})*[\,]*\]'  # noqa
+    )
+
     for device in devices:
         logger.info("Loading %r ...", device)
-        try:
-            device = client.load_device(name=device)
-            loaded_devs.append(device)
-        except Exception:
-            logger.exception("Unable to load %r", device)
+        result = klass_regex.findall(device)
+        if len(result) > 0:
+            try:
+                klass, args = result[0]
+                default_kwargs = {"name": "device"}
+                if args:
+                    kwargs = ast.literal_eval(args)
+                    default_kwargs.update(kwargs)
+
+                device = pcdsutils.utils.import_helper(klass)(**default_kwargs)
+                loaded_devs.append(device)
+            except Exception:
+                logger.exception("Unable to load class entry: %s with args %s",
+                                 klass, args)
+        else:
+            if not happi_enabled:
+                logger.error("Happi not available. Unable to load entry: %r",
+                             device)
+                continue
+            try:
+                device = client.load_device(name=device)
+                loaded_devs.append(device)
+            except Exception:
+                logger.exception("Unable to load Happi entry: %r", device)
     if loaded_devs or not devices:
         logger.debug("Creating empty TyphosSuite ...")
         suite = typhos.TyphosSuite()
         logger.info("Loading Tools ...")
-        for name, tool in suite.default_tools.items():
+        tools = dict(suite.default_tools)
+        tools.pop("StripTool")
+        for name, tool in tools.items():
             suite.add_tool(name, tool())
         if devices:
             logger.info("Adding devices ...")
@@ -114,7 +149,8 @@ def typhos_cli(args):
     args = parser.parse_args(args)
     typhos_cli_setup(args)
     if not args.version:
-        suite = create_suite(args.devices, cfg=args.happi_cfg)
+        with typhos.utils.no_device_lazy_load():
+            suite = create_suite(args.devices, cfg=args.happi_cfg)
         if suite:
             window = QMainWindow()
             window.setCentralWidget(suite)

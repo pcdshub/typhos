@@ -9,3 +9,4 @@ qtpy
 pyqtgraph
 ophyd
 numpydoc
+pcdsutils
