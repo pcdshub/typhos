@@ -8,6 +8,8 @@ from pydm.utilities.display_loading import load_py_file
 from qtpy.QtCore import Property, Slot, Q_ENUMS
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
+import pcdsutils
+
 from .utils import (ui_dir, TyphosBase, clear_layout, reload_widget_stylesheet)
 from .widgets import TyphosDesignerMixin
 
@@ -246,6 +248,39 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
             display.force_template = template
         # Add the device
         display.add_device(device, macros=macros)
+        return display
+
+    @classmethod
+    def from_class(cls, klass, *, template=None, macros=None, **kwargs):
+        """
+        Create a new TyphosDeviceDisplay from a Device class
+
+        Loads the signals in to the appropriate positions and sets the title to
+        a cleaned version of the device name
+
+        Parameters
+        ----------
+        klass : str or class
+        template :str, optional
+            Set the ``display_template``
+        macros: dict, optional
+            Macro substitutions to be placed in template
+        kwargs : dict
+            Extra arguments are used at device instantiation
+
+        Returns
+        -------
+        TyphosDeviceDisplay
+        """
+        try:
+            obj = pcdsutils.utils.get_instance_by_name(klass, **kwargs)
+        except Exception:
+            logger.exception('Failed to generate TyphosDeviceDisplay from '
+                             'device %s', obj)
+            return None
+        display = TyphosDeviceDisplay.from_device(
+            obj, template=template, macros=macros
+        )
         return display
 
     @Slot(object)
