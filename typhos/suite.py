@@ -12,8 +12,7 @@ import textwrap
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
 from qtpy import QtWidgets
 from qtpy.QtCore import Signal, Slot, Qt
-from qtpy.QtWidgets import (QDockWidget, QHBoxLayout, QVBoxLayout, QWidget,
-                            QFileDialog)
+from qtpy.QtWidgets import QWidget
 import pcdsutils.qt
 
 
@@ -104,7 +103,7 @@ class TyphosSuite(TyphosBase):
         self._bar = pcdsutils.qt.QPopBar(title='Suite', parent=self,
                                          widget=self._tree)
 
-        self.setLayout(QHBoxLayout())
+        self.setLayout(QtWidgets.QHBoxLayout())
         self.layout().setSpacing(1)
         self.layout().setContentsMargins(0, 0, 0, 0)
 
@@ -238,7 +237,7 @@ class TyphosSuite(TyphosBase):
         if not self.embedded_dock:
             self.embedded_dock = SubDisplay()
             self.embedded_dock.setWidget(QWidget())
-            self.embedded_dock.widget().setLayout(QVBoxLayout())
+            self.embedded_dock.widget().setLayout(QtWidgets.QVBoxLayout())
             self.embedded_dock.widget().layout().addStretch(1)
             self._content_frame.layout().addWidget(self.embedded_dock)
 
@@ -276,7 +275,7 @@ class TyphosSuite(TyphosBase):
             logger.warning("Unable to find sidebar item for %r", widget)
         # Make sure the actual widget is hidden
         logger.debug("Hiding widget %r ...", widget)
-        if isinstance(widget.parent(), QDockWidget):
+        if isinstance(widget.parent(), QtWidgets.QDockWidget):
             logger.debug("Closing dock ...")
             widget.parent().close()
         # Hide the full dock if this is the last widget
@@ -391,8 +390,8 @@ class TyphosSuite(TyphosBase):
         """
         logger.debug("Requesting file location for saved TyphosSuite")
         root_dir = os.getcwd()
-        filename = QFileDialog.getSaveFileName(self, 'Save TyphosSuite',
-                                               root_dir, "Python (*.py)")
+        filename = QtWidgets.QFileDialog.getSaveFileName(
+            self, 'Save TyphosSuite', root_dir, "Python (*.py)")
         if filename:
             try:
                 with open(filename[0], 'w+') as handle:
