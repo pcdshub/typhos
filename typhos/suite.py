@@ -10,9 +10,13 @@ import textwrap
 # External #
 ############
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
+from qtpy import QtWidgets
 from qtpy.QtCore import Signal, Slot, Qt
 from qtpy.QtWidgets import (QDockWidget, QHBoxLayout, QVBoxLayout, QWidget,
                             QFileDialog)
+import pcdsutils.qt
+
+
 ###########
 # Package #
 ###########
@@ -95,11 +99,23 @@ class TyphosSuite(TyphosBase):
         self._save_action = ptypes.ActionParameter(name='Save Suite')
         self._tree.addParameters(self._save_action)
         self._save_action.sigActivated.connect(self.save)
+
         # Setup layout
-        self._layout = QHBoxLayout()
-        self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
-        self._layout.addWidget(self._tree)
-        self.setLayout(self._layout)
+        self._bar = pcdsutils.qt.QPopBar(title='Suite', parent=self,
+                                         widget=self._tree)
+
+        self.setLayout(QHBoxLayout())
+        self.layout().setSpacing(1)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+        self._content_frame = QtWidgets.QFrame(self)
+        self._content_frame.setObjectName("content")
+        self._content_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self._content_frame.setLayout(QtWidgets.QHBoxLayout())
+
+        self.layout().addWidget(self._bar)
+        self.layout().addWidget(self._content_frame)
+
         self.embedded_dock = None
 
     def add_subdisplay(self, name, display, category):
@@ -212,7 +228,7 @@ class TyphosSuite(TyphosBase):
         widget.setVisible(True)
         dock.setWidget(widget)
         # Add to layout
-        self.layout().addWidget(dock)
+        self._content_frame.layout().addWidget(dock)
 
     @Slot(str)
     @Slot(object)
@@ -224,7 +240,7 @@ class TyphosSuite(TyphosBase):
             self.embedded_dock.setWidget(QWidget())
             self.embedded_dock.widget().setLayout(QVBoxLayout())
             self.embedded_dock.widget().layout().addStretch(1)
-            self.layout().addWidget(self.embedded_dock)
+            self._content_frame.layout().addWidget(self.embedded_dock)
 
         if not isinstance(widget, QWidget):
             widget = self.get_subdisplay(widget)
