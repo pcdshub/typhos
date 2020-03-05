@@ -151,6 +151,9 @@
     Panel of Signals for Device
     </string>
      </property>
+     <property name="showHints" stdset="0">
+      <bool>true</bool>
+     </property>
      <property name="showNormal" stdset="0">
       <bool>true</bool>
      </property>

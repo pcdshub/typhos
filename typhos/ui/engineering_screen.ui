@@ -121,6 +121,12 @@
     Panel of Signals for Device
     </string>
          </property>
+         <property name="showHints" stdset="0">
+          <bool>true</bool>
+         </property>
+         <property name="showNormal" stdset="0">
+          <bool>true</bool>
+         </property>
          <property name="showConfig" stdset="0">
           <bool>false</bool>
          </property>
@@ -195,6 +201,9 @@
          <property name="showNormal" stdset="0">
           <bool>false</bool>
          </property>
+         <property name="showConfig" stdset="0">
+          <bool>true</bool>
+         </property>
          <property name="showOmitted" stdset="0">
           <bool>false</bool>
          </property>
@@ -268,6 +277,9 @@
          </property>
          <property name="showConfig" stdset="0">
           <bool>false</bool>
+         </property>
+         <property name="showOmitted" stdset="0">
+          <bool>true</bool>
          </property>
          <property name="sortBy" stdset="0">
           <enum>TyphosSignalPanel::byName</enum>
