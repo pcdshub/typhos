@@ -90,7 +90,7 @@ class TyphosSuite(TyphosBase):
                      'StripTool': TyphosTimePlot,
                      'Console': TyphosConsole}
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, *, pin=False):
         super().__init__(parent=parent)
         # Setup parameter tree
         self._tree = ParameterTree(parent=self, showHeader=False)
@@ -101,7 +101,7 @@ class TyphosSuite(TyphosBase):
 
         # Setup layout
         self._bar = pcdsutils.qt.QPopBar(title='Suite', parent=self,
-                                         widget=self._tree)
+                                         widget=self._tree, pin=pin)
 
         self.setLayout(QtWidgets.QHBoxLayout())
         self.layout().setSpacing(1)
@@ -341,8 +341,8 @@ class TyphosSuite(TyphosBase):
                                  device.name, type(tool))
 
     @classmethod
-    def from_device(cls, device, parent=None,
-                    tools=dict(), **kwargs):
+    def from_device(cls, device, parent=None, tools=dict(), pin=False,
+                    **kwargs):
         """
         Create a new TyphosDeviceDisplay from an ophyd.Device
 
@@ -363,7 +363,7 @@ class TyphosSuite(TyphosBase):
         kwargs:
             Passed to :meth:`TyphosSuite.add_device`
         """
-        display = cls(parent=parent)
+        display = cls(parent=parent, pin=pin)
         if tools is not None:
             if not tools:
                 logger.debug("Using default TyphosSuite tools ...")
