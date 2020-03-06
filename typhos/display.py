@@ -138,6 +138,7 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
         if self._main_widget:
             logger.debug("Clearing existing layout ...")
             clear_layout(self.layout())
+
         # Assemble our macros
         self._last_macros = macros or self._last_macros
         for display_type in self.templates:
@@ -146,34 +147,40 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
                 logger.debug("Found new template %r for %r",
                              value, display_type)
                 self.templates[display_type] = value
+
         try:
-            logger.debug("Loading %s", self.current_template)
-            ext = os.path.splitext(self.current_template)[1]
-            # Support Python files
-            if ext == '.py':
-                logger.debug("Loading %r as a Python file ...",
-                             self.current_template)
-                self._main_widget = load_py_file(self.current_template,
-                                                 macros=self._last_macros)
-            # Otherwise assume you have given use a UI file
-            else:
-                logger.debug("Loading as a Qt Designer file ...")
-                self._main_widget = Display(ui_filename=self.current_template,
-                                            macros=self._last_macros)
-            # Add device to all children widgets
-            if self.devices:
-                designer = (self._main_widget.findChildren(TyphosDesignerMixin)
-                            or [])
-                bases = (self._main_widget.findChildren(TyphosBase)
-                         or [])
-                for widget in set(bases + designer):
-                    widget.add_device(self.devices[0])
+            self._load_template(self.current_template)
         except Exception:
             logger.exception("Unable to load file %r", self.current_template)
             self._main_widget = QWidget()
         finally:
             self.layout().addWidget(self._main_widget)
             reload_widget_stylesheet(self)
+
+    def _load_template(self, filename):
+        logger.debug("Loading %s", filename)
+        ext = os.path.splitext(filename)[1]
+        # Support Python files
+        if ext == '.py':
+            logger.debug('Load Python template: %r', filename)
+            self._main_widget = load_py_file(filename,
+                                             macros=self._last_macros)
+        else:
+            # Otherwise assume you have given use a UI file
+            logger.debug('Load UI template: %r', filename)
+            self._main_widget = Display(ui_filename=filename,
+                                        macros=self._last_macros)
+        # Add device to all children widgets
+        if not self.devices:
+            return
+
+        device, = self.devices
+        designer = (self._main_widget.findChildren(TyphosDesignerMixin)
+                    or [])
+        bases = (self._main_widget.findChildren(TyphosBase)
+                 or [])
+        for widget in set(bases + designer):
+            widget.add_device(device)
 
     @Property(str)
     def force_template(self):
