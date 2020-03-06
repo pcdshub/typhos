@@ -68,7 +68,8 @@ def test_suite_get_subdisplay_by_name(suite, device):
 
 def test_suite_show_display_by_device(suite, device):
     suite.show_subdisplay(device.x)
-    dock = suite.layout().itemAt(suite.layout().count() - 1).widget()
+    dock = suite._content_frame.layout().itemAt(
+        suite.layout().count() - 1).widget()
     assert isinstance(dock, QtWidgets.QDockWidget)
     assert device.x in dock.widget().devices
 
@@ -76,7 +77,8 @@ def test_suite_show_display_by_device(suite, device):
 def test_suite_show_display_by_parameter(suite):
     device_param = suite.top_level_groups['Devices'].childs[0]
     suite.show_subdisplay(device_param)
-    dock = suite.layout().itemAt(suite.layout().count() - 1).widget()
+    dock = suite._content_frame.layout().itemAt(
+        suite.layout().count() - 1).widget()
     assert isinstance(dock, QtWidgets.QDockWidget)
     assert device_param.device in dock.widget().devices
     assert dock.receivers(dock.closing) == 1
