@@ -10,9 +10,12 @@ import textwrap
 # External #
 ############
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
+from qtpy import QtWidgets
 from qtpy.QtCore import Signal, Slot, Qt
-from qtpy.QtWidgets import (QDockWidget, QHBoxLayout, QVBoxLayout, QWidget,
-                            QFileDialog)
+from qtpy.QtWidgets import QWidget
+import pcdsutils.qt
+
+
 ###########
 # Package #
 ###########
@@ -87,7 +90,7 @@ class TyphosSuite(TyphosBase):
                      'StripTool': TyphosTimePlot,
                      'Console': TyphosConsole}
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, *, pin=False):
         super().__init__(parent=parent)
         # Setup parameter tree
         self._tree = ParameterTree(parent=self, showHeader=False)
@@ -95,11 +98,23 @@ class TyphosSuite(TyphosBase):
         self._save_action = ptypes.ActionParameter(name='Save Suite')
         self._tree.addParameters(self._save_action)
         self._save_action.sigActivated.connect(self.save)
+
         # Setup layout
-        self._layout = QHBoxLayout()
-        self._layout.setSizeConstraint(QHBoxLayout.SetFixedSize)
-        self._layout.addWidget(self._tree)
-        self.setLayout(self._layout)
+        self._bar = pcdsutils.qt.QPopBar(title='Suite', parent=self,
+                                         widget=self._tree, pin=pin)
+
+        self.setLayout(QtWidgets.QHBoxLayout())
+        self.layout().setSpacing(1)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+        self._content_frame = QtWidgets.QFrame(self)
+        self._content_frame.setObjectName("content")
+        self._content_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self._content_frame.setLayout(QtWidgets.QHBoxLayout())
+
+        self.layout().addWidget(self._bar)
+        self.layout().addWidget(self._content_frame)
+
         self.embedded_dock = None
 
     def add_subdisplay(self, name, display, category):
@@ -212,7 +227,7 @@ class TyphosSuite(TyphosBase):
         widget.setVisible(True)
         dock.setWidget(widget)
         # Add to layout
-        self.layout().addWidget(dock)
+        self._content_frame.layout().addWidget(dock)
 
     @Slot(str)
     @Slot(object)
@@ -222,9 +237,9 @@ class TyphosSuite(TyphosBase):
         if not self.embedded_dock:
             self.embedded_dock = SubDisplay()
             self.embedded_dock.setWidget(QWidget())
-            self.embedded_dock.widget().setLayout(QVBoxLayout())
+            self.embedded_dock.widget().setLayout(QtWidgets.QVBoxLayout())
             self.embedded_dock.widget().layout().addStretch(1)
-            self.layout().addWidget(self.embedded_dock)
+            self._content_frame.layout().addWidget(self.embedded_dock)
 
         if not isinstance(widget, QWidget):
             widget = self.get_subdisplay(widget)
@@ -260,7 +275,7 @@ class TyphosSuite(TyphosBase):
             logger.warning("Unable to find sidebar item for %r", widget)
         # Make sure the actual widget is hidden
         logger.debug("Hiding widget %r ...", widget)
-        if isinstance(widget.parent(), QDockWidget):
+        if isinstance(widget.parent(), QtWidgets.QDockWidget):
             logger.debug("Closing dock ...")
             widget.parent().close()
         # Hide the full dock if this is the last widget
@@ -326,8 +341,8 @@ class TyphosSuite(TyphosBase):
                                  device.name, type(tool))
 
     @classmethod
-    def from_device(cls, device, parent=None,
-                    tools=dict(), **kwargs):
+    def from_device(cls, device, parent=None, tools=dict(), pin=False,
+                    **kwargs):
         """
         Create a new TyphosDeviceDisplay from an ophyd.Device
 
@@ -348,7 +363,7 @@ class TyphosSuite(TyphosBase):
         kwargs:
             Passed to :meth:`TyphosSuite.add_device`
         """
-        display = cls(parent=parent)
+        display = cls(parent=parent, pin=pin)
         if tools is not None:
             if not tools:
                 logger.debug("Using default TyphosSuite tools ...")
@@ -375,8 +390,8 @@ class TyphosSuite(TyphosBase):
         """
         logger.debug("Requesting file location for saved TyphosSuite")
         root_dir = os.getcwd()
-        filename = QFileDialog.getSaveFileName(self, 'Save TyphosSuite',
-                                               root_dir, "Python (*.py)")
+        filename = QtWidgets.QFileDialog.getSaveFileName(
+            self, 'Save TyphosSuite', root_dir, "Python (*.py)")
         if filename:
             try:
                 with open(filename[0], 'w+') as handle:

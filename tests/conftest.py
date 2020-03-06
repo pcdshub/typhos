@@ -38,6 +38,7 @@ import pytest
 import qtpy
 from qtpy import QtGui, QtWidgets
 from pydm import PyDMApplication
+from pydm.widgets.logdisplay import GuiHandler
 
 ###########
 # Package #
@@ -237,7 +238,20 @@ class MockDevice(Device):
 
 @pytest.fixture(scope='function')
 def device():
-    return MockDevice('Tst:This', name='Simulated Device')
+    dev = MockDevice('Tst:This', name='Simulated Device')
+    yield dev
+    clear_handlers(dev)
+
+
+def clear_handlers(device):
+    if isinstance(device.log, logging.Logger):
+        _logger = device.log
+    else:
+        _logger = device.log.logger
+
+    for handler in list(_logger.handlers):
+        if isinstance(handler, GuiHandler):
+            _logger.handlers.remove(handler)
 
 
 @pytest.fixture(scope='session')
@@ -250,5 +264,6 @@ def client():
 
 @pytest.fixture(scope='session')
 def happi_cfg():
-    path = pathlib.Path(__file__)
-    return str(path.parent / 'happi.cfg')
+    path = str(MODULE_PATH / 'happi.cfg')
+    os.environ['HAPPI_CFG'] = path
+    return path

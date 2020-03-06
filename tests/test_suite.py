@@ -11,7 +11,7 @@ import tempfile
 ############
 import pytest
 from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
-from qtpy.QtWidgets import QDockWidget
+from qtpy import QtWidgets
 
 ###########
 # Package #
@@ -68,16 +68,18 @@ def test_suite_get_subdisplay_by_name(suite, device):
 
 def test_suite_show_display_by_device(suite, device):
     suite.show_subdisplay(device.x)
-    dock = suite.layout().itemAt(suite.layout().count() - 1).widget()
-    assert isinstance(dock, QDockWidget)
+    dock = suite._content_frame.layout().itemAt(
+        suite.layout().count() - 1).widget()
+    assert isinstance(dock, QtWidgets.QDockWidget)
     assert device.x in dock.widget().devices
 
 
 def test_suite_show_display_by_parameter(suite):
     device_param = suite.top_level_groups['Devices'].childs[0]
     suite.show_subdisplay(device_param)
-    dock = suite.layout().itemAt(suite.layout().count() - 1).widget()
-    assert isinstance(dock, QDockWidget)
+    dock = suite._content_frame.layout().itemAt(
+        suite.layout().count() - 1).widget()
+    assert isinstance(dock, QtWidgets.QDockWidget)
     assert device_param.device in dock.widget().devices
     assert dock.receivers(dock.closing) == 1
 
@@ -155,7 +157,7 @@ def test_suite_save_util(suite, device):
 
 def test_suite_save(suite, monkeypatch):
     tfile = Path(tempfile.gettempdir()) / 'test.py'
-    monkeypatch.setattr(typhos.suite.QFileDialog,
+    monkeypatch.setattr(QtWidgets.QFileDialog,
                         'getSaveFileName',
                         lambda *args: (str(tfile), str(tfile)))
     suite.save()
@@ -166,7 +168,7 @@ def test_suite_save(suite, monkeypatch):
 
 
 def test_suite_save_cancel_smoke(suite, monkeypatch):
-    monkeypatch.setattr(typhos.suite.QFileDialog,
+    monkeypatch.setattr(QtWidgets.QFileDialog,
                         'getSaveFileName',
                         lambda *args: None)
     suite.save()
