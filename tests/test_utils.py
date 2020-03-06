@@ -169,6 +169,13 @@ Class1.full_name = Class1.__module__ + '.' + Class1.__name__
          # Create these:
          ['Class1.ui', 'c.ui', 'Class1.engineering.ui'],
      ),
+     pytest.param(
+        Class1, 'detailed',
+         # Expected
+         ['Class1.py', 'Class1.ui'],
+         # Create these:
+         ['Class1.ui', 'Class1.py', 'c.ui', 'Class1.engineering.ui'],
+     ),
      ]
 )
 def test_path_search(tmpdir, cls, view_type, create, expected):

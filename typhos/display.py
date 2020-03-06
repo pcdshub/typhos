@@ -1,6 +1,7 @@
 import enum
 import logging
 import os.path
+import pathlib
 
 from qtpy.QtCore import Q_ENUMS, Property, Slot
 from qtpy.QtWidgets import QHBoxLayout, QWidget
