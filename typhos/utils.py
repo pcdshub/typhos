@@ -4,6 +4,7 @@ Utility functions for typhos
 import contextlib
 import collections
 import importlib.util
+import inspect
 ############
 # Standard #
 ############
@@ -476,6 +477,9 @@ def find_templates_for_class(cls, view_type, paths, *, extension='.ui',
     path : pathlib.Path
         A matching path, ordered from most-to-least specific.
     '''
+    if not inspect.isclass(cls):
+        cls = type(cls)
+
     paths = remove_duplicate_items(
         [pathlib.Path(p).expanduser().resolve() for p in paths]
     )

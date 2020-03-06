@@ -74,10 +74,9 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
 
         # Set this to None first so we don't render
         super().__init__(parent=parent)
-        # Initialize blank UI
+
         self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
-        # Load template
         self.load_template()
 
     @property
@@ -103,18 +102,24 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
     @Property(str, designable=False)
     def device_class(self):
         """Full class with module name of loaded device"""
-        if getattr(self, 'devices', []):
-            device_class = self.devices[0].__class__
-            return '.'.join((device_class.__module__,
-                             device_class.__name__))
-        return ''
+        device = self.device
+        cls = self.device.__class__
+        return f'{cls.__module__}.{cls.__name__}' if device else ''
 
     @Property(str, designable=False)
     def device_name(self):
         "Name of loaded device"
-        if getattr(self, 'devices', []):
-            return self.devices[0].name
-        return ''
+        device = self.device
+        return device.name if device else ''
+
+    @property
+    def device(self):
+        '''The device associated with this Device Display'''
+        try:
+            device, = self.devices
+            return device
+        except ValueError:
+            ...
 
     def load_template(self, macros=None):
         """
@@ -230,8 +235,21 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
             macros['name'] = device.name
         if 'prefix' not in macros and hasattr(device, 'prefix'):
             macros['prefix'] = device.prefix
-        # Reload template
+
+        self.search_for_templates()
         self.load_template(macros=macros)
+
+    def search_for_templates(self):
+        '''
+        Search the filesystem for device-specific templates
+        '''
+        device = self.device
+        if not device:
+            return
+
+        cls = device.__class__
+        for display_type in DisplayTypes:
+            utils.find_templates_for_class(cls, display_type.name, )
 
     @classmethod
     def from_device(cls, device, template=None, macros=None):
