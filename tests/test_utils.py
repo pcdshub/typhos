@@ -176,7 +176,7 @@ def test_path_search(tmpdir, cls, view_type, create, expected):
         file = tmpdir.join(to_create)
         file.write('')
 
-    results = typhos.utils.find_best_template_for_class(
+    results = typhos.utils.find_templates_for_class(
         cls, view_type, paths=[tmpdir])
 
     assert list(r.name for r in results) == expected

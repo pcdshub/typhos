@@ -443,8 +443,8 @@ def remove_duplicate_items(list_):
     return cls(sorted(set(list_), key=list_.index))
 
 
-def find_best_template_for_class(cls, view_type, paths, *, extension='.ui',
-                                 include_mro=True):
+def find_templates_for_class(cls, view_type, paths, *, extension='.ui',
+                             include_mro=True):
     '''
     Given a class `cls` and a view type (such as 'detailed'), search `paths`
     for potential templates to show.
