@@ -1,39 +1,32 @@
-from enum import Enum
+import enum
 import logging
 import os.path
 
-from pydm import Display
-from pydm.utilities.display_loading import load_py_file
-
-from qtpy.QtCore import Property, Slot, Q_ENUMS
+from qtpy.QtCore import Q_ENUMS, Property, Slot
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
 import pcdsutils
+from pydm import Display
+from pydm.utilities.display_loading import load_py_file
+from typhos import utils
 
-from .utils import (ui_dir, TyphosBase, clear_layout, reload_widget_stylesheet)
+from .utils import TyphosBase, clear_layout, reload_widget_stylesheet, ui_dir
 from .widgets import TyphosDesignerMixin
-
 
 logger = logging.getLogger(__name__)
 
 
-class DisplayTypes:
+class DisplayTypes(enum.IntEnum):
     """Types of Available Templates"""
     embedded_screen = 0
     detailed_screen = 1
     engineering_screen = 2
 
-    @classmethod
-    def to_enum(cls):
-        # First let's remove the internals
-        entries = [(k, v) for k, v in cls.__dict__.items()
-                   if not k.startswith("__")
-                   and not callable(v)
-                   and not isinstance(v, staticmethod)]
-        return Enum('TemplateEnum', entries)
+
+_DisplayTypes = utils.pyqt_class_from_enum(DisplayTypes)
 
 
-class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
+class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -63,18 +56,23 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
     parent: QWidget, optional
     """
     # Template types and defaults
-    Q_ENUMS(DisplayTypes)
-    TemplateEnum = DisplayTypes.to_enum()  # For convenience
+    Q_ENUMS(_DisplayTypes)
+    TemplateEnum = DisplayTypes  # For convenience
 
-    def __init__(self,  parent=None, **kwargs):
+    def __init__(self, parent=None, **kwargs):
         # Intialize background variable
         self._forced_template = ''
         self._last_macros = dict()
         self._main_widget = None
         self._display_type = DisplayTypes.detailed_screen
-        self.templates = dict((_typ.name, os.path.join(ui_dir,
-                                                       _typ.name + '.ui'))
-                              for _typ in self.TemplateEnum)
+
+        # Without a device set
+        self.templates = {
+            templ.name: os.path.join(ui_dir, templ.name + '.ui')
+            for templ in self.TemplateEnum
+        }
+        print(self.templates)
+
         # Set this to None first so we don't render
         super().__init__(parent=parent)
         # Initialize blank UI
@@ -92,7 +90,7 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
         template_key = self.TemplateEnum(self._display_type).name
         return self.templates[template_key]
 
-    @Property(DisplayTypes)
+    @Property(_DisplayTypes)
     def display_type(self):
         return self._display_type
 

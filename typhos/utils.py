@@ -420,6 +420,15 @@ def no_device_lazy_load():
         Device.lazy_wait_for_connection = old_val
 
 
+def pyqt_class_from_enum(enum):
+    '''
+    Create an inheritable base class from a Python Enum, which can also be used
+    for Q_ENUMS.
+    '''
+    enum_dict = {item.name: item.value for item in list(enum)}
+    return type(enum.__name__, (object, ), enum_dict)
+
+
 def _get_template_filenames_for_class(class_, view_type, *, extension='.ui',
                                       include_mro=True):
     '''
