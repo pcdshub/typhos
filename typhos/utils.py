@@ -43,7 +43,7 @@ from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QPainter, QMovie
 from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
                             QWidget, QMessageBox, QLabel)
-from pydm.utils import raise_to_operator
+from pydm.exception import raise_to_operator
 
 #############
 #  Package  #
