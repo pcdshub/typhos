@@ -259,5 +259,6 @@ def client():
 
 @pytest.fixture(scope='session')
 def happi_cfg():
-    path = pathlib.Path(__file__)
-    return str(path.parent / 'happi.cfg')
+    path = str(MODULE_PATH / 'happi.cfg')
+    os.environ['HAPPI_CFG'] = path
+    return path
