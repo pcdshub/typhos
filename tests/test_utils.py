@@ -12,7 +12,7 @@ import simplejson as json
 
 import typhos
 from typhos.utils import (use_stylesheet, clean_name, grab_kind,
-                          TyphosBase, raise_to_operator, load_suite,
+                          TyphosBase, load_suite,
                           saved_template, no_device_lazy_load)
 
 class NestedDevice(Device):
@@ -73,20 +73,6 @@ def test_typhosbase_repaint_smoke(qtbot):
     qtbot.addWidget(tp)
     pe = QPaintEvent(QRect(1, 2, 3, 4))
     tp.paintEvent(pe)
-
-
-def test_raise_to_operator_msg(monkeypatch, qtbot):
-
-    monkeypatch.setattr(QMessageBox, 'exec_', lambda x: 1)
-    exc_dialog = None
-    try:
-        1/0
-    except ZeroDivisionError as exc:
-        exc_dialog = raise_to_operator(exc)
-
-    qtbot.addWidget(exc_dialog)
-    assert exc_dialog is not None
-    assert 'ZeroDivisionError' in exc_dialog.text()
 
 
 def test_load_suite(qtbot, happi_cfg):
