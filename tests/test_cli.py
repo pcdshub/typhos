@@ -5,6 +5,8 @@ import pytest
 import typhos
 from typhos.cli import typhos_cli, QApplication
 
+from . import conftest
+
 
 def test_cli_version(capsys):
     typhos_cli(['--version'])
@@ -52,12 +54,17 @@ def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
     ("ophyd.sim.SynAxis[]", "device"),
     ("ophyd.sim.SynAxis[{'name':'foo'}]", "foo")
 ])
-def test_cli_class(monkeypatch, qapp, qtbot, klass, name):
+def test_cli_class(monkeypatch, qapp, qtbot, klass, name, happi_cfg):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
     window = typhos_cli([klass])
     qtbot.addWidget(window)
     assert window.isVisible()
-    assert name == window.centralWidget().devices[0].name
+
+    suite = window.centralWidget()
+    assert name == suite.devices[0].name
+
+    for dev in suite.devices:
+        conftest.clear_handlers(dev)
 
 
 def test_cli_class_invalid(qtbot):

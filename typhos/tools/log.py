@@ -14,7 +14,8 @@ class TyphosLogDisplay(TyphosBase):
         # root logger. This causes issue if this widget is closed before the
         # end of the Python session. For the long term this issue will be
         # resolved with https://github.com/slaclab/pydm/issues/474
-        self.logdisplay = PyDMLogDisplay(logname='not_set', level=level)
+        self.logdisplay = PyDMLogDisplay(logname='not_set', level=level,
+                                         parent=self)
         self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.logdisplay)
 
@@ -28,4 +29,5 @@ class TyphosLogDisplay(TyphosBase):
         # the existing handler do all the filtering
         else:
             device.log.setLevel(logging.NOTSET)
-            device.log.addHandler(self.logdisplay.handler)
+            logger = getattr(device.log, 'logger', device.log)
+            logger.addHandler(self.logdisplay.handler)

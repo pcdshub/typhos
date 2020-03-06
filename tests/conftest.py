@@ -38,6 +38,7 @@ import pytest
 import qtpy
 from qtpy import QtGui, QtWidgets
 from pydm import PyDMApplication
+from pydm.widgets.logdisplay import GuiHandler
 
 ###########
 # Package #
@@ -237,7 +238,15 @@ class MockDevice(Device):
 
 @pytest.fixture(scope='function')
 def device():
-    return MockDevice('Tst:This', name='Simulated Device')
+    dev = MockDevice('Tst:This', name='Simulated Device')
+    yield dev
+    clear_handlers(dev)
+
+
+def clear_handlers(device):
+    for handler in list(device.log.logger.handlers):
+        if isinstance(handler, GuiHandler):
+            device.log.logger.handlers.remove(handler)
 
 
 @pytest.fixture(scope='session')
