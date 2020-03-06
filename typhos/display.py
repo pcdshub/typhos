@@ -71,7 +71,6 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
             templ.name: os.path.join(ui_dir, templ.name + '.ui')
             for templ in self.TemplateEnum
         }
-        print(self.templates)
 
         # Set this to None first so we don't render
         super().__init__(parent=parent)
