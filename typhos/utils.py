@@ -20,25 +20,8 @@ import traceback
 ############
 from ophyd import Kind, Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
-try:
-    from ophyd.sim import SignalRO
-except ImportError:
-    import ophyd.sim
-    from ophyd.utils import ReadOnlyError
-
-    class SignalRO(ophyd.sim.Signal):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self._metadata.update(
-                connected=True,
-                write_access=False,
-            )
-
-        def put(self, value, *, timestamp=None, force=False):
-            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
-
-        def set(self, value, *, timestamp=None, force=False):
-            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+import ophyd.sim
+from ophyd.utils import ReadOnlyError
 from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QPainter, QMovie
 from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
@@ -52,6 +35,19 @@ logger = logging.getLogger(__name__)
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
+
+
+class SignalRO(ophyd.sim.SynSignalRO):
+    def __init__(self, value=0, *args, **kwargs):
+        self._value = value
+        super().__init__(*args, **kwargs)
+        self._metadata.update(
+            connected=True,
+            write_access=False,
+        )
+
+    def get(self):
+        return self._value
 
 
 def channel_from_signal(signal):

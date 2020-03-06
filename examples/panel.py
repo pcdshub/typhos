@@ -2,24 +2,7 @@
 import sys
 import numpy as np
 from ophyd import Device, Component as Cpt, Signal
-try:
-    from ophyd.sim import SignalRO
-except ImportError:
-    from ophyd.utils import ReadOnlyError
-
-    class SignalRO(ophyd.sim.Signal):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self._metadata.update(
-                connected=True,
-                write_access=False,
-            )
-
-        def put(self, value, *, timestamp=None, force=False):
-            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
-
-        def set(self, value, *, timestamp=None, force=False):
-            raise ReadOnlyError("The signal {} is readonly.".format(self.name))
+from typhos.utils import SignalRO
 from qtpy.QtWidgets import QApplication
 import typhos
 
@@ -40,7 +23,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     typhos.use_stylesheet()
     # Create my panel
-    panel = typhos.TyphonSignalPanel.from_device(sample)
+    panel = typhos.TyphosSignalPanel.from_device(sample)
     panel.sortBy = panel.byName
     # Execute
     panel.show()
