@@ -483,6 +483,8 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
 
     if not extensions:
         extensions = ['.py', '.ui']
+    elif isinstance(extensions, str):
+        extensions = [extensions]
 
     paths = remove_duplicate_items(
         [pathlib.Path(p).expanduser().resolve() for p in paths]

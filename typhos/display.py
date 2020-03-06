@@ -250,7 +250,22 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
 
         cls = device.__class__
         for display_type in DisplayTypes:
-            utils.find_templates_for_class(cls, display_type.name, )
+            # TODO display_type names make me sad
+            view = display_type.name
+            if view.endswith('_screen'):
+                view = view.split('_screen')[0]
+
+            # TODO paths
+            filenames = utils.find_templates_for_class(cls, view, [ui_dir])
+            for filename in filenames:
+                old_template = self.templates.get(display_type, None)
+                if not old_template or pathlib.Path(old_template) != filename:
+                    # Only get the first one for now, though this could be used to
+                    # get alternate screen options
+                    self.templates[display_type] = filename
+                    logger.debug('Found new template %s for %s (was %s)',
+                                 display_type, filename, old_template)
+                break
 
     @classmethod
     def from_device(cls, device, template=None, macros=None):
