@@ -23,7 +23,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     typhos.use_stylesheet()
     # Create my panel
-    panel = typhos.TyphonSignalPanel.from_device(sample)
+    panel = typhos.TyphosSignalPanel.from_device(sample)
     panel.sortBy = panel.byName
     # Execute
     panel.show()
