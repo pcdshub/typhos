@@ -128,25 +128,20 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
         macros: dict, optional
             Macro substitutions to be made in the file
         """
-        # If we are not fully initialized yet do not try and add anything to
-        # the layout. This will happen if the QApplication has a stylesheet
-        # that forces a template, prior to the creation of this display
         if self.layout() is None:
-            logger.debug("Widget not initialized, do not load template")
+            # If we are not fully initialized yet do not try and add anything
+            # to the layout. This will happen if the QApplication has a
+            # stylesheet that forces a template prior to the creation of this
+            # display
             return
+
         # Clear anything that exists in the current layout
         if self._main_widget:
             logger.debug("Clearing existing layout ...")
             clear_layout(self.layout())
 
         # Assemble our macros
-        self._last_macros = macros or self._last_macros
-        for display_type in self.templates:
-            value = self._last_macros.get(display_type)
-            if value:
-                logger.debug("Found new template %r for %r",
-                             value, display_type)
-                self.templates[display_type] = value
+        self._update_macros(macros)
 
         try:
             self._load_template(self.current_template)
@@ -156,6 +151,15 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
         finally:
             self.layout().addWidget(self._main_widget)
             reload_widget_stylesheet(self)
+
+    def _update_macros(self, macros):
+        self._last_macros = macros or self._last_macros
+        for display_type in self.templates:
+            value = self._last_macros.get(display_type)
+            if value:
+                logger.debug("Found new template %r for %r",
+                             value, display_type)
+                self.templates[display_type] = value
 
     def _load_template(self, filename):
         logger.debug("Loading %s", filename)
