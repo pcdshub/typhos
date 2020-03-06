@@ -26,6 +26,7 @@ from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QPainter, QMovie
 from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
                             QWidget, QMessageBox, QLabel)
+from pydm.exception import raise_to_operator
 
 #############
 #  Package  #
@@ -309,21 +310,6 @@ def clear_layout(layout):
             child.widget().deleteLater()
         elif child.layout():
             clear_layout(child.layout())
-
-
-def raise_to_operator(exc):
-    """Utility function to show an Exception to a user"""
-    logger.error("Reporting error %r to user ...", exc)
-    err_msg = QMessageBox()
-    err_msg.setText(f'{exc.__class__.__name__}: {exc}')
-    err_msg.setWindowTitle(type(exc).__name__)
-    err_msg.setIcon(QMessageBox.Critical)
-    handle = io.StringIO()
-    traceback.print_tb(exc.__traceback__, file=handle)
-    handle.seek(0)
-    err_msg.setDetailedText(handle.read())
-    err_msg.exec_()
-    return err_msg
 
 
 def reload_widget_stylesheet(widget, cascade=False):
