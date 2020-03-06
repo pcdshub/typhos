@@ -244,9 +244,14 @@ def device():
 
 
 def clear_handlers(device):
-    for handler in list(device.log.logger.handlers):
+    if isinstance(device.log, logging.Logger):
+        _logger = device.log
+    else:
+        _logger = device.log.logger
+
+    for handler in list(_logger.handlers):
         if isinstance(handler, GuiHandler):
-            device.log.logger.handlers.remove(handler)
+            _logger.handlers.remove(handler)
 
 
 @pytest.fixture(scope='session')
