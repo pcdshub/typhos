@@ -2,9 +2,10 @@ import enum
 import logging
 import os.path
 import pathlib
+import functools
 
-from qtpy.QtCore import Q_ENUMS, Property, Slot
-from qtpy.QtWidgets import QHBoxLayout, QWidget
+from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
+from qtpy.QtWidgets import QHBoxLayout, QWidget, QMenu
 
 import pcdsutils
 from pydm import Display
@@ -79,6 +80,43 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
         self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.load_template()
+
+        self.setContextMenuPolicy(Qt.DefaultContextMenu)
+        self.contextMenuEvent = self.open_context_menu
+
+    def generate_context_menu(self):
+        """
+        Generates the custom context menu, and populates it with any external
+        tools that have been loaded.  PyDMWidget subclasses should override
+        this method (after calling superclass implementation) to add the menu.
+
+        Returns
+        -------
+        QMenu
+        """
+        def switch_template(fname):
+            self.force_template = fname
+
+        menu = QMenu(parent=self)
+
+        for display_name, filename in self.templates.items():
+            action = menu.addAction(display_name)
+            action.triggered.connect(functools.partial(switch_template,
+                                                       filename))
+
+        return menu
+
+    def open_context_menu(self, ev):
+        """
+        Handler for when the Default Context Menu is requested.
+
+        Parameters
+        ----------
+        ev : QEvent
+        """
+        menu = self.generate_context_menu()
+        menu.exec_(self.mapToGlobal(ev.pos()))
+        del menu
 
     @property
     def current_template(self):
