@@ -5,24 +5,21 @@ import collections
 import contextlib
 import importlib.util
 import inspect
-import io
 import logging
 import os.path
 import pathlib
 import random
 import re
-import traceback
 
 from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QMovie, QPainter
-from qtpy.QtWidgets import (QApplication, QLabel, QMessageBox, QStyle,
-                            QStyleFactory, QStyleOption, QWidget)
+from qtpy.QtWidgets import (QApplication, QLabel, QStyle, QStyleFactory,
+                            QStyleOption, QWidget)
 
 import ophyd.sim
 from ophyd import Device, Kind
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
-from ophyd.utils import ReadOnlyError
-from pydm.exception import raise_to_operator
+from pydm.exception import raise_to_operator  # noqa
 
 logger = logging.getLogger(__name__)
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
