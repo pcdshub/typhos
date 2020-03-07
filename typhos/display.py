@@ -262,8 +262,8 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
             for filename in filenames:
                 old_template = self.templates.get(display_type, None)
                 if not old_template or pathlib.Path(old_template) != filename:
-                    # Only get the first one for now, though this could be used to
-                    # get alternate screen options
+                    # Only get the first one for now, though this could be used
+                    # to get alternate screen options
                     self.templates[display_type.name] = filename
                     logger.debug('Found new template %s for %s (was %s)',
                                  display_type, filename, old_template)

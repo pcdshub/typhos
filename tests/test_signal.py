@@ -1,24 +1,17 @@
-############
-# Standard #
-############
 import random
 
-############
-# External #
-############
 import numpy as np
+from qtpy.QtWidgets import QWidget
+
 from ophyd import Kind
 from ophyd.signal import Signal
-from ophyd.sim import (SynSignal, SynSignalRO, FakeEpicsSignal,
-                       FakeEpicsSignalRO)
+from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
+                       SynSignalRO)
 from pydm.widgets import PyDMEnumComboBox
-from qtpy.QtWidgets import QWidget
-###########
-# Package #
-###########
 from typhos.signal import SignalPanel, TyphosSignalPanel, signal_widget
 from typhos.widgets import ImageDialogButton, WaveformDialogButton
-from .conftest import show_widget, RichSignal, DeadSignal
+
+from .conftest import DeadSignal, RichSignal, show_widget
 
 
 def test_panel_creation(qtbot):

@@ -12,31 +12,21 @@ with the correct type with the method `get_param_value``. There may be cases
 where these widgets find that the user has entered inappropriate values, in
 this case they should return np.nan to halt the function from being called.
 """
-############
-# Standard #
-############
-import logging
 import inspect
+import logging
 from functools import partial
 
-############
-# External #
-############
 import numpy as np
-from qtpy.QtCore import Property, Slot, Qt, QSize
-from qtpy.QtGui import QFont
-from qtpy.QtWidgets import (QSizePolicy, QGroupBox, QLabel, QSpacerItem,
-                            QWidget, QPushButton, QLineEdit, QCheckBox,
-                            QHBoxLayout, QVBoxLayout)
 from numpydoc import docscrape
+from qtpy.QtCore import Property, QSize, Qt, Slot
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import (QCheckBox, QGroupBox, QHBoxLayout, QLabel,
+                            QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
+                            QVBoxLayout, QWidget)
 
-###########
-# Package #
-###########
+from .status import TyphosStatusThread
 from .utils import clean_attr, raise_to_operator
 from .widgets import TogglePanel, TyphosDesignerMixin
-from .status import TyphosStatusThread
-
 
 logger = logging.getLogger(__name__)
 

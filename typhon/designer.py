@@ -1,10 +1,9 @@
 from pydm.widgets.qtplugin_base import qtplugin_factory
 
-from .signal import TyphonSignalPanel
 from .display import TyphonDeviceDisplay
 from .func import TyphonMethodButton
 from .positioner import TyphonPositionerWidget
-
+from .signal import TyphonSignalPanel
 
 group_name = 'Typhon Widgets - Deprecated'
 TyphonSignalPanelPlugin = qtplugin_factory(TyphonSignalPanel,

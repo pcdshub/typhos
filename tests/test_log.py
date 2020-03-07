@@ -1,7 +1,6 @@
 import logging
 
 from ophyd import Device
-
 from typhos.tools import TyphosLogDisplay
 
 

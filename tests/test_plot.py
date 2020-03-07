@@ -1,22 +1,13 @@
 """
 Module Docstring
 """
-############
-# Standard #
-############
 import logging
 
-###############
-# Third Party #
-###############
-from ophyd import EpicsSignal, Signal
 import pytest
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QColor
 
-##########
-# Module #
-##########
+from ophyd import EpicsSignal, Signal
 from typhos import register_signal
 from typhos.tools.plot import TyphosTimePlot
 from typhos.utils import channel_from_signal

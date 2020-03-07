@@ -1,37 +1,25 @@
 """
 Utility functions for typhos
 """
-import contextlib
 import collections
+import contextlib
 import importlib.util
 import inspect
-############
-# Standard #
-############
-import io
 import logging
 import os.path
 import pathlib
 import random
 import re
-import traceback
 
-############
-# External #
-############
-from ophyd import Kind, Device
-from ophyd.signal import EpicsSignalBase, EpicsSignalRO
-import ophyd.sim
-from ophyd.utils import ReadOnlyError
 from qtpy.QtCore import QSize
-from qtpy.QtGui import QColor, QPainter, QMovie
-from qtpy.QtWidgets import (QApplication, QStyle, QStyleOption, QStyleFactory,
-                            QWidget, QMessageBox, QLabel)
-from pydm.exception import raise_to_operator
+from qtpy.QtGui import QColor, QMovie, QPainter
+from qtpy.QtWidgets import (QApplication, QLabel, QStyle, QStyleFactory,
+                            QStyleOption, QWidget)
 
-#############
-#  Package  #
-#############
+import ophyd.sim
+from ophyd import Device, Kind
+from ophyd.signal import EpicsSignalBase, EpicsSignalRO
+from pydm.exception import raise_to_operator  # noqa
 
 logger = logging.getLogger(__name__)
 ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')

@@ -1,10 +1,13 @@
 """Example to create a Panel of Ophyd Signals from an object"""
 import sys
+
 import numpy as np
-from ophyd import Device, Component as Cpt, Signal
-from typhos.utils import SignalRO
 from qtpy.QtWidgets import QApplication
+
 import typhos
+from ophyd import Component as Cpt
+from ophyd import Device, Signal
+from typhos.utils import SignalRO
 
 
 class Sample(Device):

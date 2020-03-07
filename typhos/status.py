@@ -1,5 +1,5 @@
-import time
 import logging
+import time
 
 from qtpy.QtCore import QThread, Signal
 

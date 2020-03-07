@@ -1,18 +1,9 @@
-############
-# Standard #
-############
 
-############
-# External #
-############
 import numpy as np
 from ophyd import Signal
 from pydm.widgets import PyDMLineEdit
 from qtpy.QtWidgets import QWidget
 
-###########
-# Package #
-###########
 from ..conftest import DeadSignal, RichSignal
 from typhos.plugins.core import (SignalPlugin, SignalConnection,
                                  register_signal)

@@ -6,13 +6,14 @@ __all__ = ['use_stylesheet', 'register_signal', 'load_suite',
            'TyphosMethodButton', '__version__'
            ]
 
+from ._version import get_versions
 from .display import TyphosDeviceDisplay
 from .func import TyphosMethodButton
-from .suite import TyphosSuite
-from .signal import TyphosSignalPanel
-from .positioner import TyphosPositionerWidget
-from .utils import use_stylesheet, load_suite
 from .plugins import register_signal
-from ._version import get_versions
+from .positioner import TyphosPositionerWidget
+from .signal import TyphosSignalPanel
+from .suite import TyphosSuite
+from .utils import load_suite, use_stylesheet
+
 __version__ = get_versions()['version']
 del get_versions

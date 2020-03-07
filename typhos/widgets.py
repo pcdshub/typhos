@@ -1,25 +1,15 @@
-############
-# Standard #
-############
 import logging
 
-############
-# External #
-############
 import qtawesome as qta
-from qtpy.QtCore import Property, QSize, Qt, Signal, Slot, QObject
-from qtpy.QtWidgets import (QAction, QPushButton, QVBoxLayout, QWidget,
-                            QToolBar, QDockWidget, QDialog)
-from pydm.widgets import (PyDMLabel, PyDMEnumComboBox, PyDMLineEdit,
-                          PyDMWaveformPlot, PyDMImageView)
+from pyqtgraph.parametertree import parameterTypes as ptypes
+from qtpy.QtCore import Property, QObject, QSize, Qt, Signal, Slot
+from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
+                            QToolBar, QVBoxLayout, QWidget)
+
+from pydm.widgets import (PyDMEnumComboBox, PyDMImageView, PyDMLabel,
+                          PyDMLineEdit, PyDMWaveformPlot)
 from pydm.widgets.base import PyDMWidget
 from pydm.widgets.channel import PyDMChannel
-from pyqtgraph.parametertree import parameterTypes as ptypes
-
-###########
-# Package #
-###########
-
 
 logger = logging.getLogger(__name__)
 

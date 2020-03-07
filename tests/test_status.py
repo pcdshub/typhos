@@ -1,9 +1,9 @@
 from unittest.mock import Mock
 
-from ophyd.status import Status
 import pytest
 from qtpy.QtWidgets import QWidget
 
+from ophyd.status import Status
 from typhos.status import TyphosStatusThread
 
 
