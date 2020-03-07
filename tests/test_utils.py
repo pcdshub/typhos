@@ -15,6 +15,7 @@ from typhos.utils import (use_stylesheet, clean_name, grab_kind,
                           TyphosBase, load_suite,
                           saved_template, no_device_lazy_load)
 
+
 class NestedDevice(Device):
     phi = Cpt(Device)
 
@@ -92,7 +93,7 @@ def test_load_suite(qtbot, happi_cfg):
 
 def test_load_suite_with_bad_py_file():
     with pytest.raises(AttributeError):
-        suite = load_suite(typhos.utils.__file__)
+        load_suite(typhos.utils.__file__)
 
 
 def test_no_device_lazy_load():
@@ -115,3 +116,60 @@ def test_no_device_lazy_load():
     assert Device.lazy_wait_for_connection is old_val
     assert dev.lazy_wait_for_connection is old_val
     assert dev.c.lazy_wait_for_connection is old_val
+
+
+class Class1:
+    ...
+
+
+Class1.full_name = Class1.__module__ + '.' + Class1.__name__
+
+
+@pytest.mark.parametrize(
+    'cls, view_type, expected, create',
+    [pytest.param(
+        Class1, 'detailed',
+        # Expected
+        ['Class1.detailed.ui'],
+        # Create these:
+        ['foo.bar.ui', 'Class1.detailed.ui'],
+     ),
+     pytest.param(
+         Class1, 'detailed',
+         # Expected
+         [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui', 'Class1.ui'],
+         # Create these:
+         ['a.ui', Class1.full_name + '.detailed.ui', 'Class1.detailed.ui', 'Class1.ui'],
+     ),
+     pytest.param(
+         Class1, 'detailed',
+         # Expected
+         [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui'],
+         # Create these:
+         [Class1.full_name + '.detailed.ui', 'b.ui', 'Class1.detailed.ui'],
+     ),
+     pytest.param(
+        Class1, 'detailed',
+         # Expected
+         ['Class1.ui'],
+         # Create these:
+         ['Class1.ui', 'c.ui', 'Class1.engineering.ui'],
+     ),
+     pytest.param(
+        Class1, 'detailed',
+         # Expected
+         ['Class1.py', 'Class1.ui'],
+         # Create these:
+         ['Class1.ui', 'Class1.py', 'c.ui', 'Class1.engineering.ui'],
+     ),
+     ]
+)
+def test_path_search(tmpdir, cls, view_type, create, expected):
+    for to_create in create:
+        file = tmpdir.join(to_create)
+        file.write('')
+
+    results = typhos.utils.find_templates_for_class(
+        cls, view_type, paths=[tmpdir])
+
+    assert list(r.name for r in results) == expected

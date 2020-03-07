@@ -1,39 +1,33 @@
-from enum import Enum
+import enum
 import logging
 import os.path
+import pathlib
 
-from pydm import Display
-from pydm.utilities.display_loading import load_py_file
-
-from qtpy.QtCore import Property, Slot, Q_ENUMS
+from qtpy.QtCore import Q_ENUMS, Property, Slot
 from qtpy.QtWidgets import QHBoxLayout, QWidget
 
 import pcdsutils
+from pydm import Display
+from pydm.utilities.display_loading import load_py_file
+from typhos import utils
 
-from .utils import (ui_dir, TyphosBase, clear_layout, reload_widget_stylesheet)
+from .utils import TyphosBase, clear_layout, reload_widget_stylesheet, ui_dir
 from .widgets import TyphosDesignerMixin
-
 
 logger = logging.getLogger(__name__)
 
 
-class DisplayTypes:
+class DisplayTypes(enum.IntEnum):
     """Types of Available Templates"""
     embedded_screen = 0
     detailed_screen = 1
     engineering_screen = 2
 
-    @classmethod
-    def to_enum(cls):
-        # First let's remove the internals
-        entries = [(k, v) for k, v in cls.__dict__.items()
-                   if not k.startswith("__")
-                   and not callable(v)
-                   and not isinstance(v, staticmethod)]
-        return Enum('TemplateEnum', entries)
+
+_DisplayTypes = utils.pyqt_class_from_enum(DisplayTypes)
 
 
-class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
+class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
     """
     Main Panel display for a signal Ophyd Device
 
@@ -63,24 +57,27 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
     parent: QWidget, optional
     """
     # Template types and defaults
-    Q_ENUMS(DisplayTypes)
-    TemplateEnum = DisplayTypes.to_enum()  # For convenience
+    Q_ENUMS(_DisplayTypes)
+    TemplateEnum = DisplayTypes  # For convenience
 
-    def __init__(self,  parent=None, **kwargs):
+    def __init__(self, parent=None, **kwargs):
         # Intialize background variable
         self._forced_template = ''
         self._last_macros = dict()
         self._main_widget = None
         self._display_type = DisplayTypes.detailed_screen
-        self.templates = dict((_typ.name, os.path.join(ui_dir,
-                                                       _typ.name + '.ui'))
-                              for _typ in self.TemplateEnum)
+
+        # Without a device set
+        self.templates = {
+            templ.name: os.path.join(ui_dir, templ.name + '.ui')
+            for templ in self.TemplateEnum
+        }
+
         # Set this to None first so we don't render
         super().__init__(parent=parent)
-        # Initialize blank UI
+
         self.setLayout(QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
-        # Load template
         self.load_template()
 
     @property
@@ -92,7 +89,7 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
         template_key = self.TemplateEnum(self._display_type).name
         return self.templates[template_key]
 
-    @Property(DisplayTypes)
+    @Property(_DisplayTypes)
     def display_type(self):
         return self._display_type
 
@@ -106,18 +103,24 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
     @Property(str, designable=False)
     def device_class(self):
         """Full class with module name of loaded device"""
-        if getattr(self, 'devices', []):
-            device_class = self.devices[0].__class__
-            return '.'.join((device_class.__module__,
-                             device_class.__name__))
-        return ''
+        device = self.device
+        cls = self.device.__class__
+        return f'{cls.__module__}.{cls.__name__}' if device else ''
 
     @Property(str, designable=False)
     def device_name(self):
         "Name of loaded device"
-        if getattr(self, 'devices', []):
-            return self.devices[0].name
-        return ''
+        device = self.device
+        return device.name if device else ''
+
+    @property
+    def device(self):
+        '''The device associated with this Device Display'''
+        try:
+            device, = self.devices
+            return device
+        except ValueError:
+            ...
 
     def load_template(self, macros=None):
         """
@@ -131,17 +134,31 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
         macros: dict, optional
             Macro substitutions to be made in the file
         """
-        # If we are not fully initialized yet do not try and add anything to
-        # the layout. This will happen if the QApplication has a stylesheet
-        # that forces a template, prior to the creation of this display
         if self.layout() is None:
-            logger.debug("Widget not initialized, do not load template")
+            # If we are not fully initialized yet do not try and add anything
+            # to the layout. This will happen if the QApplication has a
+            # stylesheet that forces a template prior to the creation of this
+            # display
             return
+
         # Clear anything that exists in the current layout
         if self._main_widget:
             logger.debug("Clearing existing layout ...")
             clear_layout(self.layout())
+
         # Assemble our macros
+        self._update_macros(macros)
+
+        try:
+            self._load_template(self.current_template)
+        except Exception:
+            logger.exception("Unable to load file %r", self.current_template)
+            self._main_widget = QWidget()
+        finally:
+            self.layout().addWidget(self._main_widget)
+            reload_widget_stylesheet(self)
+
+    def _update_macros(self, macros):
         self._last_macros = macros or self._last_macros
         for display_type in self.templates:
             value = self._last_macros.get(display_type)
@@ -149,34 +166,31 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
                 logger.debug("Found new template %r for %r",
                              value, display_type)
                 self.templates[display_type] = value
-        try:
-            logger.debug("Loading %s", self.current_template)
-            ext = os.path.splitext(self.current_template)[1]
-            # Support Python files
-            if ext == '.py':
-                logger.debug("Loading %r as a Python file ...",
-                             self.current_template)
-                self._main_widget = load_py_file(self.current_template,
-                                                 macros=self._last_macros)
+
+    def _load_template(self, filename):
+        logger.debug("Loading %s", filename)
+        ext = os.path.splitext(filename)[1]
+        # Support Python files
+        if ext == '.py':
+            logger.debug('Load Python template: %r', filename)
+            self._main_widget = load_py_file(filename,
+                                             macros=self._last_macros)
+        else:
             # Otherwise assume you have given use a UI file
-            else:
-                logger.debug("Loading as a Qt Designer file ...")
-                self._main_widget = Display(ui_filename=self.current_template,
-                                            macros=self._last_macros)
-            # Add device to all children widgets
-            if self.devices:
-                designer = (self._main_widget.findChildren(TyphosDesignerMixin)
-                            or [])
-                bases = (self._main_widget.findChildren(TyphosBase)
-                         or [])
-                for widget in set(bases + designer):
-                    widget.add_device(self.devices[0])
-        except Exception:
-            logger.exception("Unable to load file %r", self.current_template)
-            self._main_widget = QWidget()
-        finally:
-            self.layout().addWidget(self._main_widget)
-            reload_widget_stylesheet(self)
+            logger.debug('Load UI template: %r', filename)
+            self._main_widget = Display(ui_filename=filename,
+                                        macros=self._last_macros)
+        # Add device to all children widgets
+        if not self.devices:
+            return
+
+        device, = self.devices
+        designer = (self._main_widget.findChildren(TyphosDesignerMixin)
+                    or [])
+        bases = (self._main_widget.findChildren(TyphosBase)
+                 or [])
+        for widget in set(bases + designer):
+            widget.add_device(device)
 
     @Property(str)
     def force_template(self):
@@ -222,8 +236,38 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, DisplayTypes):
             macros['name'] = device.name
         if 'prefix' not in macros and hasattr(device, 'prefix'):
             macros['prefix'] = device.prefix
-        # Reload template
+
+        self.search_for_templates()
         self.load_template(macros=macros)
+
+    def search_for_templates(self):
+        '''
+        Search the filesystem for device-specific templates
+        '''
+        device = self.device
+        if not device:
+            return
+
+        cls = device.__class__
+        logger.debug('Searching for templates for %s', cls.__name__)
+
+        for display_type in DisplayTypes:
+            # TODO display_type names make me sad
+            view = display_type.name
+            if view.endswith('_screen'):
+                view = view.split('_screen')[0]
+
+            # TODO paths
+            filenames = utils.find_templates_for_class(cls, view, [ui_dir])
+            for filename in filenames:
+                old_template = self.templates.get(display_type, None)
+                if not old_template or pathlib.Path(old_template) != filename:
+                    # Only get the first one for now, though this could be used to
+                    # get alternate screen options
+                    self.templates[display_type.name] = filename
+                    logger.debug('Found new template %s for %s (was %s)',
+                                 display_type, filename, old_template)
+                break
 
     @classmethod
     def from_device(cls, device, template=None, macros=None):

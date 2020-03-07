@@ -4,6 +4,7 @@ Utility functions for typhos
 import contextlib
 import collections
 import importlib.util
+import inspect
 ############
 # Standard #
 ############
@@ -400,3 +401,81 @@ def no_device_lazy_load():
         yield
     finally:
         Device.lazy_wait_for_connection = old_val
+
+
+def pyqt_class_from_enum(enum):
+    '''
+    Create an inheritable base class from a Python Enum, which can also be used
+    for Q_ENUMS.
+    '''
+    enum_dict = {item.name: item.value for item in list(enum)}
+    return type(enum.__name__, (object, ), enum_dict)
+
+
+def _get_template_filenames_for_class(class_, view_type, *, include_mro=True):
+    '''
+    Yields all possible template filenames that can be used for the class, in
+    order of priority, including those in the class MRO.
+
+    This does not include the file extension, to be appended by the caller.
+    '''
+    for cls in class_.mro():
+        module = cls.__module__
+        name = cls.__name__
+        yield f'{module}.{name}.{view_type}'
+        yield f'{name}.{view_type}'
+        yield f'{name}'
+
+        if not include_mro:
+            break
+
+
+def remove_duplicate_items(list_):
+    'Return a de-duplicated list/tuple of items in `list_`, retaining order'
+    cls = type(list_)
+    return cls(sorted(set(list_), key=list_.index))
+
+
+def find_templates_for_class(cls, view_type, paths, *, extensions=None,
+                             include_mro=True):
+    '''
+    Given a class `cls` and a view type (such as 'detailed'), search `paths`
+    for potential templates to show.
+
+    Parameters
+    ----------
+    cls : class
+        Search for templates with this class name
+    view_type : {'detailed', 'engineering', 'embedded'}
+        The view type
+    paths : iterable
+        Iterable of paths to be expanded, de-duplicated, and searched
+    extensions : str or list, optional
+        The template filename extension (default is ``'.ui'`` or ``'.py'``)
+    include_mro : bool, optional
+        Include superclasses - those in the MRO - of ``cls`` as well
+
+    Yields
+    ------
+    path : pathlib.Path
+        A matching path, ordered from most-to-least specific.
+    '''
+    if not inspect.isclass(cls):
+        cls = type(cls)
+
+    if not extensions:
+        extensions = ['.py', '.ui']
+    elif isinstance(extensions, str):
+        extensions = [extensions]
+
+    paths = remove_duplicate_items(
+        [pathlib.Path(p).expanduser().resolve() for p in paths]
+    )
+
+    for candidate_filename in _get_template_filenames_for_class(
+            cls, view_type, include_mro=include_mro):
+        for extension in extensions:
+            for path in paths:
+                for match in path.glob(candidate_filename + extension):
+                    if match.is_file():
+                        yield match
