@@ -1,25 +1,18 @@
-############
-# Standard #
-############
 import io
 import os
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
-############
-# External #
-############
 import pytest
-from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
+from pyqtgraph.parametertree import ParameterTree
+from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtWidgets
 
-###########
-# Package #
-###########
 import typhos.suite
-from typhos.utils import clean_name, save_suite
-from typhos.suite import TyphosSuite, DeviceParameter
 from typhos.display import TyphosDeviceDisplay
+from typhos.suite import DeviceParameter, TyphosSuite
+from typhos.utils import clean_name, save_suite
+
 from .conftest import show_widget
 
 

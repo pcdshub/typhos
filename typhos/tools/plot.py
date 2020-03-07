@@ -1,23 +1,14 @@
 """
 Typhos Plotting Interface
 """
-############
-# Standard #
-############
 import logging
 
-###############
-# Third Party #
-###############
 from ophyd import Device
 from timechart.displays.main_display import TimeChartDisplay
 from timechart.utilities.utils import random_color
 from qtpy.QtCore import Slot
 from qtpy.QtWidgets import (QComboBox, QPushButton, QLabel, QVBoxLayout,
                             QHBoxLayout)
-##########
-# Module #
-##########
 from ..utils import (channel_from_signal, clean_attr, clean_name, TyphosBase)
 
 logger = logging.getLogger(__name__)

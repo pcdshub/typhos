@@ -3,17 +3,17 @@ import pathlib
 import subprocess
 import tempfile
 
-from qtpy.QtCore import QRect
-from qtpy.QtGui import QPaintEvent
-from qtpy.QtWidgets import QWidget, QMessageBox
-from ophyd import Device, Component as Cpt, Kind
 import pytest
 import simplejson as json
+from qtpy.QtCore import QRect
+from qtpy.QtGui import QPaintEvent
+from qtpy.QtWidgets import QMessageBox, QWidget
 
 import typhos
-from typhos.utils import (use_stylesheet, clean_name, grab_kind,
-                          TyphosBase, load_suite,
-                          saved_template, no_device_lazy_load)
+from ophyd import Component as Cpt
+from ophyd import Device, Kind
+from typhos.utils import (TyphosBase, clean_name, grab_kind, load_suite,
+                          no_device_lazy_load, saved_template, use_stylesheet)
 
 
 class NestedDevice(Device):

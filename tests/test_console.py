@@ -1,8 +1,9 @@
 import types
 
+import pytest
+
 import happi
 from happi.loader import from_container
-import pytest
 from typhos.tools import TyphosConsole
 
 

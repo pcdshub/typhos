@@ -1,22 +1,14 @@
-############
-# Standard #
-############
-import time
 import threading
-
-############
-# External #
-############
-import pytest
-from ophyd import Device
-from ophyd.status import Status
+import time
 from unittest.mock import Mock
 
-###########
-# Package #
-###########
+import pytest
+
+from ophyd import Device
+from ophyd.status import Status
+from typhos.func import FunctionDisplay, FunctionPanel, TyphosMethodButton
+
 from .conftest import show_widget
-from typhos.func import FunctionPanel, FunctionDisplay, TyphosMethodButton
 
 kwargs = dict()
 

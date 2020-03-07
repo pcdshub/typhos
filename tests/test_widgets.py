@@ -1,11 +1,11 @@
 import pytest
 import qtawesome as qta
-from qtpy.QtWidgets import QWidget
 from qtpy.QtGui import QIcon
+from qtpy.QtWidgets import QWidget
 
-from typhos.widgets import (TyphosSidebarItem, SignalDialogButton, QDialog,
-                            ImageDialogButton, WaveformDialogButton)
 from typhos.suite import SidebarParameter
+from typhos.widgets import (ImageDialogButton, QDialog, SignalDialogButton,
+                            TyphosSidebarItem, WaveformDialogButton)
 
 
 class DialogButton(SignalDialogButton):

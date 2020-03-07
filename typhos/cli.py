@@ -1,9 +1,9 @@
 """This module defines the ``typhos`` command line utility"""
 import argparse
-import logging
-import sys
-import re
 import ast
+import logging
+import re
+import sys
 
 import coloredlogs
 from qtpy.QtWidgets import QApplication, QMainWindow

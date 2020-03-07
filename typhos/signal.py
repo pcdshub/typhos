@@ -1,28 +1,19 @@
-############
-# Standard #
-############
-from functools import partial
 import logging
+from functools import partial
 
-############
-# External #
-############
+from qtpy.QtCore import Q_ENUMS, Property, QSize, QTimer
+from qtpy.QtWidgets import QGridLayout, QHBoxLayout, QLabel
+
 from ophyd import Kind
-from ophyd.signal import Signal, EpicsSignal, EpicsSignalBase, EpicsSignalRO
+from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO, Signal
 from pydm.widgets.display_format import DisplayFormat
-from qtpy.QtCore import Property, Q_ENUMS, QSize, QTimer
-from qtpy.QtWidgets import (QGridLayout, QHBoxLayout, QLabel)
 
-#############
-#  Package  #
-#############
-from .utils import (channel_name, clear_layout, clean_attr, grab_kind,
-                    is_signal_ro, TyphosBase, TyphosLoading)
-from .widgets import (TyphosLineEdit, TyphosComboBox, TyphosLabel,
-                      TyphosDesignerMixin, ImageDialogButton,
-                      WaveformDialogButton, SignalDialogButton)
 from .plugins import register_signal
-
+from .utils import (TyphosBase, TyphosLoading, channel_name, clean_attr,
+                    clear_layout, grab_kind, is_signal_ro)
+from .widgets import (ImageDialogButton, SignalDialogButton, TyphosComboBox,
+                      TyphosDesignerMixin, TyphosLabel, TyphosLineEdit,
+                      WaveformDialogButton)
 
 logger = logging.getLogger(__name__)
 

@@ -1,16 +1,16 @@
-import os.path
 import logging
+import os.path
 
-from ophyd import Device
 from qtpy import uic
 from qtpy.QtCore import Property, Slot
 
-from .plugins import register_signal
-from .utils import (TyphosBase, ui_dir, channel_from_signal, grab_kind,
-                    raise_to_operator, reload_widget_stylesheet)
-from .status import TyphosStatusThread
-from .widgets import TyphosDesignerMixin
+from ophyd import Device
 
+from .plugins import register_signal
+from .status import TyphosStatusThread
+from .utils import (TyphosBase, channel_from_signal, grab_kind,
+                    raise_to_operator, reload_widget_stylesheet, ui_dir)
+from .widgets import TyphosDesignerMixin
 
 logger = logging.getLogger(__name__)
 

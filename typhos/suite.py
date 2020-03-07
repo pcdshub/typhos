@@ -1,29 +1,21 @@
-############
-# Standard #
-############
-import os
-from functools import partial
 import logging
+import os
 import textwrap
+from functools import partial
 
-############
-# External #
-############
-from pyqtgraph.parametertree import ParameterTree, parameterTypes as ptypes
+from pyqtgraph.parametertree import ParameterTree
+from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtWidgets
-from qtpy.QtCore import Signal, Slot, Qt
+from qtpy.QtCore import Qt, Signal, Slot
 from qtpy.QtWidgets import QWidget
+
 import pcdsutils.qt
 
-
-###########
-# Package #
-###########
 from .display import TyphosDeviceDisplay
-from .utils import (clean_name, TyphosBase, flatten_tree, raise_to_operator,
+from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
+from .utils import (TyphosBase, clean_name, flatten_tree, raise_to_operator,
                     save_suite, saved_template)
-from .widgets import TyphosSidebarItem, SubDisplay
-from .tools import TyphosTimePlot, TyphosLogDisplay, TyphosConsole
+from .widgets import SubDisplay, TyphosSidebarItem
 
 logger = logging.getLogger(__name__)
 

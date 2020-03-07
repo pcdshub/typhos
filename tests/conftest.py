@@ -1,32 +1,25 @@
-############
-# Standard #
-############
+import logging
 import os.path
 import pathlib
-import logging
 import time
 from functools import wraps
 
-############
-# External #
-############
-from happi import Client
 import numpy as np
-import ophyd.sim
-from ophyd import Device, Component as C, FormattedComponent as FC
-from ophyd.sim import SynAxis, Signal, SynPeriodicSignal
 import pytest
 import qtpy
 from qtpy import QtGui, QtWidgets
+
+import ophyd.sim
+import typhos
+from happi import Client
+from ophyd import Component as C
+from ophyd import Device
+from ophyd import FormattedComponent as FC
+from ophyd.sim import Signal, SynAxis, SynPeriodicSignal
 from pydm import PyDMApplication
 from pydm.widgets.logdisplay import GuiHandler
-
-###########
-# Package #
-###########
-import typhos
 from typhos.plugins.happi import register_client
-from typhos.utils import TyphosBase, SignalRO
+from typhos.utils import SignalRO, TyphosBase
 
 logger = logging.getLogger(__name__)
 
