@@ -101,7 +101,9 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
 
         for display_name, filename in self.templates.items():
             action = menu.addAction(display_name)
-            action.triggered.connect(functools.partial(switch_template,
+            def switch_template():
+                self.force_template = filename
+            action.triggered.connect(switch_template)
                                                        filename))
 
         return menu
