@@ -94,17 +94,15 @@ class TyphosDeviceDisplay(TyphosBase, TyphosDesignerMixin, _DisplayTypes):
         -------
         QMenu
         """
-        def switch_template(fname):
-            self.force_template = fname
-
         menu = QMenu(parent=self)
 
         for display_name, filename in self.templates.items():
             action = menu.addAction(display_name)
-            def switch_template():
+
+            def switch_template(*, filename=filename):
                 self.force_template = filename
+
             action.triggered.connect(switch_template)
-                                                       filename))
 
         return menu
 
