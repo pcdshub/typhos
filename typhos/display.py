@@ -9,9 +9,8 @@ from qtpy import QtWidgets, QtCore
 from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
 
 import pcdsutils
-from pydm import Display
-from pydm.utilities.display_loading import load_py_file
-from pydm.utilities import IconFont
+import pydm.display
+import pydm.utilities
 from typhos import utils
 
 from . import utils
@@ -38,12 +37,12 @@ DEFAULT_TEMPLATES = {
 class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
     template_selected = QtCore.Signal(object)
 
-    def __init__(self, icon, templates, parent=None):
+    def __init__(self, icon, parent=None):
         super().__init__(parent=parent)
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
-        self.templates = templates
+        self.templates = None
         self.clicked.connect(self._select_first_template)
         self.setIcon(icon)
 
@@ -56,6 +55,9 @@ class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
         self.template_selected.emit(template)
 
     def generate_context_menu(self):
+        if not self.templates:
+            return
+
         menu = QtWidgets.QMenu(parent=self)
         for template in self.templates:
             def selected(*, template=template):
@@ -96,17 +98,17 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         if parent:
             self.setParent(parent)
 
+        self._create_ui()
+
     def _create_ui(self):
         layout = self.layout()
-        utils.clear_layout(layout)
         self.buttons.clear()
 
-        if not self.device_display:
-            return
-
-        for template_type, templates in self.device_display.templates.items():
-            icon = IconFont().icon(self.icons[template_type])
-            button = TyphosDisplaySwitcherButton(icon, templates)
+        for template_type in DisplayTypes:
+            template_type = template_type.name
+            icon = pydm.utilities.IconFont().icon(self.icons[template_type])
+            button = TyphosDisplaySwitcherButton(icon)
+            self.buttons[template_type] = button
             button.template_selected.connect(self._template_selected)
             layout.addWidget(button, 0, Qt.AlignRight)
 
@@ -118,7 +120,10 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
     def set_device_display(self, display):
         self.device_display = display
-        self._create_ui()
+
+        for template_type in self.buttons:
+            templates = display.templates.get(template_type, [])
+            self.buttons[template_type].templates = templates
 
     def add_device(self, device):
         ...
@@ -341,12 +346,12 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         if filename.suffix == '.py':
             logger.debug('Load Python template: %r', filename)
-            main = load_py_file(filename, macros=self._macros)
+            loader = pydm.display.load_py_file
         else:
             logger.debug('Load UI template: %r', filename)
-            main = Display(ui_filename=filename, macros=self._macros)
+            loader = pydm.display.load_ui_file
 
-        self._main_widget = main
+        self._main_widget = main = loader(filename, macros=self._macros)
 
         # Add device to all children widgets
         if not self.devices:
