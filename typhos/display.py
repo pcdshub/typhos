@@ -107,6 +107,9 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             button.template_selected.connect(self._template_selected)
             layout.addWidget(button, 0, Qt.AlignRight)
 
+            friendly_name = template_type.replace('_', ' ').capitalize()
+            button.setToolTip(f'Switch to {friendly_name}')
+
     def _template_selected(self, template):
         self.device_display.force_template = template
 
@@ -152,7 +155,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     Q_ENUMS(_DisplayTypes)
     TemplateEnum = DisplayTypes  # For convenience
 
-    def __init__(self, parent=None, **kwargs):
+    def __init__(self, parent=None, *, embedded_templates=None,
+                 detailed_templates=None, engineering_templates=None,
+                 **kwargs):
         # Intialize background variable
         self._forced_template = ''
         self._macros = dict()
@@ -160,6 +165,15 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self._display_type = DisplayTypes.detailed_screen
 
         self.templates = {type_.name: [] for type_ in DisplayTypes}
+
+        instance_templates = {
+            'embedded_screen': embedded_templates or [],
+            'detailed_screen': detailed_templates or [],
+            'engineering_screen': engineering_templates or [],
+        }
+        for view, path_list in instance_templates.items():
+            paths = [pathlib.Path(p).expanduser().resolve() for p in path_list]
+            self.templates[view].extend(paths)
 
         # Set this to None first so we don't render
         super().__init__(parent=parent)
@@ -311,7 +325,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             except KeyError:
                 ...
             else:
-                value = pathlib.Path(value).resolve()
+                value = pathlib.Path(value).expanduser().resolve()
                 if self._templates_from_macros[display_type] != value:
                     if value.exists() and value.is_file():
                         ret[display_type.name] = value
@@ -322,12 +336,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if filename == self._current_template:
             return
 
-        # Support Python files
         if filename.suffix == '.py':
             logger.debug('Load Python template: %r', filename)
             main = load_py_file(filename, macros=self._macros)
         else:
-            # Otherwise assume you have given use a UI file
             logger.debug('Load UI template: %r', filename)
             main = Display(ui_filename=filename, macros=self._macros)
 
