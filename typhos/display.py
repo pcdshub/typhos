@@ -5,7 +5,7 @@ import os.path
 import pathlib
 import functools
 
-from qtpy import QtWidgets
+from qtpy import QtWidgets, QtCore
 from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
 
 import pcdsutils
@@ -32,6 +32,91 @@ DEFAULT_TEMPLATES = {
     type_.name: [(utils.ui_dir / f'{type_.name}.ui').resolve()]
     for type_ in DisplayTypes
 }
+
+
+class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
+    template_selected = QtCore.Signal(object)
+
+    def __init__(self, label, templates, parent=None):
+        super().__init__(label, parent=parent)
+
+        self.setContextMenuPolicy(Qt.DefaultContextMenu)
+        self.contextMenuEvent = self.open_context_menu
+        self.templates = templates
+        self.clicked.connect(self._select_first_template)
+
+    def _select_first_template(self):
+        try:
+            template = self.templates[0]
+        except IndexError:
+            return
+
+        self.template_selected.emit(template)
+
+    def generate_context_menu(self):
+        menu = QtWidgets.QMenu(parent=self)
+        for template in self.templates:
+            def selected(*, template=template):
+                self.template_selected.emit(template)
+
+            action = menu.addAction(template.name)
+            action.triggered.connect(selected)
+        return menu
+
+    def open_context_menu(self, ev):
+        menu = self.generate_context_menu()
+        menu.exec_(self.mapToGlobal(ev.pos()))
+
+
+class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
+    """
+    Title bar for a Typhos Device Display
+    """
+
+    def __init__(self, parent=None, **kwargs):
+        # Intialize background variable
+        super().__init__(parent=None)
+
+        self.device_display = None
+        self.buttons = {}
+        layout = QtWidgets.QHBoxLayout()
+        self.setLayout(layout)
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.setContextMenuPolicy(Qt.DefaultContextMenu)
+        self.contextMenuEvent = self.open_context_menu
+
+        if parent:
+            self.setParent(parent)
+
+    def _create_ui(self):
+        layout = self.layout()
+        utils.clear_layout(layout)
+        self.buttons.clear()
+
+        if not self.device_display:
+            return
+
+        for template_type, templates in self.device_display.templates.items():
+            label = {'embedded_screen': 'E',
+                     'detailed_screen': 'D',
+                     'engineering_screen': 'N',
+                     }[template_type]
+            button = TyphosDisplaySwitcherButton(label, templates)
+            button.template_selected.connect(self._template_selected)
+            layout.addWidget(button, 0, Qt.AlignRight)
+
+    def _template_selected(self, template):
+        self.device_display.force_template = template
+
+    def set_device_display(self, display):
+        self.device_display = display
+        self._create_ui()
+
+    def add_device(self, device):
+        ...
+
 
 class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                           _DisplayTypes):
@@ -79,8 +164,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         # Set this to None first so we don't render
         super().__init__(parent=parent)
 
-        self.setLayout(QtWidgets.QHBoxLayout())
-        self.layout().setContentsMargins(0, 0, 0, 0)
+        layout = QtWidgets.QHBoxLayout()
+        self.setLayout(layout)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.load_best_template()
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
@@ -356,7 +442,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 [templ for templ in DEFAULT_TEMPLATES[display_type.name]
                  if templ not in template_list]
             )
-
 
     @classmethod
     def from_device(cls, device, template=None, macros=None):
