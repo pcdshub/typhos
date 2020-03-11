@@ -22,7 +22,8 @@ from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.exception import raise_to_operator  # noqa
 
 logger = logging.getLogger(__name__)
-ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
+MODULE_PATH = pathlib.Path(__file__).parent.resolve()
+ui_dir = MODULE_PATH / 'ui'
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
 
