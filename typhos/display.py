@@ -290,19 +290,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if not template:
             self._main_widget = QtWidgets.QWidget()
             self._current_template = None
-            return
-
-        try:
-            self._load_template(template)
-        except Exception:
-            logger.exception("Unable to load file %r", self.current_template)
-            self._main_widget = QtWidgets.QWidget()
-            self._current_template = None
         else:
-            self._current_template = template
-        finally:
-            self.layout().addWidget(self._main_widget)
-            utils.reload_widget_stylesheet(self)
+            try:
+                self._load_template(template)
+            except Exception:
+                logger.exception("Unable to load file %r", self.current_template)
+                self._main_widget = QtWidgets.QWidget()
+                self._current_template = None
+
+        self.layout().addWidget(self._main_widget)
+        utils.reload_widget_stylesheet(self)
 
     def _get_templates_from_macros(self, macros=None):
         macros = macros or self._macros
@@ -322,22 +319,25 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         return ret
 
     def _load_template(self, filename):
+        if filename == self._current_template:
+            return
+
         logger.debug("Loading %s", filename)
-        ext = os.path.splitext(filename)[1]
         # Support Python files
-        if ext == '.py':
+        if filename.suffix == '.py':
             logger.debug('Load Python template: %r', filename)
-            self._main_widget = load_py_file(filename, macros=self._macros)
+            main = load_py_file(filename, macros=self._macros)
         else:
             # Otherwise assume you have given use a UI file
             logger.debug('Load UI template: %r', filename)
-            self._main_widget = Display(ui_filename=filename,
-                                        macros=self._macros)
+            main = Display(ui_filename=filename, macros=self._macros)
+
+        self._main_widget = main
+
         # Add device to all children widgets
         if not self.devices:
             return
 
-        main = self._main_widget
         designer = main.findChildren(widgets.TyphosDesignerMixin) or []
         bases = main.findChildren(utils.TyphosBase) or []
 
@@ -347,6 +347,8 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
             if hasattr(widget, 'set_device_display'):
                 widget.set_device_display(self)
+
+        self._current_template = filename
 
     @Property(str)
     def force_template(self):
@@ -406,9 +408,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         cls = device.__class__
 
-        # TODO other paths
-        directories = [utils.ui_dir]
-
         logger.debug('Searching for templates for %s', cls.__name__)
 
         macro_templates = self._get_templates_from_macros(self._macros)
@@ -430,7 +429,8 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                              display_type, macro_template, len(template_list))
 
             # 2. Templates based on class hierarchy names
-            filenames = utils.find_templates_for_class(cls, view, directories)
+            filenames = utils.find_templates_for_class(
+                cls, view, utils.DISPLAY_PATHS)
             for filename in filenames:
                 if filename not in template_list:
                     template_list.append(filename)

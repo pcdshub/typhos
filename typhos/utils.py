@@ -6,7 +6,7 @@ import contextlib
 import importlib.util
 import inspect
 import logging
-import os.path
+import os
 import pathlib
 import random
 import re
@@ -26,6 +26,19 @@ MODULE_PATH = pathlib.Path(__file__).parent.resolve()
 ui_dir = MODULE_PATH / 'ui'
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
+
+
+def _get_display_paths():
+    'Get all display paths based on PYDM_DISPLAY_PATHS + typhos built-ins'
+    paths = os.environ.get('PYDM_DISPLAYS_PATH', '')
+    for path in paths.split(os.pathsep):
+        path = pathlib.Path(path).resolve()
+        if path.exists() and path.is_dir():
+            yield path
+    yield ui_dir
+
+
+DISPLAY_PATHS = list(_get_display_paths())
 
 
 class SignalRO(ophyd.sim.SynSignalRO):
