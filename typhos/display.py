@@ -11,6 +11,7 @@ from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
 import pcdsutils
 from pydm import Display
 from pydm.utilities.display_loading import load_py_file
+from pydm.utilities import IconFont
 from typhos import utils
 
 from . import utils
@@ -37,13 +38,14 @@ DEFAULT_TEMPLATES = {
 class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
     template_selected = QtCore.Signal(object)
 
-    def __init__(self, label, templates, parent=None):
-        super().__init__(label, parent=parent)
+    def __init__(self, icon, templates, parent=None):
+        super().__init__(parent=parent)
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
         self.templates = templates
         self.clicked.connect(self._select_first_template)
+        self.setIcon(icon)
 
     def _select_first_template(self):
         try:
@@ -72,6 +74,10 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     """
     Title bar for a Typhos Device Display
     """
+    icons = {'embedded_screen': 'compress',
+             'detailed_screen': 'braille',
+             'engineering_screen': 'cogs'
+             }
 
     def __init__(self, parent=None, **kwargs):
         # Intialize background variable
@@ -99,15 +105,12 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             return
 
         for template_type, templates in self.device_display.templates.items():
-            label = {'embedded_screen': 'E',
-                     'detailed_screen': 'D',
-                     'engineering_screen': 'N',
-                     }[template_type]
-            button = TyphosDisplaySwitcherButton(label, templates)
+            icon = IconFont().icon(self.icons[template_type])
+            button = TyphosDisplaySwitcherButton(icon, templates)
             button.template_selected.connect(self._template_selected)
             layout.addWidget(button, 0, Qt.AlignRight)
 
-            friendly_name = template_type.replace('_', ' ').capitalize()
+            friendly_name = template_type.replace('_', ' ')
             button.setToolTip(f'Switch to {friendly_name}')
 
     def _template_selected(self, template):
