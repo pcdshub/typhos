@@ -322,7 +322,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if filename == self._current_template:
             return
 
-        logger.debug("Loading %s", filename)
         # Support Python files
         if filename.suffix == '.py':
             logger.debug('Load Python template: %r', filename)
