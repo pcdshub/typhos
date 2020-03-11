@@ -19,42 +19,60 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="main_layout" stretch="0,0,0,3">
-   <property name="spacing">
-    <number>10</number>
-   </property>
-   <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
-   </property>
-   <property name="leftMargin">
-    <number>5</number>
-   </property>
-   <property name="topMargin">
-    <number>5</number>
-   </property>
-   <property name="rightMargin">
-    <number>5</number>
-   </property>
-   <property name="bottomMargin">
-    <number>5</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QLabel" name="name_label">
-     <property name="font">
-      <font>
-       <family>Sans Serif</family>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
+    <layout class="QHBoxLayout" name="button_layout_2" stretch="1,0">
+     <property name="spacing">
+      <number>2</number>
      </property>
-     <property name="text">
-      <string>${name}</string>
+     <property name="leftMargin">
+      <number>10</number>
      </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
+     <property name="topMargin">
+      <number>2</number>
      </property>
-    </widget>
+     <property name="rightMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
+     <item alignment="Qt::AlignLeft">
+      <widget class="QLabel" name="name_label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Sans Serif</family>
+         <pointsize>20</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="text">
+        <string>${name}</string>
+       </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="TyphosDisplaySwitcher" name="TyphosDisplaySwitcher_2">
+       <property name="toolTip">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QFrame" name="underline">
@@ -169,8 +187,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>373</width>
-            <height>232</height>
+            <width>359</width>
+            <height>215</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -246,8 +264,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>373</width>
-            <height>232</height>
+            <width>359</width>
+            <height>215</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -295,6 +313,11 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>TyphosDisplaySwitcher</class>
+   <extends>QFrame</extends>
+   <header>typhos.display</header>
+  </customwidget>
   <customwidget>
    <class>TyphosSignalPanel</class>
    <extends>QWidget</extends>
