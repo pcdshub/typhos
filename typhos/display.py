@@ -9,9 +9,9 @@ from qtpy import QtWidgets, QtCore
 from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
 
 import pcdsutils
+import pcdsutils.qt
 import pydm.display
 import pydm.utilities
-from typhos import utils
 
 from . import utils
 from . import widgets
@@ -35,7 +35,8 @@ DEFAULT_TEMPLATES = {
 
 
 class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
-    template_selected = QtCore.Signal(object)
+    'A button in the TyphosDisplaySwitcher'
+    template_selected = QtCore.Signal(pathlib.Path)
 
     def __init__(self, icon, parent=None):
         super().__init__(parent=parent)
@@ -45,6 +46,7 @@ class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
         self.templates = None
         self.clicked.connect(self._select_first_template)
         self.setIcon(icon)
+        self.setMinimumSize(32, 32)
 
     def _select_first_template(self):
         try:
@@ -74,8 +76,10 @@ class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
 
 class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     """
-    Title bar for a Typhos Device Display
+    Display switcher button set for use with a Typhos Device Display
     """
+    template_selected = QtCore.Signal(pathlib.Path)
+
     icons = {'embedded_screen': 'compress',
              'detailed_screen': 'braille',
              'engineering_screen': 'cogs'
@@ -116,7 +120,9 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             button.setToolTip(f'Switch to {friendly_name}')
 
     def _template_selected(self, template):
-        self.device_display.force_template = template
+        self.template_selected.emit(template)
+        if self.device_display is not None:
+            self.device_display.force_template = template
 
     def set_device_display(self, display):
         self.device_display = display
@@ -127,6 +133,41 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
     def add_device(self, device):
         ...
+
+
+class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
+    """
+    Standardized Typhos Device Display title
+    """
+    def __init__(self, title='${name}', *, show_switcher=True, parent=None):
+        self._show_switcher = show_switcher
+        super().__init__(parent=parent)
+
+        layout = QtWidgets.QHBoxLayout(self)
+        self.setLayout(layout)
+
+        self.label = QtWidgets.QLabel(title)
+        self.switcher = TyphosDisplaySwitcher()
+        layout.addWidget(self.label)
+        layout.addWidget(self.switcher)
+
+        self.show_switcher = show_switcher
+
+    @Property(bool)
+    def show_switcher(self):
+        return self._show_switcher
+
+    @show_switcher.setter
+    def show_switcher(self, value):
+        self._show_switcher = bool(value)
+        self.switcher.setVisible(self._show_switcher)
+
+    locals().update(**pcdsutils.qt.forward_properties(
+        locals_dict=locals(),
+        attr_name='label',
+        cls=QtWidgets.QLabel,
+        superclasses=[QtWidgets.QFrame]
+    ))
 
 
 class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,

@@ -3,7 +3,7 @@ import os.path
 import pytest
 
 from pydm import Display
-from typhos import TyphosDeviceDisplay
+import typhos.display
 from typhos.utils import clean_attr
 
 from .conftest import show_widget
@@ -11,14 +11,24 @@ from .conftest import show_widget
 
 @pytest.fixture(scope='function')
 def display(qtbot):
-    display = TyphosDeviceDisplay()
+    display = typhos.display.TyphosDeviceDisplay()
     qtbot.addWidget(display)
     return display
 
 
+@pytest.fixture(scope='function', params=[False, True])
+def show_switcher(request):
+    return request.param
+
+
+@show_widget
+def test_device_title(device, motor, show_switcher, qtbot):
+    title = typhos.display.TyphosDisplayTitle(show_switcher=show_switcher)
+
+
 @show_widget
 def test_device_display(device, motor, qtbot):
-    panel = TyphosDeviceDisplay.from_device(motor)
+    panel = typhos.display.TyphosDeviceDisplay.from_device(motor)
     panel_main = panel._main_widget
     qtbot.addWidget(panel)
     # We have all our signals
@@ -77,7 +87,7 @@ def test_display_force_template(display):
     assert display.current_template == 'tst.ui'
 
 def test_display_with_channel(client, qtbot):
-    panel = TyphosDeviceDisplay()
+    panel = typhos.display.TyphosDeviceDisplay()
     qtbot.addWidget(panel)
     panel.channel = 'happi://test_motor'
     assert panel.channel == 'happi://test_motor'
