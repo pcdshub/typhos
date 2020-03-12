@@ -153,7 +153,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.underline.setLineWidth(10)
 
         self.grid_layout.addWidget(self.label, 0, 0)
-        self.grid_layout.addWidget(self.switcher, 0, 1)
+        self.grid_layout.addWidget(self.switcher, 0, 1, Qt.AlignRight)
         self.grid_layout.addWidget(self.underline, 1, 0, 0, 2)
 
         self.setLayout(self.grid_layout)
