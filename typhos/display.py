@@ -163,14 +163,14 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.switcher.setVisible(self._show_switcher)
 
     def add_device(self, device):
-        if not self.text:
+        if not self.label.text():
             self.label.setText(device.name)
 
     locals().update(**pcdsutils.qt.forward_properties(
         locals_dict=locals(),
         attr_name='label',
         cls=QtWidgets.QLabel,
-        superclasses=[QtWidgets.QFrame]
+        superclasses=[QtWidgets.QFrame],
     ))
 
 
