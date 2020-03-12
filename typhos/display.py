@@ -143,8 +143,6 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self._show_switcher = show_switcher
         super().__init__(parent=parent)
 
-        self.grid_layout = QtWidgets.QGridLayout()
-
         self.label = QtWidgets.QLabel(title)
         self.switcher = TyphosDisplaySwitcher()
         self.underline = QtWidgets.QFrame()
@@ -152,12 +150,13 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.underline.setFrameShadow(self.underline.Plain)
         self.underline.setLineWidth(10)
 
+        self.grid_layout = QtWidgets.QGridLayout()
         self.grid_layout.addWidget(self.label, 0, 0)
         self.grid_layout.addWidget(self.switcher, 0, 1, Qt.AlignRight)
         self.grid_layout.addWidget(self.underline, 1, 0, 0, 2)
-
         self.setLayout(self.grid_layout)
 
+        # Set the property:
         self.show_switcher = show_switcher
 
     @Property(bool)
@@ -420,9 +419,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         return ret
 
     def _load_template(self, filename):
-        if filename == self._current_template:
-            return
-
         if filename.suffix == '.py':
             logger.debug('Load Python template: %r', filename)
             loader = pydm.display.load_py_file
