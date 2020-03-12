@@ -5,7 +5,7 @@ import os.path
 import pathlib
 import functools
 
-from qtpy import QtWidgets, QtCore, QtDesigner
+from qtpy import QtWidgets, QtCore
 from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
 
 import pcdsutils
@@ -153,11 +153,6 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
         self.show_switcher = show_switcher
 
-        if pydm.utilities.is_qt_designer():
-            form = QtDesigner.QDesignerFormWindowInterface.findFormWindow(self)
-            if form:
-                form.cursor().setProperty('text', '${name}')
-
     @Property(bool)
     def show_switcher(self):
         return self._show_switcher
@@ -168,7 +163,8 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.switcher.setVisible(self._show_switcher)
 
     def add_device(self, device):
-        ...
+        if not self.text:
+            self.label.setText(device.name)
 
     locals().update(**pcdsutils.qt.forward_properties(
         locals_dict=locals(),
