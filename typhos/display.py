@@ -143,13 +143,20 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self._show_switcher = show_switcher
         super().__init__(parent=parent)
 
-        layout = QtWidgets.QHBoxLayout(self)
-        self.setLayout(layout)
+        self.grid_layout = QtWidgets.QGridLayout()
 
         self.label = QtWidgets.QLabel(title)
         self.switcher = TyphosDisplaySwitcher()
-        layout.addWidget(self.label)
-        layout.addWidget(self.switcher)
+        self.underline = QtWidgets.QFrame()
+        self.underline.setFrameShape(self.underline.HLine)
+        self.underline.setFrameShadow(self.underline.Plain)
+        self.underline.setLineWidth(10)
+
+        self.grid_layout.addWidget(self.label, 0, 0)
+        self.grid_layout.addWidget(self.switcher, 0, 1)
+        self.grid_layout.addWidget(self.underline, 1, 0, 0, 2)
+
+        self.setLayout(self.grid_layout)
 
         self.show_switcher = show_switcher
 
@@ -166,12 +173,39 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         if not self.label.text():
             self.label.setText(device.name)
 
+    # Make designable properties from the title label available here as well
     locals().update(**pcdsutils.qt.forward_properties(
         locals_dict=locals(),
         attr_name='label',
         cls=QtWidgets.QLabel,
         superclasses=[QtWidgets.QFrame],
+        condition=('margin', 'alignment', 'spacing', 'pixmap', 'text',
+                   'textFormat', 'wordWrap', 'indent', 'openExternalLinks',
+                   'textInteractionFlags', 'buddy'),
     ))
+
+    # Make designable properties from the grid_layout
+    locals().update(**pcdsutils.qt.forward_properties(
+        locals_dict=locals(),
+        attr_name='grid_layout',
+        cls=QtWidgets.QHBoxLayout,
+        superclasses=[QtWidgets.QFrame],
+        prefix='layout_',
+        condition=('margin', 'spacing'),
+        )
+    )
+
+    # Make designable properties from the underline
+    locals().update(**pcdsutils.qt.forward_properties(
+        locals_dict=locals(),
+        attr_name='underline',
+        cls=QtWidgets.QFrame,
+        superclasses=[QtWidgets.QFrame],
+        prefix='underline_',
+        condition=('palette', 'styleSheet', 'lineWidth', 'midLineWidth'),
+    ))
+
+
 
 
 class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
