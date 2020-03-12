@@ -1,9 +1,7 @@
-import copy
 import enum
 import logging
 import os.path
 import pathlib
-import functools
 
 from qtpy import QtWidgets, QtCore
 from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
@@ -205,8 +203,6 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     ))
 
 
-
-
 class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                           _DisplayTypes):
     """
@@ -394,7 +390,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             try:
                 self._load_template(template)
             except Exception:
-                logger.exception("Unable to load file %r", self.current_template)
+                logger.exception("Unable to load file %r", template)
                 self._main_widget = QtWidgets.QWidget()
                 self._current_template = None
 
