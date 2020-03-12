@@ -25,6 +25,9 @@
      <property name="toolTip">
       <string/>
      </property>
+     <property name="underline_midLineWidth" stdset="0">
+      <number>-4</number>
+     </property>
     </widget>
    </item>
    <item>

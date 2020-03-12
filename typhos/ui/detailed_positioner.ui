@@ -21,75 +21,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <layout class="QHBoxLayout" name="button_layout_2" stretch="1,0">
-     <property name="spacing">
-      <number>2</number>
-     </property>
-     <property name="leftMargin">
-      <number>10</number>
-     </property>
-     <property name="topMargin">
-      <number>2</number>
-     </property>
-     <property name="rightMargin">
-      <number>2</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item alignment="Qt::AlignLeft">
-      <widget class="QLabel" name="name_label_2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <family>Sans Serif</family>
-         <pointsize>20</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-         <kerning>true</kerning>
-        </font>
-       </property>
-       <property name="text">
-        <string>${name}</string>
-       </property>
-       <property name="scaledContents">
-        <bool>false</bool>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="TyphosDisplaySwitcher" name="TyphosDisplaySwitcher_2">
-       <property name="toolTip">
-        <string/>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QFrame" name="underline">
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::HLine</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
-     <property name="lineWidth">
-      <number>10</number>
+    <widget class="TyphosDisplayTitle" name="TyphosDisplayTitle">
+     <property name="toolTip">
+      <string/>
      </property>
     </widget>
    </item>
@@ -381,11 +315,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphosDisplaySwitcher</class>
-   <extends>QFrame</extends>
-   <header>typhos.display</header>
-  </customwidget>
-  <customwidget>
    <class>TyphosSignalPanel</class>
    <extends>QWidget</extends>
    <header>typhos.signal</header>
@@ -394,6 +323,11 @@
    <class>TyphosPositionerWidget</class>
    <extends>QWidget</extends>
    <header>typhos.positioner</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosDisplayTitle</class>
+   <extends>QFrame</extends>
+   <header>typhos.display</header>
   </customwidget>
  </customwidgets>
  <resources/>
