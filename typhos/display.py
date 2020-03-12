@@ -176,9 +176,10 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         attr_name='label',
         cls=QtWidgets.QLabel,
         superclasses=[QtWidgets.QFrame],
-        condition=('margin', 'alignment', 'spacing', 'pixmap', 'text',
-                   'textFormat', 'wordWrap', 'indent', 'openExternalLinks',
-                   'textInteractionFlags', 'buddy'),
+        condition=('alignment', 'buddy', 'font', 'indent', 'margin',
+                   'openExternalLinks', 'pixmap', 'spacing', 'text',
+                   'textFormat', 'textInteractionFlags', 'wordWrap',
+                   ),
     ))
 
     # Make designable properties from the grid_layout
