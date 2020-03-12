@@ -481,3 +481,39 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
                 for match in path.glob(candidate_filename + extension):
                     if match.is_file():
                         yield match
+
+
+def find_file_in_paths(filename, *, paths=None):
+    '''
+    Search for filename ``filename`` in the list of paths ``paths``
+
+    Parameters
+    ----------
+    filename : str or pathlib.Path
+        The filename
+    paths : list or iterable, optional
+        List of paths to search. Defaults to DISPLAY_PATHS.
+
+    Yields
+    ------
+    All filenames that match in the given paths
+    '''
+    if paths is None:
+        paths = DISPLAY_PATHS
+
+    if isinstance(filename, pathlib.Path):
+        if filename.is_absolute():
+            if filename.exists():
+                yield filename
+            return
+
+        filename = filename.name
+
+    paths = remove_duplicate_items(
+        [pathlib.Path(p).expanduser().resolve() for p in paths]
+    )
+
+    for path in paths:
+        for match in path.glob(filename):
+            if match.is_file():
+                yield match

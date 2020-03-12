@@ -25,11 +25,20 @@ class DisplayTypes(enum.IntEnum):
 
 
 _DisplayTypes = utils.pyqt_class_from_enum(DisplayTypes)
+DisplayTypes.names = [view.name for view in DisplayTypes]
 
 DEFAULT_TEMPLATES = {
-    type_.name: [(utils.ui_dir / f'{type_.name}.ui').resolve()]
-    for type_ in DisplayTypes
+    name: [(utils.ui_dir / f'{name}.ui').resolve()]
+    for name in DisplayTypes.names
 }
+
+def normalize_display_type(display_type):
+    try:
+        return DisplayTypes(display_type)
+    except Exception as ex:
+        if display_type in DisplayTypes.names:
+            return getattr(DisplayTypes, display_type)
+        raise ValueError(f'Unrecognized display type: {display_type}') from ex
 
 
 class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
@@ -106,8 +115,7 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         layout = self.layout()
         self.buttons.clear()
 
-        for template_type in DisplayTypes:
-            template_type = template_type.name
+        for template_type in DisplayTypes.names:
             icon = pydm.utilities.IconFont().icon(self.icons[template_type])
             button = TyphosDisplaySwitcherButton(icon)
             self.buttons[template_type] = button
@@ -247,14 +255,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     def __init__(self, parent=None, *, embedded_templates=None,
                  detailed_templates=None, engineering_templates=None,
+                 display_type='detailed_screen',
                  **kwargs):
         # Intialize background variable
         self._forced_template = ''
         self._macros = dict()
         self._main_widget = None
-        self._display_type = DisplayTypes.detailed_screen
+        self._searched = False
 
-        self.templates = {type_.name: [] for type_ in DisplayTypes}
+        self.templates = {name: [] for name in DisplayTypes.names}
+        self._display_type = normalize_display_type(display_type)
 
         instance_templates = {
             'embedded_screen': embedded_templates or [],
@@ -327,7 +337,20 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         # Store our new value
         if self._display_type != value:
             self._display_type = value
-            self.load_best_template(macros=self._macros)
+            self.load_best_template()
+
+    @property
+    def macros(self):
+        return dict(self._macros)
+
+    @macros.setter
+    def macros(self, macros):
+        self._macros.clear()
+        self._macros.update(**(macros or {}))
+
+        # If any display macros are specified, re-search for templates:
+        if any(view in self._macros for view in DisplayTypes.names):
+            self.search_for_templates()
 
     @Property(str, designable=False)
     def device_class(self):
@@ -352,8 +375,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             ...
 
     def get_best_template(self, display_type, macros):
-        if hasattr(display_type, 'name'):
-            display_type = display_type.name
+        display_type = normalize_display_type(display_type).name
 
         templates = self.templates[display_type]
         if templates:
@@ -362,7 +384,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         logger.warning("No templates available for display type: %s",
                        self._display_type)
 
-    def load_best_template(self, macros=None):
+    def load_best_template(self):
         """
         Load a new template
 
@@ -370,9 +392,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         ----------
         template: str
             Absolute path to template location
-
-        macros: dict, optional
-            Macro substitutions to be made in the file
         """
         if self.layout() is None:
             # If we are not fully initialized yet do not try and add anything
@@ -381,15 +400,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             # display
             return
 
+        if not self._searched:
+            self.search_for_templates()
+
         # Clear anything that exists in the current layout
         if self._main_widget:
             logger.debug("Clearing existing layout ...")
             utils.clear_layout(self.layout())
 
-        self._macros = macros or self._macros
-
         template = (self._forced_template or
-                    self.get_best_template(self._display_type, self._macros))
+                    self.get_best_template(self._display_type, self.macros))
 
         if not template:
             self._main_widget = QtWidgets.QWidget()
@@ -405,20 +425,18 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self.layout().addWidget(self._main_widget)
         utils.reload_widget_stylesheet(self)
 
-    def _get_templates_from_macros(self, macros=None):
-        macros = macros or self._macros
+    @staticmethod
+    def _get_templates_from_macros(macros):
         ret = {}
-        for display_type in DisplayTypes:
-            ret[display_type.name] = None
+        for display_type in DisplayTypes.names:
+            ret[display_type] = None
             try:
-                value = self._macros[display_type]
+                value = macros[display_type]
             except KeyError:
                 ...
             else:
-                value = pathlib.Path(value).expanduser().resolve()
-                if self._templates_from_macros[display_type] != value:
-                    if value.exists() and value.is_file():
-                        ret[display_type.name] = value
+                value = pathlib.Path(value)
+                ret[display_type] = list(utils.find_file_in_paths(value))
 
         return ret
 
@@ -457,7 +475,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     def force_template(self, value):
         if value != self._forced_template:
             self._forced_template = value
-            self.load_best_template(macros=self._macros)
+            self.load_best_template()
 
     def add_device(self, device, macros=None):
         """
@@ -481,20 +499,24 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             self.devices.clear()
         # Add the device to the cache
         super().add_device(device)
-        # Try and collect macros from device
-        if not macros:
-            if hasattr(device, 'md'):
-                macros = device.md.post()
-            else:
-                macros = dict()
-        # Ensure we at least pass in the device name and prefix
-        if 'name' not in macros:
-            macros['name'] = device.name
-        if 'prefix' not in macros and hasattr(device, 'prefix'):
-            macros['prefix'] = device.prefix
+        self._searched = False
 
-        self.search_for_templates()
-        self.load_best_template(macros=macros)
+        # Macros are:
+        #   1. Macros from the device
+        #   2. Updated with `name`, and `prefix`, if available
+        #   3. Overridden with the `macros` argument for this method
+        new_macros = dict(device.md.post()) if hasattr(device, 'md') else {}
+
+        # Ensure we at least pass in the device name and prefix
+        if 'name' not in new_macros:
+            new_macros['name'] = device.name
+        if 'prefix' not in new_macros and hasattr(device, 'prefix'):
+            new_macros['prefix'] = device.prefix
+
+        new_macros.update(**(macros or {}))
+
+        self.macros = new_macros
+        self.load_best_template()
 
     def search_for_templates(self):
         '''
@@ -502,29 +524,28 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         '''
         device = self.device
         if not device:
+            logger.debug('Cannot search for templates without device')
             return
 
+        self._searched = True
         cls = device.__class__
 
         logger.debug('Searching for templates for %s', cls.__name__)
-
         macro_templates = self._get_templates_from_macros(self._macros)
 
-        for display_type in DisplayTypes:
-            # TODO display_type names make me sad
-            view = display_type.name
+        for display_type in DisplayTypes.names:
+            view = display_type
             if view.endswith('_screen'):
                 view = view.split('_screen')[0]
 
-            template_list = self.templates[display_type.name]
+            template_list = self.templates[display_type]
             template_list.clear()
 
             # 1. Highest priority: macros
-            macro_template = macro_templates[display_type.name]
-            if macro_template and macro_template not in template_list:
-                template_list.append(macro_template)
+            for template in set(macro_templates[display_type] or []):
+                template_list.append(template)
                 logger.debug('Adding macro template %s: %s (total=%d)',
-                             display_type, macro_template, len(template_list))
+                             display_type, template, len(template_list))
 
             # 2. Templates based on class hierarchy names
             filenames = utils.find_templates_for_class(
@@ -537,7 +558,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
             # 3. Default templates
             template_list.extend(
-                [templ for templ in DEFAULT_TEMPLATES[display_type.name]
+                [templ for templ in DEFAULT_TEMPLATES[display_type]
                  if templ not in template_list]
             )
 
