@@ -6,6 +6,7 @@ from pydm import Display
 import typhos.display
 from typhos.utils import clean_attr
 
+from . import conftest
 from .conftest import show_widget
 
 
@@ -109,10 +110,9 @@ def test_display_device_name_property(motor, display):
     assert display.device_name == motor.name
 
 
-def test_display_with_py_file(display):
-    py_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           'utils/display.py')
-    display.templates['detailed_screen'] = py_file
+def test_display_with_py_file(display, motor):
+    py_file = str(conftest.MODULE_PATH / 'utils' / 'display.py')
+    display.add_device(motor, macros={'detailed_screen': py_file})
     display.load_best_template()
     assert isinstance(display._main_widget, Display)
     assert getattr(display._main_widget, 'is_from_test_file', False)

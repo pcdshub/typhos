@@ -435,8 +435,15 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             except KeyError:
                 ...
             else:
-                value = pathlib.Path(value)
-                ret[display_type] = list(utils.find_file_in_paths(value))
+                if not value:
+                    continue
+                try:
+                    value = pathlib.Path(value)
+                except ValueError as ex:
+                    logger.debug('Invalid path specified in macro: %s=%s',
+                                 display_type, value, exc_info=ex)
+                else:
+                    ret[display_type] = list(utils.find_file_in_paths(value))
 
         return ret
 
@@ -448,7 +455,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             logger.debug('Load UI template: %r', filename)
             loader = pydm.display.load_ui_file
 
-        self._main_widget = main = loader(filename, macros=self._macros)
+        self._main_widget = main = loader(str(filename), macros=self._macros)
 
         # Add device to all children widgets
         if not self.devices:
