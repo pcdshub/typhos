@@ -3,7 +3,7 @@ import logging
 import os.path
 import pathlib
 
-from qtpy import QtWidgets, QtCore
+from qtpy import QtWidgets, QtCore, QtGui
 from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
 
 import pcdsutils
@@ -141,8 +141,15 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self._show_switcher = show_switcher
         super().__init__(parent=parent)
 
+        font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.TitleFont)
+        font.setPointSizeF(14.0)
+        font.setBold(True)
+
         self.label = QtWidgets.QLabel(title)
+        self.label.setFont(font)
+
         self.switcher = TyphosDisplaySwitcher()
+
         self.underline = QtWidgets.QFrame()
         self.underline.setFrameShape(self.underline.HLine)
         self.underline.setFrameShadow(self.underline.Plain)
