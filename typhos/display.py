@@ -309,14 +309,15 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 action = menu.addAction(os.path.split(filename)[-1])
                 action.triggered.connect(switch_template)
 
+        def refresh_templates():
+            self.search_for_templates()
+            self.load_best_template()
+
         base_menu.addSeparator()
         refresh_action = base_menu.addAction("Refresh Templates")
-        refresh_action.triggered.connect(self._refresh_templates)
+        refresh_action.triggered.connect(refresh_templates)
 
         return base_menu
-
-    def _refresh_templates(self):
-        self.load_best_template(use_cache=False)
 
     def open_context_menu(self, ev):
         """
@@ -390,14 +391,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         logger.warning("No templates available for display type: %s",
                        self._display_type)
 
-    def load_best_template(self, use_cache=True):
+    def load_best_template(self):
         """
         Load a new template
-
-        Parameters
-        ----------
-        use_cache: bool
-            Whether or not to use the cached search. Default is True.
         """
         if self.layout() is None:
             # If we are not fully initialized yet do not try and add anything
@@ -406,7 +402,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             # display
             return
 
-        if not self._searched or not use_cache:
+        if not self._searched:
             self.search_for_templates()
 
         # Clear anything that exists in the current layout
