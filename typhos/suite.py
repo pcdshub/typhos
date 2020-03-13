@@ -84,28 +84,28 @@ class TyphosSuite(TyphosBase):
 
     def __init__(self, parent=None, *, pin=False):
         super().__init__(parent=parent)
-        # Setup parameter tree
+
         self._tree = ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
         self._save_action = ptypes.ActionParameter(name='Save Suite')
         self._tree.addParameters(self._save_action)
         self._save_action.sigActivated.connect(self.save)
 
-        # Setup layout
         self._bar = pcdsutils.qt.QPopBar(title='Suite', parent=self,
                                          widget=self._tree, pin=pin)
-
-        self.setLayout(QtWidgets.QHBoxLayout())
-        self.layout().setSpacing(1)
-        self.layout().setContentsMargins(0, 0, 0, 0)
 
         self._content_frame = QtWidgets.QFrame(self)
         self._content_frame.setObjectName("content")
         self._content_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self._content_frame.setLayout(QtWidgets.QHBoxLayout())
 
-        self.layout().addWidget(self._bar)
-        self.layout().addWidget(self._content_frame)
+        # Horizontal box layout: [PopBar] [Content Frame]
+        layout = QtWidgets.QHBoxLayout()
+        self.setLayout(layout)
+        layout.setSpacing(1)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self._bar)
+        layout.addWidget(self._content_frame)
 
         self.embedded_dock = None
 
