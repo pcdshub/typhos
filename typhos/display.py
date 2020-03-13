@@ -482,21 +482,41 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             self._forced_template = value
             self.load_best_template()
 
+    @staticmethod
+    def _build_macros_from_device(device, macros=None):
+        result = {}
+        if hasattr(device, 'md'):
+            if isinstance(device.md, dict):
+                result = dict(device.md)
+            else:
+                result = dict(device.md.post())
+
+        if 'name' not in result:
+            result['name'] = device.name
+        if 'prefix' not in result and hasattr(device, 'prefix'):
+            result['prefix'] = device.prefix
+
+        result.update(**(macros or {}))
+        return result
+
     def add_device(self, device, macros=None):
         """
         Add a Device and signals to the TyphosDeviceDisplay
 
+        The full dictionary of macros is built with the following order of
+        precedence::
+
+           1. Macros from the device metadata itself
+           2. If available, `name`, and `prefix` will be added from the device
+           3. The argument ``macros`` is then used to fill/update the final
+              macro dictionary
+
         Parameters
         ----------
         device: ophyd.Device
-
+            The device to add
         macros: dict, optional
-            Set of macros to reload the template with. There are two fallback
-            options attempted if no information is passed in. First, if the
-            device has an ``md`` attribute after being loaded from a ``happi``
-            database, that information will be passed in as macros. Finally, if
-            no ``name`` field is passed in, we ensure the ``device.name`` and
-            ``device.prefix`` are entered as well.
+            Additional macros to use/replace the defaults.
         """
         # We only allow one device at a time
         if self.devices:
@@ -505,22 +525,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         # Add the device to the cache
         super().add_device(device)
         self._searched = False
-
-        # Macros are:
-        #   1. Macros from the device
-        #   2. Updated with `name`, and `prefix`, if available
-        #   3. Overridden with the `macros` argument for this method
-        new_macros = dict(device.md.post()) if hasattr(device, 'md') else {}
-
-        # Ensure we at least pass in the device name and prefix
-        if 'name' not in new_macros:
-            new_macros['name'] = device.name
-        if 'prefix' not in new_macros and hasattr(device, 'prefix'):
-            new_macros['prefix'] = device.prefix
-
-        new_macros.update(**(macros or {}))
-
-        self.macros = new_macros
+        self.macros = self._build_macros_from_device(device, macros=macros)
         self.load_best_template()
 
     def search_for_templates(self):
