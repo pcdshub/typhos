@@ -259,6 +259,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                  display_type='detailed_screen',
                  **kwargs):
         # Intialize background variable
+        self._current_template = None
         self._forced_template = ''
         self._macros = dict()
         self._main_widget = None
