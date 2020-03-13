@@ -281,7 +281,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         layout = QtWidgets.QHBoxLayout()
         self.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
-        self.load_best_template()
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
@@ -310,7 +309,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 action = menu.addAction(os.path.split(filename)[-1])
                 action.triggered.connect(switch_template)
 
+        base_menu.addSeparator()
+        refresh_action = base_menu.addAction("Refresh Templates")
+        refresh_action.triggered.connect(self._refresh_templates)
+
         return base_menu
+
+    def _refresh_templates(self):
+        self.load_best_template(use_cache=False)
 
     def open_context_menu(self, ev):
         """
@@ -384,14 +390,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         logger.warning("No templates available for display type: %s",
                        self._display_type)
 
-    def load_best_template(self):
+    def load_best_template(self, use_cache=True):
         """
         Load a new template
 
         Parameters
         ----------
-        template: str
-            Absolute path to template location
+        use_cache: bool
+            Whether or not to use the cached search. Default is True.
         """
         if self.layout() is None:
             # If we are not fully initialized yet do not try and add anything
@@ -400,7 +406,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             # display
             return
 
-        if not self._searched:
+        if not self._searched or not use_cache:
             self.search_for_templates()
 
         # Clear anything that exists in the current layout
