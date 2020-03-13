@@ -457,16 +457,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self._main_widget = main = loader(str(filename), macros=self._macros)
 
-        # Add device to all children widgets
-        if not self.devices:
-            return
+        self._main_widget = main = loader(str(filename), macros=self._macros)
 
+        # Notify child widgets of: this device dispay + the device
+        device = self.device
         designer = main.findChildren(widgets.TyphosDesignerMixin) or []
         bases = main.findChildren(utils.TyphosBase) or []
 
-        device, = self.devices
         for widget in set(bases + designer):
-            widget.add_device(device)
+            if device and hasattr(widget, 'add_device'):
+                widget.add_device(device)
 
             if hasattr(widget, 'set_device_display'):
                 widget.set_device_display(self)
