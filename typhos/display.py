@@ -9,6 +9,7 @@ from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
 import pcdsutils
 import pcdsutils.qt
 import pydm.display
+import pydm.exception
 import pydm.utilities
 
 from . import utils
@@ -419,10 +420,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         else:
             try:
                 self._load_template(template)
-            except Exception:
+            except Exception as ex:
                 logger.exception("Unable to load file %r", template)
-                self._main_widget = QtWidgets.QWidget()
-                self._current_template = None
+                # If we have a previously defined template
+                if self._current_template is not None:
+                    # Fallback to it so users have a choice
+                    self._load_template(self._current_template)
+                    pydm.exception.raise_to_operator(ex)
+                else:
+                    self._main_widget = QtWidgets.QWidget()
+                    self._current_template = None
 
         self.layout().addWidget(self._main_widget)
         utils.reload_widget_stylesheet(self)
