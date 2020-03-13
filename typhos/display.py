@@ -334,7 +334,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     @display_type.setter
     def display_type(self, value):
-        # Store our new value
+        value = normalize_display_type(value)
         if self._display_type != value:
             self._display_type = value
             self.load_best_template()
