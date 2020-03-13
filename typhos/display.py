@@ -448,13 +448,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         return ret
 
     def _load_template(self, filename):
-        if filename.suffix == '.py':
-            logger.debug('Load Python template: %r', filename)
-            loader = pydm.display.load_py_file
-        else:
-            logger.debug('Load UI template: %r', filename)
-            loader = pydm.display.load_ui_file
+        loader = (pydm.display.load_py_file if filename.suffix == '.py'
+                  else pydm.display.load_ui_file)
 
+        logger.debug('Load template using %s: %r', loader.__name__, filename)
         self._main_widget = main = loader(str(filename), macros=self._macros)
 
         # Notify child widgets of: this device dispay + the device
