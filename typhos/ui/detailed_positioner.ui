@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>320</width>
-    <height>455</height>
+    <width>341</width>
+    <height>513</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,59 +19,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="main_layout" stretch="0,0,0,3">
-   <property name="spacing">
-    <number>10</number>
-   </property>
-   <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
-   </property>
-   <property name="leftMargin">
-    <number>5</number>
-   </property>
-   <property name="topMargin">
-    <number>5</number>
-   </property>
-   <property name="rightMargin">
-    <number>5</number>
-   </property>
-   <property name="bottomMargin">
-    <number>5</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <widget class="QLabel" name="name_label">
-     <property name="font">
-      <font>
-       <family>Sans Serif</family>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>${name}</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QFrame" name="underline">
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::HLine</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
-     <property name="lineWidth">
-      <number>10</number>
+    <widget class="TyphosDisplayTitle" name="TyphosDisplayTitle">
+     <property name="toolTip">
+      <string/>
      </property>
     </widget>
    </item>
@@ -159,8 +111,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>298</width>
-            <height>222</height>
+            <width>305</width>
+            <height>215</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -236,8 +188,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>298</width>
-            <height>222</height>
+            <width>305</width>
+            <height>215</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -313,8 +265,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>298</width>
-            <height>222</height>
+            <width>305</width>
+            <height>215</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -371,6 +323,11 @@
    <class>TyphosPositionerWidget</class>
    <extends>QWidget</extends>
    <header>typhos.positioner</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosDisplayTitle</class>
+   <extends>QFrame</extends>
+   <header>typhos.display</header>
   </customwidget>
  </customwidgets>
  <resources/>

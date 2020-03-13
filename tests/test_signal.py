@@ -1,6 +1,7 @@
 import random
 
 import numpy as np
+import pydm.utilities
 from qtpy.QtWidgets import QWidget
 
 from ophyd import Kind
@@ -104,7 +105,7 @@ def test_typhos_panel(qapp, client, qtbot):
     assert panel.channel == 'happi://test_device'
     # Reset channel and no smoke comes out
     panel.channel = 'happi://test_motor'
-    qapp.establish_widget_connections(panel)
+    pydm.utilities.establish_widget_connections(panel)
     # Check we have our device
     assert len(panel.devices) == 1
     device = panel.devices[0]
@@ -132,7 +133,7 @@ def test_typhos_panel_sorting(qapp, client, qtbot):
     # Sort by name
     panel.sortBy = panel.SignalOrder.byName
     panel.channel = 'happi://test_motor'
-    qapp.establish_widget_connections(panel)
+    pydm.utilities.establish_widget_connections(panel)
     sorted_names = sorted(panel.devices[0].component_names)
     sig_layout = panel.layout().layout()
     assert list(panel.layout().signals.keys()) == sorted_names

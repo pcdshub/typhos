@@ -6,7 +6,7 @@ import contextlib
 import importlib.util
 import inspect
 import logging
-import os.path
+import os
 import pathlib
 import random
 import re
@@ -22,9 +22,23 @@ from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.exception import raise_to_operator  # noqa
 
 logger = logging.getLogger(__name__)
-ui_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ui')
+MODULE_PATH = pathlib.Path(__file__).parent.resolve()
+ui_dir = MODULE_PATH / 'ui'
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
+
+
+def _get_display_paths():
+    'Get all display paths based on PYDM_DISPLAY_PATHS + typhos built-ins'
+    paths = os.environ.get('PYDM_DISPLAYS_PATH', '')
+    for path in paths.split(os.pathsep):
+        path = pathlib.Path(path).resolve()
+        if path.exists() and path.is_dir():
+            yield path
+    yield ui_dir
+
+
+DISPLAY_PATHS = list(_get_display_paths())
 
 
 class SignalRO(ophyd.sim.SynSignalRO):
@@ -467,3 +481,39 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
                 for match in path.glob(candidate_filename + extension):
                     if match.is_file():
                         yield match
+
+
+def find_file_in_paths(filename, *, paths=None):
+    '''
+    Search for filename ``filename`` in the list of paths ``paths``
+
+    Parameters
+    ----------
+    filename : str or pathlib.Path
+        The filename
+    paths : list or iterable, optional
+        List of paths to search. Defaults to DISPLAY_PATHS.
+
+    Yields
+    ------
+    All filenames that match in the given paths
+    '''
+    if paths is None:
+        paths = DISPLAY_PATHS
+
+    if isinstance(filename, pathlib.Path):
+        if filename.is_absolute():
+            if filename.exists():
+                yield filename
+            return
+
+        filename = filename.name
+
+    paths = remove_duplicate_items(
+        [pathlib.Path(p).expanduser().resolve() for p in paths]
+    )
+
+    for path in paths:
+        for match in path.glob(filename):
+            if match.is_file():
+                yield match
