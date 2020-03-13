@@ -1,5 +1,6 @@
 
 import numpy as np
+import pydm.utilities
 from ophyd import Signal
 from pydm.widgets import PyDMLineEdit
 from qtpy.QtWidgets import QWidget
@@ -21,7 +22,7 @@ def test_signal_connection(qapp, qtbot):
     # In PyDM > 1.5.0 this will not be neccesary as the widget will be
     # connected after we set the channel name
     if not hasattr(listener, 'connect'):
-        qapp.establish_widget_connections(widget)
+        pydm.utilities.establish_widget_connections(widget)
     # Check that our widget receives the initial value
     qapp.processEvents()
     assert widget._write_access
