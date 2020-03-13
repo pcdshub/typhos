@@ -457,8 +457,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self._main_widget = main = loader(str(filename), macros=self._macros)
 
-        self._main_widget = main = loader(str(filename), macros=self._macros)
-
         # Notify child widgets of: this device dispay + the device
         device = self.device
         designer = main.findChildren(widgets.TyphosDesignerMixin) or []
