@@ -8,12 +8,8 @@
 
 > **WARNING**: This package was renamed.
 >
-> The previous name Typhon was renamed as Typhos due to PyPI name collision.
-> For now we offer backwards compatibility
-> but it is strongly recommended that you update all references in your code.
->
-> The compatibility layer will be dropped soon after two releases of this
-> package.
+> The last version supporting the `typhon` package name and command-line tool
+> was v0.7.0.  Please upgrade to `typhos` or pin to that version.
 
 EPICS is a flexible and powerful controls system to access to experimental
 information, however, the relation and meaning of process variables is often

@@ -19,4 +19,5 @@ setup(name='typhos',
       include_package_data=True,
       install_requires=requirements,
       description='Interface generation for ophyd devices',
-      entry_points={'console_scripts': ['typhos=typhos.cli:main', 'typhon=typhos.cli:main']})
+      entry_points={'console_scripts': ['typhos=typhos.cli:main']},
+)

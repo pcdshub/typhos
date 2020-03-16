@@ -2,7 +2,6 @@ codecov
 doctr
 flake8
 ipython
-matplotlib
 pytest
 pytest-qt
 pytest-timeout

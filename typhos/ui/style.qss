@@ -50,23 +50,6 @@ TyphosBase PyDMLogDisplay > QPlainTextEdit {
     font: 10px normal;
 }
 
-TyphosBase TyphonPositionerWidget[moving="true"] .QFrame {
-    border: 2px solid yellow;
-}
-
-TyphosBase TyphonPositionerWidget[moving="false"] .QFrame {
-    border: 2px solid transparent;
-}
-
-TyphosBase TyphonPositionerWidget[moving="false"][successful_move="true"] .QFrame {
-    border: 2px solid green;
-}
-
-TyphosBase TyphonPositionerWidget[moving="false"][failed_move="true"] .QFrame {
-    border: 2px solid red;
-}
-
-
 TyphosBase TyphosPositionerWidget[moving="true"] .QFrame {
     border: 2px solid yellow;
 }
