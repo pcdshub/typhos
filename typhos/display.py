@@ -33,6 +33,7 @@ DEFAULT_TEMPLATES = {
     for name in DisplayTypes.names
 }
 
+
 def normalize_display_type(display_type):
     try:
         return DisplayTypes(display_type)
