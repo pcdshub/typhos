@@ -16,61 +16,37 @@ env:
 
 matrix:
   include:
-     - python: 3.6
-       env:
-           - BUILD_DOCS=1
-           - BUILD=1
-           - PYDM_CHANNEL=pcds-tag
-     - python: 3.6
-       env: PYDM_CHANNEL=pydm-dev
-     - python: 3.6
-       env: PYDM_CHANNEL=pip
-     - python: 3.7.3  # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
-       env:
-           - PYDM_CHANNEL=pcds-tag
-           - BUILD=1
-     - python: 3.7.3  # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
-       env: PYDM_CHANNEL=pip
+    - name: flake8 linting
+      python: 3.6
+      env: LINT_PYTHON=typhos
+    - python: 3.6
+      env: BUILD_DOCS=1
+    - python: 3.7.3  # # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
+    - python: 3.8
   allow_failures:
-      - env: PYDM_CHANNEL=pip
+    - python: 3.8
 
 install:
+  - git clone --depth 1 git://github.com/pcdshub/pcds-ci-helpers.git
+  - source pcds-ci-helpers/travis/init.sh
+ 
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda install conda-build anaconda-client
   - conda update -q conda conda-build
-  - conda config --append channels pcds-tag
-  - conda config --append channels conda-forge
-  # Useful for debugging any issues with conda
+  - conda config --remove channels defaults
+  - conda config --add channels conda-forge
+  # Useful for debugging
   - conda info -a
-  - |
-    # Install all dependencies via CONDA
-    if [[ $PYDM_CHANNEL != "pip" ]]; then
-      conda config --add channels $PYDM_CHANNEL
-      # Use the recipe contained inside the repository to build packcage
-      conda build -q conda-recipe --python=$TRAVIS_PYTHON_VERSION --output-folder bld-dir
-      # Install package with development dependencies
-      conda config --add channels "file://`pwd`/bld-dir"
-      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION typhos --file dev-requirements.txt
-      # Launch Conda environment
-      source activate test-environment
-    # Install all dependencies via PIP
-    else
-      conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip
-      # Launch Conda environment
-      source activate test-environment
-      # Install package
-      python setup.py install
-      # Add our dependencies
-      pip install git+https://github.com/pcdshub/happi.git PyQt5 -r dev-requirements.txt
-    fi
-  # Setup some path environment variables for epics
-  - export PATH=$PATH:$EPICS_BASE/bin/$EPICS_HOST_ARCH
-  - export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$EPICS_BASE/lib/$EPICS_HOST_ARCH"
-  - echo "PATH=$PATH"
+  - conda build -q conda-recipe --python $TRAVIS_PYTHON_VERSION --output-folder bld-dir
+  - conda config --add channels "file://`pwd`/bld-dir"
+  # Manage conda environment
+  - conda create -n typhos-env python=$TRAVIS_PYTHON_VERSION typhos pip pyqt --file dev-requirements.txt
+  - source activate typhos-env
+  # Useful for debugging
+  - conda list
 
 before_script:
   # Run windows manager
@@ -80,18 +56,11 @@ before_script:
 script:
   - coverage run run_tests.py --show-capture=no
   - coverage report -m
-    #- coverage report -m
-  - flake8 typhos
-  # Test again but with installed version
-  - mkdir notest
-  - mv typhos/*.* notest
-  - python run_tests.py --show-capture=no
-  - mv notest/* typhos
-  - rmdir notest
+
   # Build docs
   - set -e
   - |
-    if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && $BUILD_DOCS ]]; then
+    if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY" && "$BUILD_DOCS" == "1" ]]; then
       # Create HTML documentation  
       pushd docs
       make html
@@ -115,4 +84,3 @@ after_success:
 
 after_failure:
   - cat logs/run_tests_log.txt
-  - cat logs/run_tests_log.txt.1
