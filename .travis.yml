@@ -23,8 +23,6 @@ matrix:
       env: BUILD_DOCS=1
     - python: 3.7.3  # # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
     - python: 3.8
-  allow_failures:
-    - python: 3.8
 
 install:
   - git clone --depth 1 git://github.com/pcdshub/pcds-ci-helpers.git
