@@ -1,11 +1,7 @@
 """
 Module Docstring
 """
-import logging
-
 import pytest
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QColor
 
 from ophyd import EpicsSignal, Signal
 from typhos import register_signal
@@ -20,7 +16,8 @@ def sim_signal():
     register_signal(sim_sig)
     return sim_sig
 
-def test_add_signal(qtbot,sim_signal):
+
+def test_add_signal(qtbot, sim_signal):
     # Create Signals
     epics_sig = EpicsSignal('Tst:This')
     # Create empty plot
@@ -40,7 +37,7 @@ def test_curve_methods(qtbot, sim_signal):
     qtbot.addWidget(ttp)
     ttp.add_curve('sig://' + sim_signal.name, name=sim_signal.name)
     # Check that our signal is stored in the mapping
-    assert 'sig://' + sim_signal.name in ttp.channel_map
+    assert 'sig://' + sim_signal.name in ttp.channel_to_curve
     # Check that our curve is live
     assert len(ttp.timechart.chart.curves) == 1
     # Try and add again
@@ -50,18 +47,21 @@ def test_curve_methods(qtbot, sim_signal):
     ttp.remove_curve(channel_from_signal(sim_signal))
     assert len(ttp.timechart.chart.curves) == 0
 
+
 def test_curve_creation_button(qtbot, sim_signal):
     ttp = TyphosTimePlot()
     qtbot.addWidget(ttp)
     ttp.add_available_signal(sim_signal, 'Sim Signal')
     ttp.creation_requested()
     # Check that our signal is stored in the mapping
-    assert channel_from_signal(sim_signal) in ttp.channel_map
+    assert channel_from_signal(sim_signal) in ttp.channel_to_curve
     assert len(ttp.timechart.chart.curves) == 1
+
 
 def test_device_plot(motor, qtbot):
     dtp = TyphosTimePlot.from_device(motor)
     qtbot.addWidget(dtp)
+
     # Add the hint
     assert len(dtp.timechart.chart.curves) == 1
     # Added all the signals
