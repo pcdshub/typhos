@@ -665,6 +665,15 @@ def connection_status_monitor(*signals, callback):
     with subscription_context(*signals, callback=status._connection_callback,
                               event_type='meta', run=True
                               ) as status.obj_to_cid:
+        # HACK: peek into ophyd signals to see if they're connected but have
+        # never run metadata callbacks
+        for sig in signals:
+            if sig.connected and sig._args_cache.get('meta') is None:
+                md = dict(sig.metadata)
+                if 'connected' not in md:
+                    md['connected'] = True
+                status._connection_callback(obj=sig, **md)
+
         yield status
 
 
@@ -702,15 +711,6 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
     def run(self):
         signals = get_all_signals_from_device(
             self.device, include_lazy=self.include_lazy)
-
-        # HACK: peek into ophyd signals to see if they're connected but have
-        # never run metadata callbacks
-        for sig in signals:
-            if sig.connected and sig._args_cache.get('meta') is None:
-                md = dict(sig.metadata)
-                if 'connected' not in md:
-                    md['connected'] = True
-                self.callback(obj=sig, **md)
 
         with connection_status_monitor(*signals, callback=self.callback):
             while not self.isInterruptionRequested():
