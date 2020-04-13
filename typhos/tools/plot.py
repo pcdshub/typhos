@@ -25,6 +25,9 @@ class TyphosTimePlot(utils.TyphosBase):
     ----------
     parent: QWidget
     """
+
+    hint_limit = 20
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         # Setup layout
@@ -43,8 +46,14 @@ class TyphosTimePlot(utils.TyphosBase):
         # Add timechart
         self.timechart = TimeChartDisplay(show_pv_add_panel=False)
         self.layout().addWidget(self.timechart)
-        self.channel_map = self.timechart.channel_map
         self._device_threads = {}
+
+    @property
+    def channel_to_curve(self):
+        """
+        A dictionary of channel_name to curve
+        """
+        return dict(self.timechart.channel_map)
 
     def add_available_signal(self, signal, name):
         """
@@ -141,6 +150,12 @@ class TyphosTimePlot(utils.TyphosBase):
 
         # Add to list of available signal
         self.add_available_signal(signal, name)
+
+        if len(self.channel_to_curve) >= self.hint_limit:
+            logger.debug('Too many hinted signals (at limit of %d)',
+                         self.hint_limit)
+            return
+
         if signal.name in signal.root.hints.get('fields', []):
             self.add_curve(utils.channel_from_signal(signal), name=name)
 
