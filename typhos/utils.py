@@ -703,6 +703,15 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
         signals = get_all_signals_from_device(
             self.device, include_lazy=self.include_lazy)
 
+        # HACK: peek into ophyd signals to see if they're connected but have
+        # never run metadata callbacks
+        for sig in signals:
+            if sig.connected and sig._args_cache.get('meta') is None:
+                md = dict(sig.metadata)
+                if 'connected' not in md:
+                    md['connected'] = True
+                self.callback(obj=sig, **md)
+
         with connection_status_monitor(*signals, callback=self.callback):
             while not self.isInterruptionRequested():
                 self._update_event.clear()

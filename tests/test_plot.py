@@ -1,6 +1,8 @@
 """
 Module Docstring
 """
+import time
+
 import pytest
 
 from ophyd import EpicsSignal, Signal
@@ -58,9 +60,15 @@ def test_curve_creation_button(qtbot, sim_signal):
     assert len(ttp.timechart.chart.curves) == 1
 
 
-def test_device_plot(motor, qtbot):
+def test_device_plot(motor, qapp, qtbot):
     dtp = TyphosTimePlot.from_device(motor)
     qtbot.addWidget(dtp)
+
+    # Update happens in a background thread
+    t0 = time.time()
+    while time.time() - t0 < 1:
+        qapp.processEvents()
+        time.sleep(0.1)
 
     # Add the hint
     assert len(dtp.timechart.chart.curves) == 1
