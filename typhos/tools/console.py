@@ -1,20 +1,16 @@
-import hashlib
 import logging
-import os
-import tempfile
 import threading
-from time import localtime
 
-from qtpy.QtWidgets import QApplication, QHBoxLayout
-from qtconsole.rich_jupyter_widget import RichJupyterWidget
 from qtconsole.manager import QtKernelManager
+from qtconsole.rich_jupyter_widget import RichJupyterWidget
+from qtpy.QtWidgets import QApplication, QHBoxLayout
 
-from ..utils import TyphosBase, make_identifier
+from .. import utils
 
 logger = logging.getLogger(__name__)
 
 
-class TyphosConsole(TyphosBase):
+class TyphosConsole(utils.TyphosBase):
     """
     IPython Widget for Typhos Display
 
@@ -71,52 +67,10 @@ class TyphosConsole(TyphosBase):
         else:
             logger.debug("Kernel is already shutdown.")
 
-
-try:
-    import happi
-
-    def add_device(obj, device):
-        # Needs metadata
-        if not hasattr(device, 'md'):
-            logger.error("Device %r has no stored metadata. "
-                         "Unable to load in TyphosConsole",
-                         device)
-            return
-        # Create a temporary file
-        name = hashlib.md5(str(localtime()).encode('utf-8')).hexdigest()
-        name = os.path.join(tempfile.gettempdir(), name)
+    def add_device(self, device):
         try:
-            # Dump the device in the tempfile
-            client = happi.Client(path=name, initialize=True)
-            client.add_device(device.md)
-            # Create a valid Python identifier
-            python_name = make_identifier(device.md.name)
-            # Create the script to load the device
-            load_script = (
-                       f'import happi; '
-                       f'from happi.loader import from_container; '
-                       f'client = happi.Client(path="{name}"); '
-                       f'md = client.find_device(name="{device.md.name}"); '
-                       f'{python_name} = from_container(md)')
-            # Execute the script
-            obj.kernel.kernel_client.execute(load_script, silent=True)
+            load_script = utils.code_from_device(device)
+            self.kernel.kernel_client.execute(load_script, silent=False)
         except Exception:
             logger.exception("Unable to add device %r to TyphosConsole.",
-                             device.md.name)
-            # Cleanup after ourselves
-            if os.path.exists(name):
-                os.remove(name)
-
-    # Set the TyphosConsole up to load devices
-    TyphosConsole.add_device = add_device
-
-except ImportError:
-    logger.info("Unable to import ``happi``. Devices will not be added "
-                "to the ``TyphosConsole`` unless ``TyphosConsole.add_device`` "
-                "is implemented.")
-
-    # Dummy pass-through function
-    def add_device(obj, x):
-        pass
-
-    TyphosConsole.add_device = add_device
+                             device.name)
