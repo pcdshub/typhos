@@ -3,18 +3,18 @@ Typhos Plotting Interface
 """
 import logging
 
-from ophyd import Device
+from qtpy.QtCore import Slot
+from qtpy.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QPushButton,
+                            QVBoxLayout)
 from timechart.displays.main_display import TimeChartDisplay
 from timechart.utilities.utils import random_color
-from qtpy.QtCore import Slot
-from qtpy.QtWidgets import (QComboBox, QPushButton, QLabel, QVBoxLayout,
-                            QHBoxLayout)
-from ..utils import (channel_from_signal, clean_attr, clean_name, TyphosBase)
+
+from .. import utils
 
 logger = logging.getLogger(__name__)
 
 
-class TyphosTimePlot(TyphosBase):
+class TyphosTimePlot(utils.TyphosBase):
     """
     Generalized widget for plotting Ophyd signals
 
@@ -44,6 +44,7 @@ class TyphosTimePlot(TyphosBase):
         self.timechart = TimeChartDisplay(show_pv_add_panel=False)
         self.layout().addWidget(self.timechart)
         self.channel_map = self.timechart.channel_map
+        self._device_threads = {}
 
     def add_available_signal(self, signal, name):
         """
@@ -59,7 +60,7 @@ class TyphosTimePlot(TyphosBase):
         name: str
             Alias for signal to display in QComboBox
         """
-        self.signal_combo.addItem(name, channel_from_signal(signal))
+        self.signal_combo.addItem(name, utils.channel_from_signal(signal))
 
     def add_curve(self, channel, name=None, color=None, **kwargs):
         """
@@ -120,33 +121,36 @@ class TyphosTimePlot(TyphosBase):
         # Add to the plot
         self.add_curve(channel, name=name)
 
+    @Slot(object, bool, dict)
+    def _connection_update(self, signal, connected, metadata):
+        if not connected:
+            return
+
+        name = f'{signal.root.name}.{signal.dotted_name}'
+
+        try:
+            desc = signal.describe()[signal.name]
+        except Exception:
+            logger.exception("Unable to add %s to plot-able signals", name)
+            return
+
+        # Only include scalars
+        if desc['dtype'] not in ('integer', 'number'):
+            logger.debug("Ignoring non-scalar signal %s", name)
+            return
+
+        # Add to list of available signal
+        self.add_available_signal(signal, name)
+        if signal.name in signal.root.hints.get('fields', []):
+            self.add_curve(utils.channel_from_signal(signal), name=name)
+
     def add_device(self, device):
         """Add a device and it's component signals to the plot"""
         super().add_device(device)
-        # Sort through components
-        devices = [device] + [getattr(device, sub)
-                              for sub in device._sub_devices]
-        for subdevice in devices:
-            logger.debug("Adding signals for %s to plot ...", subdevice.name)
-            for component in subdevice.component_names:
-                # Find all signals
-                if not isinstance(component, Device):
-                    try:
-                        sig = getattr(subdevice, component)
-                        # Only include scalars
-                        if sig.describe()[sig.name]['dtype'] in ('integer',
-                                                                 'number'):
-                            # Make component name
-                            name = clean_attr(component)
-                            if subdevice != device:
-                                name = ' '.join((clean_name(subdevice), name))
-                            # Add to list of available signals
-                            self.add_available_signal(sig, name)
-                            # Automatically plot if in Device hints
-                            if sig.name in subdevice.hints.get('fields', []):
-                                self.add_curve(channel_from_signal(sig),
-                                               name=name)
-                    except Exception:
-                        logger.exception("Unable to add %s to "
-                                         "plot-able signals",
-                                         component)
+
+        if device not in self._device_threads:
+            thread = utils.DeviceConnectionMonitorThread(
+                device, include_lazy=False)
+            thread.connection_update.connect(self._connection_update)
+            self._device_threads[device] = thread
+            thread.start()
