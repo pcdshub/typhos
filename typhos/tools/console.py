@@ -64,6 +64,7 @@ class TyphosConsole(utils.TyphosBase):
         self._ready_lock = threading.Lock()
         self._kernel_is_ready = False
         self._pending_devices = []
+        self._pending_commands = []
 
         self._check_readiness_timer = QtCore.QTimer()
         self._check_readiness_timer.setInterval(100)
@@ -96,10 +97,14 @@ class TyphosConsole(utils.TyphosBase):
         with self._ready_lock:
             self._kernel_is_ready = True
 
+        for command in self._pending_commands:
+            self.execute(command)
+
         for device in self._pending_devices:
             self._add_device(device)
 
-        self._pending_devices = None
+        self._pending_commands = []
+        self._pending_devices = []
 
     def _wait_for_readiness(self):
         """Wait for the kernel to show the prompt"""
@@ -153,13 +158,19 @@ class TyphosConsole(utils.TyphosBase):
         """
         return self.jupyter_widget._control.toPlainText()
 
-    def execute(self, script, *, echo=True):
+    def execute(self, script, *, echo=True, check_readiness=True):
         """
         Execute some code in the console
         """
         if echo:
             # Can't seem to get `interactive` or `hidden=False` working:
             script = '\n'.join((f"print({repr(script)})", script))
+
+        if check_readiness:
+            with self._ready_lock:
+                if not self._kernel_is_ready:
+                    self._pending_commands.append(script)
+                    return
 
         self.jupyter_widget.kernel_client.execute(script)
 
