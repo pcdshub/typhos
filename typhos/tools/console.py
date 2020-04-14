@@ -92,7 +92,6 @@ class TyphosConsole(utils.TyphosBase):
     def add_device(self, device):
         # Add the device after a short delay to allow the console widget time
         # to get initialized
-        self.show()
         QtCore.QTimer.singleShot(
             100, lambda device=device: self._add_device(device)
         )
