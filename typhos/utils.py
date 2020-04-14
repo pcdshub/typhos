@@ -10,7 +10,9 @@ import os
 import pathlib
 import random
 import re
+import threading
 
+from qtpy import QtCore
 from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QMovie, QPainter
 from qtpy.QtWidgets import (QApplication, QLabel, QStyle, QStyleFactory,
@@ -517,3 +519,197 @@ def find_file_in_paths(filename, *, paths=None):
         for match in path.glob(filename):
             if match.is_file():
                 yield match
+
+
+@contextlib.contextmanager
+def subscription_context(*objects, callback, event_type=None, run=True):
+    '''
+    [Context manager] Subscribe to a specific event from all objects
+
+    Unsubscribes all signals before exiting
+
+    Parameters
+    ----------
+    *objects : ophyd.OphydObj
+        Ophyd objects (signals) to monitor
+    callback : callable
+        Callback to run, with same signature as that of
+        :meth:``ophyd.OphydObj.subscribe``
+    event_type : str, optional
+        The event type to subscribe to
+    run : bool, optional
+        Run the previously cached subscription immediately
+    '''
+    obj_to_cid = {}
+    try:
+        for obj in objects:
+            obj_to_cid[obj] = obj.subscribe(callback, event_type=event_type,
+                                            run=run)
+        yield dict(obj_to_cid)
+    finally:
+        for obj, cid in obj_to_cid.items():
+            obj.unsubscribe(cid)
+
+
+def get_all_signals_from_device(device, include_lazy=False, filter_by=None):
+    '''
+    Get all signals in a given device
+
+    Parameters
+    ----------
+    device : ophyd.Device
+        ophyd Device to monitor
+    include_lazy : bool, optional
+        Include lazy signals as well
+    filter_by : callable, optional
+        Filter signals, with signature ``callable(ophyd.Device.ComponentWalk)``
+    '''
+    if not filter_by:
+        def filter_by(walk):
+            return True
+
+    def _get_signals():
+        return [
+            walk.item
+            for walk in device.walk_signals(include_lazy=include_lazy)
+            if filter_by(walk)
+        ]
+
+    if not include_lazy:
+        return _get_signals()
+
+    with no_device_lazy_load():
+        return _get_signals()
+
+
+@contextlib.contextmanager
+def subscription_context_device(device, callback, event_type=None, run=True, *,
+                                include_lazy=False, filter_by=None):
+    '''
+    [Context manager] Subscribe to ``event_type`` from signals in ``device``
+
+    Unsubscribes all signals before exiting
+
+    Parameters
+    ----------
+    device : ophyd.Device
+        ophyd Device to monitor
+    callback : callable
+        Callback to run, with same signature as that of
+        :meth:``ophyd.OphydObj.subscribe``
+    event_type : str, optional
+        The event type to subscribe to
+    run : bool, optional
+        Run the previously cached subscription immediately
+    include_lazy : bool, optional
+        Include lazy signals as well
+    filter_by : callable, optional
+        Filter signals, with signature ``callable(ophyd.Device.ComponentWalk)``
+    '''
+    signals = get_all_signals_from_device(device, include_lazy=include_lazy)
+    with subscription_context(*signals, callback=callback,
+                              event_type=event_type, run=run) as obj_to_cid:
+        yield obj_to_cid
+
+
+class _ConnectionStatus:
+    def __init__(self, signals, callback):
+        self.signals = signals
+        self.connected = set()
+        self.callback = callback
+        self.lock = threading.Lock()
+
+    def _connection_callback(self, *, obj, connected, **kwargs):
+        with self.lock:
+            if connected and obj not in self.connected:
+                self.connected.add(obj)
+            elif not connected and obj in self.connected:
+                self.connected.remove(obj)
+            else:
+                return
+
+        logger.debug('Connection update: %r (obj=%s connected=%s kwargs=%r)',
+                     self, obj.name, connected, kwargs)
+        self.callback(obj=obj, connected=connected, **kwargs)
+
+    def __repr__(self):
+        return (
+            f'<{self.__class__.__name__} connected={len(self.connected)} '
+            f'signals={len(self.signals)}>'
+        )
+
+
+@contextlib.contextmanager
+def connection_status_monitor(*signals, callback):
+    '''
+    [Context manager] Monitor connection status from a number of signals
+
+    Filters out any other metadata updates, only calling once
+    connected/disconnected
+
+    Parameters
+    ----------
+    *signals : ophyd.OphydObj
+        Signals to monitor
+    callback : callable
+        Callback to run, with same signature as that of
+        :meth:``ophyd.OphydObj.subscribe``. ``obj`` and ``connected`` are
+        guaranteed kwargs.
+    '''
+
+    status = _ConnectionStatus(signals=signals, callback=callback)
+
+    with subscription_context(*signals, callback=status._connection_callback,
+                              event_type='meta', run=True
+                              ) as status.obj_to_cid:
+        # HACK: peek into ophyd signals to see if they're connected but have
+        # never run metadata callbacks
+        for sig in signals:
+            if sig.connected and sig._args_cache.get('meta') is None:
+                md = dict(sig.metadata)
+                if 'connected' not in md:
+                    md['connected'] = True
+                status._connection_callback(obj=sig, **md)
+
+        yield status
+
+
+class DeviceConnectionMonitorThread(QtCore.QThread):
+    '''
+    Monitor connection status in a background thread
+
+    Parameters
+    ----------
+    device : ophyd.Device
+        The device to grab signals from
+    include_lazy : bool, optional
+        Include lazy signals as well
+
+    Attributes
+    ----------
+    connection_update : QtCore.Signal
+        Connection update signal with signature::
+
+            (signal, connected, metadata_dict)
+    '''
+
+    connection_update = QtCore.Signal(object, bool, dict)
+
+    def __init__(self, device, include_lazy=False):
+        super().__init__()
+        self.device = device
+        self.include_lazy = include_lazy
+        self._update_event = threading.Event()
+
+    def callback(self, obj, connected, **kwargs):
+        self._update_event.set()
+        self.connection_update.emit(obj, connected, kwargs)
+
+    def run(self):
+        signals = get_all_signals_from_device(
+            self.device, include_lazy=self.include_lazy)
+
+        with connection_status_monitor(*signals, callback=self.callback):
+            while not self.isInterruptionRequested():
+                self._update_event.clear()
+                self._update_event.wait(timeout=0.5)
