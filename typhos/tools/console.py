@@ -82,7 +82,7 @@ class TyphosConsole(utils.TyphosBase):
         app = QtWidgets.QApplication.instance()
         app.aboutToQuit.connect(self.shutdown)
 
-        self.execute(f'print("{self._startup_text}")', echo=False)
+        # self.execute(f'print("{self._startup_text}")', echo=False)
 
     @property
     def kernel_is_ready(self):
@@ -107,7 +107,13 @@ class TyphosConsole(utils.TyphosBase):
 
     def _wait_for_readiness(self):
         """Wait for the kernel to show the prompt"""
-        if self._startup_text in self._plain_text:
+
+        def looks_ready(text):
+            if self._startup_text in text:
+                return True
+            return any(line.startswith('In ') for line in text.splitlines())
+
+        if looks_ready(self._plain_text):
             self.kernel_ready.emit()
             self._check_readiness_timer.stop()
 
