@@ -51,8 +51,6 @@ class TyphosConsole(utils.TyphosBase):
     kernel_ready = QtCore.Signal()
     kernel_shut_down = QtCore.Signal()
 
-    _startup_text = 'Typhos console starting up...'
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._shutting_down = False
@@ -107,8 +105,6 @@ class TyphosConsole(utils.TyphosBase):
         """Wait for the kernel to show the prompt"""
 
         def looks_ready(text):
-            if self._startup_text in text:
-                return True
             return any(line.startswith('In ') for line in text.splitlines())
 
         if looks_ready(self._plain_text):
