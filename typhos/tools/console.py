@@ -1,4 +1,5 @@
 import logging
+import threading
 
 from qtconsole.manager import QtKernelManager
 from qtconsole.rich_jupyter_widget import RichJupyterWidget
@@ -47,7 +48,10 @@ class TyphosConsole(utils.TyphosBase):
     """
 
     device_added = QtCore.Signal(object)
+    kernel_ready = QtCore.Signal()
     kernel_shut_down = QtCore.Signal()
+
+    _startup_text = 'Typhos console starting up...'
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -58,6 +62,17 @@ class TyphosConsole(utils.TyphosBase):
         self.jupyter_widget.syntax_style = 'monokai'
         self.jupyter_widget.set_default_style(colors='Linux')
 
+        # Setup kernel readiness checks
+        self._ready_lock = threading.Lock()
+        self._kernel_is_ready = False
+        self._pending_devices = []
+
+        self._check_readiness_timer = QtCore.QTimer()
+        self._check_readiness_timer.setInterval(100)
+        self._check_readiness_timer.timeout.connect(self._wait_for_readiness)
+        self._check_readiness_timer.start()
+        self.kernel_ready.connect(self._add_pending_devices)
+
         # Set the layout
         self.setLayout(QtWidgets.QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
@@ -66,6 +81,35 @@ class TyphosConsole(utils.TyphosBase):
         # Ensure we shutdown the kernel
         app = QtWidgets.QApplication.instance()
         app.aboutToQuit.connect(self.shutdown)
+
+        self.execute(f'print("{self._startup_text}")', echo=False)
+
+    @property
+    def kernel_is_ready(self):
+        """Is the Jupyter kernel ready?"""
+        return self.kernel_is_alive and self._kernel_is_read
+
+    @property
+    def kernel_is_alive(self):
+        """Is the Jupyter kernel alive and not shutting down?"""
+        return (self.jupyter_widget.kernel_manager.is_alive() and
+                not self._shutting_down)
+
+    def _add_pending_devices(self):
+        """Add devices that were requested prior to the kernel being ready"""
+        with self._ready_lock:
+            self._kernel_is_ready = True
+
+        for device in self._pending_devices:
+            self._add_device(device)
+
+        self._pending_devices = None
+
+    def _wait_for_readiness(self):
+        """Wait for the kernel to show the prompt"""
+        if self._startup_text in self._plain_text:
+            self.kernel_ready.emit()
+            self._check_readiness_timer.stop()
 
     def sizeHint(self):
         default = super().sizeHint()
@@ -92,9 +136,12 @@ class TyphosConsole(utils.TyphosBase):
     def add_device(self, device):
         # Add the device after a short delay to allow the console widget time
         # to get initialized
-        QtCore.QTimer.singleShot(
-            100, lambda device=device: self._add_device(device)
-        )
+        with self._ready_lock:
+            if not self._kernel_is_ready:
+                self._pending_devices.append(device)
+                return
+
+        self._add_device(device)
 
     @property
     def _plain_text(self):
