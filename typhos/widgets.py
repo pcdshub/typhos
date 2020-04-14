@@ -161,11 +161,11 @@ class TyphosLineEdit(PyDMLineEdit):
         history_menu.setFont(font)
 
         max_len = max(len(value)
-                      for value, timestamp in self._setpoint_history) or 1
+                      for value, timestamp in self._setpoint_history)
 
         # Pad values such that timestamp lines up:
         # (Value)     @ (Timestamp)
-        action_format = '{value:<%d} @ {timestamp}' % max_len
+        action_format = '{value:<%d} @ {timestamp}' % (max_len + 1)
 
         for value, timestamp in reversed(self._setpoint_history):
             timestamp = timestamp.strftime('%m/%d %H:%M')
