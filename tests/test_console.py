@@ -1,36 +1,74 @@
-import types
+import time
 
-import pytest
-
-import happi
-from happi.loader import from_container
+import ophyd
+import ophyd.sim
 from typhos.tools import TyphosConsole
 
 
 def test_base_console(qtbot):
     tc = TyphosConsole()
     qtbot.addWidget(tc)
-    assert tc.kernel.kernel_manager.is_alive()
+    assert tc.jupyter_widget.kernel_manager.is_alive()
     tc.shutdown()
-    assert not tc.kernel.kernel_manager.is_alive()
+    with qtbot.waitSignal(tc.kernel_shut_down, timeout=1000):
+        ...
+    assert not tc.jupyter_widget.kernel_manager.is_alive()
     tc.shutdown()
 
 
-@pytest.mark.timeout(30)
-@pytest.mark.xfail
-def test_add_device(qapp, qtbot):
-    # Create a device and attach metadata
-    md = happi.Device(name='Test This', prefix='Tst:This:1', beamline='TST',
-                      device_class='types.SimpleNamespace', args=list(),
-                      kwargs={'here': 'very unique text'})
-    device = from_container(md)
-    # Add the device to the Console
+def test_add_happi_device(qapp, qtbot, happi_cfg, client):
+    device = client['Syn:Motor'].get()
+
     tc = TyphosConsole.from_device(device)
     qtbot.addWidget(tc)
-    # Check that we created the object in the shell
-    tc.kernel.kernel_client.execute('print(test_this.here)', silent=False)
-    while md.kwargs['here'] not in tc.kernel._control.toPlainText():
+
+    with qtbot.waitSignal(tc.device_added, timeout=1000):
+        ...
+
+    tc.execute('print(test_motor.md["creation"])')
+
+    creation = device.md['creation']
+    while creation not in tc._plain_text:
         qapp.processEvents()
-    # Smoke test not happi Device
-    tc.add_device(types.SimpleNamespace(hi=3))
+        print(tc._plain_text)
+        time.sleep(0.5)
+
+
+def test_add_importable_device(qapp, qtbot):
+    device = ophyd.sim.SynAxis(name='device')
+    tc = TyphosConsole.from_device(device)
+    qtbot.addWidget(tc)
+
+    with qtbot.waitSignal(tc.device_added, timeout=1000):
+        ...
+
+    tc.execute('print("velocity value is", device.velocity.get())')
+
+    expected = 'velocity value is 1'
+    while expected not in tc._plain_text:
+        qapp.processEvents()
+        print(tc._plain_text)
+        time.sleep(0.5)
+
+    tc.shutdown()
+
+
+def test_add_fake_device(qapp, qtbot):
+    EpicsMotor = ophyd.sim.make_fake_device(ophyd.EpicsMotor)
+    device = EpicsMotor('sim:mtr1', name="sim_mtr1")
+
+    tc = TyphosConsole.from_device(device)
+    qtbot.addWidget(tc)
+
+    with qtbot.waitSignal(tc.device_added, timeout=1000):
+        ...
+
+    tc.execute('print("my name is", sim_mtr1.name)')
+
+    expected = 'my name is sim_mtr1'
+    while expected not in tc._plain_text:
+        qapp.processEvents()
+        print(tc._plain_text)
+        time.sleep(0.5)
+
     tc.shutdown()

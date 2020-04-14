@@ -1,9 +1,8 @@
 import logging
-import threading
 
 from qtconsole.manager import QtKernelManager
 from qtconsole.rich_jupyter_widget import RichJupyterWidget
-from qtpy import QtWidgets
+from qtpy import QtCore, QtWidgets
 
 from .. import utils
 
@@ -46,6 +45,10 @@ class TyphosConsole(utils.TyphosBase):
     is not installed, users will need to create a custom ``add_device`` method
     if they want their devices loaded in both the GUI and console.
     """
+
+    device_added = QtCore.Signal(object)
+    kernel_shut_down = QtCore.Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._shutting_down = False
@@ -72,23 +75,51 @@ class TyphosConsole(utils.TyphosBase):
     def shutdown(self):
         """Shutdown the Jupyter Kernel"""
         client = self.jupyter_widget.kernel_client
-        if not self._shutting_down:
-            logger.debug("Kernel is already shutdown.")
+        if self._shutting_down:
+            logger.debug("Kernel is already shutting down")
             return
 
         self._shutting_down = True
         logger.debug("Stopping Jupyter Client")
 
         def cleanup():
-            client.stop_channels()
-            self.kernel_manager.shutdown_kernel()
+            self.jupyter_widget.kernel_manager.shutdown_kernel()
+            self.kernel_shut_down.emit()
 
-        threading.Thread(target=cleanup, daemon=True).start()
+        client.stop_channels()
+        QtCore.QTimer.singleShot(0, cleanup)
 
     def add_device(self, device):
+        # Add the device after a short delay to allow the console widget time
+        # to get initialized
+        self.show()
+        QtCore.QTimer.singleShot(
+            100, lambda device=device: self._add_device(device)
+        )
+
+    @property
+    def _plain_text(self):
+        """
+        Text in the console
+        """
+        return self.jupyter_widget._control.toPlainText()
+
+    def execute(self, script, *, echo=True):
+        """
+        Execute some code in the console
+        """
+        if echo:
+            # Can't seem to get `interactive` or `hidden=False` working:
+            script = '\n'.join((f"print({repr(script)})", script))
+
+        self.jupyter_widget.kernel_client.execute(script)
+
+    def _add_device(self, device):
         try:
             script = utils.code_from_device(device)
-            self.jupyter_widget.execute(script, hidden=False, interactive=True)
+            self.execute(script)
         except Exception:
             logger.exception("Unable to add device %r to TyphosConsole.",
                              device.name)
+        else:
+            self.device_added.emit(device)
