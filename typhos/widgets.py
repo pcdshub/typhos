@@ -109,6 +109,13 @@ class TyphosLineEdit(PyDMLineEdit):
     def sizeHint(self):
         return QSize(100, 30)
 
+    @property
+    def setpoint_history(self):
+        """
+        History of setpoints, as a dictionary of {setpoint: timestamp}
+        """
+        return dict(self._setpoint_history)
+
     @Property(int, designable=True)
     def setpointHistoryCount(self):
         """
