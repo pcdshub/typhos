@@ -573,7 +573,11 @@ def code_from_device_repr(device):
     ----------
     device : ophyd.Device
     """
-    module = device.__module__
+    try:
+        module = device.__module__
+    except AttributeError:
+        raise ValueError('Device class must be in a module') from None
+
     class_name = device.__class__.__name__
     if module == '__main__':
         raise ValueError('Device class must be in a module')
@@ -581,10 +585,10 @@ def code_from_device_repr(device):
     cls = device.__class__
     is_fake = is_fake_device_class(cls)
 
-    class_name = f'{module}.{class_name}'
+    full_class_name = f'{module}.{class_name}'
     kwargs = '\n   '.join(f'{k}={v!r},' for k, v in device._repr_info())
     logger.debug('%r fully qualified Device class: %r', device.name,
-                 class_name)
+                 full_class_name)
     if is_fake:
         actual_class = get_device_from_fake_class(cls)
         actual_name = f'{actual_class.__module__}.{actual_class.__name__}'
@@ -605,7 +609,7 @@ ophyd.sim.clear_fake_device({device.name})
     return f'''\
 import pcdsutils
 
-{class_name} = pcdsutils.utils.import_helper({class_name!r})
+{class_name} = pcdsutils.utils.import_helper({full_class_name!r})
 {device.name} = {class_name}(
     {kwargs}
 )
