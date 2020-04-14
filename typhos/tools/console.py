@@ -80,9 +80,7 @@ class TyphosConsole(utils.TyphosBase):
 
         # Ensure we shutdown the kernel
         app = QtWidgets.QApplication.instance()
-        app.aboutToQuit.connect(self.shutdown)
-
-        # self.execute(f'print("{self._startup_text}")', echo=False)
+        app.aboutToQuit.connect(lambda: self.shutdown(block=True))
 
     @property
     def kernel_is_ready(self):
@@ -122,7 +120,7 @@ class TyphosConsole(utils.TyphosBase):
         default.setWidth(600)
         return default
 
-    def shutdown(self):
+    def shutdown(self, *, block=False):
         """Shutdown the Jupyter Kernel"""
         client = self.jupyter_widget.kernel_client
         if self._shutting_down:
@@ -137,7 +135,10 @@ class TyphosConsole(utils.TyphosBase):
             self.kernel_shut_down.emit()
 
         client.stop_channels()
-        QtCore.QTimer.singleShot(0, cleanup)
+        if block:
+            cleanup()
+        else:
+            QtCore.QTimer.singleShot(0, cleanup)
 
     def add_device(self, device):
         # Add the device after a short delay to allow the console widget time
