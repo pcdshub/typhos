@@ -620,20 +620,17 @@ class _ConnectionStatus:
         self.lock = threading.Lock()
 
     def _connection_callback(self, *, obj, connected, **kwargs):
-        run_callback = False
         with self.lock:
             if connected and obj not in self.connected:
                 self.connected.add(obj)
-                run_callback = True
             elif not connected and obj in self.connected:
                 self.connected.remove(obj)
-                run_callback = True
+            else:
+                return
 
-        if run_callback:
-            logger.debug(
-                'Connection update: %r (obj=%s connected=%s kwargs=%r)',
-                self, obj.name, connected, kwargs)
-            self.callback(obj=obj, connected=connected, **kwargs)
+        logger.debug('Connection update: %r (obj=%s connected=%s kwargs=%r)',
+                     self, obj.name, connected, kwargs)
+        self.callback(obj=obj, connected=connected, **kwargs)
 
     def __repr__(self):
         return (
