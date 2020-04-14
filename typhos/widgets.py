@@ -1,7 +1,10 @@
+import collections
+import datetime
 import logging
 
 import qtawesome as qta
 from pyqtgraph.parametertree import parameterTypes as ptypes
+from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import Property, QObject, QSize, Qt, Signal, Slot
 from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
                             QToolBar, QVBoxLayout, QWidget)
@@ -93,6 +96,10 @@ class TyphosLineEdit(PyDMLineEdit):
     Reimplementation of PyDMLineEdit to set some custom defaults
     """
     def __init__(self, *args, **kwargs):
+        self._setpoint_history_count = 5
+        self._setpoint_history = collections.deque(
+            [],  self._setpoint_history_count)
+
         super().__init__(*args, **kwargs)
         self.showUnits = True
         self.setMinimumHeight(30)
@@ -101,6 +108,86 @@ class TyphosLineEdit(PyDMLineEdit):
 
     def sizeHint(self):
         return QSize(100, 30)
+
+    @Property(int, designable=True)
+    def setpointHistoryCount(self):
+        """
+        Number of items to show in the context menu "setpoint history"
+        """
+        return self._setpoint_history_count
+
+    @setpointHistoryCount.setter
+    def setpointHistoryCount(self, value):
+        self._setpoint_history_count = max((0, int(value)))
+        self._setpoint_history = collections.deque(
+            self._setpoint_history, self._setpoint_history_count)
+
+    def _remove_history_item_by_value(self, remove_value):
+        """
+        Remove an item from the history buffer by value
+        """
+        new_history = [(value, ts) for value, ts in self._setpoint_history
+                       if value != remove_value]
+        self._setpoint_history = collections.deque(
+            new_history, self._setpoint_history_count)
+
+    def _add_history_item(self, value, *, timestamp=None):
+        """
+        Add an item to the history buffer
+        """
+        if value in dict(self._setpoint_history):
+            # Push this value to the end of the list as most-recently used
+            self._remove_history_item_by_value(value)
+
+        self._setpoint_history.append(
+            (value, timestamp or datetime.datetime.now())
+        )
+
+    def send_value(self):
+        """
+        Update channel value while recording setpoint history
+        """
+        value = self.text().strip()
+        retval = super().send_value()
+        self._add_history_item(value)
+        return retval
+
+    def _create_history_menu(self):
+        if not self._setpoint_history:
+            return None
+
+        history_menu = QtWidgets.QMenu("&History")
+        font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
+        history_menu.setFont(font)
+
+        max_len = max(len(value)
+                      for value, timestamp in self._setpoint_history) or 1
+
+        # Pad values such that timestamp lines up:
+        # (Value)     @ (Timestamp)
+        action_format = '{value:<%d} @ {timestamp}' % max_len
+
+        for value, timestamp in reversed(self._setpoint_history):
+            timestamp = timestamp.strftime('%m/%d %H:%M')
+            action = history_menu.addAction(
+                action_format.format(value=value, timestamp=timestamp))
+
+            def history_selected(*, value=value):
+                self.setText(str(value))
+
+            action.triggered.connect(history_selected)
+
+        return history_menu
+
+    def widget_ctx_menu(self):
+        menu = super().widget_ctx_menu()
+        if self._setpoint_history_count > 0:
+            self._history_menu = self._create_history_menu()
+            if self._history_menu is not None:
+                menu.addSeparator()
+                menu.addMenu(self._history_menu)
+
+        return menu
 
     def unit_changed(self, new_unit):
         """
@@ -122,7 +209,7 @@ class TyphosLineEdit(PyDMLineEdit):
 
 class TyphosLabel(PyDMLabel):
     """
-    Reimplemtation of PyDMLabel to set some custom defaults
+    Reimplementation of PyDMLabel to set some custom defaults
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
