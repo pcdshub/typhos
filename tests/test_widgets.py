@@ -1,8 +1,9 @@
 import pytest
-import qtawesome as qta
-from qtpy.QtGui import QIcon
 from qtpy.QtWidgets import QWidget
 
+import ophyd
+import pydm
+from typhos import widgets
 from typhos.suite import SidebarParameter
 from typhos.widgets import (ImageDialogButton, QDialog, SignalDialogButton,
                             TyphosSidebarItem, WaveformDialogButton)
@@ -68,3 +69,24 @@ def test_dialog_button_instances_smoke(qtbot, button_type):
     qtbot.addWidget(button)
     widget = button.widget()
     assert widget.parent() == button
+
+
+def test_line_edit_history(qtbot, motor):
+    widget = widgets.TyphosLineEdit()
+    qtbot.addWidget(widget)
+
+    widget.channel = 'sig://' + ophyd.sim.motor.setpoint.name
+    widget.channeltype = int  # hack
+    pydm.utilities.establish_widget_connections(widget)
+
+    items = list(range(10))
+    for i in items:
+        widget.setText(str(i))
+        widget.send_value()
+
+    expected = items[-widget.setpointHistoryCount:]
+    assert list(widget.setpoint_history) == [str(s) for s in expected]
+
+    # Smoke test menu creation
+    menu = widget.widget_ctx_menu()
+    qtbot.addWidget(menu)
