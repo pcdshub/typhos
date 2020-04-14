@@ -614,7 +614,7 @@ def subscription_context_device(device, callback, event_type=None, run=True, *,
 
 class _ConnectionStatus:
     def __init__(self, signals, callback):
-        self.signals = set()
+        self.signals = signals
         self.connected = set()
         self.callback = callback
         self.lock = threading.Lock()
