@@ -59,12 +59,17 @@ class TyphosConsole(utils.TyphosBase):
         self.jupyter_widget = _make_jupyter_widget_with_kernel('python3')
         self.jupyter_widget.syntax_style = 'monokai'
         self.jupyter_widget.set_default_style(colors='Linux')
+        self.jupyter_widget.kernel_manager.kernel_restarted.connect(
+            self._handle_kernel_restart
+        )
 
         # Setup kernel readiness checks
         self._ready_lock = threading.Lock()
         self._kernel_is_ready = False
         self._pending_devices = []
         self._pending_commands = []
+
+        self._device_history = set()
 
         self._check_readiness_timer = QtCore.QTimer()
         self._check_readiness_timer.setInterval(100)
@@ -80,6 +85,8 @@ class TyphosConsole(utils.TyphosBase):
         # Ensure we shutdown the kernel
         app = QtWidgets.QApplication.instance()
         app.aboutToQuit.connect(lambda: self.shutdown(block=True))
+
+        self.device_added.connect(self._add_device_history)
 
     @property
     def kernel_is_ready(self):
@@ -183,3 +190,11 @@ class TyphosConsole(utils.TyphosBase):
                              device.name)
         else:
             self.device_added.emit(device)
+
+    def _handle_kernel_restart(self):
+        logger.debug('Kernel was restarted.')
+        for dev in self._device_history:
+            self.add_device(dev)
+
+    def _add_device_history(self, device):
+        self._device_history.add(device)
