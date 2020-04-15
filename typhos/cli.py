@@ -129,7 +129,6 @@ def create_suite(devices, cfg=None):
         suite = typhos.TyphosSuite()
         logger.info("Loading Tools ...")
         tools = dict(suite.default_tools)
-        tools.pop("StripTool")
         for name, tool in tools.items():
             suite.add_tool(name, tool())
         if devices:
