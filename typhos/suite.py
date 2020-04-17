@@ -546,7 +546,6 @@ class TyphosDeviceContainerTitle(QtWidgets.QFrame,
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.toggle_requested.emit()
-            print('title clicked', self.label.text())
 
         super().mousePressEvent(event)
 
@@ -697,12 +696,12 @@ class TyphosCompositeDisplay(TyphosBase):
             try:
                 container = containers[container_name]
             except KeyError:
-                parent_name = '.'.join(container_name.split('.')[:-1])
-                parent_container = containers[parent_name]
-
                 container = TyphosDeviceContainer(
                     title=f'{device.name}.{container_name}')
                 containers[container_name] = container
+
+                parent_name = '.'.join(container_name.split('.')[:-1])
+                parent_container = containers[parent_name]
                 parent_container.add_widget(container)
 
             if issubclass(walk.item.cls, ophyd.Device):
@@ -726,7 +725,6 @@ class TyphosCompositeDisplay(TyphosBase):
 
         self._scroll_area.setWidget(self._main_frame)
         self._scroll_area.setWidgetResizable(True)
-        print(self._main_frame.parent().objectName())
 
     @classmethod
     def from_device(cls, device, parent=None, **kwargs):
