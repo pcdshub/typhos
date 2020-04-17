@@ -5,12 +5,14 @@ from functools import partial
 
 from pyqtgraph.parametertree import ParameterTree
 from pyqtgraph.parametertree import parameterTypes as ptypes
-from qtpy import QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Qt, Signal, Slot
 from qtpy.QtWidgets import QWidget
 
+import ophyd
 import pcdsutils.qt
 
+from . import widgets
 from .display import TyphosDeviceDisplay
 from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
 from .utils import (TyphosBase, clean_name, flatten_tree, raise_to_operator,
@@ -440,3 +442,317 @@ class TyphosSuite(TyphosBase):
             parameter.sigEmbed.connect(partial(self.embed_subdisplay,
                                                parameter))
         return parameter
+
+
+class TyphosTitleFilter(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
+    """
+    Display switcher button set for use with a Typhos Device Display
+    """
+    template_selected = QtCore.Signal(object)
+
+    icons = {'embedded_screen': 'compress',
+             'detailed_screen': 'braille',
+             'engineering_screen': 'cogs'
+             }
+
+    def __init__(self, parent=None, **kwargs):
+        # Intialize background variable
+        super().__init__(parent=None)
+
+        self.device_display = None
+        self.buttons = {}
+        layout = QtWidgets.QHBoxLayout()
+        self.setLayout(layout)
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.setContextMenuPolicy(Qt.DefaultContextMenu)
+        self.contextMenuEvent = self.open_context_menu
+
+        if parent:
+            self.setParent(parent)
+
+        self._create_ui()
+
+    def _create_ui(self):
+        layout = self.layout()
+        self.buttons.clear()
+
+        from . import display
+        for template_type in display.DisplayTypes.names:
+            # icon = pydm.utilities.IconFont().icon(self.icons[template_type])
+            button = QtWidgets.QPushButton()
+            button.setFixedWidth(50)
+            self.buttons[template_type] = button
+            # button.template_selected.connect(self._template_selected)
+            layout.addWidget(button, 0, Qt.AlignRight)
+
+            friendly_name = template_type.replace('_', ' ')
+            button.setToolTip(f'Switch to {friendly_name}')
+
+    def _template_selected(self, template):
+        self.template_selected.emit(template)
+        if self.device_display is not None:
+            self.device_display.force_template = template
+
+    def set_device_display(self, display):
+        self.device_display = display
+
+        for template_type in self.buttons:
+            templates = display.templates.get(template_type, [])
+            self.buttons[template_type].templates = templates
+
+    def add_device(self, device):
+        ...
+
+
+class TyphosDeviceContainerTitle(QtWidgets.QFrame,
+                                 widgets.TyphosDesignerMixin):
+    """
+    Standardized Typhos Device Display title
+    """
+    toggle_requested = QtCore.Signal()
+
+    def __init__(self, title, *, show_filter=True, show_line=False,
+                 parent=None):
+        self._show_filter = show_filter
+        super().__init__(parent=parent)
+
+        font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.TitleFont)
+        font.setPointSizeF(14.0)
+        font.setBold(True)
+
+        self.label = QtWidgets.QLabel(title)
+        self.label.setFont(font)
+
+        self.filter = TyphosTitleFilter()
+
+        self.underline = QtWidgets.QFrame()
+        self.underline.setFrameShape(self.underline.HLine)
+        self.underline.setFrameShadow(self.underline.Plain)
+        self.underline.setLineWidth(10)
+
+        self.grid_layout = QtWidgets.QGridLayout()
+        self.grid_layout.addWidget(self.label, 0, 0)
+        self.grid_layout.addWidget(self.filter, 0, 1, Qt.AlignRight)
+        self.grid_layout.addWidget(self.underline, 1, 0, 1, 2)
+        self.grid_layout.setContentsMargins(5, 0, 1, 0)
+        self.setLayout(self.grid_layout)
+
+        # Set the property:
+        self.show_filter = show_filter
+        self.show_line = show_line
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.toggle_requested.emit()
+            print('title clicked', self.label.text())
+
+        super().mousePressEvent(event)
+
+    @QtCore.Property(bool)
+    def show_line(self):
+        return self._show_line
+
+    @show_line.setter
+    def show_line(self, value):
+        self._show_line = bool(value)
+        self.underline.setVisible(self._show_line)
+
+    @QtCore.Property(bool)
+    def show_filter(self):
+        return self._show_filter
+
+    @show_filter.setter
+    def show_filter(self, value):
+        self._show_filter = bool(value)
+        self.filter.setVisible(self._show_filter)
+
+    def add_device(self, device):
+        if not self.label.text():
+            self.label.setText(device.name)
+
+
+class TyphosDeviceContainer(QtWidgets.QFrame):
+    threshold = 5
+
+    def __init__(self, title='', parent=None):
+        super().__init__(parent=parent)
+
+        self._title = TyphosDeviceContainerTitle(title=title)
+        self._title.toggle_requested.connect(self._toggle_view)
+        self._content = QtWidgets.QFrame()
+
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().addWidget(self._title)
+        self.layout().addWidget(self._content)
+
+        self._content.setLineWidth(1)
+        self._content.setFrameShadow(QtWidgets.QFrame.Raised)
+        self._content.setFrameShape(QtWidgets.QFrame.StyledPanel)
+
+        self._content_layout = QtWidgets.QVBoxLayout()
+        # self._content_layout.
+        self._content.setLayout(self._content_layout)
+
+        if title:
+            self.setObjectName(title)
+
+        self._content.setObjectName(self.objectName() + '_content')
+        self._filter_visible = False
+        self._line_visible = False
+        # self.cls = cls
+        # self.device_display = TyphosDeviceDisplay()
+
+    def _toggle_view(self):
+        visible = not self._content.isVisible()
+        self._content.setVisible(visible)
+        if visible:
+            self._title.show_filter = self._filter_visible
+            self._title.show_line = self._line_visible
+        else:
+            self._filter_visible = self._title.show_filter
+            self._line_visible = self._title.show_line
+            self._title.show_filter = False
+            self._title.show_line = False
+
+    @property
+    def widgets(self):
+        for idx in range(self._content_layout.count()):
+            yield self._content_layout.itemAt(idx).widget()
+
+    def add_widget(self, widget):
+        self._content_layout.addWidget(widget, 0, Qt.AlignTop)
+
+    def complete_layout(self):
+        if len(list(self.widgets)) < self.threshold:
+            self._title.show_line = False
+            self._title.show_filter = False
+
+            font = self._title.label.font()
+            font.setPointSizeF(font.pointSizeF() * 0.8)
+            self._title.label.setFont(font)
+
+
+class TyphosCompositeDisplay(TyphosBase):
+    """
+    Complete Typhos Window
+
+    This contains all the necessities to load tools and devices into a Typhos
+    window.
+
+    Parameters
+    ----------
+    parent : QWidget, optional
+    """
+    default_tools = {'Log': TyphosLogDisplay,
+                     'StripTool': TyphosTimePlot,
+                     'Console': TyphosConsole}
+
+    def __init__(self, use_templates=True, parent=None):
+        super().__init__(parent=parent)
+
+        self._scroll_area = QtWidgets.QScrollArea()  # (self)
+        self._scroll_area.setAlignment(Qt.AlignTop)
+        self._scroll_area.setObjectName("content")
+        self._scroll_area.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self._scroll_area.setVerticalScrollBarPolicy(
+            Qt.ScrollBarAlwaysOn)
+        self._scroll_area.setObjectName(self.objectName() + '_scroll_area')
+
+        self._main_frame = TyphosDeviceContainer(parent=self._scroll_area)
+
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self._scroll_area)
+
+        self.use_templates = use_templates
+        self.embedded_dock = None
+
+    def add_device(self, device, children=True, category='Devices'):
+        """
+        Add a device to the ``TyphosSuite``
+
+        Parameters
+        ----------
+        device: ophyd.Device
+
+        children: bool, optional
+            Also add any ``subdevices`` of this device to the suite as well.
+
+        category: str, optional
+            Category of device. By default, all devices will just be added to
+            the "Devices" group
+        """
+        super().add_device(device)
+
+        containers = {'': self._main_frame}
+
+        self._main_frame._title.label.setText(device.name)
+
+        for walk in device.walk_components():
+            container_name = '.'.join(walk.dotted_name.split('.')[:-1])
+            try:
+                container = containers[container_name]
+            except KeyError:
+                parent_name = '.'.join(container_name.split('.')[:-1])
+                parent_container = containers[parent_name]
+
+                container = TyphosDeviceContainer(
+                    title=f'{device.name}.{container_name}')
+                containers[container_name] = container
+                parent_container.add_widget(container)
+
+            if issubclass(walk.item.cls, ophyd.Device):
+                continue
+
+            if not self.use_templates:
+                label = QtWidgets.QLabel(walk.dotted_name)
+                label.setObjectName(walk.dotted_name)
+                container.add_widget(label)
+
+        if self.use_templates:
+            for dotted_name, container in containers.items():
+                if not dotted_name:
+                    continue
+                inst = getattr(device, dotted_name)
+                disp = TyphosDeviceDisplay.from_device(inst)
+                container.add_widget(disp)
+
+        for container in containers.values():
+            container.complete_layout()
+
+        self._scroll_area.setWidget(self._main_frame)
+        self._scroll_area.setWidgetResizable(True)
+        print(self._main_frame.parent().objectName())
+
+    @classmethod
+    def from_device(cls, device, parent=None, **kwargs):
+        """
+        Create a new TyphosDeviceDisplay from an ophyd.Device
+
+        Parameters
+        ----------
+        device: ophyd.Device
+
+        children: bool, optional
+            Choice to include child Device components
+
+        parent: QWidgets
+
+        tools: dict, optional
+            Tools to load for the object. ``dict`` should be name, class pairs.
+            By default these will be ``.default_tools``, but ``None`` can be
+            passed to avoid tool loading completely.
+
+        kwargs:
+            Passed to :meth:`TyphosSuite.add_device`
+        """
+        display = cls(parent=parent)
+        display.add_device(device, **kwargs)
+        return display
+
+    def save(self):
+        ''
