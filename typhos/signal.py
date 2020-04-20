@@ -8,9 +8,10 @@ from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO, Signal
 from pydm.widgets.display_format import DisplayFormat
 
+from . import utils
 from .plugins import register_signal
 from .utils import (TyphosBase, TyphosLoading, channel_name, clean_attr,
-                    clear_layout, grab_kind, is_signal_ro)
+                    clear_layout, is_signal_ro)
 from .widgets import (ImageDialogButton, SignalDialogButton, TyphosComboBox,
                       TyphosDesignerMixin, TyphosLabel, TyphosLineEdit,
                       WaveformDialogButton)
@@ -258,6 +259,56 @@ class SignalOrder:
     byName = 1
 
 
+DEFAULT_KIND_ORDER = (Kind.hinted, Kind.normal, Kind.config, Kind.omitted)
+
+
+def _get_signal_sorter(signal_order, *, kind_order=None):
+    kind_order = kind_order or DEFAULT_KIND_ORDER
+
+    # Pick our sorting function
+    if signal_order == SignalOrder.byKind:
+        # Sort by kind
+        def sorter(x):
+            return (kind_order.index(x[1].kind), x[0])
+
+    elif signal_order == SignalOrder.byName:
+        # Sort by name
+        def sorter(x):
+            return x[0]
+    else:
+        logger.exception("Unknown sorting type %r", kind_order)
+        return []
+
+    return sorter
+
+
+def _device_signals_by_kind(device, kind):
+    """
+    Get signals from a device by kind
+
+    Parameters
+    ----------
+    device : ophyd.Device
+        The device
+    kind : ophyd.Kind
+        The kind with which to filter
+
+    Yields
+    ------
+    name : str
+        Cleaned attribute name
+    signal : ophyd.OphydObj
+        The signal itself
+    component : ophyd.Component
+        The component from which the signal was created
+    """
+    try:
+        for attr, item in utils.grab_kind(device, kind.name).items():
+            yield clean_attr(attr), item.signal, item.component
+    except Exception:
+        logger.exception("Unable to add %s signals from %r", kind.name, device)
+
+
 class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     """
     Panel of Signals for Device
@@ -326,38 +377,25 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         # We can't set a layout if we don't have any devices
         if not self.devices:
             return
-        # Clear our layout
+
         self.layout().clear()
-        shown_kind = [kind for kind in Kind if self._kinds[kind.name]]
-        # Iterate through kinds
-        signals = list()
-        device = self.devices[0]
-        for kind in shown_kind:
-            try:
-                for attr, item in grab_kind(device, kind.name).items():
+        signals = []
+        show_kinds = [kind for kind in Kind if self._kinds[kind.name]]
+
+        for device in self.devices:
+            for kind in show_kinds:
+                for label, signal, cpt in _device_signals_by_kind(
+                        device, kind):
                     # Check twice for Kind as signal might have multiple kinds
-                    if item.signal.kind in shown_kind:
-                        label = clean_attr(attr)
-                        signals.append((label, item.signal, item.component))
-            except Exception:
-                logger.exception("Unable to add %s signals from %r",
-                                 kind.name, self.devices[0])
-        # Pick our sorting function
-        if self._signal_order == SignalOrder.byKind:
 
-            # Sort by kind
-            def sorter(x):
-                return (self.kind_order.index(x[1].kind), x[0])
+                    # TODO: I think this is incorrect; as a 'hinted and normal'
+                    # signal will not show up if showHints=False and
+                    # showNormal=True
+                    if signal.kind in show_kinds:
+                        signals.append((label, signal, cpt))
 
-        elif self._signal_order == SignalOrder.byName:
-
-            # Sort by name
-            def sorter(x):
-                return x[0]
-        else:
-            logger.exception("Unknown sorting type %r", self.sortBy)
-            return
-        # Add to layout
+        sorter = _get_signal_sorter(self._signal_order,
+                                    kind_order=self.kind_order)
         for (label, signal, cpt) in sorted(set(signals), key=sorter):
             self.layout().add_signal(signal, label, tooltip=cpt.doc)
 

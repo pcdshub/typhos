@@ -1,10 +1,9 @@
 import random
 
 import numpy as np
-import pydm.utilities
 from qtpy.QtWidgets import QWidget
 
-from ophyd import Kind
+import pydm.utilities
 from ophyd.signal import Signal
 from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
                        SynSignalRO)
@@ -120,6 +119,7 @@ def test_typhos_panel(qapp, client, qtbot):
     assert len(panel.layout().signals) == num_hints
     panel.showNormal = True
     panel.showHints = False
+    print(panel.layout().signals)
     assert len(panel.layout().signals) == num_read - num_hints
     panel.showHints = True
     assert len(panel.layout().signals) == num_read
@@ -135,7 +135,7 @@ def test_typhos_panel_sorting(qapp, client, qtbot):
     panel.channel = 'happi://test_motor'
     pydm.utilities.establish_widget_connections(panel)
     sorted_names = sorted(panel.devices[0].component_names)
-    sig_layout = panel.layout().layout()
+    _ = panel.layout().layout()
     assert list(panel.layout().signals.keys()) == sorted_names
     # Sort by kind
     panel.sortBy = panel.SignalOrder.byKind
