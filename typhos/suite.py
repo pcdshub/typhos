@@ -468,30 +468,27 @@ class TyphosCompositeFrame(QtWidgets.QFrame):
 
         self._title = TyphosDeviceContainerTitle(title=name)
         self._title.toggle_requested.connect(self._toggle_view)
-        self._content = QtWidgets.QFrame()
+        self._frame = QtWidgets.QFrame()
 
+        # self._title.switcher.template_selected.connect()
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(self._title)
-        self.layout().addWidget(self._content)
-
-        self._content.setLineWidth(1)
-        self._content.setFrameShadow(QtWidgets.QFrame.Raised)
-        self._content.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.layout().addWidget(self._frame)
 
         self.signal_panel = typhos_signal.SignalPanel()
-        self._content.setLayout(self.signal_panel)
+        self._frame.setLayout(self.signal_panel)
 
         if name:
             self.setObjectName(name)
 
-        self._content.setObjectName(self.objectName() + '_content')
+        self._frame.setObjectName(self.objectName() + '_frame')
         self._switcher_visible = False
         self._line_visible = False
 
     def _toggle_view(self):
-        visible = not self._content.isVisible()
-        self._content.setVisible(visible)
+        visible = not self._frame.isVisible()
+        self._frame.setVisible(visible)
         if visible:
             self._title.show_switcher = self._switcher_visible
             self._title.show_underline = self._line_visible
@@ -506,9 +503,13 @@ class TyphosCompositeFrame(QtWidgets.QFrame):
             self._title.show_underline = False
             self._title.show_switcher = False
 
-            font = self._title.label.font()
-            font.setPointSizeF(font.pointSizeF() * 0.8)
-            self._title.label.setFont(font)
+            # font = self._title.label.font()
+            # font.setPointSizeF(font.pointSizeF() * 0.8)
+            # self._title.label.setFont(font)
+        else:
+            self._frame.setLineWidth(1)
+            self._frame.setFrameShadow(QtWidgets.QFrame.Raised)
+            self._frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
 
 
 def _get_top_level_components(device_cls):
@@ -538,7 +539,7 @@ class TyphosCompositeDisplay(TyphosBase):
 
         self._main_frame = TyphosCompositeFrame(name=name)
         if scrollable:
-            self._scroll_area = QtWidgets.QScrollArea()  # (self)
+            self._scroll_area = QtWidgets.QScrollArea()
             self._scroll_area.setAlignment(Qt.AlignTop)
             self._scroll_area.setObjectName("content")
             self._scroll_area.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -564,6 +565,19 @@ class TyphosCompositeDisplay(TyphosBase):
         self.embedded_dock = None
 
     @classmethod
+    def _get_specific_screens(cls, device_cls):
+        """
+        Get the list of specific screens for a given device class
+
+        That is, screens that are not default Typhos-provided screens
+        """
+        return [
+            template for template in utils.find_templates_for_class(
+                device_cls, 'detailed', utils.DISPLAY_PATHS)
+            if not utils.is_standard_template(template)
+        ]
+
+    @classmethod
     def suggest_display_class(cls, device_cls):
         """
         Which display should be used for a given :class:`ophyd.Device` class?
@@ -578,13 +592,7 @@ class TyphosCompositeDisplay(TyphosBase):
             num_devices += issubclass(component.cls, ophyd.Device)
             num_signals += issubclass(component.cls, ophyd.Signal)
 
-        specific_screens = list(
-            template.name
-            for template in utils.find_templates_for_class(
-                device_cls, 'detailed', paths=utils.DISPLAY_PATHS)
-            if not utils.is_standard_template(template)
-        )
-
+        specific_screens = cls._get_specific_screens(device_cls)
         if (len(specific_screens) or
                 (num_devices <= cls.device_count_threshold and
                  num_signals >= cls.signal_count_threshold)):
@@ -620,7 +628,9 @@ class TyphosCompositeDisplay(TyphosBase):
         for attr, component in _get_top_level_components(type(device)):
             dotted_name = f'{device.name}.{attr}'
             obj = getattr(device, attr)
-            if issubclass(component.cls, ophyd.Device):
+            if not issubclass(component.cls, ophyd.Device):
+                self._signal_panel.add_signal(obj, name=dotted_name)
+            else:
                 display_cls = self.suggest_display_class(component.cls)
 
                 if issubclass(display_cls, TyphosCompositeDisplay):
@@ -632,11 +642,6 @@ class TyphosCompositeDisplay(TyphosBase):
                 self._containers[dotted_name] = container
                 self._signal_panel.add_row(container)
                 container.add_device(obj)
-
-                # disp = TyphosDeviceDisplay.from_device(inst)
-                # container.add_widget(disp)
-            else:
-                self._signal_panel.add_signal(obj, name=dotted_name)
 
         for dotted_name, container in self._containers.items():
             if hasattr(container, '_finish_layout'):
