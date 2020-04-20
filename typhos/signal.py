@@ -130,6 +130,13 @@ class SignalPanel(QtWidgets.QGridLayout):
             for name, sig in signals.items():
                 self.add_signal(sig, name)
 
+    @property
+    def row_count(self):
+        """
+        The number of filled-in rows
+        """
+        return self._row_count
+
     def _add_devices_cb(self, name, row, signal):
         # Create the read-only signal
         read = create_signal_widget(signal, read_only=True)
@@ -235,11 +242,19 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         row = self._row_count
         self._row_count += 1
-        for col, item in enumerate(widgets):
+
+        if len(widgets) == 1:
+            item, = widgets
             if isinstance(item, QtWidgets.QLayout):
-                self.addLayout(item, row, col, **kwargs)
+                self.addLayout(item, row, 0, 1, 2, **kwargs)
             else:
-                self.addWidget(item, row, col, **kwargs)
+                self.addWidget(item, row, 0, 1, 2, **kwargs)
+        else:
+            for col, item in enumerate(widgets):
+                if isinstance(item, QtWidgets.QLayout):
+                    self.addLayout(item, row, col, **kwargs)
+                else:
+                    self.addWidget(item, row, col, **kwargs)
 
         return row
 

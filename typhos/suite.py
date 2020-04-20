@@ -12,7 +12,8 @@ from qtpy.QtWidgets import QWidget
 import ophyd
 import pcdsutils.qt
 
-from . import widgets
+from . import signal as signal_mod
+from . import utils, widgets
 from .display import TyphosDeviceDisplay
 from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
 from .utils import (TyphosBase, clean_name, flatten_tree, raise_to_operator,
@@ -575,10 +576,10 @@ class TyphosDeviceContainerTitle(QtWidgets.QFrame,
 class TyphosDeviceContainer(QtWidgets.QFrame):
     threshold = 5
 
-    def __init__(self, title='', parent=None):
+    def __init__(self, name='', parent=None):
         super().__init__(parent=parent)
 
-        self._title = TyphosDeviceContainerTitle(title=title)
+        self._title = TyphosDeviceContainerTitle(title=name)
         self._title.toggle_requested.connect(self._toggle_view)
         self._content = QtWidgets.QFrame()
 
@@ -591,12 +592,11 @@ class TyphosDeviceContainer(QtWidgets.QFrame):
         self._content.setFrameShadow(QtWidgets.QFrame.Raised)
         self._content.setFrameShape(QtWidgets.QFrame.StyledPanel)
 
-        self._content_layout = QtWidgets.QVBoxLayout()
-        # self._content_layout.
-        self._content.setLayout(self._content_layout)
+        self.signal_panel = signal_mod.SignalPanel()
+        self._content.setLayout(self.signal_panel)
 
-        if title:
-            self.setObjectName(title)
+        if name:
+            self.setObjectName(name)
 
         self._content.setObjectName(self.objectName() + '_content')
         self._filter_visible = False
@@ -616,22 +616,21 @@ class TyphosDeviceContainer(QtWidgets.QFrame):
             self._title.show_filter = False
             self._title.show_line = False
 
-    @property
-    def widgets(self):
-        for idx in range(self._content_layout.count()):
-            yield self._content_layout.itemAt(idx).widget()
-
-    def add_widget(self, widget):
-        self._content_layout.addWidget(widget, 0, Qt.AlignTop)
-
     def complete_layout(self):
-        if len(list(self.widgets)) < self.threshold:
+        if self.signal_panel.row_count < self.threshold:
             self._title.show_line = False
             self._title.show_filter = False
 
             font = self._title.label.font()
             font.setPointSizeF(font.pointSizeF() * 0.8)
             self._title.label.setFont(font)
+
+
+def _get_top_level_components(device_cls):
+    """
+    Get all top-level components from a device class
+    """
+    return list(device_cls._sig_attrs.items())
 
 
 class TyphosCompositeDisplay(TyphosBase):
@@ -643,82 +642,126 @@ class TyphosCompositeDisplay(TyphosBase):
     parent : QWidget, optional
     """
 
-    def __init__(self, use_templates=True, parent=None):
+    device_count_threshold = 2
+    signal_count_threshold = 20
+
+    def __init__(self, parent=None, *, use_templates=False, scrollable=True,
+                 name=''):
         super().__init__(parent=parent)
 
-        self._scroll_area = QtWidgets.QScrollArea()  # (self)
-        self._scroll_area.setAlignment(Qt.AlignTop)
-        self._scroll_area.setObjectName("content")
-        self._scroll_area.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self._scroll_area.setVerticalScrollBarPolicy(
-            Qt.ScrollBarAlwaysOn)
-        self._scroll_area.setObjectName(self.objectName() + '_scroll_area')
+        self._scroll_area = None
 
-        self._main_frame = TyphosDeviceContainer(parent=self._scroll_area)
+        self._main_frame = TyphosDeviceContainer(name=name)
+        if scrollable:
+            self._scroll_area = QtWidgets.QScrollArea()  # (self)
+            self._scroll_area.setAlignment(Qt.AlignTop)
+            self._scroll_area.setObjectName("content")
+            self._scroll_area.setFrameShape(QtWidgets.QFrame.StyledPanel)
+            self._scroll_area.setVerticalScrollBarPolicy(
+                Qt.ScrollBarAlwaysOn)
+            self._scroll_area.setObjectName(self.objectName() + '_scroll_area')
+
+            self._main_frame.setParent(self._scroll_area)
+
+        self._signal_panel = self._main_frame.signal_panel
+        self._containers = {}
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self._scroll_area)
+
+        if self._scroll_area:
+            layout.addWidget(self._scroll_area)
+        else:
+            layout.addWidget(self._main_frame)
 
         self.use_templates = use_templates
         self.embedded_dock = None
 
-    def add_device(self, device, children=True, category='Devices'):
+    @classmethod
+    def suggest_display_class(cls, device_cls):
         """
-        Add a device to the ``TyphosSuite``
+        Which display should be used for a given :class:`ophyd.Device` class?
+
+        Returns
+        -------
+        cls : {TyphosDeviceDisplay, TyphosCompositeDisplay}
+        """
+        num_devices = 0
+        num_signals = 0
+        for attr, component in _get_top_level_components(device_cls):
+            num_devices += issubclass(component.cls, ophyd.Device)
+            num_signals += issubclass(component.cls, ophyd.Signal)
+
+        specific_screens = list(
+            template.name
+            for template in utils.find_templates_for_class(
+                device_cls, 'detailed', paths=utils.DISPLAY_PATHS)
+            if not utils.is_standard_template(template)
+        )
+
+        if (len(specific_screens) or
+                (num_devices <= cls.device_count_threshold and
+                 num_signals >= cls.signal_count_threshold)):
+            # 1. There's a custom screen - we probably should use them
+            # 2. There aren't many devices, so the composite display isn't
+            #    useful
+            # 3. There are many signals, which should be broken up somehow
+            display_class = TyphosDeviceDisplay
+        else:
+            # 1. No custom screen, or
+            # 2. Many devices or a relatively small number of signals
+            display_class = TyphosCompositeDisplay
+
+        logger.debug(
+            '%s screens=%s num_signals=%d num_devices=%d -> suggest %s',
+            device_cls, specific_screens, num_signals, num_devices,
+            display_class
+        )
+        return display_class
+
+    def add_device(self, device):
+        """
+        Add a device to the ``TyphosCompositeDisplay``
 
         Parameters
         ----------
-        device: ophyd.Device
-
-        children: bool, optional
-            Also add any ``subdevices`` of this device to the suite as well.
-
-        category: str, optional
-            Category of device. By default, all devices will just be added to
-            the "Devices" group
+        device : ophyd.Device
         """
         super().add_device(device)
 
-        containers = {'': self._main_frame}
-
         self._main_frame._title.label.setText(device.name)
 
-        for walk in device.walk_components():
-            container_name = '.'.join(walk.dotted_name.split('.')[:-1])
-            try:
-                container = containers[container_name]
-            except KeyError:
-                container = TyphosDeviceContainer(
-                    title=f'{device.name}.{container_name}')
-                containers[container_name] = container
+        for attr, component in _get_top_level_components(type(device)):
+            dotted_name = f'{device.name}.{attr}'
+            obj = getattr(device, attr)
+            if issubclass(component.cls, ophyd.Device):
+                display_cls = self.suggest_display_class(component.cls)
 
-                parent_name = '.'.join(container_name.split('.')[:-1])
-                parent_container = containers[parent_name]
-                parent_container.add_widget(container)
+                if issubclass(display_cls, TyphosCompositeDisplay):
+                    kwargs = dict(scrollable=False)
+                else:
+                    kwargs = dict()
 
-            if issubclass(walk.item.cls, ophyd.Device):
-                continue
+                container = display_cls(name=dotted_name, **kwargs)
+                self._containers[dotted_name] = container
+                self._signal_panel.add_row(container)
+                container.add_device(obj)
 
-            if not self.use_templates:
-                label = QtWidgets.QLabel(walk.dotted_name)
-                label.setObjectName(walk.dotted_name)
-                container.add_widget(label)
+                # disp = TyphosDeviceDisplay.from_device(inst)
+                # container.add_widget(disp)
+            else:
+                self._signal_panel.add_signal(obj, name=dotted_name)
 
-        if self.use_templates:
-            for dotted_name, container in containers.items():
-                if not dotted_name:
-                    continue
-                inst = getattr(device, dotted_name)
-                disp = TyphosDeviceDisplay.from_device(inst)
-                container.add_widget(disp)
+        # for container in containers.values():
+        #     container.complete_layout()
 
-        for container in containers.values():
-            container.complete_layout()
+        self._finish_layout()
 
-        self._scroll_area.setWidget(self._main_frame)
-        self._scroll_area.setWidgetResizable(True)
+    def _finish_layout(self):
+        if self._scroll_area:
+            self._scroll_area.setWidget(self._main_frame)
+            self._scroll_area.setWidgetResizable(True)
 
     @classmethod
     def from_device(cls, device, parent=None, **kwargs):

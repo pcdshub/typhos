@@ -449,6 +449,18 @@ def remove_duplicate_items(list_):
     return cls(sorted(set(list_), key=list_.index))
 
 
+def is_standard_template(template):
+    """
+    Is the template one provided with typhos?
+
+    Parameters
+    ----------
+    template : str or pathlib.Path
+    """
+    common_path = pathlib.Path(os.path.commonpath((template, MODULE_PATH)))
+    return common_path == MODULE_PATH
+
+
 def find_templates_for_class(cls, view_type, paths, *, extensions=None,
                              include_mro=True):
     '''
