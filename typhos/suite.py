@@ -460,7 +460,7 @@ class TyphosDeviceContainerTitle(typhos_display.TyphosDisplayTitle,
         super().mousePressEvent(event)
 
 
-class TyphosDeviceContainer(QtWidgets.QFrame):
+class TyphosCompositeFrame(QtWidgets.QFrame):
     threshold = 5
 
     def __init__(self, name='', parent=None):
@@ -486,27 +486,25 @@ class TyphosDeviceContainer(QtWidgets.QFrame):
             self.setObjectName(name)
 
         self._content.setObjectName(self.objectName() + '_content')
-        self._filter_visible = False
+        self._switcher_visible = False
         self._line_visible = False
-        # self.cls = cls
-        # self.device_display = TyphosDeviceDisplay()
 
     def _toggle_view(self):
         visible = not self._content.isVisible()
         self._content.setVisible(visible)
         if visible:
-            self._title.show_filter = self._filter_visible
-            self._title.show_line = self._line_visible
+            self._title.show_switcher = self._switcher_visible
+            self._title.show_underline = self._line_visible
         else:
-            self._filter_visible = self._title.show_filter
-            self._line_visible = self._title.show_line
-            self._title.show_filter = False
-            self._title.show_line = False
+            self._switcher_visible = self._title.show_switcher
+            self._line_visible = self._title.show_underline
+            self._title.show_switcher = False
+            self._title.show_underline = False
 
-    def complete_layout(self):
+    def _finish_layout(self):
         if self.signal_panel.row_count < self.threshold:
-            self._title.show_line = False
-            self._title.show_filter = False
+            self._title.show_underline = False
+            self._title.show_switcher = False
 
             font = self._title.label.font()
             font.setPointSizeF(font.pointSizeF() * 0.8)
@@ -538,7 +536,7 @@ class TyphosCompositeDisplay(TyphosBase):
 
         self._scroll_area = None
 
-        self._main_frame = TyphosDeviceContainer(name=name)
+        self._main_frame = TyphosCompositeFrame(name=name)
         if scrollable:
             self._scroll_area = QtWidgets.QScrollArea()  # (self)
             self._scroll_area.setAlignment(Qt.AlignTop)
@@ -640,8 +638,9 @@ class TyphosCompositeDisplay(TyphosBase):
             else:
                 self._signal_panel.add_signal(obj, name=dotted_name)
 
-        # for container in containers.values():
-        #     container.complete_layout()
+        for dotted_name, container in self._containers.items():
+            if hasattr(container, '_finish_layout'):
+                container._finish_layout()
 
         self._finish_layout()
 
@@ -649,6 +648,7 @@ class TyphosCompositeDisplay(TyphosBase):
         if self._scroll_area:
             self._scroll_area.setWidget(self._main_frame)
             self._scroll_area.setWidgetResizable(True)
+        self._main_frame._finish_layout()
 
     @classmethod
     def from_device(cls, device, parent=None, **kwargs):
