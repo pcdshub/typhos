@@ -636,18 +636,12 @@ class TyphosDeviceContainer(QtWidgets.QFrame):
 
 class TyphosCompositeDisplay(TyphosBase):
     """
-    Complete Typhos Window
-
-    This contains all the necessities to load tools and devices into a Typhos
-    window.
+    Tree-like widget showing a full ophyd Device, with sub-devices
 
     Parameters
     ----------
     parent : QWidget, optional
     """
-    default_tools = {'Log': TyphosLogDisplay,
-                     'StripTool': TyphosTimePlot,
-                     'Console': TyphosConsole}
 
     def __init__(self, use_templates=True, parent=None):
         super().__init__(parent=parent)
@@ -734,19 +728,11 @@ class TyphosCompositeDisplay(TyphosBase):
         Parameters
         ----------
         device: ophyd.Device
-
-        children: bool, optional
-            Choice to include child Device components
-
-        parent: QWidgets
-
-        tools: dict, optional
-            Tools to load for the object. ``dict`` should be name, class pairs.
-            By default these will be ``.default_tools``, but ``None`` can be
-            passed to avoid tool loading completely.
-
-        kwargs:
-            Passed to :meth:`TyphosSuite.add_device`
+            The device
+        parent: QtWidgets.QWidget
+            The parent widget
+        **kwargs
+            Passed to :meth:`TyphosCompositeDisplay.add_device`
         """
         display = cls(parent=parent)
         display.add_device(device, **kwargs)

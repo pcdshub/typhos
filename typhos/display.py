@@ -3,8 +3,8 @@ import logging
 import os.path
 import pathlib
 
-from qtpy import QtWidgets, QtCore, QtGui
-from qtpy.QtCore import Q_ENUMS, Property, Slot, Qt
+from qtpy import QtCore, QtGui, QtWidgets
+from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
 
 import pcdsutils
 import pcdsutils.qt
@@ -12,8 +12,7 @@ import pydm.display
 import pydm.exception
 import pydm.utilities
 
-from . import utils
-from . import widgets
+from . import utils, widgets
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +31,10 @@ DEFAULT_TEMPLATES = {
     name: [(utils.ui_dir / f'{name}.ui').resolve()]
     for name in DisplayTypes.names
 }
+
+DEFAULT_TEMPLATES['detailed_screen'].append(
+    (utils.ui_dir / f'detailed_tree.ui').resolve()
+)
 
 
 def normalize_display_type(display_type):
