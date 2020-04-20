@@ -729,13 +729,29 @@ def subscription_context_device(device, callback, event_type=None, run=True, *,
 
 class _ConnectionStatus:
     def __init__(self, signals, callback):
-        self.signals = signals
+        self.signals = list(signals)
         self.connected = set()
         self.callback = callback
         self.lock = threading.Lock()
+        # NOTE: this will be set externally
+        self.obj_to_cid = {}
+
+    def remove_signal(self, signal):
+        'Remove a signal from being monitored - no more callbacks'
+        with self.lock:
+            self.signals.remove(signal)
+            if signal in self.connected:
+                self.connected.remove(signal)
+
+            cid = self.obj_to_cid.pop(signal)
+            signal.unsubscribe(cid)
 
     def _connection_callback(self, *, obj, connected, **kwargs):
         with self.lock:
+            if obj not in self.obj_to_cid:
+                # May have been removed
+                return
+
             if connected and obj not in self.connected:
                 self.connected.add(obj)
             elif not connected and obj in self.connected:
