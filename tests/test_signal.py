@@ -8,7 +8,7 @@ from ophyd.signal import Signal
 from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
                        SynSignalRO)
 from pydm.widgets import PyDMEnumComboBox
-from typhos.signal import SignalPanel, TyphosSignalPanel, signal_widget
+from typhos.signal import SignalPanel, TyphosSignalPanel, create_signal_widget
 from typhos.widgets import ImageDialogButton, WaveformDialogButton
 
 from .conftest import DeadSignal, RichSignal, show_widget
@@ -148,7 +148,7 @@ def test_typhos_panel_sorting(qapp, client, qtbot):
 @show_widget
 def test_signal_widget_waveform(qtbot):
     signal = Signal(name='test_wave', value=np.zeros((4, )))
-    widget = signal_widget(signal)
+    widget = create_signal_widget(signal)
     qtbot.addWidget(widget)
     assert isinstance(widget, WaveformDialogButton)
     return widget
@@ -157,7 +157,7 @@ def test_signal_widget_waveform(qtbot):
 @show_widget
 def test_signal_widget_image(qtbot):
     signal = Signal(name='test_img', value=np.zeros((400, 540)))
-    widget = signal_widget(signal)
+    widget = create_signal_widget(signal)
     qtbot.addWidget(widget)
     assert isinstance(widget, ImageDialogButton)
     return widget

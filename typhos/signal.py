@@ -19,7 +19,7 @@ from .widgets import (ImageDialogButton, SignalDialogButton, TyphosComboBox,
 logger = logging.getLogger(__name__)
 
 
-def signal_widget(signal, read_only=False, tooltip=None):
+def create_signal_widget(signal, read_only=False, tooltip=None):
     """
     Factory for creating a PyDMWidget from a signal
 
@@ -106,6 +106,10 @@ def signal_widget(signal, read_only=False, tooltip=None):
     return widget_instance
 
 
+# Backward-compatibility (TODO deprecate)
+signal_widget = create_signal_widget
+
+
 class SignalPanel(QGridLayout):
     """
     Base panel display for EPICS signals
@@ -127,11 +131,11 @@ class SignalPanel(QGridLayout):
 
     def _add_devices_cb(self, name, index, signal):
         # Create the read-only signal
-        read = signal_widget(signal, read_only=True)
+        read = create_signal_widget(signal, read_only=True)
         # Create the write signal
         if (not is_signal_ro(signal) and not isinstance(read,
                                                         SignalDialogButton)):
-            write = signal_widget(signal)
+            write = create_signal_widget(signal)
         else:
             write = None
 
