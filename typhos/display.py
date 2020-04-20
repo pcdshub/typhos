@@ -61,6 +61,10 @@ class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
         self.setMinimumSize(32, 32)
 
     def _select_first_template(self):
+        if self.templates is None:
+            logger.warning('set_device_display not called on %s', self)
+            return
+
         try:
             template = self.templates[0]
         except IndexError:
@@ -83,7 +87,8 @@ class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
 
     def open_context_menu(self, ev):
         menu = self.generate_context_menu()
-        menu.exec_(self.mapToGlobal(ev.pos()))
+        if menu:
+            menu.exec_(self.mapToGlobal(ev.pos()))
 
 
 class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
