@@ -155,7 +155,9 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     """
     Standardized Typhos Device Display title
     """
-    def __init__(self, title='${name}', *, show_switcher=True, parent=None):
+    def __init__(self, title='${name}', *, show_switcher=True,
+                 show_underline=True, parent=None):
+        self._show_underline = show_underline
         self._show_switcher = show_switcher
         super().__init__(parent=parent)
 
@@ -181,6 +183,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
         # Set the property:
         self.show_switcher = show_switcher
+        self.show_underline = show_underline
 
     @Property(bool)
     def show_switcher(self):
@@ -194,6 +197,15 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     def add_device(self, device):
         if not self.label.text():
             self.label.setText(device.name)
+
+    @QtCore.Property(bool)
+    def show_underline(self):
+        return self._show_underline
+
+    @show_underline.setter
+    def show_underline(self, value):
+        self._show_underline = bool(value)
+        self.underline.setVisible(self._show_underline)
 
     # Make designable properties from the title label available here as well
     locals().update(**pcdsutils.qt.forward_properties(
