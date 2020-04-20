@@ -1,8 +1,8 @@
 import logging
 from functools import partial
 
+from qtpy import QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property, QSize, QTimer
-from qtpy.QtWidgets import QGridLayout, QHBoxLayout, QLabel
 
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO, Signal
@@ -110,7 +110,7 @@ def create_signal_widget(signal, read_only=False, tooltip=None):
 signal_widget = create_signal_widget
 
 
-class SignalPanel(QGridLayout):
+class SignalPanel(QtWidgets.QGridLayout):
     """
     Base panel display for EPICS signals
 
@@ -124,12 +124,13 @@ class SignalPanel(QGridLayout):
         super().__init__()
         # Store signal information
         self.signals = dict()
+        self._row_count = 0
         # Add supplied signals
         if signals:
             for name, sig in signals.items():
                 self.add_signal(sig, name)
 
-    def _add_devices_cb(self, name, index, signal):
+    def _add_devices_cb(self, name, row, signal):
         # Create the read-only signal
         read = create_signal_widget(signal, read_only=True)
         # Create the write signal
@@ -140,7 +141,7 @@ class SignalPanel(QGridLayout):
             write = None
 
         # Add readback
-        val_display = self.itemAtPosition(index, 1)
+        val_display = self.itemAtPosition(row, 1)
         loading_widget = val_display.itemAt(0).widget()
         if isinstance(loading_widget, TyphosLoading):
             val_display.removeWidget(loading_widget)
@@ -173,7 +174,7 @@ class SignalPanel(QGridLayout):
 
         Returns
         -------
-        loc : int
+        row : int
             Row number that the signal information was added to in the
             `SignalPanel.layout()``
         """
@@ -191,7 +192,7 @@ class SignalPanel(QGridLayout):
 
                 # Maybe a HACK to get the _add_devices_cb to happen at the
                 # main thread.
-                method = partial(self._add_devices_cb, name, loc, signal)
+                method = partial(self._add_devices_cb, name, row, signal)
                 QTimer.singleShot(0, method)
 
         logger.debug("Adding signal %s", name)
@@ -199,29 +200,48 @@ class SignalPanel(QGridLayout):
         # Add to the layout
 
         # Create label
-        label = QLabel()
+        label = QtWidgets.QLabel()
         label.setText(name)
         if tooltip is not None:
             label.setToolTip(tooltip)
-        # Create signal display
-        val_display = QHBoxLayout()
 
-        # Add displays to panel
-        loc = len(self.signals)
-
+        val_display = QtWidgets.QHBoxLayout()
         val_display.addWidget(TyphosLoading())
+        row = self.add_row(label, val_display)
 
-        self.addWidget(label, loc, 0)
-        self.addLayout(val_display, loc, 1)
         # Store signal
         self.signals[name] = (None, None)
 
         if signal.connected:
-            self._add_devices_cb(name, loc, signal)
+            self._add_devices_cb(name, row, signal)
         else:
             signal.subscribe(_device_meta_cb, Signal.SUB_META, run=True)
 
-        return loc
+        return row
+
+    def add_row(self, *widgets, **kwargs):
+        """
+        Add ``widgets`` to the next row
+
+        Parameters
+        ----------
+        *widgets
+            List of :class:`QtWidgets.QWidget` or :class:`QtWidgets.QLayout`.
+
+        Returns
+        -------
+        row : int
+            The row number
+        """
+        row = self._row_count
+        self._row_count += 1
+        for col, item in enumerate(widgets):
+            if isinstance(item, QtWidgets.QLayout):
+                self.addLayout(item, row, col, **kwargs)
+            else:
+                self.addWidget(item, row, col, **kwargs)
+
+        return row
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
@@ -238,7 +258,7 @@ class SignalPanel(QGridLayout):
 
         Returns
         -------
-        loc : int
+        row : int
             Row number that the signal information was added to in the
             `SignalPanel.layout()``
         """
