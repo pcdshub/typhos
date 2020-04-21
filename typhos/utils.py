@@ -856,3 +856,10 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
             while not self.isInterruptionRequested():
                 self._update_event.clear()
                 self._update_event.wait(timeout=0.5)
+
+
+def _get_top_level_components(device_cls):
+    """
+    Get all top-level components from a device class
+    """
+    return list(device_cls._sig_attrs.items())

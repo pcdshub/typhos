@@ -6,6 +6,7 @@ import pathlib
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
 
+import ophyd
 import pcdsutils
 import pcdsutils.qt
 import pydm.display
@@ -32,9 +33,8 @@ DEFAULT_TEMPLATES = {
     for name in DisplayTypes.names
 }
 
-DEFAULT_TEMPLATES['detailed_screen'].append(
-    (utils.ui_dir / f'detailed_tree.ui').resolve()
-)
+DETAILED_TREE_TEMPLATE = (utils.ui_dir / f'detailed_tree.ui').resolve()
+DEFAULT_TEMPLATES['detailed_screen'].append(DETAILED_TREE_TEMPLATE)
 
 
 def normalize_display_type(display_type):
@@ -275,15 +275,20 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     Q_ENUMS(_DisplayTypes)
     TemplateEnum = DisplayTypes  # For convenience
 
-    def __init__(self, parent=None, *, embedded_templates=None,
+    device_count_threshold = 0
+    signal_count_threshold = 30
+
+    def __init__(self, parent=None, *, scrollable=True,
+                 composite_heuristics=True, embedded_templates=None,
                  detailed_templates=None, engineering_templates=None,
-                 display_type='detailed_screen',
-                 **kwargs):
-        # Intialize background variable
+                 display_type='detailed_screen', **kwargs):
+
+        self._composite_heuristics = composite_heuristics
         self._current_template = None
         self._forced_template = ''
-        self._macros = dict()
-        self._main_widget = None
+        self._macros = {}
+        self._display_widget = None
+        self._scrollable = False
         self._searched = False
 
         self.templates = {name: [] for name in DisplayTypes.names}
@@ -298,7 +303,12 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             paths = [pathlib.Path(p).expanduser().resolve() for p in path_list]
             self.templates[view].extend(paths)
 
-        # Set this to None first so we don't render
+        self._scroll_area = QtWidgets.QScrollArea()
+        self._scroll_area.setAlignment(Qt.AlignTop)
+        # self._scroll_area.setObjectName(self.objectName() + '_scroll_area')
+        self._scroll_area.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self._scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+
         super().__init__(parent=parent)
 
         layout = QtWidgets.QHBoxLayout()
@@ -307,6 +317,44 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
+        self.scrollable = scrollable
+
+    @Property(bool)
+    def composite_heuristics(self):
+        """Allow composite screen to be chosen by heuristics?"""
+        return self._composite_heuristics
+
+    @composite_heuristics.setter
+    def composite_heuristics(self, composite_heuristics):
+        # Switch between using the scroll area layout or
+        self._composite_heuristics = bool(composite_heuristics)
+
+    @Property(bool)
+    def scrollable(self):
+        """..."""
+        return self._scrollable
+
+    @scrollable.setter
+    def scrollable(self, scrollable):
+        # Switch between using the scroll area layout or
+        if scrollable == self._scrollable:
+            return
+
+        self._scrollable = bool(scrollable)
+        self._move_display_to_layout(self._display_widget)
+
+    def _move_display_to_layout(self, widget):
+        if not widget:
+            return
+
+        widget.setParent(None)
+        if self._scrollable:
+            self._scroll_area.setWidget(widget)
+            self._scroll_area.setWidgetResizable(True)
+        else:
+            self.layout().addWidget(widget)
+
+        self._scroll_area.setVisible(self._scrollable)
 
     def generate_context_menu(self):
         """
@@ -414,6 +462,17 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         logger.warning("No templates available for display type: %s",
                        self._display_type)
 
+    def _clear_layout(self):
+        """
+        Clear the layout in preparation for another template setting
+        """
+        # Clear anything that exists in the current layout
+        layout = self.layout()
+        layout.removeWidget(self._scroll_area)
+        utils.clear_layout(layout)
+        self._scroll_area.takeWidget()
+        layout.addWidget(self._scroll_area)
+
     def load_best_template(self):
         """
         Load a new template
@@ -428,20 +487,17 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if not self._searched:
             self.search_for_templates()
 
-        # Clear anything that exists in the current layout
-        if self._main_widget:
-            logger.debug("Clearing existing layout ...")
-            utils.clear_layout(self.layout())
+        self._clear_layout()
 
         template = (self._forced_template or
                     self.get_best_template(self._display_type, self.macros))
 
         if not template:
-            self._main_widget = QtWidgets.QWidget()
-            self._current_template = None
+            widget = QtWidgets.QWidget()
+            template = None
         else:
             try:
-                self._load_template(template)
+                widget = self._load_template(template)
             except Exception as ex:
                 logger.exception("Unable to load file %r", template)
                 # If we have a previously defined template
@@ -450,10 +506,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                     self._load_template(self._current_template)
                     pydm.exception.raise_to_operator(ex)
                 else:
-                    self._main_widget = QtWidgets.QWidget()
-                    self._current_template = None
+                    widget = QtWidgets.QWidget()
+                    template = None
 
-        self.layout().addWidget(self._main_widget)
+        self._display_widget = widget
+        self._current_template = template
+        self._update_children()
+        self._move_display_to_layout(self._display_widget)
+
         utils.reload_widget_stylesheet(self)
 
     @staticmethod
@@ -479,16 +539,23 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         return ret
 
     def _load_template(self, filename):
+        """
+        Load template from file and return the widget
+        """
         loader = (pydm.display.load_py_file if filename.suffix == '.py'
                   else pydm.display.load_ui_file)
 
         logger.debug('Load template using %s: %r', loader.__name__, filename)
-        self._main_widget = main = loader(str(filename), macros=self._macros)
+        return loader(str(filename), macros=self._macros)
 
-        # Notify child widgets of: this device dispay + the device
+    def _update_children(self):
+        """
+        Notify child widgets of this device display + the device
+        """
         device = self.device
-        designer = main.findChildren(widgets.TyphosDesignerMixin) or []
-        bases = main.findChildren(utils.TyphosBase) or []
+        display = self._display_widget
+        designer = display.findChildren(widgets.TyphosDesignerMixin) or []
+        bases = display.findChildren(utils.TyphosBase) or []
 
         for widget in set(bases + designer):
             if device and hasattr(widget, 'add_device'):
@@ -496,8 +563,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
             if hasattr(widget, 'set_device_display'):
                 widget.set_device_display(self)
-
-        self._current_template = filename
 
     @Property(str)
     def force_template(self):
@@ -585,7 +650,12 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 logger.debug('Adding macro template %s: %s (total=%d)',
                              display_type, template, len(template_list))
 
-            # 2. Templates based on class hierarchy names
+            # 2. Composite heuristics, if enabled
+            if self._composite_heuristics and view == 'detailed':
+                if self.suggest_composite_screen(cls):
+                    template_list.append(DETAILED_TREE_TEMPLATE)
+
+            # 3. Templates based on class hierarchy names
             filenames = utils.find_templates_for_class(
                 cls, view, utils.DISPLAY_PATHS)
             for filename in filenames:
@@ -594,11 +664,47 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                     logger.debug('Found new template %s: %s (total=%d)',
                                  display_type, filename, len(template_list))
 
-            # 3. Default templates
+            # 4. Default templates
             template_list.extend(
                 [templ for templ in DEFAULT_TEMPLATES[display_type]
                  if templ not in template_list]
             )
+
+    @classmethod
+    def suggest_composite_screen(cls, device_cls):
+        """
+        Should the composite screen be suggested for the given class?
+
+        Returns
+        -------
+        composite : bool
+            If True, favor the composite screen
+        """
+        num_devices = 0
+        num_signals = 0
+        for attr, component in utils._get_top_level_components(device_cls):
+            num_devices += issubclass(component.cls, ophyd.Device)
+            num_signals += issubclass(component.cls, ophyd.Signal)
+
+        specific_screens = cls._get_specific_screens(device_cls)
+        if (len(specific_screens) or
+                (num_devices <= cls.device_count_threshold and
+                 num_signals >= cls.signal_count_threshold)):
+            # 1. There's a custom screen - we probably should use them
+            # 2. There aren't many devices, so the composite display isn't
+            #    useful
+            # 3. There are many signals, which should be broken up somehow
+            composite = False
+        else:
+            # 1. No custom screen, or
+            # 2. Many devices or a relatively small number of signals
+            composite = True
+
+        logger.debug(
+            '%s screens=%s num_signals=%d num_devices=%d -> composite=%s',
+            device_cls, specific_screens, num_signals, num_devices, composite
+        )
+        return composite
 
     @classmethod
     def from_device(cls, device, template=None, macros=None):
@@ -655,6 +761,19 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             return None
 
         return cls.from_device(obj, template=template, macros=macros)
+
+    @classmethod
+    def _get_specific_screens(cls, device_cls):
+        """
+        Get the list of specific screens for a given device class
+
+        That is, screens that are not default Typhos-provided screens
+        """
+        return [
+            template for template in utils.find_templates_for_class(
+                device_cls, 'detailed', utils.DISPLAY_PATHS)
+            if not utils.is_standard_template(template)
+        ]
 
     @Slot(object)
     def _tx(self, value):

@@ -31,13 +31,13 @@
     </widget>
    </item>
    <item>
-    <widget class="TyphosCompositeDisplay" name="read_panel">
+    <widget class="TyphosCompositeSignalPanel" name="signal_panel">
      <property name="toolTip">
       <string/>
      </property>
      <property name="whatsThis">
       <string>
-    Panel of Signals for Device
+    Panel of Signals + Sub-Devices for Device
     </string>
      </property>
     </widget>
@@ -46,14 +46,19 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphosCompositeDisplay</class>
+   <class>TyphosSignalPanel</class>
    <extends>QWidget</extends>
-   <header>typhos.suite</header>
+   <header>typhos.signal</header>
   </customwidget>
   <customwidget>
    <class>TyphosDisplayTitle</class>
    <extends>QFrame</extends>
    <header>typhos.display</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosCompositeSignalPanel</class>
+   <extends>TyphosSignalPanel</extends>
+   <header>typhos.signal</header>
   </customwidget>
  </customwidgets>
  <resources/>
