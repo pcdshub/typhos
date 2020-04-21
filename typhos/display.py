@@ -155,6 +155,8 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     """
     Standardized Typhos Device Display title
     """
+    toggle_requested = QtCore.Signal()
+
     def __init__(self, title='${name}', *, show_switcher=True,
                  show_underline=True, parent=None):
         self._show_underline = show_underline
@@ -206,6 +208,12 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     def show_underline(self, value):
         self._show_underline = bool(value)
         self.underline.setVisible(self._show_underline)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.toggle_requested.emit()
+
+        super().mousePressEvent(event)
 
     # Make designable properties from the title label available here as well
     locals().update(**pcdsutils.qt.forward_properties(
