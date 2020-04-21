@@ -473,26 +473,40 @@ class CompositeSignalPanel(SignalPanel):
                 if widget:
                     widget.setVisible(signal.kind in kinds)
 
+    def add_device_container(self, device, name):
+        """
+        Add a sub-device to the next row
+
+        Parameters
+        ----------
+        device : ophyd.Device
+            The device to add
+        name : str
+            The name/label to go with the device
+        """
+        logger.debug('%s adding sub-device: %s', self.__class__.__name__,
+                     device.__class__.__name__)
+        container = display.TyphosDeviceDisplay(name=name, scrollable=False,
+                                                composite_heuristics=True)
+        self._containers[name] = container
+        self.add_row(container)
+        container.add_device(device)
+
     def add_device(self, device):
+        """
+        Hook for typhos to add a device
+        """
         super().add_device(device)
 
-        logger.debug('CompositeSignalPanel signals from device: %s',
+        logger.debug('%s signals from device: %s', self.__class__.__name__,
                      device.name)
         for attr, component in utils._get_top_level_components(type(device)):
             dotted_name = f'{device.name}.{attr}'
             obj = getattr(device, attr)
-            if not issubclass(component.cls, ophyd.Device):
-                self.add_signal(obj, name=dotted_name)
+            if issubclass(component.cls, ophyd.Device):
+                self.add_device_container(obj, name=dotted_name)
             else:
-                logger.debug('CompositeSignalPanel adding sub-device: %s',
-                             component.cls)
-                container = display.TyphosDeviceDisplay(
-                    name=dotted_name, scrollable=False,
-                    composite_heuristics=True)
-
-                self._containers[dotted_name] = container
-                self.add_row(container)
-                container.add_device(obj)
+                self.add_signal(obj, name=dotted_name)
 
 
 class TyphosCompositeSignalPanel(TyphosSignalPanel):
