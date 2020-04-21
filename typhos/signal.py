@@ -120,6 +120,8 @@ class SignalPanel(QtWidgets.QGridLayout):
         Signals to include in the panel
         Parent of panel
     """
+    _NUM_COLS = 2
+
     def __init__(self, signals=None):
         super().__init__()
 
@@ -232,6 +234,9 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         Add ``widgets`` to the next row
 
+        If only one widget is given, it will be adjusted automatically to span
+        all columns.
+
         Parameters
         ----------
         *widgets
@@ -248,9 +253,9 @@ class SignalPanel(QtWidgets.QGridLayout):
         if len(widgets) == 1:
             item, = widgets
             if isinstance(item, QtWidgets.QLayout):
-                self.addLayout(item, row, 0, 1, 2, **kwargs)
+                self.addLayout(item, row, 0, 1, self._NUM_COLS, **kwargs)
             else:
-                self.addWidget(item, row, 0, 1, 2, **kwargs)
+                self.addWidget(item, row, 0, 1, self._NUM_COLS, **kwargs)
         else:
             for col, item in enumerate(widgets):
                 if isinstance(item, QtWidgets.QLayout):
@@ -497,7 +502,7 @@ class CompositeSignalPanel(SignalPanel):
         for name, info in self.signals.items():
             signal = info['signal']
             row = info['row']
-            for col in (0, 1):
+            for col in range(self._NUM_COLS):
                 widget = self.itemAtPosition(row, col).widget()
                 if widget:
                     widget.setVisible(signal.kind in kinds)
