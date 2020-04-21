@@ -404,6 +404,13 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     _panel_class = SignalPanel
     updated = QtCore.Signal()
 
+    _kind_to_property = {
+        'hinted': 'showHints',
+        'normal': 'showNormal',
+        'config': 'showConfig',
+        'omitted': 'showOmitted',
+    }
+
     def __init__(self, parent=None, init_channel=None):
         super().__init__(parent=parent)
         # Create a SignalPanel layout to be modified later
@@ -412,6 +419,9 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         # Add default Kind values
         self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
         self._signal_order = SignalOrder.byKind
+
+        self.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+        self.contextMenuEvent = self.open_context_menu
 
     def _get_kind(self, kind):
         return self._kinds[kind]
@@ -477,11 +487,35 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     def set_device_display(self, display):
         self.display = display
 
+    def generate_context_menu(self):
+        menu = QtWidgets.QMenu(parent=self)
+        for kind, property_name in self._kind_to_property.items():
+            def selected(new_value, *, name=property_name):
+                setattr(self, name, new_value)
+
+            action = menu.addAction('Show &' + kind)
+            action.setCheckable(True)
+            action.setChecked(getattr(self, property_name))
+            action.triggered.connect(selected)
+        return menu
+
+    def open_context_menu(self, ev):
+        """
+        Handler for when the Default Context Menu is requested.
+
+        Parameters
+        ----------
+        ev : QEvent
+        """
+        menu = self.generate_context_menu()
+        menu.exec_(self.mapToGlobal(ev.pos()))
+
 
 class CompositeSignalPanel(SignalPanel):
     def __init__(self):
         super().__init__(signals=None)
         self._containers = {}
+        self._hidden_layouts = {}
 
     def filter_signals(self, kinds, order):
         """
@@ -502,10 +536,20 @@ class CompositeSignalPanel(SignalPanel):
         for name, info in self.signals.items():
             signal = info['signal']
             row = info['row']
+            visible = signal.kind in kinds
             for col in range(self._NUM_COLS):
-                widget = self.itemAtPosition(row, col).widget()
-                if widget:
-                    widget.setVisible(signal.kind in kinds)
+                item = self.itemAtPosition(row, col)
+                if visible and (row, col) in self._hidden_layouts:
+                    self.addItem(self._hidden_layouts.pop((row, col)),
+                                 row, col)
+                elif item:
+                    layout = item.layout()
+                    widget = item.widget()
+                    if not visible and layout:
+                        self._hidden_layouts[(row, col)] = item
+                        self.removeItem(item)
+                    elif widget:
+                        widget.setVisible(visible)
 
     def add_sub_device(self, device, name):
         """
