@@ -215,6 +215,18 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
         super().mousePressEvent(event)
 
+    def set_device_display(self, display):
+        self.device_display = display
+
+        def toggle_display():
+            ...
+            # widget = display.display_widget
+            # TODO: not the right widget; intent is to hide the signal panel
+            # this title is buddies with
+            # if widget:
+            #     widget.setVisible(not widget.isVisible())
+        self.toggle_requested.connect(toggle_display)
+
     # Make designable properties from the title label available here as well
     locals().update(**pcdsutils.qt.forward_properties(
         locals_dict=locals(),
@@ -316,6 +328,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         # self._scroll_area.setObjectName(self.objectName() + '_scroll_area')
         self._scroll_area.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self._scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self._scroll_area.setWidgetResizable(True)
 
         super().__init__(parent=parent)
 
@@ -358,7 +371,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         widget.setParent(None)
         if self._scrollable:
             self._scroll_area.setWidget(widget)
-            self._scroll_area.setWidgetResizable(True)
         else:
             self.layout().addWidget(widget)
 
@@ -523,6 +535,13 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self._move_display_to_layout(self._display_widget)
 
         utils.reload_widget_stylesheet(self)
+
+    @property
+    def display_widget(self):
+        """
+        The widget from the display itself
+        """
+        return self._display_widget
 
     @staticmethod
     def _get_templates_from_macros(macros):
@@ -715,7 +734,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         return composite
 
     @classmethod
-    def from_device(cls, device, template=None, macros=None):
+    def from_device(cls, device, template=None, macros=None, **kwargs):
         """
         Create a new TyphosDeviceDisplay from a Device
 
@@ -730,8 +749,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             Set the ``display_template``
         macros: dict, optional
             Macro substitutions to be placed in template
+        **kwargs
+            Passed to the class init
         """
-        display = cls()
+        display = cls(**kwargs)
         # Reset the template if provided
         if template:
             display.force_template = template
@@ -754,7 +775,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             Set the ``display_template``
         macros: dict, optional
             Macro substitutions to be placed in template
-        kwargs : dict
+        **kwargs
             Extra arguments are used at device instantiation
 
         Returns
