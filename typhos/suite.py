@@ -12,7 +12,6 @@ from qtpy.QtWidgets import QWidget
 import pcdsutils.qt
 
 from . import display as typhos_display
-from . import signal as typhos_signal
 from . import utils, widgets
 from .display import TyphosDeviceDisplay
 from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
@@ -456,55 +455,3 @@ class TyphosDeviceContainerTitle(typhos_display.TyphosDisplayTitle,
             self.toggle_requested.emit()
 
         super().mousePressEvent(event)
-
-
-class TyphosCompositeFrame(QtWidgets.QFrame):
-    threshold = 5
-
-    def __init__(self, name='', parent=None):
-        super().__init__(parent=parent)
-
-        self._title = TyphosDeviceContainerTitle(title=name)
-        self._title.toggle_requested.connect(self._toggle_view)
-        self._frame = QtWidgets.QFrame()
-
-        # self._title.switcher.template_selected.connect()
-        self.setLayout(QtWidgets.QVBoxLayout())
-        self.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(self._title)
-        self.layout().addWidget(self._frame)
-
-        self.signal_panel = typhos_signal.SignalPanel()
-        self._frame.setLayout(self.signal_panel)
-
-        if name:
-            self.setObjectName(name)
-
-        self._frame.setObjectName(self.objectName() + '_frame')
-        self._switcher_visible = False
-        self._line_visible = False
-
-    def _toggle_view(self):
-        visible = not self._frame.isVisible()
-        self._frame.setVisible(visible)
-        if visible:
-            self._title.show_switcher = self._switcher_visible
-            self._title.show_underline = self._line_visible
-        else:
-            self._switcher_visible = self._title.show_switcher
-            self._line_visible = self._title.show_underline
-            self._title.show_switcher = False
-            self._title.show_underline = False
-
-    def _finish_layout(self):
-        if self.signal_panel.row_count < self.threshold:
-            self._title.show_underline = False
-            self._title.show_switcher = False
-
-            # font = self._title.label.font()
-            # font.setPointSizeF(font.pointSizeF() * 0.8)
-            # self._title.label.setFont(font)
-        else:
-            self._frame.setLineWidth(1)
-            self._frame.setFrameShadow(QtWidgets.QFrame.Raised)
-            self._frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
