@@ -288,6 +288,20 @@ class SignalPanel(QtWidgets.QGridLayout):
         return self.add_signal(sig, name)
 
     def filter_signals(self, kinds, order):
+        """
+        Filter signals based on the given kinds
+
+        Parameters
+        ----------
+        kinds : list of :class:`ophyd.Kind`
+            If given
+        order : :class:`SignalOrder`
+            Order by kind, or by name, for example
+
+        Note
+        ----
+        :class:`SignalPanel` recreates all widgets when this is called.
+        """
         self.clear()
         signals = []
 
@@ -465,6 +479,21 @@ class CompositeSignalPanel(SignalPanel):
         self._containers = {}
 
     def filter_signals(self, kinds, order):
+        """
+        Filter signals based on the given kinds
+
+        Parameters
+        ----------
+        kinds : list of :class:`ophyd.Kind`
+            If given
+        order : :class:`SignalOrder`
+            Order by kind, or by name, for example
+
+        Note
+        ----
+        :class:`CompositeSignalPanel` merely toggles visibility and does not
+        destroy nor recreate widgets when this is called.
+        """
         for name, info in self.signals.items():
             signal = info['signal']
             row = info['row']
@@ -473,7 +502,7 @@ class CompositeSignalPanel(SignalPanel):
                 if widget:
                     widget.setVisible(signal.kind in kinds)
 
-    def add_device_container(self, device, name):
+    def add_sub_device(self, device, name):
         """
         Add a sub-device to the next row
 
@@ -504,7 +533,7 @@ class CompositeSignalPanel(SignalPanel):
             dotted_name = f'{device.name}.{attr}'
             obj = getattr(device, attr)
             if issubclass(component.cls, ophyd.Device):
-                self.add_device_container(obj, name=dotted_name)
+                self.add_sub_device(obj, name=dotted_name)
             else:
                 self.add_signal(obj, name=dotted_name)
 
