@@ -164,6 +164,9 @@ class SignalPanel(QtWidgets.QGridLayout):
         print('-' * (64 * self._NUM_COLS), file=file)
 
     def _add_devices_cb(self, name, row, signal):
+        if name not in self.signals:
+            return
+
         # Create the read-only signal
         read = create_signal_widget(signal, read_only=True)
         # Create the write signal
@@ -345,6 +348,8 @@ class SignalPanel(QtWidgets.QGridLayout):
         sorter = _get_signal_sorter(order)
         for (label, signal, cpt) in sorted(set(signals), key=sorter):
             self.add_signal(signal, label, tooltip=cpt.doc)
+
+        self.setSizeConstraint(self.SetMinimumSize)
 
     def add_device(self, device):
         self._devices.append(device)

@@ -325,7 +325,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self._scroll_area = QtWidgets.QScrollArea()
         self._scroll_area.setAlignment(Qt.AlignTop)
-        # self._scroll_area.setObjectName(self.objectName() + '_scroll_area')
+        self._scroll_area.setObjectName('_scroll_area')
         self._scroll_area.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self._scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self._scroll_area.setWidgetResizable(True)
@@ -528,6 +528,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 else:
                     widget = QtWidgets.QWidget()
                     template = None
+
+        if widget:
+            widget.setObjectName('display_widget')
 
         self._display_widget = widget
         self._current_template = template
