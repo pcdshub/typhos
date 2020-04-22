@@ -181,6 +181,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.grid_layout.addWidget(self.label, 0, 0)
         self.grid_layout.addWidget(self.switcher, 0, 1, Qt.AlignRight)
         self.grid_layout.addWidget(self.underline, 1, 0, 1, 2)
+        self.grid_layout.setSizeConstraint(self.grid_layout.SetMinimumSize)
         self.setLayout(self.grid_layout)
 
         # Set the property:
