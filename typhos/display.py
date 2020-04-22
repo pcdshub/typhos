@@ -343,17 +343,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     @Property(bool)
     def composite_heuristics(self):
-        """Allow composite screen to be chosen by heuristics?"""
+        """Allow composite screen to be suggested first by heuristics?"""
         return self._composite_heuristics
 
     @composite_heuristics.setter
     def composite_heuristics(self, composite_heuristics):
-        # Switch between using the scroll area layout or
         self._composite_heuristics = bool(composite_heuristics)
 
     @Property(bool)
     def scrollable(self):
-        """..."""
+        """Place the display in a scrollable area?"""
         return self._scrollable
 
     @scrollable.setter

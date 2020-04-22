@@ -262,13 +262,13 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         Add ``widgets`` to the next row
 
-        If less widgets are given than `NUM_COLS`, the last widget will be
+        If fewer than ``NUM_COLS`` widgets are given, the last widget will be
         adjusted automatically to span the remaining columns.
 
         Parameters
         ----------
         *widgets
-            List of :class:`QtWidgets.QWidget` or :class:`QtWidgets.QLayout`.
+            List of :class:`QtWidgets.QWidget`
 
         Returns
         -------
@@ -284,6 +284,21 @@ class SignalPanel(QtWidgets.QGridLayout):
         return row
 
     def _update_row(self, row, widgets, **kwargs):
+        """
+        Update ``row`` to contain ``widgets``
+
+        If fewer widgets than ``NUM_COLS`` are given, the last widget will be
+        adjusted automatically to span the remaining columns.
+
+        Parameters
+        ----------
+        row : int
+            The row number
+        widgets : list of :class:`QtWidgets.QWidget`
+            If ``None`` is found, the cell will be skipped.
+        **kwargs
+            Passed into ``addWidget``
+        """
         for col, item in enumerate(widgets[:-1]):
             if item is not None:
                 self.addWidget(item, row, col, **kwargs)
