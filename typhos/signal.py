@@ -1,4 +1,5 @@
 import logging
+import sys
 from functools import partial
 
 from qtpy import QtCore, QtWidgets
@@ -140,30 +141,52 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         return self._row_count
 
+    def _dump_layout(self, file=sys.stdout):
+        """
+        Utility to dump the current layout
+        """
+        print('-' * (64 * self._NUM_COLS), file=file)
+        found_widgets = set()
+        for row in range(self._row_count):
+            print('|', end='', file=file)
+            for col in range(self._NUM_COLS):
+                item = self.itemAtPosition(row, col)
+                if item:
+                    entry = item.widget() or item.layout()
+                    found_widgets.add(entry)
+                    if isinstance(entry, QtWidgets.QLabel):
+                        entry = f'<QLabel {entry.text()!r}>'
+                else:
+                    entry = ''
+
+                print(' {:<60s}'.format(str(entry)), end=' |', file=file)
+            print(file=file)
+        print('-' * (64 * self._NUM_COLS), file=file)
+
     def _add_devices_cb(self, name, row, signal):
         # Create the read-only signal
         read = create_signal_widget(signal, read_only=True)
         # Create the write signal
-        if (not is_signal_ro(signal) and not isinstance(read,
-                                                        SignalDialogButton)):
-            write = create_signal_widget(signal)
-        else:
+        if is_signal_ro(signal) or isinstance(read, SignalDialogButton):
             write = None
+        else:
+            write = create_signal_widget(signal)
 
         # Add readback
-        val_display = self.itemAtPosition(row, 1)
-        loading_widget = val_display.itemAt(0).widget()
+        val_widget = self.itemAtPosition(row, 1).widget()
+        val_layout = val_widget.layout()
+        loading_widget = val_layout.itemAt(0).widget()
         if isinstance(loading_widget, TyphosLoading):
-            val_display.removeWidget(loading_widget)
+            val_layout.removeWidget(loading_widget)
             loading_widget.deleteLater()
-        val_display.addWidget(read)
+        val_layout.addWidget(read)
         # Add our write_pv if available
         if write is not None:
             # Add our control widget to layout
-            val_display.addWidget(write)
+            val_layout.addWidget(write)
             # Make sure they share space evenly
-            val_display.setStretch(0, 1)
-            val_display.setStretch(1, 1)
+            val_layout.setStretch(0, 1)
+            val_layout.setStretch(1, 1)
 
         self.signals[name].update(read=read, write=write)
 
@@ -215,8 +238,11 @@ class SignalPanel(QtWidgets.QGridLayout):
         if tooltip is not None:
             label.setToolTip(tooltip)
 
-        val_display = QtWidgets.QHBoxLayout()
-        val_display.addWidget(TyphosLoading())
+        val_display = QtWidgets.QWidget()
+        val_layout = QtWidgets.QHBoxLayout()
+        val_layout.setContentsMargins(0, 0, 0, 0)
+        val_display.setLayout(val_layout)
+        val_layout.addWidget(TyphosLoading())
         row = self.add_row(label, val_display)
 
         # Store signal
@@ -252,16 +278,10 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         if len(widgets) == 1:
             item, = widgets
-            if isinstance(item, QtWidgets.QLayout):
-                self.addLayout(item, row, 0, 1, self._NUM_COLS, **kwargs)
-            else:
-                self.addWidget(item, row, 0, 1, self._NUM_COLS, **kwargs)
+            self.addWidget(item, row, 0, 1, self._NUM_COLS, **kwargs)
         else:
             for col, item in enumerate(widgets):
-                if isinstance(item, QtWidgets.QLayout):
-                    self.addLayout(item, row, col, **kwargs)
-                else:
-                    self.addWidget(item, row, col, **kwargs)
+                self.addWidget(item, row, col, **kwargs)
 
         return row
 
@@ -515,7 +535,6 @@ class CompositeSignalPanel(SignalPanel):
     def __init__(self):
         super().__init__(signals=None)
         self._containers = {}
-        self._hidden_layouts = {}
 
     def filter_signals(self, kinds, order):
         """
@@ -539,17 +558,13 @@ class CompositeSignalPanel(SignalPanel):
             visible = signal.kind in kinds
             for col in range(self._NUM_COLS):
                 item = self.itemAtPosition(row, col)
-                if visible and (row, col) in self._hidden_layouts:
-                    self.addItem(self._hidden_layouts.pop((row, col)),
-                                 row, col)
-                elif item:
-                    layout = item.layout()
+                if item:
                     widget = item.widget()
-                    if not visible and layout:
-                        self._hidden_layouts[(row, col)] = item
-                        self.removeItem(item)
-                    elif widget:
+                    if widget:
                         widget.setVisible(visible)
+
+        self.update()
+        # self._dump_layout()
 
     def add_sub_device(self, device, name):
         """
@@ -562,8 +577,8 @@ class CompositeSignalPanel(SignalPanel):
         name : str
             The name/label to go with the device
         """
-        logger.debug('%s adding sub-device: %s', self.__class__.__name__,
-                     device.__class__.__name__)
+        logger.debug('%s adding sub-device: %s (%s)', self.__class__.__name__,
+                     device.name, device.__class__.__name__)
         container = display.TyphosDeviceDisplay(name=name, scrollable=False,
                                                 composite_heuristics=True)
         self._containers[name] = container
