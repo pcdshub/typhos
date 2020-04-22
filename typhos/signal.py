@@ -239,17 +239,14 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         logger.debug("Adding signal %s", name)
 
-        # Add to the layout
-
-        # Create label
         label = QtWidgets.QLabel()
         label.setText(name)
+        label.setObjectName('signal_row_label')
         if tooltip is not None:
             label.setToolTip(tooltip)
 
         row = self.add_row(label, TyphosLoading())
 
-        # Store signal
         self.signals[name] = dict(read=None, write=None, row=row,
                                   signal=signal)
 
