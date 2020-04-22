@@ -121,7 +121,10 @@ class SignalPanel(QtWidgets.QGridLayout):
         Signals to include in the panel
         Parent of panel
     """
-    _NUM_COLS = 2
+    NUM_COLS = 3
+    COL_LABEL = 0
+    COL_READBACK = 1
+    COL_SETPOINT = 2
 
     def __init__(self, signals=None):
         super().__init__()
@@ -129,6 +132,10 @@ class SignalPanel(QtWidgets.QGridLayout):
         self.signals = {}
         self._row_count = 0
         self._devices = []
+
+        # Make sure setpoint/readback share space evenly
+        self.setColumnStretch(self.COL_READBACK, 1)
+        self.setColumnStretch(self.COL_SETPOINT, 1)
 
         if signals:
             for name, sig in signals.items():
@@ -145,11 +152,11 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         Utility to dump the current layout
         """
-        print('-' * (64 * self._NUM_COLS), file=file)
+        print('-' * (64 * self.NUM_COLS), file=file)
         found_widgets = set()
         for row in range(self._row_count):
             print('|', end='', file=file)
-            for col in range(self._NUM_COLS):
+            for col in range(self.NUM_COLS):
                 item = self.itemAtPosition(row, col)
                 if item:
                     entry = item.widget() or item.layout()
@@ -161,7 +168,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
                 print(' {:<60s}'.format(str(entry)), end=' |', file=file)
             print(file=file)
-        print('-' * (64 * self._NUM_COLS), file=file)
+        print('-' * (64 * self.NUM_COLS), file=file)
 
     def _add_devices_cb(self, name, row, signal):
         if name not in self.signals:
@@ -175,21 +182,20 @@ class SignalPanel(QtWidgets.QGridLayout):
         else:
             write = create_signal_widget(signal)
 
-        # Add readback
-        val_widget = self.itemAtPosition(row, 1).widget()
-        val_layout = val_widget.layout()
-        loading_widget = val_layout.itemAt(0).widget()
-        if isinstance(loading_widget, TyphosLoading):
-            val_layout.removeWidget(loading_widget)
-            loading_widget.deleteLater()
-        val_layout.addWidget(read)
-        # Add our write_pv if available
-        if write is not None:
-            # Add our control widget to layout
-            val_layout.addWidget(write)
-            # Make sure they share space evenly
-            val_layout.setStretch(0, 1)
-            val_layout.setStretch(1, 1)
+        # Remove the 'loading...' animation if it's there
+        item = self.itemAtPosition(row, self.COL_SETPOINT)
+        if item:
+            val_widget = item.widget()
+            if isinstance(val_widget, TyphosLoading):
+                self.removeItem(item)
+                val_widget.deleteLater()
+
+        # And add the new widgets to the layout:
+        if write is None:
+            self.addWidget(read, row, self.COL_READBACK, 1, 2)
+        else:
+            self.addWidget(read, row, self.COL_READBACK)
+            self.addWidget(write, row, self.COL_SETPOINT)
 
         self.signals[name].update(read=read, write=write)
 
@@ -281,7 +287,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         if len(widgets) == 1:
             item, = widgets
-            self.addWidget(item, row, 0, 1, self._NUM_COLS, **kwargs)
+            self.addWidget(item, row, 0, 1, self.NUM_COLS, **kwargs)
         else:
             for col, item in enumerate(widgets):
                 self.addWidget(item, row, col, **kwargs)
@@ -561,7 +567,7 @@ class CompositeSignalPanel(SignalPanel):
             signal = info['signal']
             row = info['row']
             visible = signal.kind in kinds
-            for col in range(self._NUM_COLS):
+            for col in range(self.NUM_COLS):
                 item = self.itemAtPosition(row, col)
                 if item:
                     widget = item.widget()
