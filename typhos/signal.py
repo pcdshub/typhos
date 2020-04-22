@@ -190,14 +190,14 @@ class SignalPanel(QtWidgets.QGridLayout):
                 self.removeItem(item)
                 val_widget.deleteLater()
 
-        # And add the new widgets to the layout:
-        if write is None:
-            self.addWidget(read, row, self.COL_READBACK, 1, 2)
-        else:
-            self.addWidget(read, row, self.COL_READBACK)
-            self.addWidget(write, row, self.COL_SETPOINT)
-
         self.signals[name].update(read=read, write=write)
+
+        # And add the new widgets to the layout:
+        widgets = [None, read]
+        if write is not None:
+            widgets += [write]
+
+        self._update_row(row, widgets)
 
     def add_signal(self, signal, name, *, tooltip=None):
         """
@@ -247,12 +247,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         if tooltip is not None:
             label.setToolTip(tooltip)
 
-        val_display = QtWidgets.QWidget()
-        val_layout = QtWidgets.QHBoxLayout()
-        val_layout.setContentsMargins(0, 0, 0, 0)
-        val_display.setLayout(val_layout)
-        val_layout.addWidget(TyphosLoading())
-        row = self.add_row(label, val_display)
+        row = self.add_row(label, TyphosLoading())
 
         # Store signal
         self.signals[name] = dict(read=None, write=None, row=row,
@@ -269,8 +264,8 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         Add ``widgets`` to the next row
 
-        If only one widget is given, it will be adjusted automatically to span
-        all columns.
+        If less widgets are given than `NUM_COLS`, the last widget will be
+        adjusted automatically to span the remaining columns.
 
         Parameters
         ----------
@@ -285,14 +280,24 @@ class SignalPanel(QtWidgets.QGridLayout):
         row = self._row_count
         self._row_count += 1
 
-        if len(widgets) == 1:
-            item, = widgets
-            self.addWidget(item, row, 0, 1, self.NUM_COLS, **kwargs)
-        else:
-            for col, item in enumerate(widgets):
-                self.addWidget(item, row, col, **kwargs)
+        if widgets:
+            self._update_row(row, widgets, **kwargs)
 
         return row
+
+    def _update_row(self, row, widgets, **kwargs):
+        for col, item in enumerate(widgets[:-1]):
+            if item is not None:
+                self.addWidget(item, row, col, **kwargs)
+
+        last_widget = widgets[-1]
+        if last_widget is not None:
+            # Column-span the last widget over the remaining columns:
+            last_col = len(widgets) - 1
+            remaining = self.NUM_COLS - last_col
+            if remaining:
+                self.addWidget(last_widget, row, last_col, 1,
+                               self.NUM_COLS - last_col, **kwargs)
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
