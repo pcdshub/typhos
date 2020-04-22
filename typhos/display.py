@@ -492,6 +492,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         layout.removeWidget(self._scroll_area)
         utils.clear_layout(layout)
         self._scroll_area.takeWidget()
+        self._display_widget = None
         layout.addWidget(self._scroll_area)
 
     def load_best_template(self):
