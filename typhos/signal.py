@@ -3,7 +3,7 @@ import sys
 from functools import partial
 
 from qtpy import QtCore, QtWidgets
-from qtpy.QtCore import Q_ENUMS, Property, QSize, QTimer
+from qtpy.QtCore import Q_ENUMS, Property, QTimer
 
 import ophyd
 from ophyd import Kind
@@ -515,10 +515,6 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         # Configure the layout for the new device
         self._panel_layout.add_device(device)
         self._update_panel()
-
-    def sizeHint(self):
-        """Default SizeHint"""
-        return QSize(240, 140)
 
     def set_device_display(self, display):
         self.display = display
