@@ -68,3 +68,9 @@ TyphosBase TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
 TyphosDisplayTitle > QLabel:hover {
     border: 1px solid black;
 }
+
+QLineEdit#menu_action {
+    border-width: 2px;
+    border-style: outset;
+    border-color: black;
+}

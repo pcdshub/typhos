@@ -163,6 +163,10 @@ class TyphosDisplayConfigButton(TyphosToolButton):
             line_edit.setPlaceholderText('/ '.join(filters))
 
         line_edit.editingFinished.connect(text_filter_updated)
+        line_edit.setObjectName('menu_action')
+
+        action = base_menu.addAction('Filter by name:')
+        action.setEnabled(False)
 
         action = QtWidgets.QWidgetAction(self)
         action.setDefaultWidget(line_edit)
@@ -181,6 +185,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         Kind filter > Show hinted
                       ...
                       Show only hinted
+        Filter by name
         """
         base_menu = QtWidgets.QMenu(parent=self)
 
@@ -199,8 +204,8 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         filter_menu.addSeparator()
         self.create_kind_filter_menu(panels, filter_menu, only=True)
 
-        name_menu = base_menu.addMenu("&Name filter")
-        self.create_name_filter_menu(panels, name_menu)
+        base_menu.addSeparator()
+        self.create_name_filter_menu(panels, base_menu)
 
         return base_menu
 
