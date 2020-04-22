@@ -13,7 +13,7 @@ import pydm.display
 import pydm.exception
 import pydm.utilities
 
-from . import utils, widgets
+from . import signal, utils, widgets
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def normalize_display_type(display_type):
         raise ValueError(f'Unrecognized display type: {display_type}') from ex
 
 
-class TyphosToolButton(QtWidgets.QPushButton):
+class TyphosToolButton(QtWidgets.QToolButton):
     DEFAULT_ICON = 'circle'
 
     def __init__(self, icon=None, *, parent=None):
@@ -54,12 +54,15 @@ class TyphosToolButton(QtWidgets.QPushButton):
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
-        self.clicked.connect(self._left_click)
+        self.clicked.connect(self._clicked)
         self.setIcon(self.get_icon(icon))
         self.setMinimumSize(24, 24)
 
-    def _left_click(self):
+    def _clicked(self):
         'Override in a subclass'
+        menu = self.generate_context_menu()
+        if menu:
+            menu.exec_(QtGui.QCursor.pos())
 
     def generate_context_menu(self):
         'Override in subclasses'
@@ -90,13 +93,84 @@ class TyphosToolButton(QtWidgets.QPushButton):
 class TyphosDisplayConfigButton(TyphosToolButton):
     DEFAULT_ICON = 'ellipsis-v'
 
-    def _left_click(self):
-        ...
-        # self.open_context_menu()
+    _kind_to_property = signal.TyphosSignalPanel._kind_to_property
+
+    def __init__(self, icon=None, *, parent=None):
+        super().__init__(icon=icon, parent=parent)
+        self.setPopupMode(self.InstantPopup)
+        self.setArrowType(Qt.NoArrow)
+        self.templates = None
+        self.device_display = None
+
+    def set_device_display(self, device_display):
+        self.device_display = device_display
+
+    def create_kind_filter_menu(self, panels, base_menu, *, only):
+        """
+        Create the "Kind" filter menu
+
+        Parameters
+        ----------
+        panels : list of TyphosSignalPanel
+        base_menu : QMenu
+            The menu to add actions to
+        only : bool
+            False - create "Show Kind" actions
+            True - create "Show only Kind" actions
+        """
+        for kind, prop in self._kind_to_property.items():
+            def selected(new_value, *, prop=prop):
+                if only:
+                    # Show *only* the specific kind for all panels
+                    for kind, current_prop in self._kind_to_property.items():
+                        visible = (current_prop == prop)
+                        for panel in panels:
+                            setattr(panel, current_prop, visible)
+                else:
+                    # Toggle visibility of the specific kind for all panels
+                    for panel in panels:
+                        setattr(panel, prop, new_value)
+
+            title = f'Show only &{kind}' if only else f'Show &{kind}'
+            action = base_menu.addAction(title)
+            if not only:
+                action.setCheckable(True)
+                action.setChecked(all(getattr(panel, prop)
+                                      for panel in panels))
+            action.triggered.connect(selected)
 
     def generate_context_menu(self):
-        ''
-        return None
+        """
+        Generates the custom context menu
+
+        Embedded
+        Detailed
+        Engineering
+        -------------
+        Refresh templates
+        -------------
+        Kind filter > Show hinted
+                      ...
+                      Show only hinted
+        """
+        base_menu = QtWidgets.QMenu(parent=self)
+
+        display = self.device_display
+        if not display:
+            return base_menu
+
+        panels = display.findChildren(signal.TyphosSignalPanel) or []
+        if not panels:
+            return base_menu
+
+        display._generate_template_menu(base_menu)
+
+        filter_menu = base_menu.addMenu("&Kind filter")
+        self.create_kind_filter_menu(panels, filter_menu, only=False)
+        filter_menu.addSeparator()
+        self.create_kind_filter_menu(panels, filter_menu, only=True)
+
+        return base_menu
 
 
 class TyphosDisplaySwitcherButton(TyphosToolButton):
@@ -112,7 +186,7 @@ class TyphosDisplaySwitcherButton(TyphosToolButton):
         super().__init__(icon=self.icons[display_type], parent=parent)
         self.templates = None
 
-    def _left_click(self):
+    def _clicked(self):
         if self.templates is None:
             logger.warning('set_device_display not called on %s', self)
             return
@@ -135,6 +209,7 @@ class TyphosDisplaySwitcherButton(TyphosToolButton):
 
             action = menu.addAction(template.name)
             action.triggered.connect(selected)
+
         return menu
 
     def open_context_menu(self, ev):
@@ -171,6 +246,7 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     def _create_ui(self):
         layout = self.layout()
         self.buttons.clear()
+        self.config_button = None
 
         for template_type in DisplayTypes.names:
             button = TyphosDisplaySwitcherButton(template_type)
@@ -181,9 +257,9 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             friendly_name = template_type.replace('_', ' ')
             button.setToolTip(f'Switch to {friendly_name}')
 
-        button = TyphosDisplayConfigButton()
-        layout.addWidget(button, 0, Qt.AlignRight)
-        button.setToolTip('Display settings...')
+        self.config_button = TyphosDisplayConfigButton()
+        layout.addWidget(self.config_button, 0, Qt.AlignRight)
+        self.config_button.setToolTip('Display settings...')
 
     def _template_selected(self, template):
         self.template_selected.emit(template)
@@ -196,6 +272,7 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         for template_type in self.buttons:
             templates = display.templates.get(template_type, [])
             self.buttons[template_type].templates = templates
+        self.config_button.set_device_display(display)
 
     def add_device(self, device):
         ...
@@ -426,18 +503,8 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self._scroll_area.setVisible(self._scrollable)
 
-    def generate_context_menu(self):
-        """
-        Generates the custom context menu, and populates it with any external
-        tools that have been loaded.  PyDMWidget subclasses should override
-        this method (after calling superclass implementation) to add the menu.
-
-        Returns
-        -------
-        QMenu
-        """
-        base_menu = QtWidgets.QMenu(parent=self)
-
+    def _generate_template_menu(self, base_menu):
+        """Generate the template switcher menu, adding it to ``base_menu``"""
         for view, filenames in self.templates.items():
             if view.endswith('_screen'):
                 view = view.split('_screen')[0]
@@ -458,6 +525,17 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         refresh_action = base_menu.addAction("Refresh Templates")
         refresh_action.triggered.connect(refresh_templates)
 
+    def generate_context_menu(self):
+        """
+        Generates the custom context menu, and populates it with any external
+        tools that have been loaded.
+
+        Returns
+        -------
+        QMenu
+        """
+        base_menu = QtWidgets.QMenu(parent=self)
+        self._generate_template_menu(base_menu)
         return base_menu
 
     def open_context_menu(self, ev):
