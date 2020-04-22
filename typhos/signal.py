@@ -337,7 +337,17 @@ class SignalPanel(QtWidgets.QGridLayout):
             sig = EpicsSignalRO(read_pv, name=name)
         return self.add_signal(sig, name)
 
-    def filter_signals(self, kinds, order):
+    @staticmethod
+    def _apply_name_filter(filter_by, *items):
+        """
+        Apply the name filter
+        """
+        if not filter_by:
+            return True
+
+        return any(filter_by in item for item in items)
+
+    def filter_signals(self, kinds, order, *, name=None):
         """
         Filter signals based on the given kinds
 
@@ -347,6 +357,8 @@ class SignalPanel(QtWidgets.QGridLayout):
             If given
         order : :class:`SignalOrder`
             Order by kind, or by name, for example
+        name : str, optional
+            Additionally filter signals by name
 
         Note
         ----
@@ -359,11 +371,15 @@ class SignalPanel(QtWidgets.QGridLayout):
             for kind in kinds:
                 for label, signal, cpt in _device_signals_by_kind(
                         device, kind):
+                    if not self._apply_name_filter(name, label, signal.name):
+                        continue
+
                     # Check twice for Kind as signal might have multiple kinds
 
                     # TODO: I think this is incorrect; as a 'hinted and normal'
                     # signal will not show up if showHints=False and
                     # showNormal=True
+
                     if signal.kind in kinds:
                         signals.append((label, signal, cpt))
 
@@ -463,6 +479,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         # Create a SignalPanel layout to be modified later
         self._panel_layout = self._panel_class()
         self.setLayout(self._panel_layout)
+        self._name_filter = ''
         # Add default Kind values
         self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
         self._signal_order = SignalOrder.byKind
@@ -483,6 +500,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
     def _update_panel(self):
         self._panel_layout.filter_signals(
+            name=self.nameFilter,
             kinds=self.show_kinds,
             order=self._signal_order,
         )
@@ -495,16 +513,30 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     # Kind Configuration pyqtProperty
     showHints = Property(bool,
                          partial(_get_kind, kind='hinted'),
-                         partial(_set_kind, kind='hinted'))
+                         partial(_set_kind, kind='hinted'),
+                         doc='Show ophyd.Kind.hinted signals')
     showNormal = Property(bool,
                           partial(_get_kind, kind='normal'),
-                          partial(_set_kind, kind='normal'))
+                          partial(_set_kind, kind='normal'),
+                          doc='Show ophyd.Kind.normal signals')
     showConfig = Property(bool,
                           partial(_get_kind, kind='config'),
-                          partial(_set_kind, kind='config'))
+                          partial(_set_kind, kind='config'),
+                          doc='Show ophyd.Kind.config signals')
     showOmitted = Property(bool,
                            partial(_get_kind, kind='omitted'),
-                           partial(_set_kind, kind='omitted'))
+                           partial(_set_kind, kind='omitted'),
+                           doc='Show ophyd.Kind.omitted signals')
+
+    @Property(str, doc='Filter signals by name')
+    def nameFilter(self):
+        return self._name_filter
+
+    @nameFilter.setter
+    def nameFilter(self, name_filter):
+        if name_filter != self._name_filter:
+            self._name_filter = name_filter.strip()
+            self._update_panel()
 
     @Property(SignalOrder)
     def sortBy(self):
@@ -559,7 +591,7 @@ class CompositeSignalPanel(SignalPanel):
         super().__init__(signals=None)
         self._containers = {}
 
-    def filter_signals(self, kinds, order):
+    def filter_signals(self, kinds, order, *, name=None):
         """
         Filter signals based on the given kinds
 
@@ -569,16 +601,19 @@ class CompositeSignalPanel(SignalPanel):
             If given
         order : :class:`SignalOrder`
             Order by kind, or by name, for example
+        name : str, optional
+            Additionally filter signals by name
 
         Note
         ----
         :class:`CompositeSignalPanel` merely toggles visibility and does not
         destroy nor recreate widgets when this is called.
         """
-        for name, info in self.signals.items():
+        for signal_name, info in self.signals.items():
             signal = info['signal']
             row = info['row']
             visible = signal.kind in kinds
+            visible = visible and self._apply_name_filter(name, signal_name)
             for col in range(self.NUM_COLS):
                 item = self.itemAtPosition(row, col)
                 if item:

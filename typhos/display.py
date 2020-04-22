@@ -139,6 +139,35 @@ class TyphosDisplayConfigButton(TyphosToolButton):
                                       for panel in panels))
             action.triggered.connect(selected)
 
+    def create_name_filter_menu(self, panels, base_menu):
+        """
+        Create the name-based filtering menu
+
+        Parameters
+        ----------
+        base_menu : QMenu
+            The menu to add actions to
+        """
+        def text_filter_updated():
+            text = line_edit.text().strip()
+            for panel in panels:
+                panel.nameFilter = text
+
+        line_edit = QtWidgets.QLineEdit()
+
+        filters = list(set(panel.nameFilter for panel in panels
+                           if panel.nameFilter))
+        if len(filters) == 1:
+            line_edit.setText(filters[0])
+        else:
+            line_edit.setPlaceholderText('/ '.join(filters))
+
+        line_edit.editingFinished.connect(text_filter_updated)
+
+        action = QtWidgets.QWidgetAction(self)
+        action.setDefaultWidget(line_edit)
+        base_menu.addAction(action)
+
     def generate_context_menu(self):
         """
         Generates the custom context menu
@@ -169,6 +198,9 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         self.create_kind_filter_menu(panels, filter_menu, only=False)
         filter_menu.addSeparator()
         self.create_kind_filter_menu(panels, filter_menu, only=True)
+
+        name_menu = base_menu.addMenu("&Name filter")
+        self.create_name_filter_menu(panels, name_menu)
 
         return base_menu
 
