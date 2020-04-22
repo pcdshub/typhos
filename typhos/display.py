@@ -58,7 +58,7 @@ class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
         self.templates = None
         self.clicked.connect(self._select_first_template)
         self.setIcon(icon)
-        self.setMinimumSize(32, 32)
+        self.setMinimumSize(24, 24)
 
     def _select_first_template(self):
         if self.templates is None:
