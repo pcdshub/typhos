@@ -83,7 +83,7 @@ def is_signal_ro(signal):
     In the future this may be easier to do through improvements to
     introspection in the ophyd library. Until that day we need to check classes
     """
-    return isinstance(signal, (SignalRO, EpicsSignalRO))
+    return isinstance(signal, (SignalRO, EpicsSignalRO, ophyd.sim.SynSignalRO))
 
 
 def grab_kind(device, kind):
