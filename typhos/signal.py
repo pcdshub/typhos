@@ -245,7 +245,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         if tooltip is not None:
             label.setToolTip(tooltip)
 
-        row = self.add_row(label, TyphosLoading())
+        row = self.add_row(label, None)
 
         self.signals[name] = dict(read=None, write=None, row=row,
                                   signal=signal)
@@ -253,6 +253,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         if signal.connected:
             self._add_devices_cb(name, row, signal)
         else:
+            self._update_row(row, [None, TyphosLoading()])
             signal.subscribe(_device_meta_cb, Signal.SUB_META, run=True)
 
         return row
@@ -290,11 +291,9 @@ class SignalPanel(QtWidgets.QGridLayout):
         last_widget = widgets[-1]
         if last_widget is not None:
             # Column-span the last widget over the remaining columns:
-            last_col = len(widgets) - 1
-            remaining = self.NUM_COLS - last_col
-            if remaining:
-                self.addWidget(last_widget, row, last_col, 1,
-                               self.NUM_COLS - last_col, **kwargs)
+            last_column = len(widgets) - 1
+            colspan = self.NUM_COLS - last_column
+            self.addWidget(last_widget, row, last_column, 1, colspan, **kwargs)
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
