@@ -46,21 +46,73 @@ def normalize_display_type(display_type):
         raise ValueError(f'Unrecognized display type: {display_type}') from ex
 
 
-class TyphosDisplaySwitcherButton(QtWidgets.QPushButton):
-    'A button in the TyphosDisplaySwitcher'
-    template_selected = QtCore.Signal(pathlib.Path)
+class TyphosToolButton(QtWidgets.QPushButton):
+    DEFAULT_ICON = 'circle'
 
-    def __init__(self, icon, parent=None):
+    def __init__(self, icon=None, *, parent=None):
         super().__init__(parent=parent)
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
-        self.templates = None
-        self.clicked.connect(self._select_first_template)
-        self.setIcon(icon)
+        self.clicked.connect(self._left_click)
+        self.setIcon(self.get_icon(icon))
         self.setMinimumSize(24, 24)
 
-    def _select_first_template(self):
+    def _left_click(self):
+        'Override in a subclass'
+
+    def generate_context_menu(self):
+        'Override in subclasses'
+        return None
+
+    @classmethod
+    def get_icon(cls, icon=None):
+        """
+        Get a QIcon, if specified, or fall back to the default
+
+        Parameters
+        ----------
+        icon : str or QtGui.QIcon
+            If a string, assume it is from fontawesome.
+            Otherwise, use
+        """
+        icon = icon or cls.DEFAULT_ICON
+        if isinstance(icon, str):
+            return pydm.utilities.IconFont().icon(icon)
+        return icon
+
+    def open_context_menu(self, ev):
+        menu = self.generate_context_menu()
+        if menu:
+            menu.exec_(self.mapToGlobal(ev.pos()))
+
+
+class TyphosDisplayConfigButton(TyphosToolButton):
+    DEFAULT_ICON = 'ellipsis-v'
+
+    def _left_click(self):
+        ...
+        # self.open_context_menu()
+
+    def generate_context_menu(self):
+        ''
+        return None
+
+
+class TyphosDisplaySwitcherButton(TyphosToolButton):
+    'A button in the TyphosDisplaySwitcher'
+    template_selected = QtCore.Signal(pathlib.Path)
+
+    icons = {'embedded_screen': 'compress',
+             'detailed_screen': 'braille',
+             'engineering_screen': 'cogs'
+             }
+
+    def __init__(self, display_type, *, parent=None):
+        super().__init__(icon=self.icons[display_type], parent=parent)
+        self.templates = None
+
+    def _left_click(self):
         if self.templates is None:
             logger.warning('set_device_display not called on %s', self)
             return
@@ -97,11 +149,6 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     """
     template_selected = QtCore.Signal(pathlib.Path)
 
-    icons = {'embedded_screen': 'compress',
-             'detailed_screen': 'braille',
-             'engineering_screen': 'cogs'
-             }
-
     def __init__(self, parent=None, **kwargs):
         # Intialize background variable
         super().__init__(parent=None)
@@ -126,14 +173,17 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.buttons.clear()
 
         for template_type in DisplayTypes.names:
-            icon = pydm.utilities.IconFont().icon(self.icons[template_type])
-            button = TyphosDisplaySwitcherButton(icon)
+            button = TyphosDisplaySwitcherButton(template_type)
             self.buttons[template_type] = button
             button.template_selected.connect(self._template_selected)
             layout.addWidget(button, 0, Qt.AlignRight)
 
             friendly_name = template_type.replace('_', ' ')
             button.setToolTip(f'Switch to {friendly_name}')
+
+        button = TyphosDisplayConfigButton()
+        layout.addWidget(button, 0, Qt.AlignRight)
+        button.setToolTip('Display settings...')
 
     def _template_selected(self, template):
         self.template_selected.emit(template)
