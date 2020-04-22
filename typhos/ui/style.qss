@@ -1,5 +1,4 @@
 TyphosBase {
-   background-color: #ffffff;
    color: black;
    font: bold;
 }
@@ -38,7 +37,7 @@ TyphosBase QComboBox:hover {
 }
 
 TyphosBase QListWidget::item:selected {
-    background-color: #0b3ae8;;
+    background-color: #0b3ae8;
     color: white;
 }
 
