@@ -318,8 +318,8 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 class TyphosTitleLabel(QtWidgets.QLabel):
     toggle_requested = QtCore.Signal()
 
-    def __init__(self, text, parent=None):
-        super().__init__(text, parent=parent)
+    def __init__(self, text):
+        super().__init__(text)
 
         font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.TitleFont)
         font.setPointSizeF(14.0)
@@ -346,7 +346,6 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         super().__init__(parent=parent)
 
         self.label = TyphosTitleLabel(title)
-
         self.switcher = TyphosDisplaySwitcher()
 
         self.underline = QtWidgets.QFrame()
@@ -397,7 +396,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             for panel in panels:
                 panel.setVisible(not visible)
 
-        self.toggle_requested.connect(toggle_display)
+        self.label.toggle_requested.connect(toggle_display)
 
     # Make designable properties from the title label available here as well
     locals().update(**pcdsutils.qt.forward_properties(
