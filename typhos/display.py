@@ -315,6 +315,24 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         ...
 
 
+class TyphosTitleLabel(QtWidgets.QLabel):
+    toggle_requested = QtCore.Signal()
+
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent=parent)
+
+        font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.TitleFont)
+        font.setPointSizeF(14.0)
+        font.setBold(True)
+        self.setFont(font)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.toggle_requested.emit()
+
+        super().mousePressEvent(event)
+
+
 class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     """
     Standardized Typhos Device Display title
@@ -327,12 +345,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self._show_switcher = show_switcher
         super().__init__(parent=parent)
 
-        font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.TitleFont)
-        font.setPointSizeF(14.0)
-        font.setBold(True)
-
-        self.label = QtWidgets.QLabel(title)
-        self.label.setFont(font)
+        self.label = TyphosTitleLabel(title)
 
         self.switcher = TyphosDisplaySwitcher()
 
@@ -374,22 +387,16 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self._show_underline = bool(value)
         self.underline.setVisible(self._show_underline)
 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.toggle_requested.emit()
-
-        super().mousePressEvent(event)
-
     def set_device_display(self, display):
         self.device_display = display
 
         def toggle_display():
-            ...
-            # widget = display.display_widget
-            # TODO: not the right widget; intent is to hide the signal panel
-            # this title is buddies with
-            # if widget:
-            #     widget.setVisible(not widget.isVisible())
+            widget = display.display_widget
+            panels = widget.findChildren(signal.TyphosSignalPanel) or []
+            visible = all(panel.isVisible() for panel in panels)
+            for panel in panels:
+                panel.setVisible(not visible)
+
         self.toggle_requested.connect(toggle_display)
 
     # Make designable properties from the title label available here as well

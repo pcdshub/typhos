@@ -65,7 +65,7 @@ TyphosBase TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
     border: 2px solid red;
 }
 
-TyphosDisplayTitle > QLabel:hover {
+TyphosTitleLabel:hover {
     border: 1px solid black;
 }
 
