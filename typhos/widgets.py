@@ -213,6 +213,8 @@ class TyphosLabel(PyDMLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAlignment(Qt.AlignCenter)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Preferred,
+                           QtWidgets.QSizePolicy.Maximum)
         self.showUnits = True
 
     def unit_changed(self, new_unit):
