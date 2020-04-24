@@ -8,10 +8,9 @@ from pyqtgraph.parametertree import ParameterTree
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtWidgets
 
-import typhos.suite
 from typhos.display import TyphosDeviceDisplay
 from typhos.suite import DeviceParameter, TyphosSuite
-from typhos.utils import clean_name, save_suite
+from typhos.utils import save_suite
 
 from .conftest import show_widget
 
@@ -22,6 +21,7 @@ def suite(qtbot, device):
     qtbot.addWidget(suite)
     return suite
 
+
 @show_widget
 def test_suite_with_child_devices(suite, device):
     assert device in suite.devices
@@ -30,6 +30,7 @@ def test_suite_with_child_devices(suite, device):
     child_displays = device_group.childs[0].childs
     assert len(child_displays) == len(device._sub_devices)
     return suite
+
 
 def test_suite_without_children(device, qtbot):
     childless = TyphosSuite.from_device(device, children=False)
@@ -50,9 +51,11 @@ def test_suite_get_subdisplay_by_device(suite, device):
     display = suite.get_subdisplay(device)
     assert device in display.devices
 
+
 def test_suite_subdisplay_parentage(suite, device):
     display = suite.get_subdisplay(device)
     assert display in suite.findChildren(TyphosDeviceDisplay)
+
 
 def test_suite_get_subdisplay_by_name(suite, device):
     display = suite.get_subdisplay(device.name)
@@ -156,7 +159,8 @@ def test_suite_save(suite, monkeypatch):
     suite.save()
     assert tfile.exists()
     devices = [device.name for device in suite.devices]
-    assert str(devices) in open(str(tfile), 'r').read()
+    with open(str(tfile), 'r') as f:
+        assert str(devices) in f.read()
     os.remove(str(tfile))
 
 

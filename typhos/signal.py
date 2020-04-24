@@ -1,16 +1,19 @@
 import logging
+import sys
 from functools import partial
 
-from qtpy.QtCore import Q_ENUMS, Property, QSize, QTimer
-from qtpy.QtWidgets import QGridLayout, QHBoxLayout, QLabel
+from qtpy import QtCore, QtWidgets
+from qtpy.QtCore import Q_ENUMS, Property, QTimer
 
+import ophyd
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO, Signal
 from pydm.widgets.display_format import DisplayFormat
 
+from . import display, utils
 from .plugins import register_signal
 from .utils import (TyphosBase, TyphosLoading, channel_name, clean_attr,
-                    clear_layout, grab_kind, is_signal_ro)
+                    clear_layout, is_signal_ro)
 from .widgets import (ImageDialogButton, SignalDialogButton, TyphosComboBox,
                       TyphosDesignerMixin, TyphosLabel, TyphosLineEdit,
                       WaveformDialogButton)
@@ -18,7 +21,7 @@ from .widgets import (ImageDialogButton, SignalDialogButton, TyphosComboBox,
 logger = logging.getLogger(__name__)
 
 
-def signal_widget(signal, read_only=False, tooltip=None):
+def create_signal_widget(signal, read_only=False, tooltip=None):
     """
     Factory for creating a PyDMWidget from a signal
 
@@ -69,43 +72,46 @@ def signal_widget(signal, read_only=False, tooltip=None):
     if dimensions == 0:
         # Check for enum_strs, if so create a QCombobox
         if read_only:
-            logger.debug("Creating Label for %s", signal.name)
             widget = TyphosLabel
             name = signal.name + '_label'
         else:
             # Create a QCombobox if the widget has enum_strs
             if 'enum_strs' in desc:
-                logger.debug("Creating Combobox for %s", signal.name)
                 widget = TyphosComboBox
                 name = signal.name + '_combo'
             # Otherwise a LineEdit will suffice
             else:
-                logger.debug("Creating LineEdit for %s", signal.name)
                 widget = TyphosLineEdit
                 name = signal.name + '_edit'
     # Waveform
     elif len(desc.get('shape')) == 1:
-        logger.debug("Creating WaveformDialogButton for %s", signal.name)
         widget = WaveformDialogButton
         name = signal.name + '_waveform_button'
     # B/W image
     elif len(desc.get('shape')) == 2:
-        logger.debug("Creating ImageDialogButton for %s", signal.name)
         widget = ImageDialogButton
         name = signal.name + '_image_button'
     else:
         raise ValueError(f"Unable to create widget for widget of "
                          f"shape {len(desc.get('shape'))} from {signal.name}")
+
+    logger.debug("Creating %s for %s", widget.__name__, signal.name)
     widget_instance = widget(init_channel=chan)
     widget_instance.setObjectName(name)
+
     if tooltip is not None:
         widget_instance.setToolTip(tooltip)
+
     if dtype == 'string' and widget in (TyphosLabel, TyphosLineEdit):
         widget_instance.displayFormat = DisplayFormat.String
     return widget_instance
 
 
-class SignalPanel(QGridLayout):
+# Backward-compatibility (TODO deprecate)
+signal_widget = create_signal_widget
+
+
+class SignalPanel(QtWidgets.QGridLayout):
     """
     Base panel display for EPICS signals
 
@@ -115,41 +121,83 @@ class SignalPanel(QGridLayout):
         Signals to include in the panel
         Parent of panel
     """
+    NUM_COLS = 3
+    COL_LABEL = 0
+    COL_READBACK = 1
+    COL_SETPOINT = 2
+
     def __init__(self, signals=None):
         super().__init__()
-        # Store signal information
-        self.signals = dict()
-        # Add supplied signals
+
+        self.signals = {}
+        self._row_count = 0
+        self._devices = []
+
+        # Make sure setpoint/readback share space evenly
+        self.setColumnStretch(self.COL_READBACK, 1)
+        self.setColumnStretch(self.COL_SETPOINT, 1)
+
         if signals:
             for name, sig in signals.items():
                 self.add_signal(sig, name)
 
-    def _add_devices_cb(self, name, index, signal):
+    @property
+    def row_count(self):
+        """
+        The number of filled-in rows
+        """
+        return self._row_count
+
+    def _dump_layout(self, file=sys.stdout):
+        """
+        Utility to dump the current layout
+        """
+        print('-' * (64 * self.NUM_COLS), file=file)
+        found_widgets = set()
+        for row in range(self._row_count):
+            print('|', end='', file=file)
+            for col in range(self.NUM_COLS):
+                item = self.itemAtPosition(row, col)
+                if item:
+                    entry = item.widget() or item.layout()
+                    found_widgets.add(entry)
+                    if isinstance(entry, QtWidgets.QLabel):
+                        entry = f'<QLabel {entry.text()!r}>'
+                else:
+                    entry = ''
+
+                print(' {:<60s}'.format(str(entry)), end=' |', file=file)
+            print(file=file)
+        print('-' * (64 * self.NUM_COLS), file=file)
+
+    def _add_devices_cb(self, name, row, signal):
+        if name not in self.signals:
+            return
+
         # Create the read-only signal
-        read = signal_widget(signal, read_only=True)
+        read = create_signal_widget(signal, read_only=True)
         # Create the write signal
-        if (not is_signal_ro(signal) and not isinstance(read,
-                                                        SignalDialogButton)):
-            write = signal_widget(signal)
-        else:
+        if is_signal_ro(signal) or isinstance(read, SignalDialogButton):
             write = None
+        else:
+            write = create_signal_widget(signal)
 
-        # Add readback
-        val_display = self.itemAtPosition(index, 1)
-        loading_widget = val_display.itemAt(0).widget()
-        if isinstance(loading_widget, TyphosLoading):
-            val_display.removeWidget(loading_widget)
-            loading_widget.deleteLater()
-        val_display.addWidget(read)
-        # Add our write_pv if available
+        # Remove the 'loading...' animation if it's there
+        item = self.itemAtPosition(row, self.COL_SETPOINT)
+        if item:
+            val_widget = item.widget()
+            if isinstance(val_widget, TyphosLoading):
+                self.removeItem(item)
+                val_widget.deleteLater()
+
+        self.signals[name].update(read=read, write=write)
+
+        # And add the new widgets to the layout:
+        widgets = [None, read]
         if write is not None:
-            # Add our control widget to layout
-            val_display.addWidget(write)
-            # Make sure they share space evenly
-            val_display.setStretch(0, 1)
-            val_display.setStretch(1, 1)
+            widgets += [write]
 
-        self.signals[name] = (read, write)
+        self._update_row(row, widgets)
 
     def add_signal(self, signal, name, *, tooltip=None):
         """
@@ -168,7 +216,7 @@ class SignalPanel(QGridLayout):
 
         Returns
         -------
-        loc : int
+        row : int
             Row number that the signal information was added to in the
             `SignalPanel.layout()``
         """
@@ -186,37 +234,81 @@ class SignalPanel(QGridLayout):
 
                 # Maybe a HACK to get the _add_devices_cb to happen at the
                 # main thread.
-                method = partial(self._add_devices_cb, name, loc, signal)
+                method = partial(self._add_devices_cb, name, row, signal)
                 QTimer.singleShot(0, method)
 
         logger.debug("Adding signal %s", name)
 
-        # Add to the layout
-
-        # Create label
-        label = QLabel()
+        label = QtWidgets.QLabel()
         label.setText(name)
+        label.setObjectName('signal_row_label')
         if tooltip is not None:
             label.setToolTip(tooltip)
-        # Create signal display
-        val_display = QHBoxLayout()
 
-        # Add displays to panel
-        loc = len(self.signals)
+        row = self.add_row(label, None)
 
-        val_display.addWidget(TyphosLoading())
-
-        self.addWidget(label, loc, 0)
-        self.addLayout(val_display, loc, 1)
-        # Store signal
-        self.signals[name] = (None, None)
+        self.signals[name] = dict(read=None, write=None, row=row,
+                                  signal=signal)
 
         if signal.connected:
-            self._add_devices_cb(name, loc, signal)
+            self._add_devices_cb(name, row, signal)
         else:
+            self._update_row(row, [None, TyphosLoading()])
             signal.subscribe(_device_meta_cb, Signal.SUB_META, run=True)
 
-        return loc
+        return row
+
+    def add_row(self, *widgets, **kwargs):
+        """
+        Add ``widgets`` to the next row
+
+        If fewer than ``NUM_COLS`` widgets are given, the last widget will be
+        adjusted automatically to span the remaining columns.
+
+        Parameters
+        ----------
+        *widgets
+            List of :class:`QtWidgets.QWidget`
+
+        Returns
+        -------
+        row : int
+            The row number
+        """
+        row = self._row_count
+        self._row_count += 1
+
+        if widgets:
+            self._update_row(row, widgets, **kwargs)
+
+        return row
+
+    def _update_row(self, row, widgets, **kwargs):
+        """
+        Update ``row`` to contain ``widgets``
+
+        If fewer widgets than ``NUM_COLS`` are given, the last widget will be
+        adjusted automatically to span the remaining columns.
+
+        Parameters
+        ----------
+        row : int
+            The row number
+        widgets : list of :class:`QtWidgets.QWidget`
+            If ``None`` is found, the cell will be skipped.
+        **kwargs
+            Passed into ``addWidget``
+        """
+        for col, item in enumerate(widgets[:-1]):
+            if item is not None:
+                self.addWidget(item, row, col, **kwargs)
+
+        last_widget = widgets[-1]
+        if last_widget is not None:
+            # Column-span the last widget over the remaining columns:
+            last_column = len(widgets) - 1
+            colspan = self.NUM_COLS - last_column
+            self.addWidget(last_widget, row, last_column, 1, colspan, **kwargs)
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
@@ -233,7 +325,7 @@ class SignalPanel(QGridLayout):
 
         Returns
         -------
-        loc : int
+        row : int
             Row number that the signal information was added to in the
             `SignalPanel.layout()``
         """
@@ -244,6 +336,61 @@ class SignalPanel(QGridLayout):
         else:
             sig = EpicsSignalRO(read_pv, name=name)
         return self.add_signal(sig, name)
+
+    @staticmethod
+    def _apply_name_filter(filter_by, *items):
+        """
+        Apply the name filter
+        """
+        if not filter_by:
+            return True
+
+        return any(filter_by in item for item in items)
+
+    def filter_signals(self, kinds, order, *, name=None):
+        """
+        Filter signals based on the given kinds
+
+        Parameters
+        ----------
+        kinds : list of :class:`ophyd.Kind`
+            If given
+        order : :class:`SignalOrder`
+            Order by kind, or by name, for example
+        name : str, optional
+            Additionally filter signals by name
+
+        Note
+        ----
+        :class:`SignalPanel` recreates all widgets when this is called.
+        """
+        self.clear()
+        signals = []
+
+        for device in self._devices:
+            for kind in kinds:
+                for label, signal, cpt in _device_signals_by_kind(
+                        device, kind):
+                    if not self._apply_name_filter(name, label, signal.name):
+                        continue
+
+                    # Check twice for Kind as signal might have multiple kinds
+
+                    # TODO: I think this is incorrect; as a 'hinted and normal'
+                    # signal will not show up if showHints=False and
+                    # showNormal=True
+
+                    if signal.kind in kinds:
+                        signals.append((label, signal, cpt))
+
+        sorter = _get_signal_sorter(order)
+        for (label, signal, cpt) in sorted(set(signals), key=sorter):
+            self.add_signal(signal, label, tooltip=cpt.doc)
+
+        self.setSizeConstraint(self.SetMinimumSize)
+
+    def add_device(self, device):
+        self._devices.append(device)
 
     def clear(self):
         """Clear the SignalPanel"""
@@ -258,6 +405,56 @@ class SignalOrder:
     byName = 1
 
 
+DEFAULT_KIND_ORDER = (Kind.hinted, Kind.normal, Kind.config, Kind.omitted)
+
+
+def _get_signal_sorter(signal_order, *, kind_order=None):
+    kind_order = kind_order or DEFAULT_KIND_ORDER
+
+    # Pick our sorting function
+    if signal_order == SignalOrder.byKind:
+        # Sort by kind
+        def sorter(x):
+            return (kind_order.index(x[1].kind), x[0])
+
+    elif signal_order == SignalOrder.byName:
+        # Sort by name
+        def sorter(x):
+            return x[0]
+    else:
+        logger.exception("Unknown sorting type %r", kind_order)
+        return []
+
+    return sorter
+
+
+def _device_signals_by_kind(device, kind):
+    """
+    Get signals from a device by kind
+
+    Parameters
+    ----------
+    device : ophyd.Device
+        The device
+    kind : ophyd.Kind
+        The kind with which to filter
+
+    Yields
+    ------
+    name : str
+        Cleaned attribute name
+    signal : ophyd.OphydObj
+        The signal itself
+    component : ophyd.Component
+        The component from which the signal was created
+    """
+    try:
+        for attr, item in utils.grab_kind(device, kind.name).items():
+            yield clean_attr(attr), item.signal, item.component
+    except Exception:
+        logger.exception("Unable to add %s signals from %r", kind.name, device)
+
+
 class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     """
     Panel of Signals for Device
@@ -267,14 +464,28 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     # From top of page to bottom
     kind_order = (Kind.hinted, Kind.normal,
                   Kind.config, Kind.omitted)
+    _panel_class = SignalPanel
+    updated = QtCore.Signal()
+
+    _kind_to_property = {
+        'hinted': 'showHints',
+        'normal': 'showNormal',
+        'config': 'showConfig',
+        'omitted': 'showOmitted',
+    }
 
     def __init__(self, parent=None, init_channel=None):
         super().__init__(parent=parent)
         # Create a SignalPanel layout to be modified later
-        self.setLayout(SignalPanel())
+        self._panel_layout = self._panel_class()
+        self.setLayout(self._panel_layout)
+        self._name_filter = ''
         # Add default Kind values
         self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
         self._signal_order = SignalOrder.byKind
+
+        self.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+        self.contextMenuEvent = self.open_context_menu
 
     def _get_kind(self, kind):
         return self._kinds[kind]
@@ -285,21 +496,47 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
             # Store it internally
             self._kinds[kind] = value
             # Remodify the layout for the new Kind
-            self._set_layout()
+            self._update_panel()
+
+    def _update_panel(self):
+        self._panel_layout.filter_signals(
+            name=self.nameFilter,
+            kinds=self.show_kinds,
+            order=self._signal_order,
+        )
+        self.updated.emit()
+
+    @property
+    def show_kinds(self):
+        return [kind for kind in Kind if self._kinds[kind.name]]
 
     # Kind Configuration pyqtProperty
     showHints = Property(bool,
                          partial(_get_kind, kind='hinted'),
-                         partial(_set_kind, kind='hinted'))
+                         partial(_set_kind, kind='hinted'),
+                         doc='Show ophyd.Kind.hinted signals')
     showNormal = Property(bool,
                           partial(_get_kind, kind='normal'),
-                          partial(_set_kind, kind='normal'))
+                          partial(_set_kind, kind='normal'),
+                          doc='Show ophyd.Kind.normal signals')
     showConfig = Property(bool,
                           partial(_get_kind, kind='config'),
-                          partial(_set_kind, kind='config'))
+                          partial(_set_kind, kind='config'),
+                          doc='Show ophyd.Kind.config signals')
     showOmitted = Property(bool,
                            partial(_get_kind, kind='omitted'),
-                           partial(_set_kind, kind='omitted'))
+                           partial(_set_kind, kind='omitted'),
+                           doc='Show ophyd.Kind.omitted signals')
+
+    @Property(str, doc='Filter signals by name')
+    def nameFilter(self):
+        return self._name_filter
+
+    @nameFilter.setter
+    def nameFilter(self, name_filter):
+        if name_filter != self._name_filter:
+            self._name_filter = name_filter.strip()
+            self._update_panel()
 
     @Property(SignalOrder)
     def sortBy(self):
@@ -310,7 +547,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     def sortBy(self, value):
         if value != self._signal_order:
             self._signal_order = value
-            self._set_layout()
+            self._update_panel()
 
     def add_device(self, device):
         """Add a device to the widget"""
@@ -319,48 +556,109 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         # Add the new device
         super().add_device(device)
         # Configure the layout for the new device
-        self._set_layout()
+        self._panel_layout.add_device(device)
+        self._update_panel()
 
-    def _set_layout(self):
-        """Set the layout based on the current device and kind"""
-        # We can't set a layout if we don't have any devices
-        if not self.devices:
-            return
-        # Clear our layout
-        self.layout().clear()
-        shown_kind = [kind for kind in Kind if self._kinds[kind.name]]
-        # Iterate through kinds
-        signals = list()
-        device = self.devices[0]
-        for kind in shown_kind:
-            try:
-                for attr, item in grab_kind(device, kind.name).items():
-                    # Check twice for Kind as signal might have multiple kinds
-                    if item.signal.kind in shown_kind:
-                        label = clean_attr(attr)
-                        signals.append((label, item.signal, item.component))
-            except Exception:
-                logger.exception("Unable to add %s signals from %r",
-                                 kind.name, self.devices[0])
-        # Pick our sorting function
-        if self._signal_order == SignalOrder.byKind:
+    def set_device_display(self, display):
+        self.display = display
 
-            # Sort by kind
-            def sorter(x):
-                return (self.kind_order.index(x[1].kind), x[0])
+    def generate_context_menu(self):
+        menu = QtWidgets.QMenu(parent=self)
+        for kind, property_name in self._kind_to_property.items():
+            def selected(new_value, *, name=property_name):
+                setattr(self, name, new_value)
 
-        elif self._signal_order == SignalOrder.byName:
+            action = menu.addAction('Show &' + kind)
+            action.setCheckable(True)
+            action.setChecked(getattr(self, property_name))
+            action.triggered.connect(selected)
+        return menu
 
-            # Sort by name
-            def sorter(x):
-                return x[0]
-        else:
-            logger.exception("Unknown sorting type %r", self.sortBy)
-            return
-        # Add to layout
-        for (label, signal, cpt) in sorted(set(signals), key=sorter):
-            self.layout().add_signal(signal, label, tooltip=cpt.doc)
+    def open_context_menu(self, ev):
+        """
+        Handler for when the Default Context Menu is requested.
 
-    def sizeHint(self):
-        """Default SizeHint"""
-        return QSize(240, 140)
+        Parameters
+        ----------
+        ev : QEvent
+        """
+        menu = self.generate_context_menu()
+        menu.exec_(self.mapToGlobal(ev.pos()))
+
+
+class CompositeSignalPanel(SignalPanel):
+    def __init__(self):
+        super().__init__(signals=None)
+        self._containers = {}
+
+    def filter_signals(self, kinds, order, *, name=None):
+        """
+        Filter signals based on the given kinds
+
+        Parameters
+        ----------
+        kinds : list of :class:`ophyd.Kind`
+            If given
+        order : :class:`SignalOrder`
+            Order by kind, or by name, for example
+        name : str, optional
+            Additionally filter signals by name
+
+        Note
+        ----
+        :class:`CompositeSignalPanel` merely toggles visibility and does not
+        destroy nor recreate widgets when this is called.
+        """
+        for signal_name, info in self.signals.items():
+            signal = info['signal']
+            row = info['row']
+            visible = signal.kind in kinds
+            visible = visible and self._apply_name_filter(name, signal_name)
+            for col in range(self.NUM_COLS):
+                item = self.itemAtPosition(row, col)
+                if item:
+                    widget = item.widget()
+                    if widget:
+                        widget.setVisible(visible)
+
+        self.update()
+        # self._dump_layout()
+
+    def add_sub_device(self, device, name):
+        """
+        Add a sub-device to the next row
+
+        Parameters
+        ----------
+        device : ophyd.Device
+            The device to add
+        name : str
+            The name/label to go with the device
+        """
+        logger.debug('%s adding sub-device: %s (%s)', self.__class__.__name__,
+                     device.name, device.__class__.__name__)
+        container = display.TyphosDeviceDisplay(name=name, scrollable=False,
+                                                composite_heuristics=True)
+        self._containers[name] = container
+        self.add_row(container)
+        container.add_device(device)
+
+    def add_device(self, device):
+        """
+        Hook for typhos to add a device
+        """
+        super().add_device(device)
+
+        logger.debug('%s signals from device: %s', self.__class__.__name__,
+                     device.name)
+        for attr, component in utils._get_top_level_components(type(device)):
+            dotted_name = f'{device.name}.{attr}'
+            obj = getattr(device, attr)
+            if issubclass(component.cls, ophyd.Device):
+                self.add_sub_device(obj, name=dotted_name)
+            else:
+                self.add_signal(obj, name=dotted_name)
+
+
+class TyphosCompositeSignalPanel(TyphosSignalPanel):
+    _panel_class = CompositeSignalPanel

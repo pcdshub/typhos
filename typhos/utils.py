@@ -83,7 +83,7 @@ def is_signal_ro(signal):
     In the future this may be easier to do through improvements to
     introspection in the ophyd library. Until that day we need to check classes
     """
-    return isinstance(signal, (SignalRO, EpicsSignalRO))
+    return isinstance(signal, (SignalRO, EpicsSignalRO, ophyd.sim.SynSignalRO))
 
 
 def grab_kind(device, kind):
@@ -449,6 +449,18 @@ def remove_duplicate_items(list_):
     return cls(sorted(set(list_), key=list_.index))
 
 
+def is_standard_template(template):
+    """
+    Is the template one provided with typhos?
+
+    Parameters
+    ----------
+    template : str or pathlib.Path
+    """
+    common_path = pathlib.Path(os.path.commonpath((template, MODULE_PATH)))
+    return common_path == MODULE_PATH
+
+
 def find_templates_for_class(cls, view_type, paths, *, extensions=None,
                              include_mro=True):
     '''
@@ -729,13 +741,29 @@ def subscription_context_device(device, callback, event_type=None, run=True, *,
 
 class _ConnectionStatus:
     def __init__(self, signals, callback):
-        self.signals = signals
+        self.signals = list(signals)
         self.connected = set()
         self.callback = callback
         self.lock = threading.Lock()
+        # NOTE: this will be set externally
+        self.obj_to_cid = {}
+
+    def remove_signal(self, signal):
+        'Remove a signal from being monitored - no more callbacks'
+        with self.lock:
+            self.signals.remove(signal)
+            if signal in self.connected:
+                self.connected.remove(signal)
+
+            cid = self.obj_to_cid.pop(signal)
+            signal.unsubscribe(cid)
 
     def _connection_callback(self, *, obj, connected, **kwargs):
         with self.lock:
+            if obj not in self.obj_to_cid:
+                # May have been removed
+                return
+
             if connected and obj not in self.connected:
                 self.connected.add(obj)
             elif not connected and obj in self.connected:
@@ -828,3 +856,10 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
             while not self.isInterruptionRequested():
                 self._update_event.clear()
                 self._update_event.wait(timeout=0.5)
+
+
+def _get_top_level_components(device_cls):
+    """
+    Get all top-level components from a device class
+    """
+    return list(device_cls._sig_attrs.items())

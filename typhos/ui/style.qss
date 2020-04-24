@@ -1,5 +1,4 @@
 TyphosBase {
-   background-color: #ffffff;
    color: black;
    font: bold;
 }
@@ -38,7 +37,7 @@ TyphosBase QComboBox:hover {
 }
 
 TyphosBase QListWidget::item:selected {
-    background-color: #0b3ae8;;
+    background-color: #0b3ae8;
     color: white;
 }
 
@@ -64,4 +63,18 @@ TyphosBase TyphosPositionerWidget[moving="false"][successful_move="true"] .QFram
 
 TyphosBase TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
     border: 2px solid red;
+}
+
+TyphosTitleLabel {
+    border: none;
+}
+
+TyphosTitleLabel:hover {
+    border: 1px solid black;
+}
+
+QLineEdit#menu_action {
+    border-width: 2px;
+    border-style: outset;
+    border-color: black;
 }

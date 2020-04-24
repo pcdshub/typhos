@@ -1,9 +1,7 @@
-import os.path
-
 import pytest
 
-from pydm import Display
 import typhos.display
+from pydm import Display
 from typhos.utils import clean_attr
 
 from . import conftest
@@ -24,13 +22,14 @@ def show_switcher(request):
 
 @show_widget
 def test_device_title(device, motor, show_switcher, qtbot):
-    title = typhos.display.TyphosDisplayTitle(show_switcher=show_switcher)
+    typhos.display.TyphosDisplayTitle(show_switcher=show_switcher)
 
 
 @show_widget
 def test_device_display(device, motor, qtbot):
-    panel = typhos.display.TyphosDeviceDisplay.from_device(motor)
-    panel_main = panel._main_widget
+    panel = typhos.display.TyphosDeviceDisplay.from_device(
+        motor, composite_heuristics=False)
+    panel_main = panel.display_widget
     qtbot.addWidget(panel)
     # We have all our signals
     shown_read_sigs = list(panel_main.read_panel.layout().signals.keys())
@@ -40,9 +39,9 @@ def test_device_display(device, motor, qtbot):
     assert all([clean_attr(sig) in shown_cfg_sigs
                 for sig in motor.configuration_attrs])
     # Check that we can add multiple devices
-    device.name ='test'
+    device.name = 'test'
     panel.add_device(device)
-    panel_main = panel._main_widget
+    panel_main = panel.display_widget
     # We have all our signals
     shown_read_sigs = list(panel_main.read_panel.layout().signals.keys())
     assert all(clean_attr(sig) in shown_read_sigs for sig in device.read_attrs)
@@ -60,11 +59,12 @@ def test_display_without_md(motor, display):
 
 
 def test_display_with_md(motor, display):
+    screen = 'engineering_screen.ui'
     display.add_device(
-        motor, macros={'detailed_screen': 'engineering_screen.ui'})
+        motor, macros={'detailed_screen': screen})
     display.load_best_template()
-    assert display.current_template.name == 'engineering_screen.ui'
-    assert display.templates['detailed_screen'][0].name == 'engineering_screen.ui'
+    assert display.current_template.name == screen
+    assert display.templates['detailed_screen'][0].name == screen
 
 
 def test_display_type_change(motor, display):
@@ -114,5 +114,5 @@ def test_display_with_py_file(display, motor):
     py_file = str(conftest.MODULE_PATH / 'utils' / 'display.py')
     display.add_device(motor, macros={'detailed_screen': py_file})
     display.load_best_template()
-    assert isinstance(display._main_widget, Display)
-    assert getattr(display._main_widget, 'is_from_test_file', False)
+    assert isinstance(display.display_widget, Display)
+    assert getattr(display.display_widget, 'is_from_test_file', False)

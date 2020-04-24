@@ -1,20 +1,20 @@
 import random
 
 import numpy as np
-import pydm.utilities
 from qtpy.QtWidgets import QWidget
 
-from ophyd import Kind
+import pydm.utilities
 from ophyd.signal import Signal
 from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
                        SynSignalRO)
 from pydm.widgets import PyDMEnumComboBox
-from typhos.signal import SignalPanel, TyphosSignalPanel, signal_widget
+from typhos.signal import SignalPanel, TyphosSignalPanel, create_signal_widget
 from typhos.widgets import ImageDialogButton, WaveformDialogButton
 
 from .conftest import DeadSignal, RichSignal, show_widget
 
 
+@show_widget
 def test_panel_creation(qtbot):
     standard = FakeEpicsSignal('Tst:Pv')
     read_and_write = FakeEpicsSignal('Tst:Read', write_pv='Tst:Write')
@@ -42,15 +42,23 @@ def test_panel_creation(qtbot):
     qtbot.addWidget(widget)
     widget.setLayout(panel)
     assert len(panel.signals) == 6
+    panel._dump_layout()
+
+    def widget_at(row, col):
+        return panel.layout().itemAtPosition(row, col).widget()
+
     # Check read-only channels do not have write widgets
-    panel.layout().itemAtPosition(2, 1).layout().count() == 1
-    panel.layout().itemAtPosition(4, 1).layout().count() == 1
+    assert widget_at(2, 1) is widget_at(2, 2)
+    assert widget_at(4, 1) is widget_at(4, 2)
+
     # Array widget has only a button, even when writable
-    assert panel.layout().itemAtPosition(5, 1).layout().count() == 1
+    assert widget_at(5, 1) is widget_at(5, 2)
+
     # Check write widgets are present
-    panel.layout().itemAtPosition(0, 1).layout().count() == 2
-    panel.layout().itemAtPosition(1, 1).layout().count() == 2
-    panel.layout().itemAtPosition(3, 1).layout().count() == 2
+    assert widget_at(0, 1) is not widget_at(0, 2)
+    assert widget_at(1, 1) is not widget_at(1, 2)
+    assert widget_at(3, 1) is not widget_at(3, 2)
+    return widget
 
 
 def test_panel_add_enum(qtbot):
@@ -62,12 +70,14 @@ def test_panel_add_enum(qtbot):
     # Create an enum signal
     syn_sig = RichSignal(name='Syn:Enum', value=1)
     # Add our signals to the panel
-    loc1 = panel.add_signal(syn_sig, "Sim Enum PV")
+    row = panel.add_signal(syn_sig, "Sim Enum PV")
     # Check our signal was added a QCombobox
     # Assume it is the last item in the button layout
-    but_layout = panel.layout().itemAtPosition(loc1, 1)
-    assert isinstance(but_layout.itemAt(but_layout.count()-1).widget(),
-                      PyDMEnumComboBox)
+
+    def widget_at(row, col):
+        return panel.layout().itemAtPosition(row, col).widget()
+
+    assert isinstance(widget_at(row, 2), PyDMEnumComboBox)
 
 
 def test_add_dead_signal(qtbot):
@@ -85,12 +95,18 @@ def test_add_pv(qtbot):
     widget = QWidget()
     qtbot.addWidget(widget)
     widget.setLayout(panel)
-    panel.add_pv('Tst:A', 'Read Only')
+    row = panel.add_pv('Tst:A', 'Read Only')
     assert 'Read Only' in panel.signals
-    assert panel.layout().itemAtPosition(0, 1).count() == 1
-    panel.add_pv('Tst:A', "Write", write_pv='Tst:B')
+
+    def widget_at(row, col):
+        return panel.layout().itemAtPosition(row, col).widget()
+
+    # Check read-only spans setpoint/readback cols
+    assert widget_at(row, 1) is widget_at(row, 2)
+
+    row = panel.add_pv('Tst:A', "Write", write_pv='Tst:B')
     # Since it is not connected, it should show just the loading widget
-    assert panel.layout().itemAtPosition(1, 1).count() == 1
+    assert widget_at(row, 1) is widget_at(row, 2)
 
 
 @show_widget
@@ -120,6 +136,7 @@ def test_typhos_panel(qapp, client, qtbot):
     assert len(panel.layout().signals) == num_hints
     panel.showNormal = True
     panel.showHints = False
+    print(panel.layout().signals)
     assert len(panel.layout().signals) == num_read - num_hints
     panel.showHints = True
     assert len(panel.layout().signals) == num_read
@@ -135,7 +152,7 @@ def test_typhos_panel_sorting(qapp, client, qtbot):
     panel.channel = 'happi://test_motor'
     pydm.utilities.establish_widget_connections(panel)
     sorted_names = sorted(panel.devices[0].component_names)
-    sig_layout = panel.layout().layout()
+    _ = panel.layout().layout()
     assert list(panel.layout().signals.keys()) == sorted_names
     # Sort by kind
     panel.sortBy = panel.SignalOrder.byKind
@@ -148,7 +165,7 @@ def test_typhos_panel_sorting(qapp, client, qtbot):
 @show_widget
 def test_signal_widget_waveform(qtbot):
     signal = Signal(name='test_wave', value=np.zeros((4, )))
-    widget = signal_widget(signal)
+    widget = create_signal_widget(signal)
     qtbot.addWidget(widget)
     assert isinstance(widget, WaveformDialogButton)
     return widget
@@ -157,7 +174,7 @@ def test_signal_widget_waveform(qtbot):
 @show_widget
 def test_signal_widget_image(qtbot):
     signal = Signal(name='test_img', value=np.zeros((400, 540)))
-    widget = signal_widget(signal)
+    widget = create_signal_widget(signal)
     qtbot.addWidget(widget)
     assert isinstance(widget, ImageDialogButton)
     return widget

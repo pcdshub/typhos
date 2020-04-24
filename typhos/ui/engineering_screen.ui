@@ -45,7 +45,7 @@
       <number>2</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="read_layout" stretch="0,0,1">
+      <layout class="QVBoxLayout" name="read_layout" stretch="0,0,0">
        <item>
         <widget class="QLabel" name="read_label">
          <property name="font">

@@ -5,17 +5,15 @@ from functools import partial
 
 from pyqtgraph.parametertree import ParameterTree
 from pyqtgraph.parametertree import parameterTypes as ptypes
-from qtpy import QtWidgets
-from qtpy.QtCore import Qt, Signal, Slot
+from qtpy import QtCore, QtWidgets
 from qtpy.QtWidgets import QWidget
 
 import pcdsutils.qt
 
+from . import utils, widgets
 from .display import TyphosDeviceDisplay
 from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
-from .utils import (TyphosBase, clean_name, flatten_tree, raise_to_operator,
-                    save_suite, saved_template)
-from .widgets import SubDisplay, TyphosSidebarItem
+from .utils import TyphosBase, clean_name, flatten_tree, save_suite
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +22,10 @@ class SidebarParameter(ptypes.Parameter):
     """
     Parameter to hold information for the sidebar
     """
-    itemClass = TyphosSidebarItem
-    sigOpen = Signal(object)
-    sigHide = Signal(object)
-    sigEmbed = Signal(object)
+    itemClass = widgets.TyphosSidebarItem
+    sigOpen = QtCore.Signal(object)
+    sigHide = QtCore.Signal(object)
+    sigEmbed = QtCore.Signal(object)
 
     def __init__(self, embeddable=None, **opts):
         super().__init__(**opts)
@@ -36,7 +34,7 @@ class SidebarParameter(ptypes.Parameter):
 
 class DeviceParameter(SidebarParameter):
     """Parameter to hold information Ophyd Device"""
-    itemClass = TyphosSidebarItem
+    itemClass = widgets.TyphosSidebarItem
 
     def __init__(self, device, subdevices=True, **opts):
         # Set options for parameter
@@ -192,8 +190,8 @@ class TyphosSuite(TyphosBase):
         # If we got here we can't find the subdisplay
         raise ValueError(f"Unable to find subdisplay {display}")
 
-    @Slot(str)
-    @Slot(object)
+    @QtCore.Slot(str)
+    @QtCore.Slot(object)
     def show_subdisplay(self, widget):
         """
         Open a display in the dock system
@@ -209,7 +207,7 @@ class TyphosSuite(TyphosBase):
         if not isinstance(widget, QWidget):
             widget = self.get_subdisplay(widget)
         # Setup the dock
-        dock = SubDisplay(self)
+        dock = widgets.SubDisplay(self)
         # Set sidebar properly
         self._show_sidebar(widget, dock)
         # Add the widget to the dock
@@ -221,13 +219,13 @@ class TyphosSuite(TyphosBase):
         # Add to layout
         self._content_frame.layout().addWidget(dock)
 
-    @Slot(str)
-    @Slot(object)
+    @QtCore.Slot(str)
+    @QtCore.Slot(object)
     def embed_subdisplay(self, widget):
         """Embed a display in the dock system"""
         # Grab the relevant display
         if not self.embedded_dock:
-            self.embedded_dock = SubDisplay()
+            self.embedded_dock = widgets.SubDisplay()
             self.embedded_dock.setWidget(QWidget())
             self.embedded_dock.widget().setLayout(QtWidgets.QVBoxLayout())
             self.embedded_dock.widget().layout().addStretch(1)
@@ -244,8 +242,8 @@ class TyphosSuite(TyphosBase):
         self.embedded_dock.widget().layout().insertWidget(widget_count - 1,
                                                           widget)
 
-    @Slot()
-    @Slot(object)
+    @QtCore.Slot()
+    @QtCore.Slot(object)
     def hide_subdisplay(self, widget):
         """
         Hide a visible subdisplay
@@ -284,7 +282,7 @@ class TyphosSuite(TyphosBase):
         else:
             widget.hide()
 
-    @Slot()
+    @QtCore.Slot()
     def hide_subdisplays(self):
         """
         Hide all open displays
@@ -390,12 +388,12 @@ class TyphosSuite(TyphosBase):
                     save_suite(self, handle)
             except Exception as exc:
                 logger.exception("Failed to save TyphosSuite")
-                raise_to_operator(exc)
+                utils.raise_to_operator(exc)
         else:
             logger.debug("No filename chosen")
 
     # Add the template to the docstring
-    save.__doc__ += textwrap.indent('\n' + saved_template, '\t\t')
+    save.__doc__ += textwrap.indent('\n' + utils.saved_template, '\t\t')
 
     def _get_sidebar(self, widget):
         items = {}
@@ -424,7 +422,7 @@ class TyphosSuite(TyphosBase):
                 logger.debug("Creating new category %r ...", category)
                 group = ptypes.GroupParameter(name=category)
                 self._tree.addParameters(group)
-                self._tree.sortItems(0, Qt.AscendingOrder)
+                self._tree.sortItems(0, QtCore.Qt.AscendingOrder)
             logger.debug("Adding %r to category %r ...",
                          parameter.name(), group.name())
             group.addChild(parameter)
