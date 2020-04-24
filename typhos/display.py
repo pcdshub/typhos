@@ -13,7 +13,8 @@ import pydm.display
 import pydm.exception
 import pydm.utilities
 
-from . import signal, utils, widgets
+from . import panel as typhos_panel
+from . import utils, widgets
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +94,7 @@ class TyphosToolButton(QtWidgets.QToolButton):
 class TyphosDisplayConfigButton(TyphosToolButton):
     DEFAULT_ICON = 'ellipsis-v'
 
-    _kind_to_property = signal.TyphosSignalPanel._kind_to_property
+    _kind_to_property = typhos_panel.TyphosSignalPanel._kind_to_property
 
     def __init__(self, icon=None, *, parent=None):
         super().__init__(icon=icon, parent=parent)
@@ -193,7 +194,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         if not display:
             return base_menu
 
-        panels = display.findChildren(signal.TyphosSignalPanel) or []
+        panels = display.findChildren(typhos_panel.TyphosSignalPanel) or []
         if not panels:
             return base_menu
 
@@ -391,7 +392,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
         def toggle_display():
             widget = display.display_widget
-            panels = widget.findChildren(signal.TyphosSignalPanel) or []
+            panels = widget.findChildren(typhos_panel.TyphosSignalPanel) or []
             visible = all(panel.isVisible() for panel in panels)
             for panel in panels:
                 panel.setVisible(not visible)
@@ -435,7 +436,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                           _DisplayTypes):
     """
-    Main Panel display for a signal Ophyd Device
+    Main Panel display for a single Ophyd Device
 
     This widget lays out all of the architecture for a single Ophyd display.
     The structure matches an ophyd Device, but for this specific instantation,
