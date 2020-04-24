@@ -506,6 +506,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         layout = QtWidgets.QHBoxLayout()
         self.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self._scroll_area)
 
         self.setContextMenuPolicy(Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
@@ -653,17 +654,18 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         logger.warning("No templates available for display type: %s",
                        self._display_type)
 
-    def _clear_layout(self):
+    def _remove_display(self):
         """
-        Clear the layout in preparation for another template setting
+        Remove the display widget, readying for a new template
         """
-        # Clear anything that exists in the current layout
-        layout = self.layout()
-        layout.removeWidget(self._scroll_area)
-        utils.clear_layout(layout)
-        self._scroll_area.takeWidget()
+        display_widget = self._display_widget
+        if display_widget:
+            if self._scroll_area.widget():
+                self._scroll_area.takeWidget()
+            self.layout().removeWidget(display_widget)
+            display_widget.deleteLater()
+
         self._display_widget = None
-        layout.addWidget(self._scroll_area)
 
     def load_best_template(self):
         """
@@ -679,7 +681,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if not self._searched:
             self.search_for_templates()
 
-        self._clear_layout()
+        self._remove_display()
 
         template = (self._forced_template or
                     self.get_best_template(self._display_type, self.macros))
