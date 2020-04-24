@@ -382,6 +382,7 @@ class SignalDialogButton(QPushButton):
     """QPushButton to launch a QDialog with a PyDMWidget"""
     text = NotImplemented
     icon = NotImplemented
+    persistent = False
 
     def __init__(self, init_channel, text=None, icon=None, parent=None):
         self.text = text or self.text
@@ -402,7 +403,8 @@ class SignalDialogButton(QPushButton):
         if not self.dialog:
             logger.debug("Creating QDialog for %r", self.channel)
             # Set up the QDialog
-            self.dialog = QDialog(self)
+            parent = None if self.persistent else self
+            self.dialog = QDialog(parent)
             self.dialog.setWindowTitle(self.channel)
             self.dialog.setLayout(QVBoxLayout())
             self.dialog.layout().setContentsMargins(2, 2, 2, 2)
@@ -422,6 +424,7 @@ class ImageDialogButton(SignalDialogButton):
     """QPushButton to show a 2-d array"""
     text = 'Show Image'
     icon = 'fa.camera'
+    persistent = True
 
     def widget(self):
         """Create PyDMImageView"""
@@ -433,6 +436,7 @@ class WaveformDialogButton(SignalDialogButton):
     """QPushButton to show a 1-d array"""
     text = 'Show Waveform'
     icon = 'fa5s.chart-line'
+    persistent = True
 
     def widget(self):
         """Create PyDMWaveformPlot"""
