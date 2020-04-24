@@ -8,7 +8,7 @@ from ophyd.signal import Signal
 from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
                        SynSignalRO)
 from pydm.widgets import PyDMEnumComboBox
-from typhos.signal import SignalPanel, TyphosSignalPanel, create_signal_widget
+from typhos.panel import SignalPanel, TyphosSignalPanel, create_signal_widget
 from typhos.widgets import ImageDialogButton, WaveformDialogButton
 
 from .conftest import DeadSignal, RichSignal, show_widget

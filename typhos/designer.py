@@ -5,8 +5,8 @@ from pydm.widgets.qtplugin_base import qtplugin_factory
 from .display import (TyphosDeviceDisplay, TyphosDisplaySwitcher,
                       TyphosDisplayTitle)
 from .func import TyphosMethodButton
+from .panel import TyphosSignalPanel
 from .positioner import TyphosPositionerWidget
-from .signal import TyphosSignalPanel
 
 logger = logging.getLogger(__name__)
 logger.info("Loading Typhos QtDesigner plugins ...")

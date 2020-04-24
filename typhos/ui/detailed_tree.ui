@@ -73,7 +73,7 @@
   <customwidget>
    <class>TyphosSignalPanel</class>
    <extends>QWidget</extends>
-   <header>typhos.signal</header>
+   <header>typhos.panel</header>
   </customwidget>
   <customwidget>
    <class>TyphosDisplayTitle</class>
@@ -83,7 +83,7 @@
   <customwidget>
    <class>TyphosCompositeSignalPanel</class>
    <extends>TyphosSignalPanel</extends>
-   <header>typhos.signal</header>
+   <header>typhos.panel</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -317,7 +317,7 @@
   <customwidget>
    <class>TyphosSignalPanel</class>
    <extends>QWidget</extends>
-   <header>typhos.signal</header>
+   <header>typhos.panel</header>
   </customwidget>
   <customwidget>
    <class>TyphosPositionerWidget</class>
