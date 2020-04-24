@@ -1,6 +1,7 @@
 """This module defines the ``typhos`` command line utility"""
 import argparse
 import ast
+import inspect
 import logging
 import re
 import sys
@@ -10,6 +11,7 @@ from qtpy.QtWidgets import QApplication, QMainWindow
 
 import pcdsutils
 import typhos
+from ophyd.sim import make_fake_device, clear_fake_device
 
 logger = logging.getLogger(__name__)
 app = None
@@ -26,6 +28,11 @@ parser.add_argument('devices', nargs='*',
 parser.add_argument('--happi-cfg',
                     help='Location of happi configuration file '
                          'if not specified by $HAPPI_CFG environment variable')
+parser.add_argument('--fake-device', action='store_true',
+                    help='Create fake devices with no EPICS connections. '
+                         'This does not yet work for happi devices. An '
+                         'example invocation: '
+                         'typhos --fake-device ophyd.EpicsMotor[]')
 parser.add_argument('--version', '-V', action='store_true',
                     help='Current version and location '
                          'of Typhos installation.')
@@ -72,7 +79,7 @@ def typhos_cli_setup(args):
             app.setStyleSheet(handle.read())
 
 
-def create_suite(devices, cfg=None):
+def create_suite(devices, cfg=None, fake_devices=False):
     """Create a TyphosSuite from a list of device names"""
     logger.debug("Accessing Happi Client ...")
     happi_enabled = False
@@ -104,13 +111,24 @@ def create_suite(devices, cfg=None):
         if len(result) > 0:
             try:
                 klass, args = result[0]
+                klass = pcdsutils.utils.import_helper(klass)
+
                 default_kwargs = {"name": "device"}
                 if args:
                     kwargs = ast.literal_eval(args)
                     default_kwargs.update(kwargs)
 
-                device = pcdsutils.utils.import_helper(klass)(**default_kwargs)
+                if fake_devices:
+                    klass = make_fake_device(klass)
+                    # Give default value to missing positional args
+                    # This might fail, but is best effort
+                    for arg in inspect.getfullargspec(klass).args:
+                        if arg not in default_kwargs and arg != 'self':
+                            default_kwargs[arg] = 'FAKE'
+
+                device = klass(**default_kwargs)
                 loaded_devs.append(device)
+
             except Exception:
                 logger.exception("Unable to load class entry: %s with args %s",
                                  klass, args)
@@ -119,11 +137,16 @@ def create_suite(devices, cfg=None):
                 logger.error("Happi not available. Unable to load entry: %r",
                              device)
                 continue
+            if fake_devices:
+                raise NotImplementedError("Fake devices from happi not "
+                                          "supported yet")
             try:
                 device = client.load_device(name=device)
                 loaded_devs.append(device)
             except Exception:
                 logger.exception("Unable to load Happi entry: %r", device)
+        if fake_devices:
+            clear_fake_device(device)
     if loaded_devs or not devices:
         logger.debug("Creating empty TyphosSuite ...")
         suite = typhos.TyphosSuite()
@@ -149,7 +172,8 @@ def typhos_cli(args):
     typhos_cli_setup(args)
     if not args.version:
         with typhos.utils.no_device_lazy_load():
-            suite = create_suite(args.devices, cfg=args.happi_cfg)
+            suite = create_suite(args.devices, cfg=args.happi_cfg,
+                                 fake_devices=args.fake_device)
         if suite:
             window = QMainWindow()
             window.setCentralWidget(suite)
