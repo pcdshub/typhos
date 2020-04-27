@@ -474,7 +474,7 @@ class _CachedPath:
     def glob(self, pattern):
         """Glob a pattern"""
         if self.cache is None:
-            self.update_cache()
+            self.update()
 
         for path in self.cache:
             if fnmatch.fnmatch(path.name, pattern):
