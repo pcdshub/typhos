@@ -476,8 +476,9 @@ class _CachedPath:
         if self.cache is None:
             self.update()
 
+        regex = re.compile(fnmatch.translate(pattern))
         for path in self.cache:
-            if fnmatch.fnmatch(path, pattern):
+            if regex.match(path):
                 yield self.path / path
 
 
