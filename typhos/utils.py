@@ -3,6 +3,7 @@ Utility functions for typhos
 """
 import collections
 import contextlib
+import fnmatch
 import importlib.util
 import inspect
 import io
@@ -449,6 +450,37 @@ def remove_duplicate_items(list_):
     return cls(sorted(set(list_), key=list_.index))
 
 
+class _CachedPath:
+    """
+    A wrapper around pathlib.Path to support repeated globbing
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        The path to cache
+    """
+
+    def __init__(self, path):
+        self.path = pathlib.Path(path)
+        self.cache = None
+
+    def __hash__(self):
+        return hash(self.path)
+
+    def update(self):
+        """Update the file list"""
+        self.cache = list(self.path.iterdir())
+
+    def glob(self, pattern):
+        """Glob a pattern"""
+        if self.cache is None:
+            self.update_cache()
+
+        for path in self.cache:
+            if fnmatch.fnmatch(path.name, pattern):
+                yield path
+
+
 def is_standard_template(template):
     """
     Is the template one provided with typhos?
@@ -497,6 +529,8 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
         [pathlib.Path(p).expanduser().resolve() for p in paths]
     )
 
+    paths = [_CachedPath(p) for p in paths]
+
     for candidate_filename in _get_template_filenames_for_class(
             cls, view_type, include_mro=include_mro):
         for extension in extensions:
@@ -535,6 +569,8 @@ def find_file_in_paths(filename, *, paths=None):
     paths = remove_duplicate_items(
         [pathlib.Path(p).expanduser().resolve() for p in paths]
     )
+
+    paths = [_CachedPath(p) for p in paths]
 
     for path in paths:
         for match in path.glob(filename):
