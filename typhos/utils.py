@@ -44,7 +44,7 @@ def _get_display_paths():
     'Get all display paths based on PYDM_DISPLAY_PATHS + typhos built-ins'
     paths = os.environ.get('PYDM_DISPLAYS_PATH', '')
     for path in paths.split(os.pathsep):
-        path = pathlib.Path(path).resolve()
+        path = pathlib.Path(path).expanduser().resolve()
         if path.exists() and path.is_dir():
             yield path
     yield ui_dir
@@ -530,11 +530,12 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
     elif isinstance(extensions, str):
         extensions = [extensions]
 
-    paths = remove_duplicate_items(
-        [pathlib.Path(p).expanduser().resolve() for p in paths]
-    )
+    if not isinstance(paths[0], _CachedPath):
+        paths = remove_duplicate_items(
+            [pathlib.Path(p).expanduser().resolve() for p in paths]
+        )
 
-    paths = [_CachedPath(p) for p in paths]
+        paths = [_CachedPath(p) for p in paths]
 
     for candidate_filename in _get_template_filenames_for_class(
             cls, view_type, include_mro=include_mro):

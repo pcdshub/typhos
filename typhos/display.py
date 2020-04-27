@@ -898,6 +898,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         logger.debug('Searching for templates for %s', cls.__name__)
         macro_templates = self._get_templates_from_macros(self._macros)
 
+        paths = [utils._CachedPath(p) for p in utils.DISPLAY_PATHS]
         for display_type in DisplayTypes.names:
             view = display_type
             if view.endswith('_screen'):
@@ -918,8 +919,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                     template_list.append(DETAILED_TREE_TEMPLATE)
 
             # 3. Templates based on class hierarchy names
-            filenames = utils.find_templates_for_class(
-                cls, view, utils.DISPLAY_PATHS)
+            filenames = utils.find_templates_for_class(cls, view, paths)
             for filename in filenames:
                 if filename not in template_list:
                     template_list.append(filename)
