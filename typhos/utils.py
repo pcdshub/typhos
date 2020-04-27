@@ -469,7 +469,7 @@ class _CachedPath:
 
     def update(self):
         """Update the file list"""
-        self.cache = list(self.path.iterdir())
+        self.cache = os.listdir(self.path)
 
     def glob(self, pattern):
         """Glob a pattern"""
@@ -477,8 +477,8 @@ class _CachedPath:
             self.update()
 
         for path in self.cache:
-            if fnmatch.fnmatch(path.name, pattern):
-                yield path
+            if fnmatch.fnmatch(path, pattern):
+                yield self.path / path
 
 
 def is_standard_template(template):
