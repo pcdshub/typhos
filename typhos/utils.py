@@ -863,3 +863,23 @@ def _get_top_level_components(device_cls):
     Get all top-level components from a device class
     """
     return list(device_cls._sig_attrs.items())
+
+
+def find_parent_with_class(widget, cls=QWidget):
+    """
+    Finds the first parent of a widget that is an instance of ``klass``
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget from which to start the search
+    cls : type, optional
+        The class which the parent must be an instance of
+
+    """
+    parent = widget
+    while parent is not None:
+        if isinstance(parent, cls):
+            return parent
+        parent = parent.parent()
+    return None

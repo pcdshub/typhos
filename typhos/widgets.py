@@ -14,6 +14,8 @@ from pydm.widgets import (PyDMEnumComboBox, PyDMImageView, PyDMLabel,
 from pydm.widgets.base import PyDMWidget
 from pydm.widgets.channel import PyDMChannel
 
+from .utils import find_parent_with_class
+
 logger = logging.getLogger(__name__)
 
 EXPONENTIAL_UNITS = ['mtorr', 'torr', 'kpa', 'pa']
@@ -382,6 +384,7 @@ class SignalDialogButton(QPushButton):
     """QPushButton to launch a QDialog with a PyDMWidget"""
     text = NotImplemented
     icon = NotImplemented
+    parent_widget_class = QtWidgets.QWidget
 
     def __init__(self, init_channel, text=None, icon=None, parent=None):
         self.text = text or self.text
@@ -402,7 +405,8 @@ class SignalDialogButton(QPushButton):
         if not self.dialog:
             logger.debug("Creating QDialog for %r", self.channel)
             # Set up the QDialog
-            self.dialog = QDialog(self)
+            parent = find_parent_with_class(self, self.parent_widget_class)
+            self.dialog = QDialog(parent)
             self.dialog.setWindowTitle(self.channel)
             self.dialog.setLayout(QVBoxLayout())
             self.dialog.layout().setContentsMargins(2, 2, 2, 2)
@@ -422,6 +426,7 @@ class ImageDialogButton(SignalDialogButton):
     """QPushButton to show a 2-d array"""
     text = 'Show Image'
     icon = 'fa.camera'
+    parent_widget_class = QtWidgets.QMainWindow
 
     def widget(self):
         """Create PyDMImageView"""
@@ -433,6 +438,7 @@ class WaveformDialogButton(SignalDialogButton):
     """QPushButton to show a 1-d array"""
     text = 'Show Waveform'
     icon = 'fa5s.chart-line'
+    parent_widget_class = QtWidgets.QMainWindow
 
     def widget(self):
         """Create PyDMWaveformPlot"""
