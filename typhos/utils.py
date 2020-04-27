@@ -476,10 +476,14 @@ class _CachedPath:
         if self.cache is None:
             self.update()
 
-        regex = re.compile(fnmatch.translate(pattern))
-        for path in self.cache:
-            if regex.match(path):
-                yield self.path / path
+        if any(c in pattern for c in '*?['):
+            regex = re.compile(fnmatch.translate(pattern))
+            for path in self.cache:
+                if regex.match(path):
+                    yield self.path / path
+        else:
+            if pattern in self.cache:
+                yield self.path / pattern
 
 
 def is_standard_template(template):
