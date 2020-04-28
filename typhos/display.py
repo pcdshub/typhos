@@ -1,4 +1,5 @@
 import enum
+import functools
 import logging
 import os.path
 import pathlib
@@ -173,6 +174,26 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         action.setDefaultWidget(line_edit)
         base_menu.addAction(action)
 
+    def create_hide_empty_panels_menu(self, panels, base_menu):
+        """
+        Create the hide empty panels menu
+
+        Parameters
+        ----------
+        base_menu : QMenu
+            The menu to add actions to
+        """
+        action = base_menu.addAction("Hide empty panels")
+        action.setCheckable(True)
+        action.setChecked(all(panel.hide_empty for panel in panels))
+        action.triggered.connect(
+            functools.partial(self._hide_empty_panels, panels)
+        )
+
+    def _hide_empty_panels(self, panels, checked):
+        for panel in panels:
+            panel.hide_empty = checked
+
     def generate_context_menu(self):
         """
         Generates the custom context menu
@@ -186,6 +207,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         Kind filter > Show hinted
                       ...
                       Show only hinted
+        Hide empty panels
         Filter by name
         """
         base_menu = QtWidgets.QMenu(parent=self)
@@ -204,6 +226,8 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         self.create_kind_filter_menu(panels, filter_menu, only=False)
         filter_menu.addSeparator()
         self.create_kind_filter_menu(panels, filter_menu, only=True)
+
+        self.create_hide_empty_panels_menu(panels, base_menu)
 
         base_menu.addSeparator()
         self.create_name_filter_menu(panels, base_menu)

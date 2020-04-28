@@ -148,6 +148,23 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         return self._row_count
 
+    @property
+    def active_row_count(self):
+        """
+        The number of visible filled-in rows
+        """
+        count = 0
+        for row in range(self._row_count):
+            # Skip col 0 as it is the title label
+            active = False
+            for col in range(1, self.NUM_COLS):
+                item = self.itemAtPosition(row, col)
+                if item and item.widget() and item.widget().isVisible():
+                    active = True
+                    break
+            count += 1 if active else 0
+        return count
+
     def _dump_layout(self, file=sys.stdout):
         """
         Utility to dump the current layout
@@ -480,6 +497,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         self._panel_layout = self._panel_class()
         self.setLayout(self._panel_layout)
         self._name_filter = ''
+        self._hide_empty = False
         # Add default Kind values
         self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
         self._signal_order = SignalOrder.byKind
@@ -504,6 +522,13 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
             kinds=self.show_kinds,
             order=self._signal_order,
         )
+
+
+        hide = self.hide_empty and self._panel_layout.active_row_count == 0
+        logger.debug(f'Update Panel {self} -> hide_empty: {self.hide_empty} '
+                     f'| arc -> {self._panel_layout.active_row_count} '
+                     f'| rc -> {self._panel_layout.row_count}')
+        self.parent().setVisible(not hide)
         self.updated.emit()
 
     @property
@@ -547,6 +572,19 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     def sortBy(self, value):
         if value != self._signal_order:
             self._signal_order = value
+            self._update_panel()
+
+    @property
+    def hide_empty(self):
+        """
+        Wether or not to hide empty panels
+        """
+        return self._hide_empty
+
+    @hide_empty.setter
+    def hide_empty(self, hide):
+        if hide != self._hide_empty:
+            self._hide_empty = hide
             self._update_panel()
 
     def add_device(self, device):
