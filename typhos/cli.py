@@ -99,7 +99,7 @@ def create_suite(devices, cfg=None, fake_devices=False):
     try:
         happi_client = _create_happi_client(cfg)
     except Exception:
-        logger.exception("Unable to create a happi client.")
+        logger.debug("Unable to create a happi client.")
         happi_client = None
 
     # Load and add each device
