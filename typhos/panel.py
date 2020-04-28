@@ -523,7 +523,6 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
             order=self._signal_order,
         )
 
-
         hide = self.hide_empty and self._panel_layout.active_row_count == 0
         logger.debug(f'Update Panel {self} -> hide_empty: {self.hide_empty} '
                      f'| arc -> {self._panel_layout.active_row_count} '
