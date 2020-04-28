@@ -21,6 +21,83 @@ from .widgets import (ImageDialogButton, SignalDialogButton, TyphosComboBox,
 logger = logging.getLogger(__name__)
 
 
+def determine_widget_type(signal, read_only=False):
+    """
+    Determine which widget class should be used for the given signal.
+
+    Parameters
+    ----------
+    signal : ophyd.Signal
+        Signal object to determine widget class
+
+    read_only: bool, optional
+        Should the chosen widget class be read-only?
+
+    Returns
+    -------
+    widget_class : class
+        The class to use for the widget
+    kwargs : dict
+        Keyword arguments for the class
+    """
+    # Grab our channel name
+    # Still re-route EpicsSignal through the ca:// plugin
+    if isinstance(signal, EpicsSignalBase):
+        pv = (signal._read_pv
+              if read_only else signal._write_pv)
+        chan = channel_name(pv.pvname)
+    else:
+        # Register signal with plugin
+        register_signal(signal)
+        chan = channel_name(signal.name, protocol='sig')
+
+    # Grab a description of the widget to see the correct widget type
+    try:
+        desc = signal.describe()[signal.name]
+    except Exception:
+        logger.error("Unable to connect to %r during widget creation",
+                     signal.name)
+        desc = {}
+
+    kwargs = {
+        'init_channel': chan,
+    }
+
+    # Unshaped data
+    shape = desc.get('shape', [])
+    dtype = desc.get('dtype', '')
+    try:
+        dimensions = len(shape)
+    except TypeError:
+        dimensions = 0
+
+    if dimensions == 0:
+        # Check for enum_strs, if so create a QCombobox
+        if read_only:
+            widget_cls = TyphosLabel
+        else:
+            if 'enum_strs' in desc:
+                # Create a QCombobox if the widget has enum_strs
+                widget_cls = TyphosComboBox
+            else:
+                # Otherwise a LineEdit will suffice
+                widget_cls = TyphosLineEdit
+    elif dimensions == 1:
+        # Waveform
+        widget_cls = WaveformDialogButton
+    elif dimensions == 2:
+        # B/W image
+        widget_cls = ImageDialogButton
+    else:
+        raise ValueError(f"Unable to create widget for widget of "
+                         f"shape {len(desc.get('shape'))} from {signal.name}")
+
+    if dtype == 'string' and widget_cls in (TyphosLabel, TyphosLineEdit):
+        kwargs['display_format'] = DisplayFormat.String
+
+    return widget_cls, kwargs
+
+
 def create_signal_widget(signal, read_only=False, tooltip=None):
     """
     Factory for creating a PyDMWidget from a signal
@@ -43,68 +120,15 @@ def create_signal_widget(signal, read_only=False, tooltip=None):
         PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
         be able to write back to the widget and if the signal has ``enum_strs``
     """
-    # Grab our channel name
-    # Still re-route EpicsSignal through the ca:// plugin
-    if isinstance(signal, EpicsSignalBase):
-        if read_only:
-            pv = signal._read_pv
-        else:
-            pv = signal._write_pv
-        chan = channel_name(pv.pvname)
-    else:
-        # Register signal with plugin
-        register_signal(signal)
-        chan = channel_name(signal.name, protocol='sig')
-    # Grab a description of the widget to see the correct widget type
-    try:
-        desc = signal.describe()[signal.name]
-    except Exception:
-        logger.error("Unable to connect to %r during widget creation",
-                     signal.name)
-        desc = {}
-    # Unshaped data
-    shape = desc.get('shape', [])
-    dtype = desc.get('dtype', '')
-    try:
-        dimensions = len(shape)
-    except TypeError:
-        dimensions = 0
-    if dimensions == 0:
-        # Check for enum_strs, if so create a QCombobox
-        if read_only:
-            widget = TyphosLabel
-            name = signal.name + '_label'
-        else:
-            # Create a QCombobox if the widget has enum_strs
-            if 'enum_strs' in desc:
-                widget = TyphosComboBox
-                name = signal.name + '_combo'
-            # Otherwise a LineEdit will suffice
-            else:
-                widget = TyphosLineEdit
-                name = signal.name + '_edit'
-    # Waveform
-    elif len(desc.get('shape')) == 1:
-        widget = WaveformDialogButton
-        name = signal.name + '_waveform_button'
-    # B/W image
-    elif len(desc.get('shape')) == 2:
-        widget = ImageDialogButton
-        name = signal.name + '_image_button'
-    else:
-        raise ValueError(f"Unable to create widget for widget of "
-                         f"shape {len(desc.get('shape'))} from {signal.name}")
+    widget_cls, kwargs = determine_widget_type(signal, read_only=read_only)
+    logger.debug("Creating %s for %s", widget_cls, signal.name)
 
-    logger.debug("Creating %s for %s", widget.__name__, signal.name)
-    widget_instance = widget(init_channel=chan)
-    widget_instance.setObjectName(name)
-
+    widget = widget_cls(**kwargs)
+    widget.setObjectName(f'{signal.name}_{widget_cls.__name__}')
     if tooltip is not None:
-        widget_instance.setToolTip(tooltip)
+        widget.setToolTip(tooltip)
 
-    if dtype == 'string' and widget in (TyphosLabel, TyphosLineEdit):
-        widget_instance.displayFormat = DisplayFormat.String
-    return widget_instance
+    return widget
 
 
 # Backward-compatibility (TODO deprecate)

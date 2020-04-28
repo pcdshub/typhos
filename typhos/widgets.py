@@ -95,13 +95,15 @@ class TyphosLineEdit(PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, display_format=None, **kwargs):
         self._setpoint_history_count = 5
         self._setpoint_history = collections.deque(
             [],  self._setpoint_history_count)
 
         super().__init__(*args, **kwargs)
         self.showUnits = True
+        if display_format is not None:
+            self.displayFormat = display_format
 
     @property
     def setpoint_history(self):
@@ -212,12 +214,14 @@ class TyphosLabel(PyDMLabel):
     """
     Reimplementation of PyDMLabel to set some custom defaults
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, display_format=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAlignment(Qt.AlignCenter)
         self.setSizePolicy(QtWidgets.QSizePolicy.Preferred,
                            QtWidgets.QSizePolicy.Maximum)
         self.showUnits = True
+        if display_format is not None:
+            self.displayFormat = display_format
 
     def unit_changed(self, new_unit):
         """
