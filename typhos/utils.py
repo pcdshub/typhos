@@ -740,27 +740,56 @@ def subscription_context_device(device, callback, event_type=None, run=True, *,
 
 
 class _ConnectionStatus:
-    def __init__(self, signals, callback):
-        self.signals = list(signals)
+    def __init__(self, callback):
         self.connected = set()
         self.callback = callback
         self.lock = threading.Lock()
         # NOTE: this will be set externally
         self.obj_to_cid = {}
+        self.objects = set()
 
-    def remove_signal(self, signal):
-        'Remove a signal from being monitored - no more callbacks'
+    def _run_callback_hack_on_object(self, sig):
+        '''
+        HACK: peek into ophyd objects to see if they're connected but have
+        never run metadata callbacks
+
+        This is part of an ongoing ophyd issue and may be removed in the
+        future.
+        '''
+        if sig not in self.objects:
+            return
+
+        if sig.connected and sig._args_cache.get('meta') is None:
+            md = dict(sig.metadata)
+            if 'connected' not in md:
+                md['connected'] = True
+            self.connected.add(sig)
+            self._connection_callback(obj=sig, **md)
+
+    def add_object(self, obj):
+        'Add an additional object to be monitored'
         with self.lock:
-            self.signals.remove(signal)
-            if signal in self.connected:
-                self.connected.remove(signal)
+            if obj in self.objects:
+                return
 
-            cid = self.obj_to_cid.pop(signal)
-            signal.unsubscribe(cid)
+        self.objects.add(obj)
+        self.obj_to_cid[obj] = obj.subscribe(
+            self._connection_callback, event_type='meta', run=True)
+        self._run_callback_hack_on_object(obj)
+
+    def remove_object(self, obj):
+        'Remove an object from being monitored - no more callbacks'
+        with self.lock:
+            if obj in self.connected:
+                self.connected.remove(obj)
+
+            self.objects.remove(obj)
+            cid = self.obj_to_cid.pop(obj)
+            obj.unsubscribe(cid)
 
     def _connection_callback(self, *, obj, connected, **kwargs):
         with self.lock:
-            if obj not in self.obj_to_cid:
+            if obj not in self.objects:
                 # May have been removed
                 return
 
@@ -778,7 +807,7 @@ class _ConnectionStatus:
     def __repr__(self):
         return (
             f'<{self.__class__.__name__} connected={len(self.connected)} '
-            f'signals={len(self.signals)}>'
+            f'objects={len(self.objects)}>'
         )
 
 
@@ -800,19 +829,13 @@ def connection_status_monitor(*signals, callback):
         guaranteed kwargs.
     '''
 
-    status = _ConnectionStatus(signals=signals, callback=callback)
+    status = _ConnectionStatus(callback)
 
     with subscription_context(*signals, callback=status._connection_callback,
                               event_type='meta', run=True
                               ) as status.obj_to_cid:
-        # HACK: peek into ophyd signals to see if they're connected but have
-        # never run metadata callbacks
         for sig in signals:
-            if sig.connected and sig._args_cache.get('meta') is None:
-                md = dict(sig.metadata)
-                if 'connected' not in md:
-                    md['connected'] = True
-                status._connection_callback(obj=sig, **md)
+            status._run_callback_hack_on_object(sig)
 
         yield status
 
@@ -838,8 +861,8 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
 
     connection_update = QtCore.Signal(object, bool, dict)
 
-    def __init__(self, device, include_lazy=False):
-        super().__init__()
+    def __init__(self, device, include_lazy=False, **kwargs):
+        super().__init__(**kwargs)
         self.device = device
         self.include_lazy = include_lazy
         self._update_event = threading.Event()
@@ -858,10 +881,96 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
                 self._update_event.wait(timeout=0.5)
 
 
+class ObjectConnectionMonitorThread(QtCore.QThread):
+    '''
+    Monitor connection status in a background thread
+
+    Attributes
+    ----------
+    connection_update : QtCore.Signal
+        Connection update signal with signature::
+
+            (signal, connected, metadata_dict)
+    '''
+
+    connection_update = QtCore.Signal(object, bool, dict)
+
+    def __init__(self, objects=None, **kwargs):
+        super().__init__(**kwargs)
+        self.objects = list(objects or [])
+        self.status = None
+        self.lock = threading.Lock()
+        self._update_event = threading.Event()
+
+    def add_object(self, signal):
+        with self.lock:
+            # If the thread hasn't started yet, add it to the list
+            if self.status is None:
+                self.objects.append(signal)
+                return
+
+        self.status.add_object(signal)
+
+    def remove_signal(self, signal):
+        with self.lock:
+            # If the thread hasn't started yet, remove it prior to monitoring
+            if self.status is None:
+                self.objects.remove(signal)
+                return
+
+        self.status.remove_object(signal)
+
+    def callback(self, obj, connected, **kwargs):
+        self._update_event.set()
+        self.connection_update.emit(obj, connected, kwargs)
+
+    def run(self):
+        self.lock.acquire()
+        try:
+            with connection_status_monitor(
+                    *self.objects,
+                    callback=self.callback) as self.status:
+                self.lock.release()
+
+                while not self.isInterruptionRequested():
+                    self._update_event.clear()
+                    self._update_event.wait(timeout=0.5)
+        finally:
+            if self.lock.locked():
+                self.lock.release()
+
+
+class ThreadPoolWorker(QtCore.QRunnable):
+    '''
+    Worker thread helper
+
+    Parameters
+    ----------
+    func : callable
+        The function to call during :meth:``.run``
+    *args
+        Arguments for the function call
+    **kwargs
+        Keyword rarguments for the function call
+    '''
+
+    def __init__(self, func, *args, **kwargs):
+        super().__init__()
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    @QtCore.Slot()
+    def run(self):
+        try:
+            self.func(*self.args, **self.kwargs)
+        except Exception:
+            logger.exception('Failed to run %s(*%s, **%r) in thread pool',
+                             self.func, self.args, self.kwargs)
+
+
 def _get_top_level_components(device_cls):
-    """
-    Get all top-level components from a device class
-    """
+    """Get all top-level components from a device class."""
     return list(device_cls._sig_attrs.items())
 
 

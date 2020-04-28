@@ -1,13 +1,15 @@
+import collections
+import functools
 import logging
 import sys
 from functools import partial
 
 from qtpy import QtCore, QtWidgets
-from qtpy.QtCore import Q_ENUMS, Property, QTimer
+from qtpy.QtCore import Q_ENUMS, Property
 
 import ophyd
 from ophyd import Kind
-from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO, Signal
+from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
 from pydm.widgets.display_format import DisplayFormat
 
 from . import display, utils
@@ -19,6 +21,12 @@ from .widgets import (ImageDialogButton, SignalDialogButton, TyphosComboBox,
                       WaveformDialogButton)
 
 logger = logging.getLogger(__name__)
+
+
+SignalWidgetInfo = collections.namedtuple(
+    'SignalWidgetInfo',
+    'read_cls read_kwargs write_cls write_kwargs'
+)
 
 
 def determine_widget_type(signal, read_only=False):
@@ -135,6 +143,71 @@ def create_signal_widget(signal, read_only=False, tooltip=None):
 signal_widget = create_signal_widget
 
 
+class _GlobalDescribeCache(QtCore.QObject):
+    widgets_determined = QtCore.Signal(object, SignalWidgetInfo)
+
+    def __init__(self):
+        super().__init__()
+        self.monitor_thread = utils.ObjectConnectionMonitorThread(parent=self)
+        self.monitor_thread.connection_update.connect(self._connection_update)
+        self.monitor_thread.start()
+
+        self._describe_in_process = set()
+        self.cache = {}
+
+    def _describe(self, sig):
+        read_cls, read_kwargs = determine_widget_type(sig, read_only=True)
+
+        if is_signal_ro(sig) or isinstance(read_cls, SignalDialogButton):
+            write_cls = None
+            write_kwargs = {}
+        else:
+            write_cls, write_kwargs = determine_widget_type(sig)
+
+        item = SignalWidgetInfo(read_cls, read_kwargs, write_cls,
+                                write_kwargs)
+        logger.debug('Determined widgets for %s: %s', sig.name, item)
+        self.cache[sig] = item
+        self.widgets_determined.emit(sig, item)
+
+    def _worker_describe(self, sig):
+        try:
+            self._describe(sig)
+        finally:
+            self._describe_in_process.remove(sig)
+
+    @QtCore.Slot(object, bool, dict)
+    def _connection_update(self, sig, connected, metadata):
+        if not connected:
+            return
+        elif self.cache.get(sig) or sig in self._describe_in_process:
+            return
+
+        self._describe_in_process.add(sig)
+        func = functools.partial(self._worker_describe, sig)
+        QtCore.QThreadPool.globalInstance().start(
+            utils.ThreadPoolWorker(func)
+        )
+
+    def get_widget_types(self, sig):
+        try:
+            return self.cache[sig]
+        except KeyError:
+            # Add the signal, waiting for a connection update to determine
+            # widget types
+            self.monitor_thread.add_object(sig)
+
+
+_GLOBAL_DESCRIBE_CACHE = None
+
+
+def get_global_describe_cache():
+    global _GLOBAL_DESCRIBE_CACHE
+    if _GLOBAL_DESCRIBE_CACHE is None:
+        _GLOBAL_DESCRIBE_CACHE = _GlobalDescribeCache()
+    return _GLOBAL_DESCRIBE_CACHE
+
+
 class SignalPanel(QtWidgets.QGridLayout):
     """
     Base panel display for EPICS signals
@@ -160,6 +233,9 @@ class SignalPanel(QtWidgets.QGridLayout):
         # Make sure setpoint/readback share space evenly
         self.setColumnStretch(self.COL_READBACK, 1)
         self.setColumnStretch(self.COL_SETPOINT, 1)
+
+        get_global_describe_cache().widgets_determined.connect(
+            self._got_signal_widget_info)
 
         if signals:
             for name, sig in signals.items():
@@ -194,17 +270,17 @@ class SignalPanel(QtWidgets.QGridLayout):
             print(file=file)
         print('-' * (64 * self.NUM_COLS), file=file)
 
-    def _add_devices_cb(self, name, row, signal):
-        if name not in self.signals:
+    def _got_signal_widget_info(self, obj, info):
+        try:
+            sig_info = self.signals[obj]
+        except KeyError:
             return
 
-        # Create the read-only signal
-        read = create_signal_widget(signal, read_only=True)
-        # Create the write signal
-        if is_signal_ro(signal) or isinstance(read, SignalDialogButton):
-            write = None
-        else:
-            write = create_signal_widget(signal)
+        sig_info['widget_info'] = info
+        row = sig_info['row']
+
+        read = info.read_cls(**info.read_kwargs)
+        write = info.write_cls(**info.write_kwargs) if info.write_cls else None
 
         # Remove the 'loading...' animation if it's there
         item = self.itemAtPosition(row, self.COL_SETPOINT)
@@ -213,8 +289,6 @@ class SignalPanel(QtWidgets.QGridLayout):
             if isinstance(val_widget, TyphosLoading):
                 self.removeItem(item)
                 val_widget.deleteLater()
-
-        self.signals[name].update(read=read, write=write)
 
         # And add the new widgets to the layout:
         widgets = [None, read]
@@ -244,23 +318,6 @@ class SignalPanel(QtWidgets.QGridLayout):
             Row number that the signal information was added to in the
             `SignalPanel.layout()``
         """
-        def _device_meta_cb(*args, **kwargs):
-            connected = kwargs.get('connected', False)
-            if connected:
-                cid = None
-                for id, func in signal._callbacks[Signal.SUB_META].items():
-                    if func.__name__ == '_device_meta_cb':
-                        cid = id
-                        break
-
-                if cid is not None:
-                    signal.unsubscribe(cid)
-
-                # Maybe a HACK to get the _add_devices_cb to happen at the
-                # main thread.
-                method = partial(self._add_devices_cb, name, row, signal)
-                QTimer.singleShot(0, method)
-
         logger.debug("Adding signal %s", name)
 
         label = QtWidgets.QLabel()
@@ -269,16 +326,13 @@ class SignalPanel(QtWidgets.QGridLayout):
         if tooltip is not None:
             label.setToolTip(tooltip)
 
-        row = self.add_row(label, None)
+        row = self.add_row(label, None)  # TyphosLoading())
+        self.signals[signal] = dict(row=row, signal=signal, widget_info=None)
 
-        self.signals[name] = dict(read=None, write=None, row=row,
-                                  signal=signal)
-
-        if signal.connected:
-            self._add_devices_cb(name, row, signal)
-        else:
-            self._update_row(row, [None, TyphosLoading()])
-            signal.subscribe(_device_meta_cb, Signal.SUB_META, run=True)
+        monitor = get_global_describe_cache()
+        item = monitor.get_widget_types(signal)
+        if item is not None:
+            self._got_signal_widget_info(signal, item)
 
         return row
 
