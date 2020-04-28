@@ -1,6 +1,5 @@
 import collections
 import functools
-import inspect
 import logging
 import sys
 from functools import partial
@@ -488,6 +487,8 @@ class SignalPanel(QtWidgets.QGridLayout):
         if visible and info['signal'] is None:
             create_func = info['create_signal']
             info['signal'] = signal = create_func()
+            logger.debug('Instantiating a not-yet-created signal from a '
+                         'component: %s', signal.name)
             if signal.name != signal_name:
                 # This is, for better or worse, possible; does not support the
                 # case of changing the name after __init__
@@ -527,7 +528,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         items = [
             walk
             for walk in sorted(device.walk_components(), key=sorter)
-            if not inspect.issubclass(walk.item.cls, ophyd.Device)
+            if not issubclass(walk.item.cls, ophyd.Device)
         ]
 
         for walk in items:
@@ -542,8 +543,14 @@ class SignalPanel(QtWidgets.QGridLayout):
         if not connect:
             return self._add_component(device, name, component)
 
-        signal = getattr(device, name)
-        return self.add_signal(signal, name=name, tooltip=component.doc)
+        try:
+            signal = getattr(device, name)
+        except Exception as ex:
+            logger.warning('Failed to get signal %s from device %s: %s',
+                           name, device.name, ex, exc_info=True)
+            return
+
+        return self.add_signal(signal, tooltip=component.doc)
 
     def clear(self):
         """Clear the SignalPanel"""
@@ -774,8 +781,8 @@ class CompositeSignalPanel(SignalPanel):
         for attr, component in utils._get_top_level_components(type(device)):
             dotted_name = f'{device.name}.{attr}'
             if issubclass(component.cls, ophyd.Device):
-                device = getattr(device, attr)
-                self.add_sub_device(device, name=dotted_name)
+                sub_device = getattr(device, attr)
+                self.add_sub_device(sub_device, name=dotted_name)
             else:
                 self._maybe_add_signal(device, attr, component)
 
