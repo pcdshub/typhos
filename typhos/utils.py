@@ -72,8 +72,7 @@ def channel_from_signal(signal):
     # Add an item
     if isinstance(signal, EpicsSignalBase):
         return channel_name(signal._read_pv.pvname)
-    else:
-        return channel_name(signal.name, protocol='sig')
+    return channel_name(signal.name, protocol='sig')
 
 
 def is_signal_ro(signal):
