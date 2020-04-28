@@ -11,7 +11,7 @@ from qtpy.QtWidgets import QApplication, QMainWindow
 
 import pcdsutils
 import typhos
-from ophyd.sim import make_fake_device, clear_fake_device
+from ophyd.sim import clear_fake_device, make_fake_device
 
 logger = logging.getLogger(__name__)
 app = None
@@ -79,24 +79,28 @@ def typhos_cli_setup(args):
             app.setStyleSheet(handle.read())
 
 
+def _create_happi_client(cfg):
+    """Create a happi client based on configuration ``cfg``."""
+    import happi
+    import typhos.plugins.happi
+
+    if typhos.plugins.happi.HappiClientState.client:
+        logger.debug("Using happi Client already registered with Typhos")
+        return typhos.plugins.happi.HappiClientState.client
+
+    logger.debug("Creating new happi Client from configuration")
+    return happi.Client.from_config(cfg=cfg)
+
+
 def create_suite(devices, cfg=None, fake_devices=False):
     """Create a TyphosSuite from a list of device names"""
     logger.debug("Accessing Happi Client ...")
-    happi_enabled = False
-    try:
-        import happi
-        import typhos.plugins.happi
-        happi_enabled = True
-    except (ImportError, ModuleNotFoundError):
-        logger.exception("Unable to import happi to load devices!")
 
-    if happi_enabled:
-        if typhos.plugins.happi.HappiClientState.client:
-            logger.debug("Using happi Client already registered with Typhos")
-            client = typhos.plugins.happi.HappiClientState.client
-        else:
-            logger.debug("Creating new happi Client from configuration")
-            client = happi.Client.from_config(cfg=cfg)
+    try:
+        happi_client = _create_happi_client(cfg)
+    except Exception:
+        logger.debug("Unable to create a happi client.", exc_info=True)
+        happi_client = None
 
     # Load and add each device
     loaded_devs = list()
@@ -133,7 +137,7 @@ def create_suite(devices, cfg=None, fake_devices=False):
                 logger.exception("Unable to load class entry: %s with args %s",
                                  klass, args)
         else:
-            if not happi_enabled:
+            if not happi_client:
                 logger.error("Happi not available. Unable to load entry: %r",
                              device)
                 continue
@@ -141,7 +145,7 @@ def create_suite(devices, cfg=None, fake_devices=False):
                 raise NotImplementedError("Fake devices from happi not "
                                           "supported yet")
             try:
-                device = client.load_device(name=device)
+                device = happi_client.load_device(name=device)
                 loaded_devs.append(device)
             except Exception:
                 logger.exception("Unable to load Happi entry: %r", device)
