@@ -33,6 +33,8 @@ def test_device_display(device, motor, qtbot):
     qtbot.addWidget(panel)
     # We have all our signals
     shown_read_sigs = list(panel_main.read_panel.layout().signals.keys())
+    print('shown read signals:', shown_read_sigs)
+    print('motor read attrs:', motor.read_attrs)
     assert all([clean_attr(sig) in shown_read_sigs
                 for sig in motor.read_attrs])
     shown_cfg_sigs = list(panel_main.config_panel.layout().signals.keys())

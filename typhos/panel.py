@@ -383,6 +383,15 @@ class SignalPanel(QtWidgets.QGridLayout):
                 self.add_signal(sig, name)
 
     @property
+    def signals(self):
+        """Return all instantiated signals, omitting components."""
+        return {
+            name: info['signal']
+            for name, info in self.signal_name_to_info.items()
+            if info['signal'] is not None
+        }
+
+    @property
     def row_count(self):
         """
         The number of filled-in rows
@@ -464,10 +473,10 @@ class SignalPanel(QtWidgets.QGridLayout):
             `SignalPanel.layout()``
         """
         name = name or signal.name
-        if name in self.signal_name_to_info:
+        if signal.name in self.signal_name_to_info:
             return
 
-        logger.debug("Adding signal %s", name)
+        logger.debug("Adding signal %s (%s)", signal.name, name)
 
         label = QtWidgets.QLabel()
         label.setText(name)
@@ -476,7 +485,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             label.setToolTip(tooltip)
 
         row = self.add_row(label, None)  # TyphosLoading())
-        self.signal_name_to_info[name] = dict(
+        self.signal_name_to_info[signal.name] = dict(
             row=row,
             signal=signal,
             component=None,
@@ -673,25 +682,26 @@ class SignalPanel(QtWidgets.QGridLayout):
         ]
 
         for walk in items:
-            self._maybe_add_signal(device, walk.dotted_name, walk.item)
+            self._maybe_add_signal(device, walk.item.attr, walk.dotted_name,
+                                   walk.item)
 
         self.setSizeConstraint(self.SetMinimumSize)
 
-    def _maybe_add_signal(self, device, name, component):
-        connect = self._should_show(component.kind, name,
+    def _maybe_add_signal(self, device, attr, dotted_name, component):
+        connect = self._should_show(component.kind, dotted_name,
                                     **self._filter_settings)
 
         if not connect:
-            return self._add_component(device, name, component)
+            return self._add_component(device, attr, component)
 
         try:
-            signal = getattr(device, name)
+            signal = getattr(device, dotted_name)
         except Exception as ex:
-            logger.warning('Failed to get signal %s from device %s: %s',
-                           name, device.name, ex, exc_info=True)
+            logger.warning('Failed to get signal %r from device %s: %s',
+                           dotted_name, device.name, ex, exc_info=True)
             return
 
-        return self.add_signal(signal, tooltip=component.doc)
+        return self.add_signal(signal, name=attr, tooltip=component.doc)
 
     def clear(self):
         """Clear the SignalPanel"""
@@ -925,7 +935,7 @@ class CompositeSignalPanel(SignalPanel):
                 sub_device = getattr(device, attr)
                 self.add_sub_device(sub_device, name=dotted_name)
             else:
-                self._maybe_add_signal(device, attr, component)
+                self._maybe_add_signal(device, attr, attr, component)
 
 
 class TyphosCompositeSignalPanel(TyphosSignalPanel):
