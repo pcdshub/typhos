@@ -255,7 +255,6 @@ class TyphosBase(QWidget):
         """
         logger.debug("Adding device %s ...", device.name)
         self.devices.append(device)
-        print('adding device', device, 'devices=', self.devices)
 
     def paintEvent(self, event):
         # This is necessary because by default QWidget ignores stylesheets
@@ -763,7 +762,6 @@ class _ConnectionStatus:
             return
 
         if obj.connected and obj._args_cache.get('meta') is None:
-            print('callback hack', obj.name)
             md = dict(obj.metadata)
             if 'connected' not in md:
                 md['connected'] = True

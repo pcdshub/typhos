@@ -19,7 +19,7 @@
         "screen": null,
         "stand": null,
         "system": null,
-        "type": "Device",
+        "type": "OphydItem",
         "z": -1.0
     },
     "Tst:This": {
@@ -40,7 +40,7 @@
         "screen": null,
         "stand": null,
         "system": null,
-        "type": "Device",
+        "type": "OphydItem",
         "z": -1.0
     }
 }
