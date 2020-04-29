@@ -675,33 +675,64 @@ class SignalPanel(QtWidgets.QGridLayout):
         self._devices.append(device)
 
         sorter = _get_component_sorter(self.parent().sortBy)
-        items = [
+        non_devices = [
             walk
             for walk in sorted(device.walk_components(), key=sorter)
             if not issubclass(walk.item.cls, ophyd.Device)
         ]
 
-        for walk in items:
+        for walk in non_devices:
             self._maybe_add_signal(device, walk.item.attr, walk.dotted_name,
                                    walk.item)
 
         self.setSizeConstraint(self.SetMinimumSize)
 
     def _maybe_add_signal(self, device, attr, dotted_name, component):
-        connect = self._should_show(component.kind, dotted_name,
-                                    **self._filter_settings)
+        """
+        Based on the current filter settings, add either the signal or a
+        component stub.
 
-        if not connect:
-            return self._add_component(device, attr, component)
+        If the component does not match the current filter settings, a
+        stub will be added that can be filled in later should the filter
+        settings change.
 
-        try:
-            signal = getattr(device, dotted_name)
-        except Exception as ex:
-            logger.warning('Failed to get signal %r from device %s: %s',
-                           dotted_name, device.name, ex, exc_info=True)
-            return
+        If the component matches the current filter settings, it will be
+        instantiated and widgets will be added when the signal is connected.
 
-        return self.add_signal(signal, name=attr, tooltip=component.doc)
+        Parameters
+        ----------
+        device : ophyd.Device
+            The device owner
+        attr : str
+            The signal's attribute name
+        dotted_name : str
+            The signal's dotted name
+        component : ophyd.Component
+            The component class used to generate the instance
+        """
+        if component.lazy:
+            kind = component.kind
+        else:
+            try:
+                signal = getattr(device, dotted_name)
+            except Exception as ex:
+                logger.warning('Failed to get signal %r from device %s: %s',
+                               dotted_name, device.name, ex, exc_info=True)
+                return
+
+            kind = signal.kind
+
+        if self._should_show(kind, dotted_name, **self._filter_settings):
+            try:
+                signal = getattr(device, dotted_name)
+            except Exception as ex:
+                logger.warning('Failed to get signal %r from device %s: %s',
+                               dotted_name, device.name, ex, exc_info=True)
+                return
+
+            return self.add_signal(signal, name=attr, tooltip=component.doc)
+
+        return self._add_component(device, attr, component)
 
     def clear(self):
         """Clear the SignalPanel"""
