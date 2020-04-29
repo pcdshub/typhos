@@ -214,6 +214,8 @@ class _GlobalDescribeCache(QtCore.QObject):
         try:
             self.cache[obj] = desc = self._describe(obj)
             self.new_description.emit(obj, desc)
+        except Exception as ex:
+            logger.exception('Worker describe failed: %s', ex)
         finally:
             self._in_process.remove(obj)
 

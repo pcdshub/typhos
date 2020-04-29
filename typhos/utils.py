@@ -747,7 +747,7 @@ class _ConnectionStatus:
         self.obj_to_cid = {}
         self.objects = set()
 
-    def _run_callback_hack_on_object(self, sig):
+    def _run_callback_hack_on_object(self, obj):
         '''
         HACK: peek into ophyd objects to see if they're connected but have
         never run metadata callbacks
@@ -755,15 +755,14 @@ class _ConnectionStatus:
         This is part of an ongoing ophyd issue and may be removed in the
         future.
         '''
-        if sig not in self.objects:
+        if obj not in self.objects:
             return
 
-        if sig.connected and sig._args_cache.get('meta') is None:
-            md = dict(sig.metadata)
+        if obj.connected and obj._args_cache.get('meta') is None:
+            md = dict(obj.metadata)
             if 'connected' not in md:
                 md['connected'] = True
-            self.connected.add(sig)
-            self._connection_callback(obj=sig, **md)
+            self._connection_callback(obj=obj, **md)
 
     def add_object(self, obj):
         'Add an additional object to be monitored'
