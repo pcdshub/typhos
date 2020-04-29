@@ -394,6 +394,15 @@ class SignalPanel(QtWidgets.QGridLayout):
         }
 
     @property
+    def visible_signals(self):
+        """Return all visible signals, omitting components."""
+        return {
+            name: info['signal']
+            for name, info in self.signal_name_to_info.items()
+            if info['signal'] is not None and info['visible']
+        }
+
+    @property
     def row_count(self):
         """
         The number of filled-in rows
@@ -449,7 +458,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         self._update_row(row, widgets)
 
-        visible = sig_info['label'].isVisible()
+        visible = sig_info['visible']
         for widget in widgets[1:]:
             widget.setVisible(visible)
 
@@ -494,6 +503,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             widget_info=None,
             label=label,
             create_signal=None,
+            visible=True,
         )
 
         self._connect_signal(signal)
@@ -529,6 +539,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             label=label,
             component=component,
             create_signal=functools.partial(getattr, device, dotted_name),
+            visible=False,
         )
 
         return row
@@ -632,6 +643,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     def _set_visible(self, signal_name, visible):
         info = self.signal_name_to_info[signal_name]
+        info['visible'] = bool(visible)
         row = info['row']
         for col in range(self.NUM_COLS):
             item = self.itemAtPosition(row, col)
@@ -899,6 +911,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
     def add_device(self, device):
         """Add a device to the widget"""
+        self.devices.clear()
         super().add_device(device)
         # Configure the layout for the new device
         self._panel_layout.add_device(device)
