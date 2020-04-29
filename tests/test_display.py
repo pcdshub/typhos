@@ -1,8 +1,9 @@
 import pytest
 
+import ophyd
 import typhos.display
 from pydm import Display
-from typhos.utils import clean_attr
+from typhos import utils
 
 from . import conftest
 from .conftest import show_widget
@@ -27,29 +28,41 @@ def test_device_title(device, motor, show_switcher, qtbot):
 
 @show_widget
 def test_device_display(device, motor, qtbot):
+    def signals_from_panel(panel_name):
+        panel_widget = getattr(panel.display_widget, panel_name)
+        return set(panel_widget.layout().signals)
+
+    def signals_from_device(device, kinds):
+        def filter_by(sig):
+            if sig.item.kind == ophyd.Kind.omitted:
+                return False
+            return sig.item.kind in kinds
+
+        return set(
+            sig.name for sig in
+            utils.get_all_signals_from_device(device, filter_by=filter_by)
+        )
+
+    def check_read_panel(device):
+        '''normal or hinted signals'''
+        device_signals = signals_from_device(device, ophyd.Kind.hinted)
+        assert device_signals == signals_from_panel('read_panel')
+
+    def check_config_panel(device):
+        '''just config signals'''
+        device_signals = signals_from_device(device, ophyd.Kind.config)
+        assert device_signals == signals_from_panel('config_panel')
+
     panel = typhos.display.TyphosDeviceDisplay.from_device(
         motor, composite_heuristics=False)
-    panel_main = panel.display_widget
     qtbot.addWidget(panel)
-    # We have all our signals
-    shown_read_sigs = list(panel_main.read_panel.layout().signals.keys())
-    print('shown read signals:', shown_read_sigs)
-    print('motor read attrs:', motor.read_attrs)
-    assert all([clean_attr(sig) in shown_read_sigs
-                for sig in motor.read_attrs])
-    shown_cfg_sigs = list(panel_main.config_panel.layout().signals.keys())
-    assert all([clean_attr(sig) in shown_cfg_sigs
-                for sig in motor.configuration_attrs])
-    # Check that we can add multiple devices
+    check_read_panel(motor)
+    check_config_panel(motor)
+
     device.name = 'test'
     panel.add_device(device)
-    panel_main = panel.display_widget
-    # We have all our signals
-    shown_read_sigs = list(panel_main.read_panel.layout().signals.keys())
-    assert all(clean_attr(sig) in shown_read_sigs for sig in device.read_attrs)
-    shown_cfg_sigs = list(panel_main.config_panel.layout().signals.keys())
-    assert all(clean_attr(sig) in shown_cfg_sigs
-               for sig in device.configuration_attrs)
+    check_read_panel(device)
+    check_config_panel(device)
     return panel
 
 
