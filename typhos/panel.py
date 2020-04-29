@@ -295,7 +295,7 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
         read_cls, read_kwargs = widget_type_from_description(
             obj, desc, read_only=True)
 
-        if is_signal_ro(obj) or isinstance(read_cls, SignalDialogButton):
+        if is_signal_ro(obj) or issubclass(read_cls, SignalDialogButton):
             write_cls = None
             write_kwargs = {}
         else:
@@ -499,6 +499,16 @@ class SignalPanel(QtWidgets.QGridLayout):
         self._connect_signal(signal)
         return row
 
+    def _connect_signal(self, signal):
+        """
+        Instantiate widgets for the given signal using `_GlobalWidgetTypeCache`
+        """
+        monitor = get_global_widget_type_cache()
+        item = monitor.get(signal)
+        if item is not None:
+            self._got_signal_widget_info(signal, item)
+        # else: - this will happen during a callback
+
     def _add_component(self, device, dotted_name, component):
         """Add a component which could be instantiated"""
         if dotted_name in self.signal_name_to_info:
@@ -522,12 +532,6 @@ class SignalPanel(QtWidgets.QGridLayout):
         )
 
         return row
-
-    def _connect_signal(self, signal):
-        monitor = get_global_widget_type_cache()
-        item = monitor.get(signal)
-        if item is not None:
-            self._got_signal_widget_info(signal, item)
 
     def add_row(self, *widgets, **kwargs):
         """
