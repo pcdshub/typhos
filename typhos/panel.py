@@ -309,7 +309,7 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
 
     def get(self, obj):
         """
-        To access wdiget types, call this method. If available, it will be
+        To access widget types, call this method. If available, it will be
         returned immediately.  Otherwise, upon connection and successful
         ``describe()`` call, the ``widgets_determined`` Signal will be emitted.
 
@@ -328,7 +328,10 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
         except KeyError:
             # Add the signal, waiting for a connection update to determine
             # widget types
-            self.describe_cache.get(obj)
+            desc = self.describe_cache.get(obj)
+            if desc is not None:
+                # In certain scenarios (such as testing) this might happen
+                self._new_description(obj, desc)
 
 
 _GLOBAL_WIDGET_TYPE_CACHE = None
