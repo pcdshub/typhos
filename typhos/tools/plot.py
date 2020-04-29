@@ -3,13 +3,15 @@ Typhos Plotting Interface
 """
 import logging
 
-from qtpy.QtCore import Slot
+from qtpy import QtCore, QtGui
+from qtpy.QtCore import Qt, Slot
 from qtpy.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QPushButton,
                             QVBoxLayout)
 from timechart.displays.main_display import TimeChartDisplay
 from timechart.utilities.utils import random_color
 
 from .. import utils
+from ..panel import get_global_describe_cache
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +35,17 @@ class TyphosTimePlot(utils.TyphosBase):
         # Setup layout
         self.setLayout(QVBoxLayout())
         self.layout().setContentsMargins(2, 2, 2, 2)
-        # Make sure we can add signals
+
+        self._model = QtGui.QStandardItemModel()
+        self._proxy_model = QtCore.QSortFilterProxyModel()
+        self._proxy_model.setSourceModel(self._model)
+
+        self._available_signals = {}
+
         self.signal_combo = QComboBox()
+        self.signal_combo.setModel(self._proxy_model)
         self.signal_combo_label = QLabel('Available Signals: ')
+
         self.signal_create = QPushButton('Connect')
         self.signal_combo_layout = QHBoxLayout()
         self.signal_combo_layout.addWidget(self.signal_combo_label, 0)
@@ -46,7 +56,8 @@ class TyphosTimePlot(utils.TyphosBase):
         # Add timechart
         self.timechart = TimeChartDisplay(show_pv_add_panel=False)
         self.layout().addWidget(self.timechart)
-        self._device_threads = {}
+        cache = get_global_describe_cache()
+        cache.new_description.connect(self._new_description)
 
     @property
     def channel_to_curve(self):
@@ -68,8 +79,21 @@ class TyphosTimePlot(utils.TyphosBase):
 
         name: str
             Alias for signal to display in QComboBox
+
+        Raises
+        ------
+        ValueError
+            If a signal of the same name already is available
         """
-        self.signal_combo.addItem(name, utils.channel_from_signal(signal))
+        if name in self._available_signals:
+            raise ValueError('Signal already available')
+
+        channel = utils.channel_from_signal(signal)
+        self._available_signals[name] = (signal, channel)
+        item = QtGui.QStandardItem(name)
+        item.setData(channel, Qt.UserRole)
+        self._model.appendRow(item)
+        self._model.sort(0)
 
     def add_curve(self, channel, name=None, color=None, **kwargs):
         """
@@ -96,9 +120,7 @@ class TyphosTimePlot(utils.TyphosBase):
         if not color:
             color = random_color()
         logger.debug("Adding %s to plot ...", channel)
-        # TODO: Until https://github.com/slaclab/timechart/pull/32 is in
-        # a release, the pv_name and curve_name need to be the same
-        self.timechart.add_y_channel(pv_name=channel, curve_name=channel,
+        self.timechart.add_y_channel(pv_name=channel, curve_name=name,
                                      color=color, **kwargs)
 
     @Slot()
@@ -130,18 +152,9 @@ class TyphosTimePlot(utils.TyphosBase):
         # Add to the plot
         self.add_curve(channel, name=name)
 
-    @Slot(object, bool, dict)
-    def _connection_update(self, signal, connected, metadata):
-        if not connected:
-            return
-
+    @Slot(object, dict)
+    def _new_description(self, signal, desc):
         name = f'{signal.root.name}.{signal.dotted_name}'
-
-        try:
-            desc = signal.describe()[signal.name]
-        except Exception:
-            logger.exception("Unable to add %s to plot-able signals", name)
-            return
 
         # Only include scalars
         if desc['dtype'] not in ('integer', 'number'):
@@ -149,7 +162,11 @@ class TyphosTimePlot(utils.TyphosBase):
             return
 
         # Add to list of available signal
-        self.add_available_signal(signal, name)
+        try:
+            self.add_available_signal(signal, name)
+        except ValueError:
+            # Signal already added
+            return
 
         if len(self.channel_to_curve) >= self.hint_limit:
             logger.debug('Too many hinted signals (at limit of %d)',
@@ -163,9 +180,9 @@ class TyphosTimePlot(utils.TyphosBase):
         """Add a device and it's component signals to the plot"""
         super().add_device(device)
 
-        if device not in self._device_threads:
-            thread = utils.DeviceConnectionMonitorThread(
-                device, include_lazy=False)
-            thread.connection_update.connect(self._connection_update)
-            self._device_threads[device] = thread
-            thread.start()
+        cache = get_global_describe_cache()
+        for signal in utils.get_all_signals_from_device(device,
+                                                        include_lazy=False):
+            desc = cache.get(signal)
+            if desc is not None:
+                self._new_description(signal, desc)
