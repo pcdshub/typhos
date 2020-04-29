@@ -669,8 +669,11 @@ def subscription_context(*objects, callback, event_type=None, run=True):
     obj_to_cid = {}
     try:
         for obj in objects:
-            obj_to_cid[obj] = obj.subscribe(callback, event_type=event_type,
-                                            run=run)
+            try:
+                obj_to_cid[obj] = obj.subscribe(callback,
+                                                event_type=event_type, run=run)
+            except Exception:
+                logger.exception('Failed to subscribe to object %s', obj.name)
         yield dict(obj_to_cid)
     finally:
         for obj, cid in obj_to_cid.items():
@@ -771,9 +774,14 @@ class _ConnectionStatus:
                 return
 
         self.objects.add(obj)
-        self.obj_to_cid[obj] = obj.subscribe(
-            self._connection_callback, event_type='meta', run=True)
-        self._run_callback_hack_on_object(obj)
+        try:
+            self.obj_to_cid[obj] = obj.subscribe(
+                self._connection_callback, event_type='meta', run=True)
+        except Exception:
+            logger.exception('Failed to subscribe to object: %s', obj.name)
+            self.objects.remove(obj)
+        else:
+            self._run_callback_hack_on_object(obj)
 
     def remove_object(self, obj):
         'Remove an object from being monitored - no more callbacks'
