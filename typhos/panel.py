@@ -29,14 +29,17 @@ SignalWidgetInfo = collections.namedtuple(
 )
 
 
-def determine_widget_type(signal, read_only=False):
+def widget_type_from_description(signal, desc, read_only=False):
     """
-    Determine which widget class should be used for the given signal.
+    Determine which widget class should be used for the given signal
 
     Parameters
     ----------
     signal : ophyd.Signal
         Signal object to determine widget class
+
+    desc : dict
+        Previously recorded description from the signal
 
     read_only: bool, optional
         Should the chosen widget class be read-only?
@@ -48,27 +51,18 @@ def determine_widget_type(signal, read_only=False):
     kwargs : dict
         Keyword arguments for the class
     """
-    # Grab our channel name
-    # Still re-route EpicsSignal through the ca:// plugin
     if isinstance(signal, EpicsSignalBase):
+        # Still re-route EpicsSignal through the ca:// plugin
         pv = (signal._read_pv
               if read_only else signal._write_pv)
-        chan = channel_name(pv.pvname)
+        init_channel = channel_name(pv.pvname)
     else:
         # Register signal with plugin
         register_signal(signal)
-        chan = channel_name(signal.name, protocol='sig')
-
-    # Grab a description of the widget to see the correct widget type
-    try:
-        desc = signal.describe()[signal.name]
-    except Exception:
-        logger.error("Unable to connect to %r during widget creation",
-                     signal.name)
-        desc = {}
+        init_channel = channel_name(signal.name, protocol='sig')
 
     kwargs = {
-        'init_channel': chan,
+        'init_channel': init_channel,
     }
 
     # Unshaped data
@@ -104,6 +98,35 @@ def determine_widget_type(signal, read_only=False):
         kwargs['display_format'] = DisplayFormat.String
 
     return widget_cls, kwargs
+
+
+def determine_widget_type(signal, read_only=False):
+    """
+    Determine which widget class should be used for the given signal.
+
+    Parameters
+    ----------
+    signal : ophyd.Signal
+        Signal object to determine widget class
+
+    read_only: bool, optional
+        Should the chosen widget class be read-only?
+
+    Returns
+    -------
+    widget_class : class
+        The class to use for the widget
+    kwargs : dict
+        Keyword arguments for the class
+    """
+    try:
+        desc = signal.describe()[signal.name]
+    except Exception:
+        logger.error("Unable to connect to %r during widget creation",
+                     signal.name)
+        desc = {}
+
+    return widget_type_from_description(signal, desc)
 
 
 def create_signal_widget(signal, read_only=False, tooltip=None):
@@ -144,68 +167,186 @@ signal_widget = create_signal_widget
 
 
 class _GlobalDescribeCache(QtCore.QObject):
-    widgets_determined = QtCore.Signal(object, SignalWidgetInfo)
+    """
+    Cache of ophyd object descriptions
+
+    ``obj.describe()`` is called in a thread from the global QThreadPool, and
+    new results are marked by the Signal ``new_description``.
+
+    To access a description, call :meth:`.get`. If available, it will be
+    returned immediately.  Otherwise, wait for the ``new_description`` Signal.
+
+    Attributes
+    ----------
+    connect_thread : :class:`ObjectConnectionMonitorThread`
+        The thread which monitors connection status
+
+    cache : dict
+        The cache holding descriptions, keyed on ``obj``
+    """
+
+    new_description = QtCore.Signal(object, dict)
 
     def __init__(self):
         super().__init__()
-        self.monitor_thread = utils.ObjectConnectionMonitorThread(parent=self)
-        self.monitor_thread.connection_update.connect(self._connection_update)
-        self.monitor_thread.start()
+        self.connect_thread = utils.ObjectConnectionMonitorThread(parent=self)
+        self.connect_thread.connection_update.connect(self._connection_update)
+        self.connect_thread.start()
 
-        self._describe_in_process = set()
+        self._in_process = set()
         self.cache = {}
 
-    def _describe(self, sig):
-        read_cls, read_kwargs = determine_widget_type(sig, read_only=True)
-
-        if is_signal_ro(sig) or isinstance(read_cls, SignalDialogButton):
-            write_cls = None
-            write_kwargs = {}
-        else:
-            write_cls, write_kwargs = determine_widget_type(sig)
-
-        item = SignalWidgetInfo(read_cls, read_kwargs, write_cls,
-                                write_kwargs)
-        logger.debug('Determined widgets for %s: %s', sig.name, item)
-        self.cache[sig] = item
-        self.widgets_determined.emit(sig, item)
-
-    def _worker_describe(self, sig):
+    def _describe(self, obj):
+        """Retrieve the description of ``obj``."""
         try:
-            self._describe(sig)
+            return obj.describe()[obj.name]
+        except Exception:
+            logger.error("Unable to connect to %r during widget creation",
+                         obj.name)
+        return {}
+
+    def _worker_describe(self, obj):
+        """
+        This is the worker thread method that gets run in the thread pool.
+
+        It calls describe, updates the cache, and emits a signal when done.
+        """
+        try:
+            self.cache[obj] = desc = self._describe(obj)
+            self.new_description.emit(obj, desc)
         finally:
-            self._describe_in_process.remove(sig)
+            self._in_process.remove(obj)
 
     @QtCore.Slot(object, bool, dict)
-    def _connection_update(self, sig, connected, metadata):
+    def _connection_update(self, obj, connected, metadata):
+        """
+        A connection callback from the connection monitor thread.
+        """
         if not connected:
             return
-        elif self.cache.get(sig) or sig in self._describe_in_process:
+        elif self.cache.get(obj) or obj in self._in_process:
             return
 
-        self._describe_in_process.add(sig)
-        func = functools.partial(self._worker_describe, sig)
+        self._in_process.add(obj)
+        func = functools.partial(self._worker_describe, obj)
         QtCore.QThreadPool.globalInstance().start(
             utils.ThreadPoolWorker(func)
         )
 
-    def get_widget_types(self, sig):
+    def get(self, obj):
+        """
+        To access a description, call this method. If available, it will be
+        returned immediately.  Otherwise, upon connection and successful
+        ``describe()`` call, the ``new_description`` Signal will be emitted.
+
+        Parameters
+        ----------
+        obj : :class:`ophyd.OphydObj`
+            The object to get the description of
+
+        Returns
+        -------
+        desc : dict or None
+            If available in the cache, the description will be returned.
+        """
         try:
-            return self.cache[sig]
+            return self.cache[obj]
+        except KeyError:
+            # Add the object, waiting for a connection update to determine
+            # widget types
+            self.connect_thread.add_object(obj)
+
+
+class _GlobalWidgetTypeCache(QtCore.QObject):
+    """
+    Cache of ophyd object Typhos widget types
+
+    ``obj.describe()`` is called using :class:`_GlobalDescribeCache` and are
+    therefore threaded and run in the background.  New results are marked by
+    the Signal ``widgets_determined``.
+
+    To access a set of widget types, call :meth:`.get`. If available, it will
+    be returned immediately.  Otherwise, wait for the ``widgets_determined``
+    Signal.
+
+    Attributes
+    ----------
+    describe_cache : :class:`_GlobalDescribeCache`
+        The describe cache, used for determining widget types
+
+    cache : dict
+        The cache holding widget type information.
+        Keyed on ``obj``, the values are :class:`SignalWidgetInfo` tuples.
+    """
+
+    widgets_determined = QtCore.Signal(object, SignalWidgetInfo)
+
+    def __init__(self):
+        super().__init__()
+        self.cache = {}
+        self.describe_cache = get_global_describe_cache()
+        self.describe_cache.new_description.connect(self._new_description)
+
+    @QtCore.Slot(object, dict)
+    def _new_description(self, obj, desc):
+        """New description: determine widget types and update the cache."""
+        read_cls, read_kwargs = widget_type_from_description(
+            obj, desc, read_only=True)
+
+        if is_signal_ro(obj) or isinstance(read_cls, SignalDialogButton):
+            write_cls = None
+            write_kwargs = {}
+        else:
+            write_cls, write_kwargs = widget_type_from_description(obj, desc)
+
+        item = SignalWidgetInfo(read_cls, read_kwargs, write_cls,
+                                write_kwargs)
+        logger.debug('Determined widgets for %s: %s', obj.name, item)
+        self.cache[obj] = item
+        self.widgets_determined.emit(obj, item)
+
+    def get(self, obj):
+        """
+        To access wdiget types, call this method. If available, it will be
+        returned immediately.  Otherwise, upon connection and successful
+        ``describe()`` call, the ``widgets_determined`` Signal will be emitted.
+
+        Parameters
+        ----------
+        obj : :class:`ophyd.OphydObj`
+            The object to get the widget types
+
+        Returns
+        -------
+        desc : :class:`SignalWidgetInfo` or None
+            If available in the cache, the information will be returned.
+        """
+        try:
+            return self.cache[obj]
         except KeyError:
             # Add the signal, waiting for a connection update to determine
             # widget types
-            self.monitor_thread.add_object(sig)
+            self.describe_cache.get(obj)
 
 
+_GLOBAL_WIDGET_TYPE_CACHE = None
 _GLOBAL_DESCRIBE_CACHE = None
 
 
 def get_global_describe_cache():
+    """Get the _GlobalDescribeCache singleton."""
     global _GLOBAL_DESCRIBE_CACHE
     if _GLOBAL_DESCRIBE_CACHE is None:
         _GLOBAL_DESCRIBE_CACHE = _GlobalDescribeCache()
     return _GLOBAL_DESCRIBE_CACHE
+
+
+def get_global_widget_type_cache():
+    """Get the _GlobalWidgetTypeCache singleton."""
+    global _GLOBAL_WIDGET_TYPE_CACHE
+    if _GLOBAL_WIDGET_TYPE_CACHE is None:
+        _GLOBAL_WIDGET_TYPE_CACHE = _GlobalWidgetTypeCache()
+    return _GLOBAL_WIDGET_TYPE_CACHE
 
 
 class SignalPanel(QtWidgets.QGridLayout):
@@ -234,7 +375,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         self.setColumnStretch(self.COL_READBACK, 1)
         self.setColumnStretch(self.COL_SETPOINT, 1)
 
-        get_global_describe_cache().widgets_determined.connect(
+        get_global_widget_type_cache().widgets_determined.connect(
             self._got_signal_widget_info)
 
         if signals:
@@ -372,8 +513,8 @@ class SignalPanel(QtWidgets.QGridLayout):
         return row
 
     def _connect_signal(self, signal):
-        monitor = get_global_describe_cache()
-        item = monitor.get_widget_types(signal)
+        monitor = get_global_widget_type_cache()
+        item = monitor.get(signal)
         if item is not None:
             self._got_signal_widget_info(signal, item)
 
