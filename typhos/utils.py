@@ -1035,8 +1035,12 @@ def dump_grid_layout(layout, rows, cols, *, file=sys.stdout):
             if item:
                 entry = item.widget() or item.layout()
                 found_widgets.add(entry)
+                visible = entry is None or entry.isVisible()
                 if isinstance(entry, QtWidgets.QLabel):
                     entry = f'<QLabel {entry.text()!r}>'
+
+                if not visible:
+                    entry = f'(invis) {entry}'
             else:
                 entry = ''
 
