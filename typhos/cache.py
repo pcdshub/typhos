@@ -61,6 +61,12 @@ class _GlobalDescribeCache(QtCore.QObject):
         self._in_process = set()
         self.cache = {}
 
+    def clear(self):
+        """Clear the cache."""
+        self.connect_thread.clear()
+        self.cache.clear()
+        self._in_process.clear()
+
     def _describe(self, obj):
         """Retrieve the description of ``obj``."""
         try:
@@ -153,6 +159,10 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
         self.cache = {}
         self.describe_cache = get_global_describe_cache()
         self.describe_cache.new_description.connect(self._new_description)
+
+    def clear(self):
+        """Clear the cache."""
+        self.cache.clear()
 
     @QtCore.Slot(object, dict)
     def _new_description(self, obj, desc):

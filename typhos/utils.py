@@ -751,6 +751,10 @@ class _ConnectionStatus:
         self.obj_to_cid = {}
         self.objects = set()
 
+    def clear(self):
+        for obj in list(self.objects):
+            self.remove_object(obj)
+
     def _run_callback_hack_on_object(self, obj):
         '''
         HACK: peek into ophyd objects to see if they're connected but have
@@ -908,6 +912,10 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
         self.status = None
         self.lock = threading.Lock()
         self._update_event = threading.Event()
+
+    def clear(self):
+        if self.status:
+            self.status.clear()
 
     def add_object(self, obj):
         with self.lock:
