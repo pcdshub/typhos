@@ -153,7 +153,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         if tooltip is not None:
             label.setToolTip(tooltip)
 
-        row = self.add_row(label, None)  # utils.TyphosLoading())
+        row = self.add_row(label, utils.TyphosLoading())
         self.signal_name_to_info[signal.name] = dict(
             row=row,
             signal=signal,
