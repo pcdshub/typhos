@@ -155,6 +155,10 @@ class TyphosTimePlot(utils.TyphosBase):
     @Slot(object, dict)
     def _new_description(self, signal, desc):
         name = f'{signal.root.name}.{signal.dotted_name}'
+        if 'dtype' not in desc:
+            # Marks an error in retrieving the description
+            logger.debug("Ignoring signal without description %s", name)
+            return
 
         # Only include scalars
         if desc['dtype'] not in ('integer', 'number'):

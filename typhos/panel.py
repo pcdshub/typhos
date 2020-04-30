@@ -292,6 +292,11 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
     @QtCore.Slot(object, dict)
     def _new_description(self, obj, desc):
         """New description: determine widget types and update the cache."""
+        if not desc:
+            # Marks an error in retrieving the description
+            # TODO: show error widget or some default widget?
+            return
+
         read_cls, read_kwargs = widget_type_from_description(
             obj, desc, read_only=True)
 
