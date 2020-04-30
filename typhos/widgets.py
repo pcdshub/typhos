@@ -23,10 +23,37 @@ logger = logging.getLogger(__name__)
 EXPONENTIAL_UNITS = ['mtorr', 'torr', 'kpa', 'pa']
 
 
-SignalWidgetInfo = collections.namedtuple(
-    'SignalWidgetInfo',
-    'read_cls read_kwargs write_cls write_kwargs'
-)
+class SignalWidgetInfo(
+        collections.namedtuple(
+            'SignalWidgetInfo',
+            'read_cls read_kwargs write_cls write_kwargs'
+        )):
+
+    @classmethod
+    def from_signal(cls, obj, desc=None):
+        """
+        Create a `SignalWidgetInfo` given an object and its description.
+
+        Parameters
+        ----------
+        obj : :class:`ophyd.OphydObj`
+            The object
+        desc : dict, optional
+            The object description, if available.
+        """
+        if desc is None:
+            desc = obj.describe()
+
+        read_cls, read_kwargs = widget_type_from_description(
+            obj, desc, read_only=True)
+
+        if utils.is_signal_ro(obj) or issubclass(read_cls, SignalDialogButton):
+            write_cls = None
+            write_kwargs = {}
+        else:
+            write_cls, write_kwargs = widget_type_from_description(obj, desc)
+
+        return cls(read_cls, read_kwargs, write_cls, write_kwargs)
 
 
 class TogglePanel(QWidget):

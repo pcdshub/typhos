@@ -4,8 +4,7 @@ import logging
 from qtpy import QtCore
 
 from . import utils
-from .widgets import (SignalDialogButton, SignalWidgetInfo,
-                      widget_type_from_description)
+from .widgets import SignalWidgetInfo
 
 logger = logging.getLogger(__name__)
 
@@ -163,16 +162,7 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
             # TODO: show error widget or some default widget?
             return
 
-        read_cls, read_kwargs = widget_type_from_description(
-            obj, desc, read_only=True)
-
-        if utils.is_signal_ro(obj) or issubclass(read_cls, SignalDialogButton):
-            write_cls = None
-            write_kwargs = {}
-        else:
-            write_cls, write_kwargs = widget_type_from_description(obj, desc)
-
-        item = SignalWidgetInfo(read_cls, read_kwargs, write_cls, write_kwargs)
+        item = SignalWidgetInfo.from_signal(obj, desc)
         logger.debug('Determined widgets for %s: %s', obj.name, item)
         self.cache[obj] = item
         self.widgets_determined.emit(obj, item)
