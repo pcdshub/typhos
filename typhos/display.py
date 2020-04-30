@@ -37,6 +37,9 @@ DEFAULT_TEMPLATES = {
 DETAILED_TREE_TEMPLATE = (utils.ui_dir / f'detailed_tree.ui').resolve()
 DEFAULT_TEMPLATES['detailed_screen'].append(DETAILED_TREE_TEMPLATE)
 
+DEFAULT_TEMPLATES_FLATTEN = [f for _, files in DEFAULT_TEMPLATES.items()
+                             for f in files]
+
 
 def normalize_display_type(display_type):
     try:
@@ -131,6 +134,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
                     # Toggle visibility of the specific kind for all panels
                     for panel in panels:
                         setattr(panel, prop, new_value)
+                self.hide_empty()
 
             title = f'Show only &{kind}' if only else f'Show &{kind}'
             action = base_menu.addAction(title)
@@ -153,6 +157,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
             text = line_edit.text().strip()
             for panel in panels:
                 panel.nameFilter = text
+            self.hide_empty()
 
         line_edit = QtWidgets.QLineEdit()
 
@@ -172,6 +177,49 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         action = QtWidgets.QWidgetAction(self)
         action.setDefaultWidget(line_edit)
         base_menu.addAction(action)
+
+    def hide_empty(self, search=True):
+        """
+        Wrap the calls to hide empty so it can be used at search functions
+        as well as with the action click.
+
+        Parameters
+        ----------
+        search : bool
+            Whether or not this method is being called from a search/filter
+            method.
+        """
+        if search:
+            show_empty(self.device_display)
+        if self.device_display.hideEmpty:
+            hide_empty(self.device_display, process_widget=False)
+
+    def create_hide_empty_menu(self, panels, base_menu):
+        """
+        Create the hide empty filtering menu.
+
+        Parameters
+        ----------
+        base_menu : QMenu
+            The menu to add actions to
+        """
+        def handle_menu(checked):
+            self.device_display.hideEmpty = checked
+
+            if not checked:
+                # Force a reboot of the filters
+                # since we no longer can figure what was supposed to be
+                # visible or not
+                for p in panels:
+                    p._update_panel()
+                show_empty(self.device_display)
+            else:
+                self.hide_empty(search=False)
+
+        action = base_menu.addAction('Hide Empty Panels')
+        action.setCheckable(True)
+        action.setChecked(self.device_display.hideEmpty)
+        action.triggered.connect(handle_menu)
 
     def generate_context_menu(self):
         """
@@ -207,6 +255,9 @@ class TyphosDisplayConfigButton(TyphosToolButton):
 
         base_menu.addSeparator()
         self.create_name_filter_menu(panels, base_menu)
+
+        base_menu.addSeparator()
+        self.create_hide_empty_menu(panels, base_menu)
 
         return base_menu
 
@@ -390,14 +441,10 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     def set_device_display(self, display):
         self.device_display = display
 
-        def toggle_display():
-            widget = display.display_widget
-            panels = widget.findChildren(typhos_panel.TyphosSignalPanel) or []
-            visible = all(panel.isVisible() for panel in panels)
-            for panel in panels:
-                panel.setVisible(not visible)
+        def toggle():
+            toggle_display(display.display_widget)
 
-        self.label.toggle_requested.connect(toggle_display)
+        self.label.toggle_requested.connect(toggle)
 
     # Make designable properties from the title label available here as well
     locals().update(**pcdsutils.qt.forward_properties(
@@ -482,6 +529,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self._display_widget = None
         self._scrollable = False
         self._searched = False
+        self._hide_empty = False
 
         self.templates = {name: [] for name in DisplayTypes.names}
         self._display_type = normalize_display_type(display_type)
@@ -535,6 +583,15 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self._scrollable = bool(scrollable)
         self._move_display_to_layout(self._display_widget)
+
+    @Property(bool, doc="Hide empty Panels")
+    def hideEmpty(self):
+        return self._hide_empty
+
+    @hideEmpty.setter
+    def hideEmpty(self, checked):
+        if checked != self._hide_empty:
+            self._hide_empty = checked
 
     def _move_display_to_layout(self, widget):
         if not widget:
@@ -986,3 +1043,70 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'], macros=value['md'])
+
+
+def toggle_display(widget):
+    """
+    Toggle the visibility of all :class:`TyphosSignalPanel` in a display.
+    """
+    panels = widget.findChildren(typhos_panel.TyphosSignalPanel) or []
+    visible = all(panel.isVisible() for panel in panels)
+    for panel in panels:
+        panel.setVisible(not visible)
+
+
+def show_empty(widget):
+    """
+    Recursively shows all panels and widgets, empty or not.
+
+    Parameters
+    ----------
+    widget : QWidget
+    """
+    children = widget.findChildren(TyphosDeviceDisplay) or []
+    for ch in children:
+        show_empty(ch)
+    widget.setVisible(True)
+    toggle_display(widget)
+
+
+def hide_empty(widget, process_widget=True):
+    """
+    Recursively hide empty panels and widgets.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget in which to start the recursive search
+    process_widget : bool
+        Whether or not to process the visibility for the widget.
+        This is useful since we don't want to hide the top-most
+        widget otherwise users can't change the visibility back on.
+    """
+    def process(item, recursive=True):
+        if isinstance(item, TyphosDeviceDisplay) and recursive:
+            hide_empty(item)
+        elif isinstance(item, typhos_panel.TyphosSignalPanel):
+            if recursive:
+                hide_empty(item)
+            status = item._panel_layout.active_row_count > 0
+            item.setVisible(status)
+
+    if isinstance(widget, TyphosDeviceDisplay):
+        # Check if the template at this display is one of the defaults
+        # otherwise we are not sure if we can safely change it.
+
+        if widget.current_template not in DEFAULT_TEMPLATES_FLATTEN:
+            logger.info("Can't hide empty entries in non built-in templates")
+            return
+
+    children = widget.findChildren(utils.TyphosBase) or []
+    for w in children:
+        process(w)
+
+    if process_widget:
+        if isinstance(widget, TyphosDeviceDisplay):
+            overall_status = any(w.isVisible() for w in children)
+        elif isinstance(widget, typhos_panel.TyphosSignalPanel):
+            overall_status = widget._panel_layout.active_row_count > 0
+        widget.setVisible(overall_status)
