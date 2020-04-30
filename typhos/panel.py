@@ -78,23 +78,6 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         return self._row_count
 
-    @property
-    def active_row_count(self):
-        """
-        The number of visible filled-in rows
-        """
-        count = 0
-        for row in range(self._row_count):
-            # Skip col 0 as it is the title label
-            active = False
-            for col in range(1, self.NUM_COLS):
-                item = self.itemAtPosition(row, col)
-                if item and item.widget() and item.widget().isVisible():
-                    active = True
-                    break
-            count += 1 if active else 0
-        return count
-
     def _dump_layout(self, file=sys.stdout):
         """
         Utility to dump the current layout
