@@ -1045,14 +1045,28 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self.add_device(value['obj'], macros=value['md'])
 
 
-def toggle_display(widget):
+def toggle_display(widget, force_state=None):
     """
     Toggle the visibility of all :class:`TyphosSignalPanel` in a display.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget in which to look for Panels
+    force_state : bool
+        If set to True or False, it will change visibility to the value of
+        force_state.
+        If not set or set to None, it will flip the current panels state.
     """
     panels = widget.findChildren(typhos_panel.TyphosSignalPanel) or []
     visible = all(panel.isVisible() for panel in panels)
+
+    state = not visible
+    if force_state is not None:
+        state = force_state
+
     for panel in panels:
-        panel.setVisible(not visible)
+        panel.setVisible(state)
 
 
 def show_empty(widget):
@@ -1067,7 +1081,7 @@ def show_empty(widget):
     for ch in children:
         show_empty(ch)
     widget.setVisible(True)
-    toggle_display(widget)
+    toggle_display(widget, force_state=True)
 
 
 def hide_empty(widget, process_widget=True):
