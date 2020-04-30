@@ -1047,7 +1047,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
 def toggle_display(widget):
     """
-    Toggle the display visibility.
+    Toggle the visibility of all :class:`TyphosSignalPanel` in a display.
     """
     panels = widget.findChildren(typhos_panel.TyphosSignalPanel) or []
     visible = all(panel.isVisible() for panel in panels)
