@@ -310,6 +310,8 @@ class SignalPanel(QtWidgets.QGridLayout):
                 if widget:
                     widget.setVisible(visible)
 
+        self._dump_layout()
+
         if visible and info['signal'] is None:
             create_func = info['create_signal']
             info['signal'] = signal = create_func()
