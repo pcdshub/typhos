@@ -904,28 +904,28 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
 
     def __init__(self, objects=None, **kwargs):
         super().__init__(**kwargs)
-        self.objects = list(objects or [])
+        self._init_objects = list(objects or [])
         self.status = None
         self.lock = threading.Lock()
         self._update_event = threading.Event()
 
-    def add_object(self, signal):
+    def add_object(self, obj):
         with self.lock:
             # If the thread hasn't started yet, add it to the list
             if self.status is None:
-                self.objects.append(signal)
+                self._init_objects.append(obj)
                 return
 
-        self.status.add_object(signal)
+        self.status.add_object(obj)
 
-    def remove_signal(self, signal):
+    def remove_object(self, obj):
         with self.lock:
             # If the thread hasn't started yet, remove it prior to monitoring
             if self.status is None:
-                self.objects.remove(signal)
+                self._init_objects.remove(obj)
                 return
 
-        self.status.remove_object(signal)
+        self.status.remove_object(obj)
 
     def callback(self, obj, connected, **kwargs):
         self._update_event.set()
@@ -935,10 +935,10 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
         self.lock.acquire()
         try:
             with connection_status_monitor(
-                    *self.objects,
+                    *self._init_objects,
                     callback=self.callback) as self.status:
+                self._init_objects.clear()
                 self.lock.release()
-
                 while not self.isInterruptionRequested():
                     self._update_event.clear()
                     self._update_event.wait(timeout=0.5)
