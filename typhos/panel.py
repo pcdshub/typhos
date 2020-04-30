@@ -33,6 +33,8 @@ class SignalPanel(QtWidgets.QGridLayout):
     COL_READBACK = 1
     COL_SETPOINT = 2
 
+    loading_complete = QtCore.Signal(list)
+
     def __init__(self, signals=None):
         super().__init__()
 
@@ -130,6 +132,10 @@ class SignalPanel(QtWidgets.QGridLayout):
         visible = sig_info['visible']
         for widget in widgets[1:]:
             widget.setVisible(visible)
+
+        if all(sig_info['widget_info'] is not None
+               for name, sig_info in self.signal_name_to_info.items()):
+            self.loading_complete.emit(list(self.signal_name_to_info))
 
     def add_signal(self, signal, name=None, *, tooltip=None):
         """

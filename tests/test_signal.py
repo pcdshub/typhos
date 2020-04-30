@@ -4,16 +4,13 @@ import numpy as np
 import pytest
 from qtpy.QtWidgets import QWidget
 
-import ophyd
 import pydm.utilities
-import typhos.panel
 from ophyd.signal import Signal
 from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
                        SynSignalRO)
 from pydm.widgets import PyDMEnumComboBox
-from typhos import utils
-from typhos.panel import (SignalPanel, TyphosSignalPanel,
-                          get_global_widget_type_cache)
+from typhos import cache
+from typhos.panel import SignalPanel, TyphosSignalPanel
 from typhos.widgets import (ImageDialogButton, WaveformDialogButton,
                             create_signal_widget)
 
@@ -22,56 +19,15 @@ from .conftest import DeadSignal, RichSignal, show_widget
 
 @pytest.fixture(scope='function')
 def type_cache():
-    # typhos.panel._GLOBAL_WIDGET_TYPE_CACHE = None
-    typhos.panel._GLOBAL_DESCRIBE_CACHE = None
-    type_cache = get_global_widget_type_cache()
+    type_cache = cache.get_global_widget_type_cache()
+    type_cache.clear()
+    type_cache.describe_cache.clear()
     return type_cache
-
-
-def add_signals_to_type_cache(qtbot, type_cache, *signals):
-    """
-    Pre-add signals to the type cache such that widgets get created on panel
-    instantiation and not later during callbacks
-    """
-    for signal in signals:
-        with qtbot.waitSignal(type_cache.widgets_determined):
-            info = type_cache.get(signal)
-            if info is not None:
-                # A hack, so waitSignal does not timeout:
-                type_cache.widgets_determined.emit(signal, info)
-        assert type_cache.get(signal) is not None
-
-
-def patch_panel(qtbot, panel, type_cache, monkeypatch):
-    """
-    Patch a SignalPanel instance to pre-add signals to the global type cache
-    """
-
-    def add_device(device, *args, **kwargs):
-        """Add all signals to the type cache"""
-        for signal in utils.get_all_signals_from_device(device):
-            add_signals_to_type_cache(qtbot, type_cache, signal)
-        return _add_device(device, *args, **kwargs)
-
-    def add_signal(signal, *args, **kwargs):
-        """Add the given signal to the type cache"""
-        if type(signal) not in (ophyd.EpicsSignal, ophyd.EpicsSignalRO,
-                                DeadSignal):
-            add_signals_to_type_cache(qtbot, type_cache, signal)
-        return _add_signal(signal, *args, **kwargs)
-
-    _add_device = panel.add_device
-    monkeypatch.setattr(panel, 'add_device', add_device)
-
-    _add_signal = panel.add_signal
-    monkeypatch.setattr(panel, 'add_signal', add_signal)
 
 
 @pytest.fixture(scope='function')
 def panel(qtbot, type_cache, monkeypatch):
     panel = SignalPanel()
-
-    patch_panel(qtbot, panel, type_cache, monkeypatch)
     yield panel
     panel._dump_layout()
 
@@ -80,7 +36,6 @@ def panel(qtbot, type_cache, monkeypatch):
 def typhos_signal_panel(qtbot, monkeypatch, type_cache):
     typhos_panel = TyphosSignalPanel()
     qtbot.addWidget(typhos_panel)
-    patch_panel(qtbot, typhos_panel.layout(), type_cache, monkeypatch)
     yield typhos_panel
     typhos_panel.layout()._dump_layout()
 
@@ -91,6 +46,21 @@ def panel_widget(qtbot, panel):
     qtbot.addWidget(widget)
     widget.setLayout(panel)
     return widget
+
+
+def wait_panel(qtbot, panel, signal_names):
+    def condition(loaded_signals):
+        return set(loaded_signals) == signal_names
+
+    blocker = qtbot.wait_signal(panel.loading_complete,
+                                check_params_cb=condition)
+    blocker.wait()
+
+    print()
+    print('Panel loaded all signals:', signal_names)
+    print('Panel layout:')
+    panel._dump_layout()
+    print()
 
 
 @show_widget
@@ -121,7 +91,10 @@ def test_panel_creation(qtbot, panel, panel_widget):
     for name, signal in signals.items():
         panel.add_signal(signal, name=name)
 
-    assert len(panel.signals) == 6
+    wait_panel(
+        qtbot, panel,
+        signal_names=set(sig.name for sig in signals.values())
+    )
 
     def widget_at(row, col):
         return panel.itemAtPosition(row, col).widget()
@@ -145,10 +118,12 @@ def test_panel_add_enum(qtbot, panel, panel_widget):
     syn_sig = RichSignal(name='Syn:Enum', value=1)
     row = panel.add_signal(syn_sig, "Sim Enum PV")
     # Check our signal was added a QCombobox
-    # Assume it is the last item in the button layout
+
+    wait_panel(qtbot, panel, signal_names={syn_sig.name})
 
     def widget_at(row, col):
-        return panel.layout().itemAtPosition(row, col).widget()
+        print('** widget_at ** panel is', panel, panel.signals)
+        return panel.itemAtPosition(row, col).widget()
 
     assert isinstance(widget_at(row, 2), PyDMEnumComboBox)
     return panel_widget
@@ -167,7 +142,7 @@ def test_add_pv(qtbot, panel, panel_widget):
     assert 'Read Only' in panel.signals
 
     def widget_at(row, col):
-        return panel.layout().itemAtPosition(row, col).widget()
+        return panel.itemAtPosition(row, col).widget()
 
     # Check read-only spans setpoint/readback cols
     assert widget_at(row, 1) is widget_at(row, 2)
