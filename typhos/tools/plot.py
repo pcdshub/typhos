@@ -11,7 +11,7 @@ from timechart.displays.main_display import TimeChartDisplay
 from timechart.utilities.utils import random_color
 
 from .. import utils
-from ..panel import get_global_describe_cache
+from ..cache import get_global_describe_cache
 
 logger = logging.getLogger(__name__)
 

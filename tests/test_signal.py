@@ -12,9 +12,10 @@ from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
                        SynSignalRO)
 from pydm.widgets import PyDMEnumComboBox
 from typhos import utils
-from typhos.panel import (SignalPanel, TyphosSignalPanel, create_signal_widget,
+from typhos.panel import (SignalPanel, TyphosSignalPanel,
                           get_global_widget_type_cache)
-from typhos.widgets import ImageDialogButton, WaveformDialogButton
+from typhos.widgets import (ImageDialogButton, WaveformDialogButton,
+                            create_signal_widget)
 
 from .conftest import DeadSignal, RichSignal, show_widget
 

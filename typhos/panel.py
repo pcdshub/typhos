@@ -1,4 +1,3 @@
-import collections
 import functools
 import logging
 import sys
@@ -9,354 +8,14 @@ from qtpy.QtCore import Q_ENUMS, Property
 
 import ophyd
 from ophyd import Kind
-from ophyd.signal import EpicsSignal, EpicsSignalBase, EpicsSignalRO
-from pydm.widgets.display_format import DisplayFormat
+from ophyd.signal import EpicsSignal, EpicsSignalRO
 
 from . import display, utils
-from .plugins import register_signal
-from .utils import (TyphosBase, TyphosLoading, channel_name, clean_attr,
-                    clear_layout, is_signal_ro)
-from .widgets import (ImageDialogButton, SignalDialogButton, TyphosComboBox,
-                      TyphosDesignerMixin, TyphosLabel, TyphosLineEdit,
-                      WaveformDialogButton)
+from .cache import get_global_widget_type_cache
+from .utils import TyphosBase
+from .widgets import TyphosDesignerMixin
 
 logger = logging.getLogger(__name__)
-
-
-SignalWidgetInfo = collections.namedtuple(
-    'SignalWidgetInfo',
-    'read_cls read_kwargs write_cls write_kwargs'
-)
-
-
-def widget_type_from_description(signal, desc, read_only=False):
-    """
-    Determine which widget class should be used for the given signal
-
-    Parameters
-    ----------
-    signal : ophyd.Signal
-        Signal object to determine widget class
-
-    desc : dict
-        Previously recorded description from the signal
-
-    read_only: bool, optional
-        Should the chosen widget class be read-only?
-
-    Returns
-    -------
-    widget_class : class
-        The class to use for the widget
-    kwargs : dict
-        Keyword arguments for the class
-    """
-    if isinstance(signal, EpicsSignalBase):
-        # Still re-route EpicsSignal through the ca:// plugin
-        pv = (signal._read_pv
-              if read_only else signal._write_pv)
-        init_channel = channel_name(pv.pvname)
-    else:
-        # Register signal with plugin
-        register_signal(signal)
-        init_channel = channel_name(signal.name, protocol='sig')
-
-    kwargs = {
-        'init_channel': init_channel,
-    }
-
-    # Unshaped data
-    shape = desc.get('shape', [])
-    dtype = desc.get('dtype', '')
-    try:
-        dimensions = len(shape)
-    except TypeError:
-        dimensions = 0
-
-    if dimensions == 0:
-        # Check for enum_strs, if so create a QCombobox
-        if read_only:
-            widget_cls = TyphosLabel
-        else:
-            if 'enum_strs' in desc:
-                # Create a QCombobox if the widget has enum_strs
-                widget_cls = TyphosComboBox
-            else:
-                # Otherwise a LineEdit will suffice
-                widget_cls = TyphosLineEdit
-    elif dimensions == 1:
-        # Waveform
-        widget_cls = WaveformDialogButton
-    elif dimensions == 2:
-        # B/W image
-        widget_cls = ImageDialogButton
-    else:
-        raise ValueError(f"Unable to create widget for widget of "
-                         f"shape {len(desc.get('shape'))} from {signal.name}")
-
-    if dtype == 'string' and widget_cls in (TyphosLabel, TyphosLineEdit):
-        kwargs['display_format'] = DisplayFormat.String
-
-    return widget_cls, kwargs
-
-
-def determine_widget_type(signal, read_only=False):
-    """
-    Determine which widget class should be used for the given signal.
-
-    Parameters
-    ----------
-    signal : ophyd.Signal
-        Signal object to determine widget class
-
-    read_only: bool, optional
-        Should the chosen widget class be read-only?
-
-    Returns
-    -------
-    widget_class : class
-        The class to use for the widget
-    kwargs : dict
-        Keyword arguments for the class
-    """
-    try:
-        desc = signal.describe()[signal.name]
-    except Exception:
-        logger.error("Unable to connect to %r during widget creation",
-                     signal.name)
-        desc = {}
-
-    return widget_type_from_description(signal, desc)
-
-
-def create_signal_widget(signal, read_only=False, tooltip=None):
-    """
-    Factory for creating a PyDMWidget from a signal
-
-    Parameters
-    ----------
-    signal : ophyd.Signal
-        Signal object to create widget
-
-    read_only: bool, optional
-        Whether this widget should be able to write back to the signal you
-        provided
-
-    tooltip : str, optional
-        Tooltip to use for the widget
-
-    Returns
-    -------
-    widget : PyDMWidget
-        PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
-        be able to write back to the widget and if the signal has ``enum_strs``
-    """
-    widget_cls, kwargs = determine_widget_type(signal, read_only=read_only)
-    logger.debug("Creating %s for %s", widget_cls, signal.name)
-
-    widget = widget_cls(**kwargs)
-    widget.setObjectName(f'{signal.name}_{widget_cls.__name__}')
-    if tooltip is not None:
-        widget.setToolTip(tooltip)
-
-    return widget
-
-
-# Backward-compatibility (TODO deprecate)
-signal_widget = create_signal_widget
-
-
-class _GlobalDescribeCache(QtCore.QObject):
-    """
-    Cache of ophyd object descriptions
-
-    ``obj.describe()`` is called in a thread from the global QThreadPool, and
-    new results are marked by the Signal ``new_description``.
-
-    To access a description, call :meth:`.get`. If available, it will be
-    returned immediately.  Otherwise, wait for the ``new_description`` Signal.
-
-    Attributes
-    ----------
-    connect_thread : :class:`ObjectConnectionMonitorThread`
-        The thread which monitors connection status
-
-    cache : dict
-        The cache holding descriptions, keyed on ``obj``
-    """
-
-    new_description = QtCore.Signal(object, dict)
-
-    def __init__(self):
-        super().__init__()
-        self.connect_thread = utils.ObjectConnectionMonitorThread(parent=self)
-        self.connect_thread.connection_update.connect(self._connection_update)
-        self.connect_thread.start()
-
-        self._in_process = set()
-        self.cache = {}
-
-    def _describe(self, obj):
-        """Retrieve the description of ``obj``."""
-        try:
-            return obj.describe()[obj.name]
-        except Exception:
-            logger.error("Unable to connect to %r during widget creation",
-                         obj.name)
-        return {}
-
-    def _worker_describe(self, obj):
-        """
-        This is the worker thread method that gets run in the thread pool.
-
-        It calls describe, updates the cache, and emits a signal when done.
-        """
-        try:
-            self.cache[obj] = desc = self._describe(obj)
-            self.new_description.emit(obj, desc)
-        except Exception as ex:
-            logger.exception('Worker describe failed: %s', ex)
-        finally:
-            self._in_process.remove(obj)
-
-    @QtCore.Slot(object, bool, dict)
-    def _connection_update(self, obj, connected, metadata):
-        """
-        A connection callback from the connection monitor thread.
-        """
-        if not connected:
-            return
-        elif self.cache.get(obj) or obj in self._in_process:
-            return
-
-        self._in_process.add(obj)
-        func = functools.partial(self._worker_describe, obj)
-        QtCore.QThreadPool.globalInstance().start(
-            utils.ThreadPoolWorker(func)
-        )
-
-    def get(self, obj):
-        """
-        To access a description, call this method. If available, it will be
-        returned immediately.  Otherwise, upon connection and successful
-        ``describe()`` call, the ``new_description`` Signal will be emitted.
-
-        Parameters
-        ----------
-        obj : :class:`ophyd.OphydObj`
-            The object to get the description of
-
-        Returns
-        -------
-        desc : dict or None
-            If available in the cache, the description will be returned.
-        """
-        try:
-            return self.cache[obj]
-        except KeyError:
-            # Add the object, waiting for a connection update to determine
-            # widget types
-            self.connect_thread.add_object(obj)
-
-
-class _GlobalWidgetTypeCache(QtCore.QObject):
-    """
-    Cache of ophyd object Typhos widget types
-
-    ``obj.describe()`` is called using :class:`_GlobalDescribeCache` and are
-    therefore threaded and run in the background.  New results are marked by
-    the Signal ``widgets_determined``.
-
-    To access a set of widget types, call :meth:`.get`. If available, it will
-    be returned immediately.  Otherwise, wait for the ``widgets_determined``
-    Signal.
-
-    Attributes
-    ----------
-    describe_cache : :class:`_GlobalDescribeCache`
-        The describe cache, used for determining widget types
-
-    cache : dict
-        The cache holding widget type information.
-        Keyed on ``obj``, the values are :class:`SignalWidgetInfo` tuples.
-    """
-
-    widgets_determined = QtCore.Signal(object, SignalWidgetInfo)
-
-    def __init__(self):
-        super().__init__()
-        self.cache = {}
-        self.describe_cache = get_global_describe_cache()
-        self.describe_cache.new_description.connect(self._new_description)
-
-    @QtCore.Slot(object, dict)
-    def _new_description(self, obj, desc):
-        """New description: determine widget types and update the cache."""
-        if not desc:
-            # Marks an error in retrieving the description
-            # TODO: show error widget or some default widget?
-            return
-
-        read_cls, read_kwargs = widget_type_from_description(
-            obj, desc, read_only=True)
-
-        if is_signal_ro(obj) or issubclass(read_cls, SignalDialogButton):
-            write_cls = None
-            write_kwargs = {}
-        else:
-            write_cls, write_kwargs = widget_type_from_description(obj, desc)
-
-        item = SignalWidgetInfo(read_cls, read_kwargs, write_cls,
-                                write_kwargs)
-        logger.debug('Determined widgets for %s: %s', obj.name, item)
-        self.cache[obj] = item
-        self.widgets_determined.emit(obj, item)
-
-    def get(self, obj):
-        """
-        To access widget types, call this method. If available, it will be
-        returned immediately.  Otherwise, upon connection and successful
-        ``describe()`` call, the ``widgets_determined`` Signal will be emitted.
-
-        Parameters
-        ----------
-        obj : :class:`ophyd.OphydObj`
-            The object to get the widget types
-
-        Returns
-        -------
-        desc : :class:`SignalWidgetInfo` or None
-            If available in the cache, the information will be returned.
-        """
-        try:
-            return self.cache[obj]
-        except KeyError:
-            # Add the signal, waiting for a connection update to determine
-            # widget types
-            desc = self.describe_cache.get(obj)
-            if desc is not None:
-                # In certain scenarios (such as testing) this might happen
-                self._new_description(obj, desc)
-
-
-_GLOBAL_WIDGET_TYPE_CACHE = None
-_GLOBAL_DESCRIBE_CACHE = None
-
-
-def get_global_describe_cache():
-    """Get the _GlobalDescribeCache singleton."""
-    global _GLOBAL_DESCRIBE_CACHE
-    if _GLOBAL_DESCRIBE_CACHE is None:
-        _GLOBAL_DESCRIBE_CACHE = _GlobalDescribeCache()
-    return _GLOBAL_DESCRIBE_CACHE
-
-
-def get_global_widget_type_cache():
-    """Get the _GlobalWidgetTypeCache singleton."""
-    global _GLOBAL_WIDGET_TYPE_CACHE
-    if _GLOBAL_WIDGET_TYPE_CACHE is None:
-        _GLOBAL_WIDGET_TYPE_CACHE = _GlobalWidgetTypeCache()
-    return _GLOBAL_WIDGET_TYPE_CACHE
 
 
 class SignalPanel(QtWidgets.QGridLayout):
@@ -457,7 +116,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         item = self.itemAtPosition(row, self.COL_SETPOINT)
         if item:
             val_widget = item.widget()
-            if isinstance(val_widget, TyphosLoading):
+            if isinstance(val_widget, utils.TyphosLoading):
                 self.removeItem(item)
                 val_widget.deleteLater()
 
@@ -505,7 +164,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         if tooltip is not None:
             label.setToolTip(tooltip)
 
-        row = self.add_row(label, None)  # TyphosLoading())
+        row = self.add_row(label, None)  # utils.TyphosLoading())
         self.signal_name_to_info[signal.name] = dict(
             row=row,
             signal=signal,
@@ -541,7 +200,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         label.setObjectName(dotted_name + '_row_label')
         label.setToolTip(component.doc or '')
 
-        row = self.add_row(label, None)  # TyphosLoading())
+        row = self.add_row(label, None)  # utils.TyphosLoading())
         self.signal_name_to_info[dotted_name] = dict(
             row=row,
             signal=None,
@@ -765,7 +424,7 @@ class SignalPanel(QtWidgets.QGridLayout):
     def clear(self):
         """Clear the SignalPanel"""
         logger.debug("Clearing layout %r ...", self)
-        clear_layout(self)
+        utils.clear_layout(self)
         self._devices.clear()
         self.signal_name_to_info.clear()
 
@@ -817,7 +476,7 @@ def _device_signals_by_kind(device, kind):
     """
     try:
         for attr, item in utils.grab_kind(device, kind.name).items():
-            yield clean_attr(attr), item.signal, item.component
+            yield utils.clean_attr(attr), item.signal, item.component
     except Exception:
         logger.exception("Unable to add %s signals from %r", kind.name, device)
 
