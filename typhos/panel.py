@@ -421,23 +421,8 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         Utility to dump the current layout
         """
-        print('-' * (64 * self.NUM_COLS), file=file)
-        found_widgets = set()
-        for row in range(self._row_count):
-            print('|', end='', file=file)
-            for col in range(self.NUM_COLS):
-                item = self.itemAtPosition(row, col)
-                if item:
-                    entry = item.widget() or item.layout()
-                    found_widgets.add(entry)
-                    if isinstance(entry, QtWidgets.QLabel):
-                        entry = f'<QLabel {entry.text()!r}>'
-                else:
-                    entry = ''
-
-                print(' {:<60s}'.format(str(entry)), end=' |', file=file)
-            print(file=file)
-        print('-' * (64 * self.NUM_COLS), file=file)
+        return utils.dump_grid_layout(
+            self, rows=self._row_count, cols=self.NUM_COLS, file=file)
 
     def _got_signal_widget_info(self, obj, info):
         try:

@@ -10,13 +10,13 @@ import os
 import pathlib
 import random
 import re
+import sys
 import threading
 
-from qtpy import QtCore
+from qtpy import QtCore, QtWidgets
 from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QMovie, QPainter
-from qtpy.QtWidgets import (QApplication, QLabel, QStyle, QStyleFactory,
-                            QStyleOption, QWidget)
+from qtpy.QtWidgets import QWidget
 
 import ophyd.sim
 from ophyd import Device, Kind
@@ -199,10 +199,10 @@ def use_stylesheet(dark=False, widget=None):
         with open(style_path, 'r') as handle:
             style = handle.read()
     if widget is None:
-        widget = QApplication.instance()
+        widget = QtWidgets.QApplication.instance()
     # We can set Fusion style if it is an application
-    if isinstance(widget, QApplication):
-        widget.setStyle(QStyleFactory.create('Fusion'))
+    if isinstance(widget, QtWidgets.QApplication):
+        widget.setStyle(QtWidgets.QStyleFactory.create('Fusion'))
 
     # Set Stylesheet
     widget.setStyleSheet(style)
@@ -215,7 +215,7 @@ def random_color():
                   random.randint(0, 255))
 
 
-class TyphosLoading(QLabel):
+class TyphosLoading(QtWidgets.QLabel):
     loading_gif = None
     """Simple widget that displays a loading GIF"""
     def __init__(self, *args, **kwargs):
@@ -259,11 +259,12 @@ class TyphosBase(QWidget):
     def paintEvent(self, event):
         # This is necessary because by default QWidget ignores stylesheets
         # https://wiki.qt.io/How_to_Change_the_Background_Color_of_QWidget
-        opt = QStyleOption()
+        opt = QtWidgets.QStyleOption()
         opt.initFrom(self)
         painter = QPainter()
         painter.begin(self)
-        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+        self.style().drawPrimitive(QtWidgets.QStyle.PE_Widget, opt, painter,
+                                   self)
         super().paintEvent(event)
 
     @classmethod
@@ -998,3 +999,42 @@ def find_parent_with_class(widget, cls=QWidget):
             return parent
         parent = parent.parent()
     return None
+
+
+def dump_grid_layout(layout, rows, cols, *, file=sys.stdout):
+    """
+    Dump the layout of a :class:`QtWidgets.QGridLayout` to ``file``.
+
+    Parameters
+    ----------
+    layout : QtWidgets.QGridLayout
+        The layout
+    rows : int
+        Number of rows to iterate over
+    cols : int
+        Number of columns to iterate over
+    file : file-like object, optional
+        The file to dump the layout to, defaulting to standard output.
+    """
+    separator = '-' * (64 * cols)
+    print(separator, file=file)
+
+    found_widgets = set()
+    for row in range(rows):
+        print('|', end='', file=file)
+        for col in range(cols):
+            item = layout.itemAtPosition(row, col)
+            if item:
+                entry = item.widget() or item.layout()
+                found_widgets.add(entry)
+                if isinstance(entry, QtWidgets.QLabel):
+                    entry = f'<QLabel {entry.text()!r}>'
+            else:
+                entry = ''
+
+            print(' {:<60s}'.format(str(entry)), end=' |', file=file)
+
+        print(file=file)
+
+    print(separator, file=file)
+    return found_widgets
