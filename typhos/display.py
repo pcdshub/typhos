@@ -189,9 +189,9 @@ class TyphosDisplayConfigButton(TyphosToolButton):
             Whether or not this method is being called from a search/filter
             method.
         """
-        if search:
-            show_empty(self.device_display)
         if self.device_display.hideEmpty:
+            if search:
+                show_empty(self.device_display)
             hide_empty(self.device_display, process_widget=False)
 
     def create_hide_empty_menu(self, panels, base_menu):
