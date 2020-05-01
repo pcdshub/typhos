@@ -1,6 +1,5 @@
 import functools
 import logging
-import sys
 from functools import partial
 
 from qtpy import QtCore, QtWidgets
@@ -77,13 +76,6 @@ class SignalPanel(QtWidgets.QGridLayout):
         The number of filled-in rows
         """
         return self._row_count
-
-    def _dump_layout(self, file=sys.stdout):
-        """
-        Utility to dump the current layout
-        """
-        return utils.dump_grid_layout(
-            self, rows=self._row_count, cols=self.NUM_COLS, file=file)
 
     def _got_signal_widget_info(self, obj, info):
         try:
@@ -345,7 +337,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             self._set_visible(name, visible)
 
         self.update()
-        # self._dump_layout()
+        # utils.dump_grid_layout(self)
 
     @property
     def _filter_settings(self):

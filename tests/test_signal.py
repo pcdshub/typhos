@@ -9,7 +9,7 @@ from ophyd.signal import Signal
 from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
                        SynSignalRO)
 from pydm.widgets import PyDMEnumComboBox
-from typhos import cache
+from typhos import cache, utils
 from typhos.panel import SignalPanel, TyphosSignalPanel
 from typhos.widgets import (ImageDialogButton, WaveformDialogButton,
                             create_signal_widget)
@@ -29,7 +29,6 @@ def type_cache():
 def panel(qtbot, type_cache, monkeypatch):
     panel = SignalPanel()
     yield panel
-    panel._dump_layout()
 
 
 @pytest.fixture(scope='function')
@@ -37,7 +36,6 @@ def typhos_signal_panel(qtbot, monkeypatch, type_cache):
     typhos_panel = TyphosSignalPanel()
     qtbot.addWidget(typhos_panel)
     yield typhos_panel
-    typhos_panel.layout()._dump_layout()
 
 
 @pytest.fixture(scope='function')
@@ -57,9 +55,9 @@ def wait_panel(qtbot, panel, signal_names):
     blocker.wait()
 
     print()
-    print('Panel loaded all signals:', signal_names)
+    print('Panel loaded all required signals.', signal_names)
     print('Panel layout:')
-    panel._dump_layout()
+    print(utils.dump_grid_layout(panel))
     print()
 
 

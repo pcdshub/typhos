@@ -5,12 +5,12 @@ import collections
 import contextlib
 import importlib.util
 import inspect
+import io
 import logging
 import os
 import pathlib
 import random
 import re
-import sys
 import threading
 
 from qtpy import QtCore, QtWidgets
@@ -1009,7 +1009,7 @@ def find_parent_with_class(widget, cls=QWidget):
     return None
 
 
-def dump_grid_layout(layout, rows, cols, *, file=sys.stdout):
+def dump_grid_layout(layout, rows=None, cols=None, *, cell_width=60):
     """
     Dump the layout of a :class:`QtWidgets.QGridLayout` to ``file``.
 
@@ -1021,32 +1021,40 @@ def dump_grid_layout(layout, rows, cols, *, file=sys.stdout):
         Number of rows to iterate over
     cols : int
         Number of columns to iterate over
-    file : file-like object, optional
-        The file to dump the layout to, defaulting to standard output.
+
+    Returns
+    -------
+    table : str
+        The text for the summary table
     """
-    separator = '-' * (64 * cols)
-    print(separator, file=file)
+    rows = rows or layout.rowCount()
+    cols = cols or layout.columnCount()
 
-    found_widgets = set()
-    for row in range(rows):
-        print('|', end='', file=file)
-        for col in range(cols):
-            item = layout.itemAtPosition(row, col)
-            if item:
-                entry = item.widget() or item.layout()
-                found_widgets.add(entry)
-                visible = entry is None or entry.isVisible()
-                if isinstance(entry, QtWidgets.QLabel):
-                    entry = f'<QLabel {entry.text()!r}>'
+    separator = '-' * ((cell_width + 4) * cols)
+    cell = ' {:<%ds}' % cell_width
 
-                if not visible:
-                    entry = f'(invis) {entry}'
-            else:
-                entry = ''
+    def get_text(item):
+        if not item:
+            return ''
 
-            print(' {:<60s}'.format(str(entry)), end=' |', file=file)
+        entry = item.widget() or item.layout()
+        visible = entry is None or entry.isVisible()
+        if isinstance(entry, QtWidgets.QLabel):
+            entry = f'<QLabel {entry.text()!r}>'
 
-        print(file=file)
+        if not visible:
+            entry = f'(invis) {entry}'
+        return entry
 
-    print(separator, file=file)
-    return found_widgets
+    with io.StringIO() as file:
+        print(separator, file=file)
+        for row in range(rows):
+            print('|', end='', file=file)
+            for col in range(cols):
+                item = get_text(layout.itemAtPosition(row, col))
+                print(cell.format(str(item)), end=' |', file=file)
+
+            print(file=file)
+
+        print(separator, file=file)
+        return file.getvalue()
