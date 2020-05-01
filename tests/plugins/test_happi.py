@@ -1,11 +1,8 @@
 import importlib
 import sys
-import types
 from unittest.mock import Mock, patch
 
-from happi import Device
-import pytest
-
+import ophyd
 import typhos
 import typhos.plugins
 from typhos.plugins.happi import HappiPlugin
@@ -20,7 +17,7 @@ def test_connection(client):
     hp.add_connection(hc)
     assert mock.called
     tx = mock.call_args[0][0]
-    assert isinstance(tx['obj'], types.SimpleNamespace)
+    assert isinstance(tx['obj'], ophyd.sim.SynAxis)
     assert isinstance(tx['md'], dict)
     # Add another object and check that the connection does refire
     mock2 = Mock()

@@ -12,7 +12,7 @@ from qtpy import QtGui, QtWidgets
 import ophyd.sim
 import typhos
 from happi import Client
-from ophyd import Component as C
+from ophyd import Component as Cpt
 from ophyd import Device
 from ophyd import FormattedComponent as FC
 from ophyd.sim import Signal, SynAxis, SynPeriodicSignal
@@ -152,10 +152,9 @@ class DeadSignal(Signal):
 
 
 class ConfiguredSynAxis(SynAxis):
-    velocity = C(Signal, value=100)
-    acceleration = C(Signal, value=10)
-    resolution = C(Signal, value=5)
-    _default_configuration_attrs = ['velocity', 'acceleration']
+    velocity = Cpt(Signal, value=100, kind='normal')
+    acceleration = Cpt(Signal, value=10, kind='normal')
+    resolution = Cpt(Signal, value=5, kind='normal')
 
 
 class RandomSignal(SynPeriodicSignal):
@@ -169,32 +168,28 @@ class RandomSignal(SynPeriodicSignal):
 
 class MockDevice(Device):
     # Device signals
-    readback = C(RandomSignal)
-    noise = C(RandomSignal)
-    transmorgifier = C(SignalRO, value=4)
-    setpoint = C(Signal, value=0)
-    velocity = C(Signal, value=1)
-    flux = C(RandomSignal)
-    modified_flux = C(RandomSignal)
-    capacitance = C(RandomSignal)
-    acceleration = C(Signal, value=3)
-    limit = C(Signal, value=4)
-    inductance = C(RandomSignal)
-    transformed_inductance = C(SignalRO, value=3)
-    core_temperature = C(RandomSignal)
-    resolution = C(Signal, value=5)
-    duplicator = C(Signal, value=6)
+    readback = Cpt(RandomSignal, kind='normal')
+    noise = Cpt(RandomSignal, kind='normal')
+    transmorgifier = Cpt(SignalRO, value=4, kind='normal')
+    setpoint = Cpt(Signal, value=0, kind='normal')
+
+    velocity = Cpt(Signal, value=1, kind='config')
+    flux = Cpt(RandomSignal, kind='config')
+    modified_flux = Cpt(RandomSignal, kind='config')
+    capacitance = Cpt(RandomSignal, kind='config')
+    acceleration = Cpt(Signal, value=3, kind='config')
+    limit = Cpt(Signal, value=4, kind='config')
+    inductance = Cpt(RandomSignal, kind='normal')
+
+    transformed_inductance = Cpt(SignalRO, value=3, kind='omitted')
+    core_temperature = Cpt(RandomSignal, kind='omitted')
+    resolution = Cpt(Signal, value=5, kind='omitted')
+    duplicator = Cpt(Signal, value=6, kind='omitted')
 
     # Component Motors
     x = FC(ConfiguredSynAxis, name='X Axis')
     y = FC(ConfiguredSynAxis, name='Y Axis')
     z = FC(ConfiguredSynAxis, name='Z Axis')
-
-    # Default Signal Sorting
-    _default_read_attrs = ['readback', 'setpoint', 'transmorgifier',
-                           'noise', 'inductance']
-    _default_configuration_attrs = ['flux', 'modified_flux', 'capacitance',
-                                    'velocity', 'acceleration']
 
     def insert(self, width: float=2.0, height: float=2.0,
                fast_mode: bool=False):
