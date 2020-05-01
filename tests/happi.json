@@ -19,7 +19,7 @@
         "screen": null,
         "stand": null,
         "system": null,
-        "type": "Device",
+        "type": "OphydItem",
         "z": -1.0
     },
     "Tst:This": {
@@ -28,7 +28,7 @@
         "args": [],
         "beamline": "TST",
         "creation": "Mon Oct 22 09:08:55 2018",
-        "device_class": "types.SimpleNamespace",
+        "device_class": "ophyd.sim.SynAxis",
         "kwargs": {
             "name": "{{name}}"
         },
@@ -40,7 +40,7 @@
         "screen": null,
         "stand": null,
         "system": null,
-        "type": "Device",
+        "type": "OphydItem",
         "z": -1.0
     }
 }

@@ -189,9 +189,9 @@ class TyphosDisplayConfigButton(TyphosToolButton):
             Whether or not this method is being called from a search/filter
             method.
         """
-        if search:
-            show_empty(self.device_display)
         if self.device_display.hideEmpty:
+            if search:
+                show_empty(self.device_display)
             hide_empty(self.device_display, process_widget=False)
 
     def create_hide_empty_menu(self, panels, base_menu):
@@ -1045,14 +1045,28 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self.add_device(value['obj'], macros=value['md'])
 
 
-def toggle_display(widget):
+def toggle_display(widget, force_state=None):
     """
     Toggle the visibility of all :class:`TyphosSignalPanel` in a display.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget in which to look for Panels
+    force_state : bool
+        If set to True or False, it will change visibility to the value of
+        force_state.
+        If not set or set to None, it will flip the current panels state.
     """
     panels = widget.findChildren(typhos_panel.TyphosSignalPanel) or []
     visible = all(panel.isVisible() for panel in panels)
+
+    state = not visible
+    if force_state is not None:
+        state = force_state
+
     for panel in panels:
-        panel.setVisible(not visible)
+        panel.setVisible(state)
 
 
 def show_empty(widget):
@@ -1067,7 +1081,7 @@ def show_empty(widget):
     for ch in children:
         show_empty(ch)
     widget.setVisible(True)
-    toggle_display(widget)
+    toggle_display(widget, force_state=True)
 
 
 def hide_empty(widget, process_widget=True):
@@ -1089,8 +1103,8 @@ def hide_empty(widget, process_widget=True):
         elif isinstance(item, typhos_panel.TyphosSignalPanel):
             if recursive:
                 hide_empty(item)
-            status = item._panel_layout.active_row_count > 0
-            item.setVisible(status)
+            visible = bool(item._panel_layout.visible_elements)
+            item.setVisible(visible)
 
     if isinstance(widget, TyphosDeviceDisplay):
         # Check if the template at this display is one of the defaults
@@ -1108,5 +1122,5 @@ def hide_empty(widget, process_widget=True):
         if isinstance(widget, TyphosDeviceDisplay):
             overall_status = any(w.isVisible() for w in children)
         elif isinstance(widget, typhos_panel.TyphosSignalPanel):
-            overall_status = widget._panel_layout.active_row_count > 0
+            overall_status = bool(widget._panel_layout.visible_elements)
         widget.setVisible(overall_status)

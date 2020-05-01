@@ -27,9 +27,11 @@ def threaded_status(qtbot):
     if thread.isRunning():
         thread.quit()
 
+
 def test_previously_done_status_in_thread(threaded_status):
     listener, thread, status = threaded_status
     status._finished()
+    status.wait()
     thread.run()
     assert not listener.started.called
     assert not listener.finished.called

@@ -9,16 +9,51 @@ from qtpy.QtCore import Property, QObject, QSize, Qt, Signal, Slot
 from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
                             QToolBar, QVBoxLayout, QWidget)
 
+from ophyd.signal import EpicsSignalBase
 from pydm.widgets import (PyDMEnumComboBox, PyDMImageView, PyDMLabel,
                           PyDMLineEdit, PyDMWaveformPlot)
 from pydm.widgets.base import PyDMWidget
 from pydm.widgets.channel import PyDMChannel
+from pydm.widgets.display_format import DisplayFormat
 
-from .utils import find_parent_with_class
+from . import plugins, utils
 
 logger = logging.getLogger(__name__)
 
 EXPONENTIAL_UNITS = ['mtorr', 'torr', 'kpa', 'pa']
+
+
+class SignalWidgetInfo(
+        collections.namedtuple(
+            'SignalWidgetInfo',
+            'read_cls read_kwargs write_cls write_kwargs'
+        )):
+
+    @classmethod
+    def from_signal(cls, obj, desc=None):
+        """
+        Create a `SignalWidgetInfo` given an object and its description.
+
+        Parameters
+        ----------
+        obj : :class:`ophyd.OphydObj`
+            The object
+        desc : dict, optional
+            The object description, if available.
+        """
+        if desc is None:
+            desc = obj.describe()
+
+        read_cls, read_kwargs = widget_type_from_description(
+            obj, desc, read_only=True)
+
+        if utils.is_signal_ro(obj) or issubclass(read_cls, SignalDialogButton):
+            write_cls = None
+            write_kwargs = {}
+        else:
+            write_cls, write_kwargs = widget_type_from_description(obj, desc)
+
+        return cls(read_cls, read_kwargs, write_cls, write_kwargs)
 
 
 class TogglePanel(QWidget):
@@ -95,13 +130,15 @@ class TyphosLineEdit(PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, display_format=None, **kwargs):
         self._setpoint_history_count = 5
         self._setpoint_history = collections.deque(
             [],  self._setpoint_history_count)
 
         super().__init__(*args, **kwargs)
         self.showUnits = True
+        if display_format is not None:
+            self.displayFormat = display_format
 
     @property
     def setpoint_history(self):
@@ -212,12 +249,14 @@ class TyphosLabel(PyDMLabel):
     """
     Reimplementation of PyDMLabel to set some custom defaults
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, display_format=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAlignment(Qt.AlignCenter)
         self.setSizePolicy(QtWidgets.QSizePolicy.Preferred,
                            QtWidgets.QSizePolicy.Maximum)
         self.showUnits = True
+        if display_format is not None:
+            self.displayFormat = display_format
 
     def unit_changed(self, new_unit):
         """
@@ -405,7 +444,8 @@ class SignalDialogButton(QPushButton):
         if not self.dialog:
             logger.debug("Creating QDialog for %r", self.channel)
             # Set up the QDialog
-            parent = find_parent_with_class(self, self.parent_widget_class)
+            parent = utils.find_parent_with_class(
+                self, self.parent_widget_class)
             self.dialog = QDialog(parent)
             self.dialog.setWindowTitle(self.channel)
             self.dialog.setLayout(QVBoxLayout())
@@ -444,3 +484,136 @@ class WaveformDialogButton(SignalDialogButton):
         """Create PyDMWaveformPlot"""
         return PyDMWaveformPlot(init_y_channels=[self.channel],
                                 parent=self)
+
+
+def widget_type_from_description(signal, desc, read_only=False):
+    """
+    Determine which widget class should be used for the given signal
+
+    Parameters
+    ----------
+    signal : ophyd.Signal
+        Signal object to determine widget class
+
+    desc : dict
+        Previously recorded description from the signal
+
+    read_only: bool, optional
+        Should the chosen widget class be read-only?
+
+    Returns
+    -------
+    widget_class : class
+        The class to use for the widget
+    kwargs : dict
+        Keyword arguments for the class
+    """
+    if isinstance(signal, EpicsSignalBase):
+        # Still re-route EpicsSignal through the ca:// plugin
+        pv = (signal._read_pv
+              if read_only else signal._write_pv)
+        init_channel = utils.channel_name(pv.pvname)
+    else:
+        # Register signal with plugin
+        plugins.register_signal(signal)
+        init_channel = utils.channel_name(signal.name, protocol='sig')
+
+    kwargs = {
+        'init_channel': init_channel,
+    }
+
+    # Unshaped data
+    shape = desc.get('shape', [])
+    dtype = desc.get('dtype', '')
+    try:
+        dimensions = len(shape)
+    except TypeError:
+        dimensions = 0
+
+    if dimensions == 0:
+        # Check for enum_strs, if so create a QCombobox
+        if read_only:
+            widget_cls = TyphosLabel
+        else:
+            if 'enum_strs' in desc:
+                # Create a QCombobox if the widget has enum_strs
+                widget_cls = TyphosComboBox
+            else:
+                # Otherwise a LineEdit will suffice
+                widget_cls = TyphosLineEdit
+    elif dimensions == 1:
+        # Waveform
+        widget_cls = WaveformDialogButton
+    elif dimensions == 2:
+        # B/W image
+        widget_cls = ImageDialogButton
+    else:
+        raise ValueError(f"Unable to create widget for widget of "
+                         f"shape {len(desc.get('shape'))} from {signal.name}")
+
+    if dtype == 'string' and widget_cls in (TyphosLabel, TyphosLineEdit):
+        kwargs['display_format'] = DisplayFormat.String
+
+    return widget_cls, kwargs
+
+
+def determine_widget_type(signal, read_only=False):
+    """
+    Determine which widget class should be used for the given signal.
+
+    Parameters
+    ----------
+    signal : ophyd.Signal
+        Signal object to determine widget class
+
+    read_only: bool, optional
+        Should the chosen widget class be read-only?
+
+    Returns
+    -------
+    widget_class : class
+        The class to use for the widget
+    kwargs : dict
+        Keyword arguments for the class
+    """
+    try:
+        desc = signal.describe()[signal.name]
+    except Exception:
+        logger.error("Unable to connect to %r during widget creation",
+                     signal.name)
+        desc = {}
+
+    return widget_type_from_description(signal, desc)
+
+
+def create_signal_widget(signal, read_only=False, tooltip=None):
+    """
+    Factory for creating a PyDMWidget from a signal
+
+    Parameters
+    ----------
+    signal : ophyd.Signal
+        Signal object to create widget
+
+    read_only: bool, optional
+        Whether this widget should be able to write back to the signal you
+        provided
+
+    tooltip : str, optional
+        Tooltip to use for the widget
+
+    Returns
+    -------
+    widget : PyDMWidget
+        PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should
+        be able to write back to the widget and if the signal has ``enum_strs``
+    """
+    widget_cls, kwargs = determine_widget_type(signal, read_only=read_only)
+    logger.debug("Creating %s for %s", widget_cls, signal.name)
+
+    widget = widget_cls(**kwargs)
+    widget.setObjectName(f'{signal.name}_{widget_cls.__name__}')
+    if tooltip is not None:
+        widget.setToolTip(tooltip)
+
+    return widget

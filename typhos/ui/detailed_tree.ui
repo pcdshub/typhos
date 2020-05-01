@@ -52,6 +52,9 @@
     Panel of Signals + Sub-Devices for Device
     </string>
      </property>
+     <property name="showOmitted" stdset="0">
+      <bool>false</bool>
+     </property>
     </widget>
    </item>
    <item>
