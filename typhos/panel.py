@@ -106,6 +106,11 @@ class SignalPanel(QtWidgets.QGridLayout):
         }
 
     @property
+    def visible_elements(self):
+        """Return all visible signals and components"""
+        return self.visible_signals
+
+    @property
     def row_count(self):
         """
         The number of filled-in rows
@@ -634,6 +639,17 @@ class CompositeSignalPanel(SignalPanel):
                 self.add_sub_device(sub_device, name=dotted_name)
             else:
                 self._maybe_add_signal(device, attr, attr, component)
+
+    @property
+    def visible_elements(self):
+        """Return all visible signals and components"""
+        sigs = self.visible_signals
+        containers = {
+            name: cont
+            for name, cont in self._containers.items() if cont.isVisible()
+        }
+        sigs.update(containers)
+        return sigs
 
 
 class TyphosCompositeSignalPanel(TyphosSignalPanel):

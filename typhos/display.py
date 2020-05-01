@@ -1103,7 +1103,7 @@ def hide_empty(widget, process_widget=True):
         elif isinstance(item, typhos_panel.TyphosSignalPanel):
             if recursive:
                 hide_empty(item)
-            visible = bool(item._panel_layout.visible_signals)
+            visible = bool(item._panel_layout.visible_elements)
             item.setVisible(visible)
 
     if isinstance(widget, TyphosDeviceDisplay):
@@ -1122,5 +1122,5 @@ def hide_empty(widget, process_widget=True):
         if isinstance(widget, TyphosDeviceDisplay):
             overall_status = any(w.isVisible() for w in children)
         elif isinstance(widget, typhos_panel.TyphosSignalPanel):
-            overall_status = bool(widget._panel_layout.visible_signals)
+            overall_status = bool(widget._panel_layout.visible_elements)
         widget.setVisible(overall_status)
