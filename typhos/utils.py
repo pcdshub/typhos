@@ -9,6 +9,7 @@ import io
 import logging
 import os
 import pathlib
+import platform
 import random
 import re
 import threading
@@ -1060,3 +1061,30 @@ def dump_grid_layout(layout, rows=None, cols=None, *, cell_width=60):
 
         print(separator, file=file)
         return file.getvalue()
+
+
+def get_config_path():
+    """Get the typhos configuration path."""
+    if platform.system().lower() == 'windows':
+        path = os.getenv('APPDATA') or '~'
+    elif platform.system().lower() == 'darwin':
+        path = pathlib.Path('~') / 'Library' / 'Caches'
+    else:
+        path = os.getenv('XDG_CACHE_HOME') or '~/.cache'
+
+    # Allow TYPHOS_CONFIG_PATH to override the above operating system-specific
+    # entries:
+    path = os.environ.get('TYPHOS_CONFIG_PATH', path / 'typhos')
+
+    # Expand and fully resolve the path:
+    path = pathlib.Path(path).expanduser().resolve()
+
+    # And create it if necessary:
+    if not path.exists():
+        try:
+            path.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            logger.exception('Failed to create the typhos config path')
+            return None
+
+    return path

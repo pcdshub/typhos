@@ -1,9 +1,12 @@
+import ast
 import fnmatch
 import functools
 import logging
+import ophyd
 import os
 import pathlib
 import re
+import sqlite3
 import time
 
 from qtpy import QtCore
@@ -47,6 +50,23 @@ def get_global_display_path_cache():
     return _GLOBAL_DISPLAY_PATH_CACHE
 
 
+def get_describe_database_path():
+    """Get the typhos describe database path."""
+    # Highest priority: TYPHOS_DATABASE_PATH
+    env_path = os.environ.get('TYPHOS_DATABASE_PATH')
+    if env_path:
+        return env_path
+
+    # Fall back to config_path/typhos_describe.sqlite
+    config_path = utils.get_config_path()
+    if config_path is None:
+        # But if not accessible, do not use the disk
+        return ':memory:'
+
+    config_path = config_path / 'typhos_describe.sqlite'
+    return str(os.environ.get('TYPHOS_DATABASE_PATH', config_path))
+
+
 class _GlobalDescribeCache(QtCore.QObject):
     """
     Cache of ophyd object descriptions
@@ -64,6 +84,11 @@ class _GlobalDescribeCache(QtCore.QObject):
 
     cache : dict
         The cache holding descriptions, keyed on ``obj``
+
+    persistent_cache : dict or _DescribeDatabase
+        Cache that may persist between runs of typhos. Must support a ``.get``
+        method that takes an :class:`OphydObj` instance, and a ``.clear``
+        method with no arguments.
     """
 
     new_description = QtCore.Signal(object, dict)
@@ -76,11 +101,13 @@ class _GlobalDescribeCache(QtCore.QObject):
 
         self._in_process = set()
         self.cache = {}
+        self.persistent_cache = {}
 
     def clear(self):
         """Clear the cache."""
         self.connect_thread.clear()
         self.cache.clear()
+        # self.persistent_cache.clear()  # ?
         self._in_process.clear()
 
     def _describe(self, obj):
@@ -148,6 +175,12 @@ class _GlobalDescribeCache(QtCore.QObject):
         try:
             return self.cache[obj]
         except KeyError:
+            desc = self.persistent_cache.get(obj)
+            if desc is not None:
+                self.cache[obj] = desc
+                self.new_description.emit(obj, desc)
+                return desc
+
             # Add the object, waiting for a connection update to determine
             # widget types
             self.connect_thread.add_object(obj)
@@ -197,8 +230,10 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
 
         item = SignalWidgetInfo.from_signal(obj, desc)
         logger.debug('Determined widgets for %s: %s', obj.name, item)
-        self.cache[obj] = item
-        self.widgets_determined.emit(obj, item)
+
+        if self.cache.get(obj) != item:
+            self.cache[obj] = item
+            self.widgets_determined.emit(obj, item)
 
     def get(self, obj):
         """
@@ -341,3 +376,201 @@ class _GlobalDisplayPathCache:
             path, stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME)
         if path not in self.paths:
             self.paths.append(path)
+
+
+class _DescribeDatabase(QtCore.QObject):
+    """
+    An Sqlite3 database-backed cache of ophyd object descriptions
+
+    Works in conjunction with :class:`_GlobalDescribeCache` by marking itself
+    as its persistent cache.
+
+    Attributes
+    ----------
+    cache : dict
+        The cache holding descriptions, keyed on ``obj``
+    """
+
+    _columns = {
+        # Each object should translate to one unique set of the next 4:
+        'name': None,  # handled separately
+        'class': None,  # handled separately
+        'pvname': None,  # handled separately
+        'setpoint_pvname': None,  # handled separately
+
+        # Stashed keys from descriptions:
+        'derived_from': str,
+        'dtype': str,
+        'enum_strs': repr,
+        'precision': int,
+        'shape': repr,
+        'source': str,
+        'units': str,
+
+        'lower_ctrl_limit': float,
+        'upper_ctrl_limit': float,
+    }
+
+    _type_map = {
+        int: 'numeric',
+        float: 'numeric',
+        repr: 'text',
+        str: 'text',
+    }
+
+    _table_name = 'describe_cache'
+
+    def __init__(self):
+        super().__init__()
+        self.log = logging.getLogger(__name__ + '._DescribeDatabase')
+        self._init_queries()
+        self._init_database(get_describe_database_path())
+        self.describe_cache = get_global_describe_cache()
+        self.describe_cache.new_description.connect(self._new_description)
+        self.describe_cache.persistent_cache = self
+
+    @property
+    def path(self):
+        """The database file path (or ':memory:')."""
+        return self._path
+
+    def _init_queries(self):
+        """Pre-create all queries sent to the database connection."""
+        cols = ', '.join(f'{key} {self._type_map[value]}'
+                         for key, value in self._columns.items()
+                         if value is not None)
+
+        self._create_query = f'''
+            CREATE TABLE IF NOT EXISTS "{self._table_name}" (
+                name text primary key,
+                class text not null,
+                pvname text,
+                setpoint_pvname text,
+                {cols})
+        '''
+
+        col_names = ', '.join(self._columns)
+        empty_names = ', '.join('?' * len(self._columns))
+        self._insert_query = f'''
+            REPLACE INTO "{self._table_name}"
+            ({col_names})
+            VALUES ({empty_names})
+        '''
+
+        self._select_query = f'''
+            SELECT * FROM "{self._table_name}"
+            WHERE name=? AND
+            class=? AND
+            pvname=? AND
+            setpoint_pvname=?
+        '''
+
+        self.log.debug('Create query: %s', self._create_query)
+        self.log.debug('Insert query: %s', self._insert_query)
+        self.log.debug('Select query: %s', self._select_query)
+
+    def _init_database(self, path):
+        self._path = path
+        self._con = sqlite3.connect(path)
+        # Support __getitem__ in row access:
+        self._con.row_factory = sqlite3.Row
+
+        self.log.error('Describe database path: %s', path)
+        self._con.execute(self._create_query)
+
+    def _get_key_from_object(self, obj):
+        """Return a database key for the given object."""
+        return [
+            obj.name,
+            obj.__class__.__name__,   # perhaps '.'join(mro())?
+            getattr(obj, 'pvname', None),
+            getattr(obj, 'setpoint_pvname', None),
+        ]
+
+    def _stash_description(self, obj, desc):
+        """
+        Store a new (or updated) description in the database.
+
+        Parameters
+        ----------
+        obj : :class:`ophyd.OphydObj`
+            The object that the description belongs to
+        desc : dict
+            The object's description
+        """
+        items = self._get_key_from_object(obj)
+
+        for key, dtype in self._columns.items():
+            if dtype is not None:
+                try:
+                    value = dtype(desc.get(key))
+                except Exception:
+                    value = None
+                items.append(value)
+
+        with self._con:
+            self._con.execute(self._insert_query, items)
+
+    @QtCore.Slot(object, dict)
+    def _new_description(self, obj, desc):
+        """New description retrieved via the ``_GlobalDescribeCache``."""
+        try:
+            self._stash_description(obj, desc)
+        except Exception:
+            logger.exception('Failed to save object description: %s %s',
+                             obj.name, desc)
+
+    def clear(self):
+        """Clear the cache."""
+
+    def _row_to_desc(self, row):
+        """
+        Convert an :class:`sqlite3.Row` to a description dictionary.
+
+        Parameters
+        ----------
+        row : :class:`sqlite3.Row`
+
+        Returns
+        -------
+        desc : dict or None
+            The object description
+        """
+        if not row:
+            return None
+
+        desc = {}
+        for key, dtype in self._columns.items():
+            if dtype is None:
+                continue
+
+            try:
+                value = row[key]
+                if dtype is repr:
+                    # Convert back from the repr
+                    desc[key] = ast.literal_eval(value)
+                else:
+                    # Take the value as-is from the database
+                    desc[key] = value
+            except Exception:
+                ...
+
+        return desc
+
+    def get(self, obj):
+        """
+        To access a description, call this method.
+
+        Parameters
+        ----------
+        obj : :class:`ophyd.OphydObj`
+            The object to get the description of
+
+        Returns
+        -------
+        desc : dict or None
+            If available in the cache, the description will be returned.
+        """
+        cur = self._con.execute(self._select_query,
+                                self._get_key_from_object(obj))
+        return self._row_to_desc(cur.fetchone())
