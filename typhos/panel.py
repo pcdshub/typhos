@@ -12,9 +12,44 @@ from ophyd.signal import EpicsSignal, EpicsSignalRO
 from . import display, utils
 from .cache import get_global_widget_type_cache
 from .utils import TyphosBase
-from .widgets import TyphosDesignerMixin
+from .widgets import SignalWidgetInfo, TyphosDesignerMixin
 
 logger = logging.getLogger(__name__)
+
+
+class SignalOrder:
+    """Option to sort signals"""
+    byKind = 0
+    byName = 1
+
+
+DEFAULT_KIND_ORDER = (Kind.hinted, Kind.normal, Kind.config, Kind.omitted)
+
+
+def _get_component_sorter(signal_order, *, kind_order=None):
+    """
+    Get a sorting function for :class:`ophyd.device.ComponentWalk` entries.
+
+    Parameters
+    ----------
+    signal_order : SignalOrder
+        Order for signals
+    kind_order : list, optional
+        Order for Kinds, defaulting to ``DEFAULT_KIND_ORDER``.
+    """
+    kind_order = kind_order or DEFAULT_KIND_ORDER
+
+    def kind_sorter(walk):
+        """Sort by kind."""
+        return (kind_order.index(walk.item.kind), walk.dotted_name)
+
+    def name_sorter(walk):
+        """Sort by name."""
+        return walk.dotted_name
+
+    return {SignalOrder.byKind: kind_sorter,
+            SignalOrder.byName: name_sorter
+            }.get(signal_order, name_sorter)
 
 
 class SignalPanel(QtWidgets.QGridLayout):
@@ -77,7 +112,9 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         return self._row_count
 
+    @QtCore.Slot(object, SignalWidgetInfo)
     def _got_signal_widget_info(self, obj, info):
+        """Received information on how to make widgets for ``obj``"""
         try:
             sig_info = self.signal_name_to_info[obj.name]
         except KeyError:
@@ -257,12 +294,12 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         Parameters
         ---------
-        read_pv : pyepics.PV
-
+        read_pv : str
+            The readback PV name
         name : str
             Name of signal to display
-
-        write_pv : pyepics.PV, optional
+        write_pv : str, optional
+            The setpoint PV name
 
         Returns
         -------
@@ -297,6 +334,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         return self._apply_name_filter(name_filter, name)
 
     def _set_visible(self, signal_name, visible):
+        """Change the visibility of ``signal_name`` to ``visible``."""
         info = self.signal_name_to_info[signal_name]
         info['visible'] = bool(visible)
         row = info['row']
@@ -341,9 +379,11 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     @property
     def _filter_settings(self):
+        """Current filter settings from the owner widget."""
         return self.parent().filter_settings
 
     def add_device(self, device):
+        """Typhos hook for adding a new device."""
         self.clear()
         self._devices.append(device)
 
@@ -415,58 +455,6 @@ class SignalPanel(QtWidgets.QGridLayout):
         self.signal_name_to_info.clear()
 
 
-class SignalOrder:
-    """Option to sort signals"""
-    byKind = 0
-    byName = 1
-
-
-DEFAULT_KIND_ORDER = (Kind.hinted, Kind.normal, Kind.config, Kind.omitted)
-
-
-def _get_component_sorter(signal_order, *, kind_order=None):
-    kind_order = kind_order or DEFAULT_KIND_ORDER
-
-    def kind_sorter(walk):
-        """Sort by kind."""
-        return (kind_order.index(walk.item.kind), walk.dotted_name)
-
-    def name_sorter(walk):
-        """Sort by name."""
-        return walk.dotted_name
-
-    return {SignalOrder.byKind: kind_sorter,
-            SignalOrder.byName: name_sorter
-            }.get(signal_order, name_sorter)
-
-
-def _device_signals_by_kind(device, kind):
-    """
-    Get signals from a device by kind
-
-    Parameters
-    ----------
-    device : ophyd.Device
-        The device
-    kind : ophyd.Kind
-        The kind with which to filter
-
-    Yields
-    ------
-    name : str
-        Cleaned attribute name
-    signal : ophyd.OphydObj
-        The signal itself
-    component : ophyd.Component
-        The component from which the signal was created
-    """
-    try:
-        for attr, item in utils.grab_kind(device, kind.name).items():
-            yield utils.clean_attr(attr), item.signal, item.component
-    except Exception:
-        logger.exception("Unable to add %s signals from %r", kind.name, device)
-
-
 class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     """
     Panel of Signals for Device
@@ -500,9 +488,11 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         self.contextMenuEvent = self.open_context_menu
 
     def _get_kind(self, kind):
+        """Property getter for show[kind]."""
         return self._kinds[kind]
 
     def _set_kind(self, value, kind):
+        """Property setter for show[kind] = value."""
         # If we have a new value store it
         if value != self._kinds[kind]:
             # Store it internally
@@ -512,17 +502,20 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
     @property
     def filter_settings(self):
+        """Get the filter settings dictionary."""
         return dict(
             name_filter=self.nameFilter,
             kinds=self.show_kinds,
         )
 
     def _update_panel(self):
+        """Apply filters and emit the update signal."""
         self._panel_layout.filter_signals(**self.filter_settings)
         self.updated.emit()
 
     @property
     def show_kinds(self):
+        """A list of the :class:`ophyd.Kind` that should be shown."""
         return [kind for kind in Kind if self._kinds[kind.name]]
 
     # Kind Configuration pyqtProperty
@@ -565,7 +558,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
             self._update_panel()
 
     def add_device(self, device):
-        """Add a device to the widget"""
+        """Typhos hook for adding a new device."""
         self.devices.clear()
         super().add_device(device)
         # Configure the layout for the new device
@@ -573,9 +566,11 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         self._update_panel()
 
     def set_device_display(self, display):
+        """Typhos hook for when the TyphosDeviceDisplay is associated."""
         self.display = display
 
     def generate_context_menu(self):
+        """Generate a context menu for this TyphosSignalPanel."""
         menu = QtWidgets.QMenu(parent=self)
         for kind, property_name in self._kind_to_property.items():
             def selected(new_value, *, name=property_name):
@@ -606,7 +601,7 @@ class CompositeSignalPanel(SignalPanel):
 
     def add_sub_device(self, device, name):
         """
-        Add a sub-device to the next row
+        Add a sub-device to the next row.
 
         Parameters
         ----------
@@ -624,9 +619,7 @@ class CompositeSignalPanel(SignalPanel):
         container.add_device(device)
 
     def add_device(self, device):
-        """
-        Hook for typhos to add a device
-        """
+        """Typhos hook for adding a new device."""
         # TODO: note that this does not call super
         # super().add_device(device)
         self._devices.append(device)
