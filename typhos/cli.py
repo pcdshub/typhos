@@ -55,10 +55,13 @@ def typhos_cli_setup(args):
     shown_logger = logging.getLogger('typhos')
     if args.verbose:
         level = "DEBUG"
+        log_fmt = '[%(asctime)s] - %(levelname)s - Thread (%(thread)d - ' \
+                  '%(threadName)s ) - %(name)s -> %(message)s'
     else:
         level = "INFO"
+        log_fmt = '[%(asctime)s] - %(levelname)s - %(message)s'
     coloredlogs.install(level=level, logger=shown_logger,
-                        fmt='[%(asctime)s] - %(levelname)s -  %(message)s')
+                        fmt=log_fmt)
     logger.debug("Set logging level of %r to %r", shown_logger.name, level)
 
     # Version endpoint
