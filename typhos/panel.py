@@ -159,6 +159,15 @@ class SignalPanel(QtWidgets.QGridLayout):
                for name, sig_info in self.signal_name_to_info.items()):
             self.loading_complete.emit(list(self.signal_name_to_info))
 
+    def _create_row_label(self, attr, dotted_name, tooltip):
+        """Create a row label (i.e., the one in column 0)."""
+        label_text = self.label_text_from_attribute(attr, dotted_name)
+        label = QtWidgets.QLabel(label_text)
+        label.setObjectName(dotted_name + '_row_label')
+        if tooltip is not None:
+            label.setToolTip(tooltip)
+        return label
+
     def add_signal(self, signal, name=None, *, tooltip=None):
         """
         Add a signal to the panel
@@ -186,19 +195,13 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         logger.debug("Adding signal %s (%s)", signal.name, name)
 
-        label = QtWidgets.QLabel()
-        label.setText(name)
-        label.setObjectName(name + '_row_label')
-        if tooltip is not None:
-            label.setToolTip(tooltip)
-
+        label = self._create_row_label(name, name, tooltip)
         row = self.add_row(label, utils.TyphosLoading())
         self.signal_name_to_info[signal.name] = dict(
             row=row,
             signal=signal,
             component=None,
             widget_info=None,
-            label=label,
             create_signal=None,
             visible=True,
         )
@@ -216,30 +219,31 @@ class SignalPanel(QtWidgets.QGridLayout):
             self._got_signal_widget_info(signal, item)
         # else: - this will happen during a callback
 
-    def _add_component(self, device, dotted_name, component):
+    def _add_component(self, device, attr, dotted_name, component):
         """Add a component which could be instantiated"""
         if dotted_name in self.signal_name_to_info:
             return
 
         logger.debug("Adding component %s", dotted_name)
 
-        label = QtWidgets.QLabel()
-        label.setText(dotted_name)
-        label.setObjectName(dotted_name + '_row_label')
-        label.setToolTip(component.doc or '')
-
+        label = self._create_row_label(
+            attr, dotted_name, tooltip=component.doc or '')
         row = self.add_row(label, None)  # utils.TyphosLoading())
         self.signal_name_to_info[dotted_name] = dict(
             row=row,
             signal=None,
             widget_info=None,
-            label=label,
             component=component,
             create_signal=functools.partial(getattr, device, dotted_name),
             visible=False,
         )
 
         return row
+
+    def label_text_from_attribute(self, attr, dotted_name):
+        """Get label text for a given attribute."""
+        # For a basic signal panel, use the full dotted name.
+        return dotted_name
 
     def add_row(self, *widgets, **kwargs):
         """
@@ -350,17 +354,31 @@ class SignalPanel(QtWidgets.QGridLayout):
                 if widget:
                     widget.setVisible(visible)
 
-        if visible and info['signal'] is None:
-            create_func = info['create_signal']
+        if not visible or info['signal'] is not None:
+            return
+
+        # Create the signal if we're displaying it for the first time.
+        create_func = info['create_signal']
+        if create_func is None:
+            # A signal we shouldn't try to create again
+            return
+
+        try:
             info['signal'] = signal = create_func()
-            logger.debug('Instantiating a not-yet-created signal from a '
-                         'component: %s', signal.name)
-            if signal.name != signal_name:
-                # This is, for better or worse, possible; does not support the
-                # case of changing the name after __init__
-                self.signal_name_to_info[signal.name] = info
-                del self.signal_name_to_info[signal_name]
-            self._connect_signal(signal)
+        except Exception as ex:
+            logger.exception('Failed to create signal %s: %s', signal_name, ex)
+            # Stop it from another attempt
+            info['create_signal'] = None
+            return
+
+        logger.debug('Instantiating a not-yet-created signal from a '
+                     'component: %s', signal.name)
+        if signal.name != signal_name:
+            # This is, for better or worse, possible; does not support the case
+            # of changing the name after __init__
+            self.signal_name_to_info[signal.name] = info
+            del self.signal_name_to_info[signal_name]
+        self._connect_signal(signal)
 
     def filter_signals(self, kinds, name_filter=None):
         """
@@ -450,7 +468,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
             return self.add_signal(signal, name=attr, tooltip=component.doc)
 
-        return self._add_component(device, attr, component)
+        return self._add_component(device, attr, dotted_name, component)
 
     def clear(self):
         """Clear the SignalPanel"""
@@ -603,6 +621,11 @@ class CompositeSignalPanel(SignalPanel):
     def __init__(self):
         super().__init__(signals=None)
         self._containers = {}
+
+    def label_text_from_attribute(self, attr, dotted_name):
+        """Get label text for a given attribute."""
+        # For a hierarchical signal panel, use only the attribute name.
+        return attr
 
     def add_sub_device(self, device, name):
         """
