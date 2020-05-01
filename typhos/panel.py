@@ -91,6 +91,11 @@ class SignalPanel(QtWidgets.QGridLayout):
         except KeyError:
             return
 
+        if sig_info['widget_info'] is not None:
+            # Only add widgets on the first callback
+            # TODO: debug why multiple calls happen
+            return
+
         sig_info['widget_info'] = info
         row = sig_info['row']
 
@@ -309,8 +314,6 @@ class SignalPanel(QtWidgets.QGridLayout):
                 widget = item.widget()
                 if widget:
                     widget.setVisible(visible)
-
-        self._dump_layout()
 
         if visible and info['signal'] is None:
             create_func = info['create_signal']
