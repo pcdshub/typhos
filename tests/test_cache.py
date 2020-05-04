@@ -87,3 +87,6 @@ def test_persistent_cache(qtbot, describe_cache, persistent_cache, sig):
     qtbot.wait_until(check_saved)
     assert persistent_cache[sig] == persistent_cache.get(sig)
     assert len(persistent_cache) == 1
+
+    persistent_cache.clear()
+    assert len(persistent_cache) == 0

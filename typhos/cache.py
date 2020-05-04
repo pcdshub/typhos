@@ -559,6 +559,11 @@ class _DescribeDatabase(collections.abc.Mapping):
 
     def clear(self):
         """Clear the cache."""
+        self._con.execute(f'drop table {self._table_name}')
+        self._con.commit()
+        self._con.close()
+
+        self._init_database(self.path)
 
     def _row_to_key(self, row):
         """
