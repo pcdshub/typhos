@@ -70,6 +70,10 @@ class _GlobalDescribeCache(QtCore.QObject):
     def _describe(self, obj):
         """Retrieve the description of ``obj``."""
         try:
+            # Force initial value readout otherwise _readback was never
+            # set and that causes issues with more complex describe
+            # types such as DerivedSignal and NDDerivedSignal.
+            obj.get()
             return obj.describe()[obj.name]
         except Exception:
             logger.error("Unable to connect to %r during widget creation",
