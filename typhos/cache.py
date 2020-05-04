@@ -418,7 +418,10 @@ class _DescribeDatabase(QtCore.QObject):
         str: 'text',
     }
 
-    _table_name = 'describe_cache'
+    # NOTE: If the above schema changes, the version encoded in the table name
+    # should be bumped (or the db should be wiped entirely)
+    _version = 0
+    _table_name = f'describe_cache_v{_version}'
 
     def __init__(self):
         super().__init__()
