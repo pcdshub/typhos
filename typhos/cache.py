@@ -1,4 +1,5 @@
 import ast
+import collections.abc
 import fnmatch
 import functools
 import logging
@@ -30,7 +31,13 @@ def get_global_describe_cache():
     """Get the _GlobalDescribeCache singleton."""
     global _GLOBAL_DESCRIBE_CACHE
     if _GLOBAL_DESCRIBE_CACHE is None:
-        _GLOBAL_DESCRIBE_CACHE = _GlobalDescribeCache()
+        # NOTE: it's possible to disable the cache by clearing the environment
+        # variable `TYPHOS_DATABASE_PATH`.
+        db_path = get_describe_database_path()
+        persistent_cache = _DescribeDatabase() if db_path else None
+        _GLOBAL_DESCRIBE_CACHE = _GlobalDescribeCache(persistent_cache)
+        persistent_cache.describe_cache = _GLOBAL_DESCRIBE_CACHE
+
     return _GLOBAL_DESCRIBE_CACHE
 
 
@@ -93,7 +100,7 @@ class _GlobalDescribeCache(QtCore.QObject):
 
     new_description = QtCore.Signal(object, dict)
 
-    def __init__(self):
+    def __init__(self, persistent_cache=None):
         super().__init__()
         self.connect_thread = utils.ObjectConnectionMonitorThread(parent=self)
         self.connect_thread.connection_update.connect(self._connection_update)
@@ -101,7 +108,7 @@ class _GlobalDescribeCache(QtCore.QObject):
 
         self._in_process = set()
         self.cache = {}
-        self.persistent_cache = {}
+        self.persistent_cache = persistent_cache or {}
 
     def clear(self):
         """Clear the cache."""
@@ -378,7 +385,7 @@ class _GlobalDisplayPathCache:
             self.paths.append(path)
 
 
-class _DescribeDatabase(QtCore.QObject):
+class _DescribeDatabase(collections.abc.Mapping):
     """
     An Sqlite3 database-backed cache of ophyd object descriptions
 
@@ -423,19 +430,31 @@ class _DescribeDatabase(QtCore.QObject):
     _version = 0
     _table_name = f'describe_cache_v{_version}'
 
-    def __init__(self):
+    def __init__(self, path=None):
         super().__init__()
         self.log = logging.getLogger(__name__ + '._DescribeDatabase')
         self._init_queries()
-        self._init_database(get_describe_database_path())
-        self.describe_cache = get_global_describe_cache()
-        self.describe_cache.new_description.connect(self._new_description)
-        self.describe_cache.persistent_cache = self
+        self._init_database(path or get_describe_database_path())
+        self._describe_cache = None
 
     @property
     def path(self):
         """The database file path (or ':memory:')."""
         return self._path
+
+    @property
+    def describe_cache(self):
+        """The in-memory describe cache - _GlobalDescribeCache."""
+        return self._describe_cache
+
+    @describe_cache.setter
+    def describe_cache(self, cache):
+        if self._describe_cache is not None:
+            raise ValueError('describe_cache already set')
+
+        self._describe_cache = cache
+        cache.new_description.connect(self._new_description)
+        # NOTE: this does not set the describe cache's persistent cache.
 
     def _init_queries(self):
         """Pre-create all queries sent to the database connection."""
@@ -468,6 +487,9 @@ class _DescribeDatabase(QtCore.QObject):
             setpoint_pvname=?
         '''
 
+        self._select_all_query = f'SELECT * FROM "{self._table_name}"'
+        self._select_count_query = f'SELECT COUNT(*) FROM {self._table_name}'
+
         self.log.debug('Create query: %s', self._create_query)
         self.log.debug('Insert query: %s', self._insert_query)
         self.log.debug('Select query: %s', self._select_query)
@@ -478,7 +500,7 @@ class _DescribeDatabase(QtCore.QObject):
         # Support __getitem__ in row access:
         self._con.row_factory = sqlite3.Row
 
-        self.log.error('Describe database path: %s', path)
+        self.log.info('Describe database path: %s', path)
         self._con.execute(self._create_query)
 
     def _get_key_from_object(self, obj):
@@ -514,17 +536,40 @@ class _DescribeDatabase(QtCore.QObject):
         with self._con:
             self._con.execute(self._insert_query, items)
 
-    @QtCore.Slot(object, dict)
     def _new_description(self, obj, desc):
         """New description retrieved via the ``_GlobalDescribeCache``."""
         try:
+            logger.debug('Stashing description for %r: %s', obj.name, desc)
             self._stash_description(obj, desc)
         except Exception:
             logger.exception('Failed to save object description: %s %s',
                              obj.name, desc)
+            print('save failed?')
 
     def clear(self):
         """Clear the cache."""
+
+    def _row_to_key(self, row):
+        """
+        Convert an :class:`sqlite3.Row` to a key.
+
+        Parameters
+        ----------
+        row : :class:`sqlite3.Row`
+
+        Returns
+        -------
+        key : tuple
+            The key tuple which can be used in :meth:`.__getitem__`.
+        """
+        if not row:
+            return None
+
+        return [
+            row[key]
+            for key, dtype in self._columns.items()
+            if dtype is None
+        ]
 
     def _row_to_desc(self, row):
         """
@@ -577,3 +622,20 @@ class _DescribeDatabase(QtCore.QObject):
         cur = self._con.execute(self._select_query,
                                 self._get_key_from_object(obj))
         return self._row_to_desc(cur.fetchone())
+
+    def __getitem__(self, item):
+        if hasattr(item, 'name'):
+            item = self._get_key_from_object(item)
+        cur = self._con.execute(self._select_query, item)
+        return self._row_to_desc(cur.fetchone())
+
+    def __iter__(self):
+        for row in self._con.execute(self._select_all_query):
+            yield self._row_to_key(row)
+
+    def __len__(self):
+        cur = self._con.execute(self._select_count_query)
+        return cur.fetchone()[0]
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(path={self.path})'
