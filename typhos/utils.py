@@ -681,7 +681,12 @@ def subscription_context(*objects, callback, event_type=None, run=True):
         yield dict(obj_to_cid)
     finally:
         for obj, cid in obj_to_cid.items():
-            obj.unsubscribe(cid)
+            try:
+                obj.unsubscribe(cid)
+            except KeyError:
+                # It's possible that when the object is being torn down, or
+                # destroyed that this has already been done.
+                ...
 
 
 def get_all_signals_from_device(device, include_lazy=False, filter_by=None):
@@ -799,7 +804,12 @@ class _ConnectionStatus:
 
             self.objects.remove(obj)
             cid = self.obj_to_cid.pop(obj)
-            obj.unsubscribe(cid)
+            try:
+                obj.unsubscribe(cid)
+            except KeyError:
+                # It's possible that when the object is being torn down, or
+                # destroyed that this has already been done.
+                ...
 
     def _connection_callback(self, *, obj, connected, **kwargs):
         with self.lock:
