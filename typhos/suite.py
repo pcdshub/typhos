@@ -6,7 +6,6 @@ from functools import partial
 from pyqtgraph.parametertree import ParameterTree
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtCore, QtWidgets
-from qtpy.QtWidgets import QWidget
 
 import pcdsutils.qt
 
@@ -27,9 +26,18 @@ class SidebarParameter(ptypes.Parameter):
     sigHide = QtCore.Signal(object)
     sigEmbed = QtCore.Signal(object)
 
-    def __init__(self, embeddable=None, **opts):
+    def __init__(self, devices=None, embeddable=None, **opts):
         super().__init__(**opts)
         self.embeddable = embeddable
+        self.devices = list(devices) if devices else []
+
+    def has_device(self, device):
+        return any(
+            (device in self.devices,
+             device in getattr(self.value(), 'devices', []),
+             self.name() == device
+             )
+        )
 
 
 class DeviceParameter(SidebarParameter):
@@ -46,23 +54,32 @@ class DeviceParameter(SidebarParameter):
         if subdevices:
             for child in device._sub_devices:
                 subdevice = getattr(device, child)
-                # If that device has children, make sure they are also
-                # displayed further in the tree
                 if subdevice._sub_devices:
+                    # If that device has children, make sure they are also
+                    # displayed further in the tree
                     children.append(
-                        DeviceParameter(subdevice, subdevices=False))
-                # Otherwise just make a regular parameter out of it
+                        DeviceParameter(subdevice, subdevices=False)
+                    )
                 else:
+                    # Otherwise just make a regular parameter out of it
                     child_name = clean_name(subdevice,
                                             strip_parent=subdevice.root)
-                    child_display = TyphosDeviceDisplay.from_device(subdevice)
-                    children.append(SidebarParameter(value=child_display,
-                                                     name=child_name,
-                                                     embeddable=True))
+                    param = SidebarParameter(
+                        value=partial(TyphosDeviceDisplay.from_device,
+                                      subdevice),
+                        name=child_name,
+                        embeddable=True,
+                        devices=[subdevice],
+                    )
+                    children.append(param)
+
         opts['children'] = children
-        super().__init__(value=TyphosDeviceDisplay.from_device(device),
-                         embeddable=opts.pop('embeddable', True),
-                         **opts)
+        super().__init__(
+            value=partial(TyphosDeviceDisplay.from_device, device),
+            embeddable=opts.pop('embeddable', True),
+            devices=[device],
+            **opts
+        )
 
 
 class TyphosSuite(TyphosBase):
@@ -178,17 +195,28 @@ class TyphosSuite(TyphosBase):
             suite.get_subdisplay(my_device.x)
             suite.get_subdisplay('My Tool')
         """
-        if isinstance(display, SidebarParameter):
-            return display.value()
-        for group in self.top_level_groups.values():
-            tree = flatten_tree(group)
-            for param in tree:
-                match = (display in getattr(param.value(), 'devices', [])
-                         or param.name() == display)
-                if match:
-                    return param.value()
-        # If we got here we can't find the subdisplay
-        raise ValueError(f"Unable to find subdisplay {display}")
+        if not isinstance(display, SidebarParameter):
+            for group in self.top_level_groups.values():
+                tree = flatten_tree(group)
+                matches = [
+                    param for param in tree
+                    if hasattr(param, 'has_device') and
+                    param.has_device(display)
+                ]
+
+                if matches:
+                    display = matches[0]
+                    break
+
+        if not isinstance(display, SidebarParameter):
+            # If we got here we can't find the subdisplay
+            raise ValueError(f"Unable to find subdisplay {display}")
+
+        subdisplay = display.value()
+        if isinstance(subdisplay, partial):
+            subdisplay = subdisplay()
+            display.setValue(subdisplay)
+        return subdisplay
 
     @QtCore.Slot(str)
     @QtCore.Slot(object)
@@ -204,7 +232,7 @@ class TyphosSuite(TyphosBase):
             passed to :meth:`.get_subdisplay`
         """
         # Grab true widget
-        if not isinstance(widget, QWidget):
+        if not isinstance(widget, QtWidgets.QWidget):
             widget = self.get_subdisplay(widget)
         # Setup the dock
         dock = widgets.SubDisplay(self)
@@ -226,12 +254,12 @@ class TyphosSuite(TyphosBase):
         # Grab the relevant display
         if not self.embedded_dock:
             self.embedded_dock = widgets.SubDisplay()
-            self.embedded_dock.setWidget(QWidget())
+            self.embedded_dock.setWidget(QtWidgets.QWidget())
             self.embedded_dock.widget().setLayout(QtWidgets.QVBoxLayout())
             self.embedded_dock.widget().layout().addStretch(1)
             self._content_frame.layout().addWidget(self.embedded_dock)
 
-        if not isinstance(widget, QWidget):
+        if not isinstance(widget, QtWidgets.QWidget):
             widget = self.get_subdisplay(widget)
         # Set sidebar properly
         self._show_sidebar(widget, self.embedded_dock)
@@ -255,7 +283,7 @@ class TyphosSuite(TyphosBase):
             widget and hide it. If the widget provided to us is inside a
             DockWidget we will close that, otherwise the widget is just hidden.
         """
-        if not isinstance(widget, QWidget):
+        if not isinstance(widget, QtWidgets.QWidget):
             widget = self.get_subdisplay(widget)
         sidebar = self._get_sidebar(widget)
         if sidebar:
@@ -426,9 +454,13 @@ class TyphosSuite(TyphosBase):
             logger.debug("Adding %r to category %r ...",
                          parameter.name(), group.name())
             group.addChild(parameter)
-        # Setup window to have a parent
-        parameter.value().setParent(self)
-        parameter.value().setHidden(True)
+
+        widget = parameter.value()
+        if isinstance(widget, QtWidgets.QWidget):
+            # Setup window to have a parent
+            widget.setParent(self)
+            widget.setHidden(True)
+
         logger.debug("Connecting parameter signals ...")
         parameter.sigOpen.connect(partial(self.show_subdisplay,
                                           parameter))
