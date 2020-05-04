@@ -74,9 +74,16 @@ def test_persistent_cache(qtbot, describe_cache, persistent_cache, sig):
     with qtbot.wait_signal(describe_cache.new_description):
         assert describe_cache.get(sig) is None
 
-    # obj, desc = block.args
+    expected_desc = describe_cache.get(sig)
 
     def check_saved():
-        assert persistent_cache.get(sig) == describe_cache.get(sig)
+        persistent_desc = {
+            key: value for key, value in persistent_cache.get(sig).items()
+            if key in expected_desc
+        }
+        assert len(persistent_desc)
+        assert persistent_desc == expected_desc
 
     qtbot.wait_until(check_saved)
+    assert persistent_cache[sig] == persistent_cache.get(sig)
+    assert len(persistent_cache) == 1

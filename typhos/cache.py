@@ -102,13 +102,16 @@ class _GlobalDescribeCache(QtCore.QObject):
 
     def __init__(self, persistent_cache=None):
         super().__init__()
+        self._in_process = set()
+        self.cache = {}
+        if persistent_cache is None:
+            persistent_cache = {}
+
+        self.persistent_cache = persistent_cache
+
         self.connect_thread = utils.ObjectConnectionMonitorThread(parent=self)
         self.connect_thread.connection_update.connect(self._connection_update)
         self.connect_thread.start()
-
-        self._in_process = set()
-        self.cache = {}
-        self.persistent_cache = persistent_cache or {}
 
     def clear(self):
         """Clear the cache."""
@@ -182,6 +185,7 @@ class _GlobalDescribeCache(QtCore.QObject):
         try:
             return self.cache[obj]
         except KeyError:
+            print('persistent cache fallback', obj.name, self.persistent_cache)
             desc = self.persistent_cache.get(obj)
             if desc is not None:
                 self.cache[obj] = desc
@@ -418,6 +422,8 @@ class _DescribeDatabase(collections.abc.Mapping):
         'upper_ctrl_limit': float,
     }
 
+    _key_cols = [col for col, dtype in _columns.items() if dtype is None]
+
     _type_map = {
         int: 'numeric',
         float: 'numeric',
@@ -480,14 +486,18 @@ class _DescribeDatabase(collections.abc.Mapping):
         '''
 
         self._select_query = f'''
-            SELECT * FROM "{self._table_name}"
-            WHERE name=? AND
+            SELECT * FROM "{self._table_name}" WHERE
+            name=? AND
             class=? AND
             pvname=? AND
             setpoint_pvname=?
         '''
 
-        self._select_all_query = f'SELECT * FROM "{self._table_name}"'
+        self._select_key_query = f'''
+            SELECT name, class, pvname, setpoint_pvname
+            FROM "{self._table_name}"
+        '''
+
         self._select_count_query = f'SELECT COUNT(*) FROM {self._table_name}'
 
         self.log.debug('Create query: %s', self._create_query)
@@ -508,8 +518,8 @@ class _DescribeDatabase(collections.abc.Mapping):
         return [
             obj.name,
             obj.__class__.__name__,   # perhaps '.'join(mro())?
-            getattr(obj, 'pvname', None),
-            getattr(obj, 'setpoint_pvname', None),
+            getattr(obj, 'pvname', '') or '',
+            getattr(obj, 'setpoint_pvname', '') or '',
         ]
 
     def _stash_description(self, obj, desc):
@@ -528,7 +538,9 @@ class _DescribeDatabase(collections.abc.Mapping):
         for key, dtype in self._columns.items():
             if dtype is not None:
                 try:
-                    value = dtype(desc.get(key))
+                    value = desc.get(key)
+                    if value is not None:
+                        value = dtype(value)
                 except Exception:
                     value = None
                 items.append(value)
@@ -544,7 +556,6 @@ class _DescribeDatabase(collections.abc.Mapping):
         except Exception:
             logger.exception('Failed to save object description: %s %s',
                              obj.name, desc)
-            print('save failed?')
 
     def clear(self):
         """Clear the cache."""
@@ -594,12 +605,13 @@ class _DescribeDatabase(collections.abc.Mapping):
 
             try:
                 value = row[key]
-                if dtype is repr:
-                    # Convert back from the repr
-                    desc[key] = ast.literal_eval(value)
-                else:
-                    # Take the value as-is from the database
-                    desc[key] = value
+                if value is not None:
+                    if dtype is repr:
+                        # Convert back from the repr
+                        desc[key] = ast.literal_eval(value)
+                    else:
+                        # Take the value as-is from the database
+                        desc[key] = value
             except Exception:
                 ...
 
@@ -625,12 +637,12 @@ class _DescribeDatabase(collections.abc.Mapping):
 
     def __getitem__(self, item):
         if hasattr(item, 'name'):
-            item = self._get_key_from_object(item)
+            return self.get(item)
         cur = self._con.execute(self._select_query, item)
         return self._row_to_desc(cur.fetchone())
 
     def __iter__(self):
-        for row in self._con.execute(self._select_all_query):
+        for row in self._con.execute(self._select_key_query):
             yield self._row_to_key(row)
 
     def __len__(self):
