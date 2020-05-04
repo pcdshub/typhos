@@ -185,7 +185,6 @@ class _GlobalDescribeCache(QtCore.QObject):
         try:
             return self.cache[obj]
         except KeyError:
-            print('persistent cache fallback', obj.name, self.persistent_cache)
             desc = self.persistent_cache.get(obj)
             if desc is not None:
                 self.cache[obj] = desc
