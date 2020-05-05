@@ -185,15 +185,14 @@ class _GlobalDescribeCache(QtCore.QObject):
         try:
             return self.cache[obj]
         except KeyError:
+            # Add the object, waiting for a connection update to call describe
+            self.connect_thread.add_object(obj)
             desc = self.persistent_cache.get(obj)
+
             if desc is not None:
                 self.cache[obj] = desc
                 self.new_description.emit(obj, desc)
                 return desc
-
-            # Add the object, waiting for a connection update to determine
-            # widget types
-            self.connect_thread.add_object(obj)
 
 
 class _GlobalWidgetTypeCache(QtCore.QObject):
