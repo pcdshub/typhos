@@ -13,6 +13,7 @@ import pydm.display
 import pydm.exception
 import pydm.utilities
 
+from . import cache
 from . import panel as typhos_panel
 from . import utils, widgets
 
@@ -781,6 +782,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     @staticmethod
     def _get_templates_from_macros(macros):
         ret = {}
+        paths = [cache.get_global_path_cache()]
         for display_type in DisplayTypes.names:
             ret[display_type] = None
             try:
@@ -796,7 +798,8 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                     logger.debug('Invalid path specified in macro: %s=%s',
                                  display_type, value, exc_info=ex)
                 else:
-                    ret[display_type] = list(utils.find_file_in_paths(value))
+                    ret[display_type] = list(utils.find_file_in_paths(
+                        value, paths=paths))
 
         return ret
 
@@ -898,7 +901,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         logger.debug('Searching for templates for %s', cls.__name__)
         macro_templates = self._get_templates_from_macros(self._macros)
 
-        paths = [utils._CachedPath(p) for p in utils.DISPLAY_PATHS]
+        paths = [cache.get_global_path_cache()]
         for display_type in DisplayTypes.names:
             view = display_type
             if view.endswith('_screen'):

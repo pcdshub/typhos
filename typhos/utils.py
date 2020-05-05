@@ -3,7 +3,6 @@ Utility functions for typhos
 """
 import collections
 import contextlib
-import fnmatch
 import importlib.util
 import inspect
 import io
@@ -450,42 +449,6 @@ def remove_duplicate_items(list_):
     return cls(sorted(set(list_), key=list_.index))
 
 
-class _CachedPath:
-    """
-    A wrapper around pathlib.Path to support repeated globbing
-
-    Parameters
-    ----------
-    path : pathlib.Path
-        The path to cache
-    """
-
-    def __init__(self, path):
-        self.path = pathlib.Path(path)
-        self.cache = None
-
-    def __hash__(self):
-        return hash(self.path)
-
-    def update(self):
-        """Update the file list"""
-        self.cache = os.listdir(self.path)
-
-    def glob(self, pattern):
-        """Glob a pattern"""
-        if self.cache is None:
-            self.update()
-
-        if any(c in pattern for c in '*?['):
-            regex = re.compile(fnmatch.translate(pattern))
-            for path in self.cache:
-                if regex.match(path):
-                    yield self.path / path
-        else:
-            if pattern in self.cache:
-                yield self.path / pattern
-
-
 def is_standard_template(template):
     """
     Is the template one provided with typhos?
@@ -530,12 +493,13 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
     elif isinstance(extensions, str):
         extensions = [extensions]
 
-    if not isinstance(paths[0], _CachedPath):
+    if len(paths) > 1:
         paths = remove_duplicate_items(
-            [pathlib.Path(p).expanduser().resolve() for p in paths]
+            [pathlib.Path(p) for p in paths]
         )
 
-        paths = [_CachedPath(p) for p in paths]
+    from .cache import _CachedPath
+    paths = [_CachedPath.from_path(p) for p in paths]
 
     for candidate_filename in _get_template_filenames_for_class(
             cls, view_type, include_mro=include_mro):
@@ -572,11 +536,13 @@ def find_file_in_paths(filename, *, paths=None):
 
         filename = filename.name
 
-    paths = remove_duplicate_items(
-        [pathlib.Path(p).expanduser().resolve() for p in paths]
-    )
+    if len(paths) > 1:
+        paths = remove_duplicate_items(
+            [pathlib.Path(p) for p in paths]
+        )
 
-    paths = [_CachedPath(p) for p in paths]
+    from .cache import _CachedPath
+    paths = [_CachedPath.from_path(p) for p in paths]
 
     for path in paths:
         for match in path.glob(filename):
