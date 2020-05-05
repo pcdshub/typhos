@@ -1075,16 +1075,19 @@ def dump_grid_layout(layout, rows=None, cols=None, *, cell_width=60):
 
 def get_config_path():
     """Get the typhos configuration path."""
-    if platform.system().lower() == 'windows':
+    system = platform.system().lower()
+    if system == 'windows':
         path = os.getenv('APPDATA') or '~'
-    elif platform.system().lower() == 'darwin':
-        path = pathlib.Path('~') / 'Library' / 'Caches'
-    else:
+    elif system == 'darwin':
+        path = '~/Library/Caches'
+    else:  # posix
         path = os.getenv('XDG_CACHE_HOME') or '~/.cache'
+
+    default_path = pathlib.Path(path) / 'typhos'
 
     # Allow TYPHOS_CONFIG_PATH to override the above operating system-specific
     # entries:
-    path = os.environ.get('TYPHOS_CONFIG_PATH', path / 'typhos')
+    path = os.environ.get('TYPHOS_CONFIG_PATH', default_path)
 
     # Expand and fully resolve the path:
     path = pathlib.Path(path).expanduser().resolve()
