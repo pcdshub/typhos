@@ -437,9 +437,10 @@ class _DescribeDatabase(collections.abc.Mapping):
     def __init__(self, path=None):
         super().__init__()
         self.log = logging.getLogger(__name__ + '._DescribeDatabase')
+        self._describe_cache = None
+        self._preload_cache = {}
         self._init_queries()
         self._init_database(path or get_describe_database_path())
-        self._describe_cache = None
 
     @property
     def path(self):
@@ -511,14 +512,23 @@ class _DescribeDatabase(collections.abc.Mapping):
         self.log.info('Describe database path: %s', path)
         self._con.execute(self._create_query)
 
+        t0 = time.time()
+        self._preload()
+        elapsed = time.time() - t0
+        self.log.info('Took %d ms to preload the cache', int(elapsed * 1000))
+
+    def _preload(self):
+        """Pre-load all entries from the database."""
+        self._preload_cache = dict(self)
+
     def _get_key_from_object(self, obj):
         """Return a database key for the given object."""
-        return [
+        return (
             obj.name,
             obj.__class__.__name__,   # perhaps '.'join(mro())?
             getattr(obj, 'pvname', '') or '',
             getattr(obj, 'setpoint_pvname', '') or '',
-        ]
+        )
 
     def _stash_description(self, obj, desc):
         """
@@ -531,7 +541,7 @@ class _DescribeDatabase(collections.abc.Mapping):
         desc : dict
             The object's description
         """
-        items = self._get_key_from_object(obj)
+        items = list(self._get_key_from_object(obj))
 
         for key, dtype in self._columns.items():
             if dtype is not None:
@@ -549,14 +559,15 @@ class _DescribeDatabase(collections.abc.Mapping):
     def _new_description(self, obj, desc):
         """New description retrieved via the ``_GlobalDescribeCache``."""
         try:
-            logger.debug('Stashing description for %r: %s', obj.name, desc)
+            self.log.debug('Stashing description for %r: %s', obj.name, desc)
             self._stash_description(obj, desc)
         except Exception:
-            logger.exception('Failed to save object description: %s %s',
-                             obj.name, desc)
+            self.log.exception('Failed to save object description: %s %s',
+                               obj.name, desc)
 
     def clear(self):
         """Clear the cache."""
+        self._preload_cache.clear()
         self._con.execute(f'drop table {self._table_name}')
         self._con.commit()
         self._con.close()
@@ -579,11 +590,11 @@ class _DescribeDatabase(collections.abc.Mapping):
         if not row:
             return None
 
-        return [
+        return tuple(
             row[key]
             for key, dtype in self._columns.items()
             if dtype is None
-        ]
+        )
 
     def _row_to_desc(self, row):
         """
@@ -634,15 +645,23 @@ class _DescribeDatabase(collections.abc.Mapping):
         desc : dict or None
             If available in the cache, the description will be returned.
         """
-        cur = self._con.execute(self._select_query,
-                                self._get_key_from_object(obj))
-        return self._row_to_desc(cur.fetchone())
+        return self._select(self._get_key_from_object(obj))
+
+    def _select(self, key):
+        """Perform a SELECT on the given ``key``."""
+        try:
+            return self._preload_cache[key]
+        except KeyError:
+            cur = self._con.execute(self._select_query, key)
+            desc = self._row_to_desc(cur.fetchone())
+            if desc is not None:
+                self._preload_cache[key] = desc
+            return desc
 
     def __getitem__(self, item):
         if hasattr(item, 'name'):
             return self.get(item)
-        cur = self._con.execute(self._select_query, item)
-        return self._row_to_desc(cur.fetchone())
+        return self._select(item)
 
     def __iter__(self):
         for row in self._con.execute(self._select_key_query):
