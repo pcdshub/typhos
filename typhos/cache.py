@@ -73,6 +73,8 @@ class _GlobalDescribeCache(QtCore.QObject):
             # Force initial value readout otherwise _readback was never
             # set and that causes issues with more complex describe
             # types such as DerivedSignal and NDDerivedSignal.
+            # TODO: This is a temporary fix and must be removed once
+            #       https://github.com/bluesky/ophyd/pull/858 is merged
             obj.get()
             return obj.describe()[obj.name]
         except Exception:
