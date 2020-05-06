@@ -35,7 +35,9 @@ def get_global_describe_cache():
         db_path = get_describe_database_path()
         persistent_cache = _DescribeDatabase() if db_path else None
         _GLOBAL_DESCRIBE_CACHE = _GlobalDescribeCache(persistent_cache)
-        persistent_cache.describe_cache = _GLOBAL_DESCRIBE_CACHE
+        if persistent_cache is not None:
+            # Hook the persistent cache up to the global describe cache:
+            persistent_cache.describe_cache = _GLOBAL_DESCRIBE_CACHE
 
     return _GLOBAL_DESCRIBE_CACHE
 
