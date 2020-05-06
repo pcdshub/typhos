@@ -42,6 +42,21 @@ parser.add_argument('--dark', action='store_true',
                     help='Use the QDarkStyleSheet shipped with Typhos')
 parser.add_argument('--stylesheet',
                     help='Additional stylesheet options')
+parser.add_argument('--profile-modules', nargs='*',
+                    help='Submodules to profile during the execution. '
+                         'If no specific modules are specified, '
+                         'profiles all submodules of typhos. '
+                         'Turns on line profiling.')
+parser.add_argument('--profile-output',
+                    help='Filename to output the profile results to. '
+                         'If omitted, prints results to stdout. '
+                         'Turns on line profiling.')
+parser.add_argument('--benchmark', nargs='*',
+                    help='Runs the specified benchmarking tests instead of '
+                         'launching a screen. '
+                         'If no specific tests are specified, '
+                         'runs all of them. '
+                         'Turns on line profiling.')
 
 
 # Append to module docs
@@ -72,11 +87,6 @@ def typhos_cli_setup(args):
     coloredlogs.install(level=level, logger=shown_logger,
                         fmt=log_fmt)
     logger.debug("Set logging level of %r to %r", shown_logger.name, level)
-
-    # Version endpoint
-    if args.version:
-        print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
-        return
 
     # Deal with stylesheet
     qapp = get_qapp()
@@ -213,13 +223,38 @@ def launch_from_devices(devices):
 def typhos_cli(args):
     """Command Line Application for Typhos."""
     args = parser.parse_args(args)
+
+    if args.version:
+        print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
+        return
+    profiling_on = any((args.profile_modules is not None, args.profile_output,
+                        args.benchmark is not None))
+    if profiling_on:
+        # Keep line_profile an optional dependency
+        from typhos.benchmark.profile import setup_profiler
+        setup_profiler()
+
     typhos_cli_setup(args)
-    if not args.version:
+    if args.benchmark is not None:
+        from typhos.benchmark.cases import run_benchmarks
+        run_benchmarks(args.benchmark)
+        suite = None
+    else:
         with typhos.utils.no_device_lazy_load():
             suite = create_suite(args.devices, cfg=args.happi_cfg,
                                  fake_devices=args.fake_device)
         if suite:
-            return launch_suite(suite)
+            suite = launch_suite(suite)
+
+    if profiling_on:
+        if args.profile_output:
+            from typhos.benchmark.profile import save_results
+            save_results(args.profile_output)
+        else:
+            from typhos.benchmark.profile import print_results
+            print_results()
+
+    return suite
 
 def main():
     """Execute the ``typhos_cli`` with command line arguments."""

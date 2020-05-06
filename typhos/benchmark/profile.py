@@ -45,6 +45,12 @@ def save_results(filename):
         profiler.print_stats(fd)
 
 
+def print_results():
+    """Prints the formatted results directly to screen."""
+    profiler = get_profiler()
+    profiler.print_stats()
+
+
 def get_submodule_names(module_name):
     """
     Returns a list of the module name plus all importable submodule names.
