@@ -228,7 +228,9 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
 
 
 # The default stale cached_path threshold time, in seconds:
-TYPHOS_PATH_CACHE_TIME = int(os.environ.get('TYPHOS_PATH_CACHE_TIME', '600'))
+TYPHOS_DISPLAY_PATH_CACHE_TIME = int(
+    os.environ.get('TYPHOS_DISPLAY_PATH_CACHE_TIME', '600')
+)
 
 
 class _CachedPath:
@@ -253,7 +255,8 @@ class _CachedPath:
         happens on the next glob, and not on a timer-basis.
     """
 
-    def __init__(self, path, *, stale_threshold=TYPHOS_PATH_CACHE_TIME):
+    def __init__(self, path, *,
+                 stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME):
         self.path = pathlib.Path(path)
         self.cache = None
         self._update_time = None
@@ -334,6 +337,7 @@ class _GlobalDisplayPathCache:
             The path to add.
         """
         path = pathlib.Path(path).expanduser().resolve()
-        path = _CachedPath(path, stale_threshold=TYPHOS_PATH_CACHE_TIME)
+        path = _CachedPath(
+            path, stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME)
         if path not in self.paths:
             self.paths.append(path)
