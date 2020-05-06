@@ -22,6 +22,14 @@ FlatEpics = make_test_device_class(name='FlatEpics', signal_class=EpicsSignal,
 
 
 def run_caproto_ioc(device_class, prefix):
+    """
+    Runs a dummy caproto IOC.
+
+    Includes all the PVs that device_class will have if instantiate with
+    prefix.
+
+    Currently only works for flat devices, e.g. no subdevices
+    """
     pvprops = {}
     for walk in device_class.walk_components():
         cpt = walk.item
@@ -38,9 +46,10 @@ def run_caproto_ioc(device_class, prefix):
 @contextmanager
 def caproto_context(device_class, prefix):
     """
-    Yield a caproto process with all elements of the input device.
+    Yields a caproto process with all elements of the input device.
 
-    Currently only works for flat devices, e.g. no subdevices
+    The caproto IOC will be run in a background process, making it suitable for
+    testing devices in the main process.
     """
     proc = Process(target=run_caproto_ioc, args=(device_class, prefix))
     proc.start()
