@@ -1,8 +1,14 @@
+import fnmatch
 import functools
 import logging
-import ophyd
+import os
+import pathlib
+import re
+import time
 
 from qtpy import QtCore
+
+import ophyd
 
 from . import utils
 from .widgets import SignalWidgetInfo
@@ -14,6 +20,7 @@ logger = logging.getLogger(__name__)
 # `get_global_describe_cache()` and `get_global_widget_type_cache()` below.
 _GLOBAL_WIDGET_TYPE_CACHE = None
 _GLOBAL_DESCRIBE_CACHE = None
+_GLOBAL_DISPLAY_PATH_CACHE = None
 
 
 def get_global_describe_cache():
@@ -30,6 +37,14 @@ def get_global_widget_type_cache():
     if _GLOBAL_WIDGET_TYPE_CACHE is None:
         _GLOBAL_WIDGET_TYPE_CACHE = _GlobalWidgetTypeCache()
     return _GLOBAL_WIDGET_TYPE_CACHE
+
+
+def get_global_display_path_cache():
+    """Get the _GlobalDisplayPathCache singleton."""
+    global _GLOBAL_DISPLAY_PATH_CACHE
+    if _GLOBAL_DISPLAY_PATH_CACHE is None:
+        _GLOBAL_DISPLAY_PATH_CACHE = _GlobalDisplayPathCache()
+    return _GLOBAL_DISPLAY_PATH_CACHE
 
 
 class _GlobalDescribeCache(QtCore.QObject):
@@ -210,3 +225,119 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
             if desc is not None:
                 # In certain scenarios (such as testing) this might happen
                 self._new_description(obj, desc)
+
+
+# The default stale cached_path threshold time, in seconds:
+TYPHOS_DISPLAY_PATH_CACHE_TIME = int(
+    os.environ.get('TYPHOS_DISPLAY_PATH_CACHE_TIME', '600')
+)
+
+
+class _CachedPath:
+    """
+    A wrapper around pathlib.Path to support repeated globbing
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        The path to cache
+
+    Attributes
+    ----------
+    path : pathlib.Path
+        The underlying path
+    cache : list
+        The cache of filenames
+    _update_time : float
+        The last time the cache was updated
+    stale_threshold : float, optional
+        The time (in seconds) after which to update the path cache.  This
+        happens on the next glob, and not on a timer-basis.
+    """
+
+    def __init__(self, path, *,
+                 stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME):
+        self.path = pathlib.Path(path)
+        self.cache = None
+        self._update_time = None
+        self.stale_threshold = stale_threshold
+
+    @classmethod
+    def from_path(cls, path, **kwargs):
+        """
+        Get a cached path, if not already cached.
+
+        Parameters
+        ----------
+        path : :class:`pathlib.Path` or :class:`_CachedPath`
+            The paths to cache, if not already cached.
+        """
+        if isinstance(path, (cls, _GlobalDisplayPathCache)):
+            # Already a _CachedPath
+            return path
+        return cls(path, **kwargs)
+
+    def __hash__(self):
+        # Keep the hash the same as the internal path for set()/dict() usage
+        return hash(self.path)
+
+    @property
+    def time_since_last_update(self):
+        """Time (in seconds) since the last update."""
+        if self._update_time is None:
+            return 0
+        return time.monotonic() - self._update_time
+
+    def update(self):
+        """Update the file list"""
+        self.cache = os.listdir(self.path)
+        self._update_time = time.monotonic()
+
+    def glob(self, pattern):
+        """Glob a pattern"""
+        if self.cache is None:
+            self.update()
+        elif self.time_since_last_update > self.stale_threshold:
+            self.update()
+
+        if any(c in pattern for c in '*?['):
+            # Convert from glob syntax -> regular expression
+            # And compile it for repeated usage.
+            regex = re.compile(fnmatch.translate(pattern))
+            for path in self.cache:
+                if regex.match(path):
+                    yield self.path / path
+        else:
+            # No globbing syntax: only check if file is in the list
+            if pattern in self.cache:
+                yield self.path / pattern
+
+
+class _GlobalDisplayPathCache:
+    """
+    A cache for all configured display paths.
+
+    All paths from `utils.DISPLAY_PATHS` will be included:
+        1. Environment variable ``PYDM_DISPLAYS_PATH``
+        2. Typhos package built-in paths
+    """
+
+    def __init__(self):
+        self.paths = []
+        for path in utils.DISPLAY_PATHS:
+            self.add_path(path)
+
+    def add_path(self, path):
+        """
+        Add a path to be searched during ``glob``.
+
+        Parameters
+        ----------
+        path : pathlib.Path or str
+            The path to add.
+        """
+        path = pathlib.Path(path).expanduser().resolve()
+        path = _CachedPath(
+            path, stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME)
+        if path not in self.paths:
+            self.paths.append(path)

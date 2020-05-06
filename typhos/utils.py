@@ -40,10 +40,10 @@ if happi is None:
 
 
 def _get_display_paths():
-    'Get all display paths based on PYDM_DISPLAY_PATHS + typhos built-ins'
+    """Get all display paths based on PYDM_DISPLAYS_PATH + typhos built-ins."""
     paths = os.environ.get('PYDM_DISPLAYS_PATH', '')
     for path in paths.split(os.pathsep):
-        path = pathlib.Path(path).resolve()
+        path = pathlib.Path(path).expanduser().resolve()
         if path.exists() and path.is_dir():
             yield path
     yield ui_dir
@@ -493,8 +493,9 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
     elif isinstance(extensions, str):
         extensions = [extensions]
 
+    from .cache import _CachedPath
     paths = remove_duplicate_items(
-        [pathlib.Path(p).expanduser().resolve() for p in paths]
+        [_CachedPath.from_path(p) for p in paths]
     )
 
     for candidate_filename in _get_template_filenames_for_class(
@@ -532,8 +533,9 @@ def find_file_in_paths(filename, *, paths=None):
 
         filename = filename.name
 
+    from .cache import _CachedPath
     paths = remove_duplicate_items(
-        [pathlib.Path(p).expanduser().resolve() for p in paths]
+        [_CachedPath.from_path(p) for p in paths]
     )
 
     for path in paths:
