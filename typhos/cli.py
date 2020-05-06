@@ -49,6 +49,7 @@ __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 
 
 def get_qapp():
+    """Returns the global QApplication, creating it if necessary."""
     global qapp
     if qapp is None:
         logger.debug("Creating QApplication ...")
@@ -57,6 +58,7 @@ def get_qapp():
 
 
 def typhos_cli_setup(args):
+    """Setup logging and style, or show version."""
     # Logging Level handling
     logging.getLogger().addHandler(logging.NullHandler())
     shown_logger = logging.getLogger('typhos')
@@ -101,7 +103,7 @@ def _create_happi_client(cfg):
 
 
 def create_suite(devices, cfg=None, fake_devices=False):
-    """Create a TyphosSuite from a list of device names"""
+    """Create a TyphosSuite from a list of device names."""
     if devices:
         loaded_devs = create_devices(devices, cfg=cfg, fake_devices=fake_devices)
     if loaded_devs or not devices:
@@ -109,6 +111,7 @@ def create_suite(devices, cfg=None, fake_devices=False):
 
 
 def create_devices(devices_arg, cfg=None, fake_devices=False):
+    """Returns a list of devices to be included in the typhos suite."""
     logger.debug("Accessing Happi Client ...")
 
     try:
@@ -170,6 +173,7 @@ def create_devices(devices_arg, cfg=None, fake_devices=False):
 
 
 def suite_from_devices(devices):
+    """Creates an empty suite and fills it with input Ophyd devices."""
     logger.debug("Creating empty TyphosSuite ...")
     suite = typhos.TyphosSuite()
     logger.info("Loading Tools ...")
@@ -189,6 +193,7 @@ def suite_from_devices(devices):
 
 
 def launch_suite(suite):
+    """Creates a main window and execs the application."""
     window = QMainWindow()
     window.setCentralWidget(suite)
     window.show()
@@ -199,13 +204,14 @@ def launch_suite(suite):
 
 
 def launch_from_devices(devices):
+    """Alternate entry point for non-cli testing of loader."""
     get_qapp()
     suite = suite_from_devices(devices)
     return launch_suite(suite)
 
 
 def typhos_cli(args):
-    """Command Line Application for Typhos"""
+    """Command Line Application for Typhos."""
     args = parser.parse_args(args)
     typhos_cli_setup(args)
     if not args.version:
@@ -216,5 +222,5 @@ def typhos_cli(args):
             return launch_suite(suite)
 
 def main():
-    """Execute the ``typhos_cli`` with command line arguments"""
+    """Execute the ``typhos_cli`` with command line arguments."""
     typhos_cli(sys.argv[1:])
