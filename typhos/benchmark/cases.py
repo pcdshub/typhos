@@ -11,7 +11,7 @@ from caproto.server import pvproperty, PVGroup, run
 from ophyd.signal import Signal, EpicsSignal, EpicsSignalBase
 
 from .device import make_test_device_class
-from ..cli import typhos_cli
+from ..cli import launch_from_devices
 
 
 # Create the test classes
@@ -50,15 +50,15 @@ def caproto_context(device_class, prefix):
 
 def test_flat_soft():
     """Launch typhos using a flat device with no EPICS connections."""
-    typhos_cli(["typhos.benchmark.cases.FlatSoft[{'prefix':'TEST:'}]"])
+    launch_from_devices([FlatSoft('TEST:', name='test')])
 
 
 def test_flat_epics_no_connect():
     """Launch typhos using a flat device with failed EPICS connections."""
-    typhos_cli(["typhos.benchmark.cases.FlatEpics[{'prefix':'TEST:'}]"])
+    launch_from_devices([FlatEpics('TEST:', name='test')])
 
 
 def test_flat_epics_caproto():
     """Launch typhos using a flat device backed by caproto."""
     with caproto_context(FlatEpics, 'CAPRO:'):
-        typhos_cli(["typhos.benchmark.cases.FlatEpics[{'prefix':'CAPRO:'}]"])
+        launch_from_devices([FlatEpics('CAPRO:', name='test')])

@@ -48,8 +48,15 @@ parser.add_argument('--stylesheet',
 __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 
 
-def typhos_cli_setup(args):
+def get_qapp():
     global app
+    if app is None:
+        logger.debug("Creating QApplication ...")
+        app = QApplication([])
+    return app
+
+
+def typhos_cli_setup(args):
     # Logging Level handling
     logging.getLogger().addHandler(logging.NullHandler())
     shown_logger = logging.getLogger('typhos')
@@ -70,9 +77,7 @@ def typhos_cli_setup(args):
         return
 
     # Deal with stylesheet
-    if not app:
-        logger.debug("Creating QApplication ...")
-        app = QApplication([])
+    app = get_qapp()
 
     logger.debug("Applying stylesheet ...")
     typhos.use_stylesheet(dark=args.dark)
@@ -97,6 +102,13 @@ def _create_happi_client(cfg):
 
 def create_suite(devices, cfg=None, fake_devices=False):
     """Create a TyphosSuite from a list of device names"""
+    if devices:
+        loaded_devs = create_devices(devices, cfg=cfg, fake_devices=fake_devices)
+    if loaded_devs or not devices:
+       return suite_from_devices(loaded_devs)
+
+
+def create_devices(devices_arg, cfg=None, fake_devices=False):
     logger.debug("Accessing Happi Client ...")
 
     try:
@@ -112,7 +124,7 @@ def create_suite(devices, cfg=None, fake_devices=False):
         r'([a-zA-Z][a-zA-Z\.\_]*)\[(\{.+})*[\,]*\]'  # noqa
     )
 
-    for device in devices:
+    for device in devices_arg:
         logger.info("Loading %r ...", device)
         result = klass_regex.findall(device)
         if len(result) > 0:
@@ -154,23 +166,42 @@ def create_suite(devices, cfg=None, fake_devices=False):
                 logger.exception("Unable to load Happi entry: %r", device)
         if fake_devices:
             clear_fake_device(device)
-    if loaded_devs or not devices:
-        logger.debug("Creating empty TyphosSuite ...")
-        suite = typhos.TyphosSuite()
-        logger.info("Loading Tools ...")
-        tools = dict(suite.default_tools)
-        for name, tool in tools.items():
-            suite.add_tool(name, tool())
-        if devices:
-            logger.info("Adding devices ...")
-        for device in loaded_devs:
-            try:
-                suite.add_device(device)
-                suite.show_subdisplay(device)
-            except Exception:
-                logger.exception("Unable to add %r to TyphosSuite",
-                                 device.name)
-        return suite
+    return loaded_devs
+
+
+def suite_from_devices(devices):
+    logger.debug("Creating empty TyphosSuite ...")
+    suite = typhos.TyphosSuite()
+    logger.info("Loading Tools ...")
+    tools = dict(suite.default_tools)
+    for name, tool in tools.items():
+        suite.add_tool(name, tool())
+    if devices:
+        logger.info("Adding devices ...")
+    for device in devices:
+        try:
+            suite.add_device(device)
+            suite.show_subdisplay(device)
+        except Exception:
+            logger.exception("Unable to add %r to TyphosSuite",
+                             device.name)
+    return suite
+
+
+def launch_suite(suite):
+    window = QMainWindow()
+    window.setCentralWidget(suite)
+    window.show()
+    logger.info("Launching application ...")
+    QApplication.instance().exec_()
+    logger.info("Execution complete!")
+    return window
+
+
+def launch_from_devices(devices):
+    get_qapp()
+    suite = suite_from_devices(devices)
+    return launch_suite(suite)
 
 
 def typhos_cli(args):
@@ -182,16 +213,7 @@ def typhos_cli(args):
             suite = create_suite(args.devices, cfg=args.happi_cfg,
                                  fake_devices=args.fake_device)
         if suite:
-            window = QMainWindow()
-            window.setCentralWidget(suite)
-            window.setWindowTitle(suite.windowTitle())
-            window.setUnifiedTitleAndToolBarOnMac(True)
-            window.show()
-            logger.info("Launching application ...")
-            QApplication.instance().exec_()
-            logger.info("Execution complete!")
-            return window
-
+            return launch_suite(suite)
 
 def main():
     """Execute the ``typhos_cli`` with command line arguments"""
