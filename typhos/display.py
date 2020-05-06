@@ -782,7 +782,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     @staticmethod
     def _get_templates_from_macros(macros):
         ret = {}
-        paths = [cache.get_global_display_path_cache()]
+        paths = cache.get_global_display_path_cache().paths
         for display_type in DisplayTypes.names:
             ret[display_type] = None
             try:
@@ -901,7 +901,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         logger.debug('Searching for templates for %s', cls.__name__)
         macro_templates = self._get_templates_from_macros(self._macros)
 
-        paths = [cache.get_global_display_path_cache()]
+        paths = cache.get_global_display_path_cache().paths
         for display_type in DisplayTypes.names:
             view = display_type
             if view.endswith('_screen'):

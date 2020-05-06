@@ -337,8 +337,3 @@ class _GlobalDisplayPathCache:
         path = _CachedPath(path, stale_threshold=TYPHOS_PATH_CACHE_TIME)
         if path not in self.paths:
             self.paths.append(path)
-
-    def glob(self, pattern):
-        """Glob a pattern in all cached directories."""
-        for path in self.paths:
-            yield from path.glob(pattern)

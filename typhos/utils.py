@@ -493,13 +493,10 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
     elif isinstance(extensions, str):
         extensions = [extensions]
 
-    if len(paths) > 1:
-        paths = remove_duplicate_items(
-            [pathlib.Path(p) for p in paths]
-        )
-
     from .cache import _CachedPath
-    paths = [_CachedPath.from_path(p) for p in paths]
+    paths = remove_duplicate_items(
+        [_CachedPath.from_path(p) for p in paths]
+    )
 
     for candidate_filename in _get_template_filenames_for_class(
             cls, view_type, include_mro=include_mro):
@@ -536,13 +533,10 @@ def find_file_in_paths(filename, *, paths=None):
 
         filename = filename.name
 
-    if len(paths) > 1:
-        paths = remove_duplicate_items(
-            [pathlib.Path(p) for p in paths]
-        )
-
     from .cache import _CachedPath
-    paths = [_CachedPath.from_path(p) for p in paths]
+    paths = remove_duplicate_items(
+        [_CachedPath.from_path(p) for p in paths]
+    )
 
     for path in paths:
         for match in path.glob(filename):
