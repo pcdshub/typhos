@@ -14,7 +14,7 @@ import typhos
 from ophyd.sim import clear_fake_device, make_fake_device
 
 logger = logging.getLogger(__name__)
-app = None
+qapp = None
 
 # Argument Parser Setup
 parser = argparse.ArgumentParser(description='Create a TyphosSuite for '
@@ -49,11 +49,11 @@ __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 
 
 def get_qapp():
-    global app
-    if app is None:
+    global qapp
+    if qapp is None:
         logger.debug("Creating QApplication ...")
-        app = QApplication([])
-    return app
+        qapp = QApplication([])
+    return qapp
 
 
 def typhos_cli_setup(args):
@@ -77,14 +77,14 @@ def typhos_cli_setup(args):
         return
 
     # Deal with stylesheet
-    app = get_qapp()
+    qapp = get_qapp()
 
     logger.debug("Applying stylesheet ...")
     typhos.use_stylesheet(dark=args.dark)
     if args.stylesheet:
         logger.info("Loading QSS file %r ...", args.stylesheet)
         with open(args.stylesheet, 'r') as handle:
-            app.setStyleSheet(handle.read())
+            qapp.setStyleSheet(handle.read())
 
 
 def _create_happi_client(cfg):
