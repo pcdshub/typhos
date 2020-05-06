@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # `get_global_describe_cache()` and `get_global_widget_type_cache()` below.
 _GLOBAL_WIDGET_TYPE_CACHE = None
 _GLOBAL_DESCRIBE_CACHE = None
-_GLOBAL_PATH_CACHE = None
+_GLOBAL_DISPLAY_PATH_CACHE = None
 
 
 def get_global_describe_cache():
@@ -39,12 +39,12 @@ def get_global_widget_type_cache():
     return _GLOBAL_WIDGET_TYPE_CACHE
 
 
-def get_global_path_cache():
+def get_global_display_path_cache():
     """Get the _GlobalDisplayPathCache singleton."""
-    global _GLOBAL_PATH_CACHE
-    if _GLOBAL_PATH_CACHE is None:
-        _GLOBAL_PATH_CACHE = _GlobalDisplayPathCache()
-    return _GLOBAL_PATH_CACHE
+    global _GLOBAL_DISPLAY_PATH_CACHE
+    if _GLOBAL_DISPLAY_PATH_CACHE is None:
+        _GLOBAL_DISPLAY_PATH_CACHE = _GlobalDisplayPathCache()
+    return _GLOBAL_DISPLAY_PATH_CACHE
 
 
 class _GlobalDescribeCache(QtCore.QObject):
@@ -312,19 +312,27 @@ class _CachedPath:
 
 class _GlobalDisplayPathCache:
     """
-    A cache for all configured display paths
+    A cache for all configured display paths.
+
+    All paths from `utils.DISPLAY_PATHS` will be included:
+        1. Environment variable ``PYDM_DISPLAYS_PATH``
+        2. Typhos package built-in paths
     """
 
     def __init__(self):
         self.paths = []
-        self._update_times = {}
         for path in utils.DISPLAY_PATHS:
             self.add_path(path)
 
-    def clear(self):
-        self.paths.clear()
-
     def add_path(self, path):
+        """
+        Add a path to be searched during ``glob``.
+
+        Parameters
+        ----------
+        path : pathlib.Path or str
+            The path to add.
+        """
         path = pathlib.Path(path).expanduser().resolve()
         path = _CachedPath(path, stale_threshold=TYPHOS_PATH_CACHE_TIME)
         if path not in self.paths:

@@ -40,7 +40,7 @@ if happi is None:
 
 
 def _get_display_paths():
-    'Get all display paths based on PYDM_DISPLAY_PATHS + typhos built-ins'
+    """Get all display paths based on PYDM_DISPLAYS_PATH + typhos built-ins."""
     paths = os.environ.get('PYDM_DISPLAYS_PATH', '')
     for path in paths.split(os.pathsep):
         path = pathlib.Path(path).expanduser().resolve()
