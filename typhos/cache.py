@@ -3,7 +3,6 @@ import collections.abc
 import fnmatch
 import functools
 import logging
-import ophyd
 import os
 import pathlib
 import re
