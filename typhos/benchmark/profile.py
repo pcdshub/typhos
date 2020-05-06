@@ -38,6 +38,15 @@ def setup_profiler(module_names=['typhos']):
         profiler.add_module(module)
 
 
+def toggle_profiler(turn_on):
+    """Turns the profiler off or on."""
+    profiler = get_profiler()
+    if turn_on:
+        profiler.enable_by_count()
+    else:
+        profiler.disable_by_count()
+
+
 def save_results(filename):
     """Saves the formatted profiling results to filename."""
     profiler = get_profiler()

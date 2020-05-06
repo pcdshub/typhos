@@ -21,6 +21,10 @@ FlatEpics = make_test_device_class(name='FlatEpics', signal_class=EpicsSignal,
                                    include_prefix=True, num_signals=100)
 
 
+def run_benchmarks(benchmarks):
+    raise NotImplementedError('TODO: this')
+
+
 def run_caproto_ioc(device_class, prefix):
     """
     Runs a dummy caproto IOC.

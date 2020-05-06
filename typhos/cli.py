@@ -220,6 +220,13 @@ def launch_from_devices(devices):
     return launch_suite(suite)
 
 
+def typhos_core(devices, cfg=None, fake_devices=False):
+    with typhos.utils.no_device_lazy_load():
+        suite = create_suite(devices, cfg=cfg, fake_devices=fake_devices)
+    if suite:
+        return launch_suite(suite)
+
+
 def typhos_cli(args):
     """Command Line Application for Typhos."""
     args = parser.parse_args(args)
@@ -230,31 +237,30 @@ def typhos_cli(args):
     profiling_on = any((args.profile_modules is not None, args.profile_output,
                         args.benchmark is not None))
     if profiling_on:
-        # Keep line_profile an optional dependency
-        from typhos.benchmark.profile import setup_profiler
+        # Keep line_profiler an optional dependency
+        from typhos.benchmark.profile import (setup_profiler, toggle_profiler,
+                                              save_results, print_results)
+        from typhos.benchmark.cases import run_benchmarks
         setup_profiler()
+        toggle_profiler(True)
 
     typhos_cli_setup(args)
     if args.benchmark is not None:
-        from typhos.benchmark.cases import run_benchmarks
         run_benchmarks(args.benchmark)
         suite = None
     else:
-        with typhos.utils.no_device_lazy_load():
-            suite = create_suite(args.devices, cfg=args.happi_cfg,
-                                 fake_devices=args.fake_device)
-        if suite:
-            suite = launch_suite(suite)
+        suite = typhos_core(args.devices, cfg=args.happi_cfg,
+                            fake_devices=args.fake_device)
 
     if profiling_on:
+        toggle_profiler(False)
         if args.profile_output:
-            from typhos.benchmark.profile import save_results
             save_results(args.profile_output)
         else:
-            from typhos.benchmark.profile import print_results
             print_results()
 
     return suite
+
 
 def main():
     """Execute the ``typhos_cli`` with command line arguments."""
