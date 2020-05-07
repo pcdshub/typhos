@@ -54,13 +54,13 @@ def save_results(filename):
     """Saves the formatted profiling results to filename."""
     profiler = get_profiler()
     with open(filename, 'w') as fd:
-        profiler.print_stats(fd)
+        profiler.print_stats(fd, stripzeros=True, output_unit=1e-3)
 
 
 def print_results():
     """Prints the formatted results directly to screen."""
     profiler = get_profiler()
-    profiler.print_stats()
+    profiler.print_stats(stripzeros=True, output_unit=1e-3)
 
 
 def is_native(obj, module):
