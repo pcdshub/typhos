@@ -241,7 +241,10 @@ def typhos_cli(args):
         from typhos.benchmark.profile import (setup_profiler, toggle_profiler,
                                               save_results, print_results)
         from typhos.benchmark.cases import run_benchmarks
-        setup_profiler()
+        if not args.profile_modules:
+            setup_profiler()
+        else:
+            setup_profiler(args.profile_modules)
         toggle_profiler(True)
 
     typhos_cli_setup(args)
