@@ -766,10 +766,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             widget.setObjectName('display_widget')
 
         self._display_widget = widget
+
         self._current_template = template
         self._update_children()
         self._move_display_to_layout(self._display_widget)
-
         utils.reload_widget_stylesheet(self)
 
     @property

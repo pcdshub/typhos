@@ -70,12 +70,13 @@ class _GlobalDescribeCache(QtCore.QObject):
 
     def __init__(self):
         super().__init__()
-        self.connect_thread = utils.ObjectConnectionMonitorThread(parent=self)
-        self.connect_thread.connection_update.connect(self._connection_update)
-        self.connect_thread.start()
-
         self._in_process = set()
         self.cache = {}
+
+        self.connect_thread = utils.ObjectConnectionMonitorThread(parent=self)
+        self.connect_thread.connection_update.connect(
+            self._connection_update, QtCore.Qt.QueuedConnection)
+        self.connect_thread.start()
 
     def clear(self):
         """Clear the cache."""
@@ -181,7 +182,8 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
         super().__init__()
         self.cache = {}
         self.describe_cache = get_global_describe_cache()
-        self.describe_cache.new_description.connect(self._new_description)
+        self.describe_cache.new_description.connect(self._new_description,
+                                                    QtCore.Qt.QueuedConnection)
 
     def clear(self):
         """Clear the cache."""
