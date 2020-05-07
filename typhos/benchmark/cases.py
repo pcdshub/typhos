@@ -6,6 +6,7 @@ arbitrary profiling modules.
 """
 from contextlib import contextmanager
 from multiprocessing import Process
+import uuid
 
 from caproto.server import pvproperty, PVGroup, run
 from ophyd.signal import Signal, EpicsSignal, EpicsSignalBase
@@ -61,6 +62,11 @@ def caproto_context(device_class, prefix):
     proc.terminate()
 
 
+def random_prefix():
+    """Returns a random prefix to avoid test cross-talk."""
+    return str(uuid.uuid4())[:8] + ':'
+
+
 def test_flat_soft():
     """Launch typhos using a flat device with no EPICS connections."""
     launch_from_devices([FlatSoft('TEST:', name='test')])
@@ -73,5 +79,6 @@ def test_flat_epics_no_connect():
 
 def test_flat_epics_caproto():
     """Launch typhos using a flat device backed by caproto."""
-    with caproto_context(FlatEpics, 'CAPRO:'):
-        launch_from_devices([FlatEpics('CAPRO:', name='test')])
+    prefix = random_prefix()
+    with caproto_context(FlatEpics, prefix):
+        launch_from_devices([FlatEpics(prefix, name='test')])
