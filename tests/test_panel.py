@@ -163,8 +163,12 @@ def test_typhos_panel(qapp, client, qtbot, typhos_signal_panel):
     # Reset channel and no smoke comes out
     panel.channel = 'happi://test_motor'
     pydm.utilities.establish_widget_connections(panel)
-    # Check we have our device
-    assert len(panel.devices) == 1
+
+    def have_device():
+        assert len(panel.devices) == 1
+
+    qtbot.wait_until(have_device)
+
     device = panel.devices[0]
     num_hints = len(device.hints['fields'])
     num_read = len(device.read_attrs)
@@ -197,6 +201,10 @@ def test_typhos_panel_sort_by_name(qapp, client, qtbot, typhos_signal_panel):
     panel.channel = 'happi://test_motor'
     pydm.utilities.establish_widget_connections(panel)
 
+    def have_device():
+        assert len(panel.devices) == 1
+
+    qtbot.wait_until(have_device)
     device = panel.devices[0]
     sorted_names = [
         getattr(device, attr).name
@@ -216,6 +224,10 @@ def test_typhos_panel_sort_by_kind(qapp, client, qtbot, typhos_signal_panel):
     panel.channel = 'happi://test_motor'
     pydm.utilities.establish_widget_connections(panel)
 
+    def have_device():
+        assert len(panel.devices) == 1
+
+    qtbot.wait_until(have_device)
     key_order = list(panel.layout().signals.keys())
     assert key_order[0] == 'test_motor'
     assert key_order[-1] == 'test_motor_unused'
