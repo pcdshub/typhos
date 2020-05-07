@@ -20,22 +20,22 @@ def make_test_device_class(name='TestClass', signal_class=Signal,
 
     Parameters
     ----------
-    name: str, optional
+    name : str, optional
         The name of the class.
         Defaults to 'TestClass'.
 
-    signal_class: type, optional
+    signal_class : type, optional
         Picks which type of signal to use in the Device.
         Defaults to ophyd.signal.Signal.
 
-    include_prefix: bool, optional
+    include_prefix : bool, optional
         If True, passes a string as a position argument into the signal
         components. This should be True for something like an EpicsSignal and
         False for something like a base Signal, depending on the required
         arguments.
         Defaults to False.
 
-    num_signals: int, optional
+    num_signals : int, optional
         The number of signals to use in the test class.
         Defaults to 10.
     """
