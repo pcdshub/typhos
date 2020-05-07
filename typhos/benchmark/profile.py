@@ -3,6 +3,7 @@ Module using line_profiler to measure code performance and diagnose slowdowns.
 """
 import importlib
 import pkgutil
+from inspect import isclass, isfunction
 
 from line_profiler import LineProfiler
 
@@ -28,14 +29,16 @@ def setup_profiler(module_names=['typhos']):
     limit the scope by passing a particular submodule,
     e.g. module_names=['typhos.display']
     """
-    modules = set()
+    functions = set()
     for module_name in module_names:
-        submodule_names = get_submodule_names(module_name)
-        modules.update(import_modules(submodule_names))
+        modules = get_submodules(module_name)
+        for module in modules:
+            native_functions = get_native_functions(module)
+            functions.update(native_functions)
 
     profiler = get_profiler()
-    for module in modules:
-        profiler.add_module(module)
+    for function in functions:
+        profiler.add_function(function)
 
 
 def toggle_profiler(turn_on):
@@ -58,6 +61,35 @@ def print_results():
     """Prints the formatted results directly to screen."""
     profiler = get_profiler()
     profiler.print_stats()
+
+
+def is_native(obj, module):
+    """Returns True if obj was defined in module."""
+    return module.__name__ in obj.__module__
+
+
+def get_native_functions(module):
+    """Returns all functions and methods defined in module."""
+    return get_native_methods(module, module)
+
+
+def get_native_methods(cls, module):
+    """Returns all methods defined in cls that belong to module."""
+    native_methods = []
+    for obj in cls.__dict__.values():
+        if isclass(obj):
+            inner_methods = get_native_methods(obj, module)
+            native_methods.extend(inner_methods)
+        elif isfunction(obj):
+            if is_native(obj, module):
+                native_methods.append(obj)
+    return native_methods
+
+
+def get_submodules(module_name):
+    """Returns a list of the imported module plus all submodules."""
+    submodule_names = get_submodule_names(module_name)
+    return import_modules(submodule_names)
 
 
 def get_submodule_names(module_name):
