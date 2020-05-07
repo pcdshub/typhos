@@ -16,7 +16,7 @@ from ophyd.signal import Signal
 def make_test_device_class(name='TestClass', signal_class=Signal,
                            include_prefix=False, num_signals=10):
     """
-    Creates a test Device class.
+    Creates a test :class:`ophyd.Device` subclass.
 
     Parameters
     ----------
@@ -26,13 +26,13 @@ def make_test_device_class(name='TestClass', signal_class=Signal,
 
     signal_class : type, optional
         Picks which type of signal to use in the Device.
-        Defaults to ophyd.signal.Signal.
+        Defaults to :class:`ophyd.Signal`.
 
     include_prefix : bool, optional
         If True, passes a string as a position argument into the signal
-        components. This should be True for something like an EpicsSignal and
-        False for something like a base Signal, depending on the required
-        arguments.
+        components. This should be True for something like an
+        :class:`ophyd.EpicsSignal` and False for something like a base
+        :class:`ophyd.Signal`, depending on the required arguments.
         Defaults to False.
 
     num_signals : int, optional
