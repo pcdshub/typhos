@@ -22,8 +22,23 @@ FlatEpics = make_test_device_class(name='FlatEpics', signal_class=EpicsSignal,
                                    include_prefix=True, num_signals=100)
 
 
+benchmark_registry = {}
+
+
 def run_benchmarks(benchmarks):
-    raise NotImplementedError('TODO: this')
+    if not benchmarks:
+        for test in benchmark_registry.values():
+            test()
+    else:
+        for benchmark in benchmarks:
+            test = benchmark_registry[benchmark]
+            test()
+
+
+def register_benchmark(benchmark):
+    global benchmark_registry
+    benchmark_registry[benchmark.__name__] = benchmark
+    return benchmark
 
 
 def run_caproto_ioc(device_class, prefix):
@@ -67,18 +82,24 @@ def random_prefix():
     return str(uuid.uuid4())[:8] + ':'
 
 
-def test_flat_soft():
+@register_benchmark
+def test_flat_soft(auto_exit=True):
     """Launch typhos using a flat device with no EPICS connections."""
-    launch_from_devices([FlatSoft('TEST:', name='test')])
+    launch_from_devices([FlatSoft('TEST:', name='test')],
+                        auto_exit=auto_exit)
 
 
-def test_flat_epics_no_connect():
+@register_benchmark
+def test_flat_epics_no_connect(auto_exit=True):
     """Launch typhos using a flat device with failed EPICS connections."""
-    launch_from_devices([FlatEpics('TEST:', name='test')])
+    launch_from_devices([FlatEpics('TEST:', name='test')],
+                        auto_exit=auto_exit)
 
 
-def test_flat_epics_caproto():
+@register_benchmark
+def test_flat_epics_caproto(auto_exit=True):
     """Launch typhos using a flat device backed by caproto."""
     prefix = random_prefix()
     with caproto_context(FlatEpics, prefix):
-        launch_from_devices([FlatEpics(prefix, name='test')])
+        launch_from_devices([FlatEpics(prefix, name='test')],
+                            auto_exit=auto_exit)

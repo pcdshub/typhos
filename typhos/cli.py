@@ -7,6 +7,7 @@ import re
 import sys
 
 import coloredlogs
+from qtpy.QtCore import QTimer
 from qtpy.QtWidgets import QApplication, QMainWindow
 
 import pcdsutils
@@ -213,10 +214,13 @@ def launch_suite(suite):
     return window
 
 
-def launch_from_devices(devices):
+def launch_from_devices(devices, auto_exit=False):
     """Alternate entry point for non-cli testing of loader."""
-    get_qapp()
+    app = get_qapp()
     suite = suite_from_devices(devices)
+    if auto_exit:
+        timer = QTimer(suite)
+        timer.singleShot(0, app.exit)
     return launch_suite(suite)
 
 
