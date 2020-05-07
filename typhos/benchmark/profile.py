@@ -116,5 +116,5 @@ def get_submodule_names(module_name):
 
 
 def import_modules(modules):
-    """Utility function to import an interator of module names as a list."""
+    """Utility function to import an iterator of module names as a list."""
     return [importlib.import_module(mod) for mod in modules]
