@@ -57,7 +57,8 @@ class TyphosTimePlot(utils.TyphosBase):
         self.timechart = TimeChartDisplay(show_pv_add_panel=False)
         self.layout().addWidget(self.timechart)
         cache = get_global_describe_cache()
-        cache.new_description.connect(self._new_description)
+        cache.new_description.connect(self._new_description,
+                                      Qt.QueuedConnection)
 
     @property
     def channel_to_curve(self):
