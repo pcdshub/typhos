@@ -4,7 +4,7 @@ from happi import Client
 from happi.loader import from_container
 from happi.errors import SearchError
 from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
-from qtpy.QtCore import Signal
+from qtpy import QtCore
 
 
 class HappiClientState:
@@ -26,7 +26,7 @@ def register_client(client):
 
 class HappiConnection(PyDMConnection):
     """A PyDMConnection to the Happi Database"""
-    tx = Signal(dict)
+    tx = QtCore.Signal(dict)
 
     def __init__(self, channel, address, protocol=None, parent=None):
         super().__init__(channel, address, protocol=protocol, parent=parent)
@@ -36,7 +36,7 @@ class HappiConnection(PyDMConnection):
         """Add a new channel to the existing connection"""
         super().add_listener(channel)
         # Connect our channel to the signal
-        self.tx.connect(channel.tx_slot)
+        self.tx.connect(channel.tx_slot, QtCore.Qt.QueuedConnection)
         logger.debug("Loading %r from happi Client", channel)
         if '.' in self.address:
             device, child = self.address.split('.', 1)

@@ -462,11 +462,13 @@ class TyphosSuite(TyphosBase):
             widget.setHidden(True)
 
         logger.debug("Connecting parameter signals ...")
-        parameter.sigOpen.connect(partial(self.show_subdisplay,
-                                          parameter))
-        parameter.sigHide.connect(partial(self.hide_subdisplay,
-                                          parameter))
+        parameter.sigOpen.connect(partial(self.show_subdisplay, parameter),
+                                  QtCore.Qt.QueuedConnection)
+        parameter.sigHide.connect(partial(self.hide_subdisplay, parameter),
+                                  QtCore.Qt.QueuedConnection)
         if parameter.embeddable:
-            parameter.sigEmbed.connect(partial(self.embed_subdisplay,
-                                               parameter))
+            parameter.sigEmbed.connect(
+                partial(self.embed_subdisplay, parameter),
+                QtCore.Qt.QueuedConnection
+            )
         return parameter

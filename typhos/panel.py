@@ -81,7 +81,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         self.setColumnStretch(self.COL_SETPOINT, 1)
 
         get_global_widget_type_cache().widgets_determined.connect(
-            self._got_signal_widget_info)
+            self._got_signal_widget_info, QtCore.Qt.QueuedConnection)
 
         if signals:
             for name, sig in signals.items():

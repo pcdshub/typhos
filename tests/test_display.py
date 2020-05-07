@@ -110,7 +110,11 @@ def test_display_with_channel(client, qtbot):
     qtbot.addWidget(panel)
     panel.channel = 'happi://test_motor'
     assert panel.channel == 'happi://test_motor'
-    assert len(panel.devices) == 1
+
+    def device_added():
+        assert len(panel.devices) == 1
+
+    qtbot.wait_until(device_added)
 
 
 def test_display_device_class_property(motor, display):
