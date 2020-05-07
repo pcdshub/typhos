@@ -516,7 +516,7 @@ class _DescribeDatabase(collections.abc.Mapping):
         t0 = time.time()
         self._preload()
         elapsed = time.time() - t0
-        self.log.info('Took %d ms to preload the cache', int(elapsed * 1000))
+        self.log.debug('Took %d ms to preload the cache', int(elapsed * 1000))
 
     def _preload(self):
         """Pre-load all entries from the database."""
