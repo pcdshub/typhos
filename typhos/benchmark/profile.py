@@ -9,15 +9,15 @@ from line_profiler import LineProfiler
 
 
 # Global profiler instance
-PROFILER=None
+profiler = None
 
 
 def get_profiler():
     """Returns the global profiler instance, creating it if necessary."""
-    global PROFILER
-    if PROFILER is None:
-        PROFILER = LineProfiler()
-    return PROFILER
+    global profiler
+    if profiler is None:
+        profiler = LineProfiler()
+    return profiler
 
 
 def setup_profiler(module_names=['typhos']):
