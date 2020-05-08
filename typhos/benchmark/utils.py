@@ -1,14 +1,27 @@
 """
 Helpful functions that don't belong in a more specific submodule
 """
+import logging
 import signal
 import os
 import uuid
 from contextlib import contextmanager
 from multiprocessing import Process
 
-from caproto.server import pvproperty, PVGroup, run
 from ophyd.signal import EpicsSignalBase
+
+logger = logging.getLogger(__name__)
+
+
+_optional_err = ('Optional dependency caproto missing from python '
+                 'environment. Cannot test server.')
+
+try:
+    from caproto.server import pvproperty, PVGroup, run
+    has_caproto = True
+except ImportError:
+    has_caproto = False
+    logger.debug(_optional_err)
 
 
 def run_caproto_ioc(device_class, prefix):
@@ -21,6 +34,9 @@ def run_caproto_ioc(device_class, prefix):
     Assumes only basic :class:`ophyd.Component` instances in the class
     definition.
     """
+    if not has_caproto:
+        raise ImportError(_optional_err)
+
     pvprops = {}
     for suffix in yield_all_suffixes(device_class):
         pvprops[suffix] = pvproperty()
@@ -68,17 +84,14 @@ def caproto_context(device_class, prefix):
     The caproto IOC will be run in a background process, making it suitable for
     testing devices in the main process.
     """
+    if not has_caproto:
+        raise ImportError(_optional_err)
+
     proc = Process(target=run_caproto_ioc, args=(device_class, prefix))
     proc.start()
     yield
     if proc.is_alive():
         os.kill(proc.pid, signal.SIGKILL)
-
-
-@contextmanager
-def nullcontext():
-    """Stand-in for py3.7's contextlib.nullcontext"""
-    yield
 
 
 def random_prefix():

@@ -13,9 +13,12 @@ from qtpy.QtWidgets import QApplication, QMainWindow
 import pcdsutils
 import typhos
 from ophyd.sim import clear_fake_device, make_fake_device
+from typhos.app import get_qapp, launch_suite
+from typhos.benchmark.profile import profiler_context
+from typhos.benchmark.cases import run_benchmarks
+from typhos.utils import nullcontext
 
 logger = logging.getLogger(__name__)
-qapp = None
 
 # Argument Parser Setup
 parser = argparse.ArgumentParser(description='Create a TyphosSuite for '
@@ -64,15 +67,6 @@ parser.add_argument('--benchmark', nargs='*',
 __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 
 
-def get_qapp():
-    """Returns the global QApplication, creating it if necessary."""
-    global qapp
-    if qapp is None:
-        logger.debug("Creating QApplication ...")
-        qapp = QApplication([])
-    return qapp
-
-
 def typhos_cli_setup(args):
     """Setup logging and style"""
     # Logging Level handling
@@ -113,17 +107,17 @@ def _create_happi_client(cfg):
     return happi.Client.from_config(cfg=cfg)
 
 
-def create_suite(devices, cfg=None, fake_devices=False):
+def create_suite(device_names, cfg=None, fake_devices=False):
     """Create a TyphosSuite from a list of device names."""
-    if devices:
-        loaded_devs = create_devices(devices, cfg=cfg, fake_devices=fake_devices)
+    if device_names:
+        devices = create_devices(device_names, cfg=cfg, fake_devices=fake_devices)
     else:
-        loaded_devs = []
-    if loaded_devs or not devices:
-       return typhos.TyphosSuite.from_devices(loaded_devs)
+        devices = []
+    if devices or not device_names:
+       return typhos.TyphosSuite.from_devices(devices)
 
 
-def create_devices(devices_arg, cfg=None, fake_devices=False):
+def create_devices(device_names, cfg=None, fake_devices=False):
     """Returns a list of devices to be included in the typhos suite."""
     logger.debug("Accessing Happi Client ...")
 
@@ -134,15 +128,15 @@ def create_devices(devices_arg, cfg=None, fake_devices=False):
         happi_client = None
 
     # Load and add each device
-    loaded_devs = list()
+    devices = list()
 
     klass_regex = re.compile(
         r'([a-zA-Z][a-zA-Z\.\_]*)\[(\{.+})*[\,]*\]'  # noqa
     )
 
-    for device in devices_arg:
-        logger.info("Loading %r ...", device)
-        result = klass_regex.findall(device)
+    for device_name in device_names:
+        logger.info("Loading %r ...", device_name)
+        result = klass_regex.findall(device_name)
         if len(result) > 0:
             try:
                 klass, args = result[0]
@@ -162,7 +156,7 @@ def create_devices(devices_arg, cfg=None, fake_devices=False):
                             default_kwargs[arg] = 'FAKE'
 
                 device = klass(**default_kwargs)
-                loaded_devs.append(device)
+                devices.append(device)
 
             except Exception:
                 logger.exception("Unable to load class entry: %s with args %s",
@@ -170,45 +164,26 @@ def create_devices(devices_arg, cfg=None, fake_devices=False):
         else:
             if not happi_client:
                 logger.error("Happi not available. Unable to load entry: %r",
-                             device)
+                             device_name)
                 continue
             if fake_devices:
                 raise NotImplementedError("Fake devices from happi not "
                                           "supported yet")
             try:
-                device = happi_client.load_device(name=device)
-                loaded_devs.append(device)
+                device = happi_client.load_device(name=device_name)
+                devices.append(device)
             except Exception:
-                logger.exception("Unable to load Happi entry: %r", device)
+                logger.exception("Unable to load Happi entry: %r", device_name)
         if fake_devices:
             clear_fake_device(device)
-    return loaded_devs
+    return devices
 
 
-def launch_suite(suite):
-    """Creates a main window and execs the application."""
-    window = QMainWindow()
-    window.setCentralWidget(suite)
-    window.show()
-    logger.info("Launching application ...")
-    QApplication.instance().exec_()
-    logger.info("Execution complete!")
-    return window
 
-
-def launch_from_devices(devices, auto_exit=False):
-    """Alternate entry point for non-cli testing of loader."""
-    app = get_qapp()
-    suite = typhos.TyphosSuite.from_devices(devices)
-    if auto_exit:
-        timer = QTimer(suite)
-        timer.singleShot(0, app.exit)
-    return launch_suite(suite)
-
-
-def typhos_core(devices, cfg=None, fake_devices=False):
+def typhos_run(device_names, cfg=None, fake_devices=False):
+    """Run the central typhos part of typhos."""
     with typhos.utils.no_device_lazy_load():
-        suite = create_suite(devices, cfg=cfg, fake_devices=fake_devices)
+        suite = create_suite(device_names, cfg=cfg, fake_devices=fake_devices)
     if suite:
         return launch_suite(suite)
 
@@ -220,35 +195,23 @@ def typhos_cli(args):
     if args.version:
         print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
         return
-    profiling_on = any((args.profile_modules is not None, args.profile_output,
-                        args.benchmark is not None))
-    if profiling_on:
-        # Keep line_profiler an optional dependency
-        from typhos.benchmark.profile import (setup_profiler, toggle_profiler,
-                                              save_results, print_results)
-        from typhos.benchmark.cases import run_benchmarks
-        if not args.profile_modules:
-            setup_profiler()
-        else:
-            setup_profiler(args.profile_modules)
-        toggle_profiler(True)
 
-    typhos_cli_setup(args)
-    if args.benchmark is not None:
-        run_benchmarks(args.benchmark)
-        suite = None
+    if any((args.profile_modules is not None, args.profile_output,
+            args.benchmark is not None)):
+        context = profiler_context(module_names=args.profile_modules,
+                                   filename=args.profile_output)
     else:
-        suite = typhos_core(args.devices, cfg=args.happi_cfg,
-                            fake_devices=args.fake_device)
+        context = nullcontext()
 
-    if profiling_on:
-        toggle_profiler(False)
-        if args.profile_output:
-            save_results(args.profile_output)
+    with context:
+        typhos_cli_setup(args)
+        if args.benchmark is not None:
+            run_benchmarks(args.benchmark)
+            suite = None
         else:
-            print_results()
-
-    return suite
+            suite = typhos_run(args.devices, cfg=args.happi_cfg,
+                                fake_devices=args.fake_device)
+        return suite
 
 
 def main():

@@ -10,8 +10,9 @@ from functools import partial
 from ophyd.signal import Signal, EpicsSignal
 
 from .device import make_test_device_class as make_cls
-from .utils import caproto_context, nullcontext, random_prefix
-from ..cli import launch_from_devices
+from .utils import caproto_context, random_prefix
+from ..app import launch_from_devices
+from ..utils import nullcontext
 
 
 # Define matrix of testing parameters

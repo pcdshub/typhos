@@ -2,10 +2,21 @@
 Module using line_profiler to measure code performance and diagnose slowdowns.
 """
 import importlib
+import logging
 import pkgutil
+from contextlib import contextmanager
 from inspect import isclass, isfunction
 
-from line_profiler import LineProfiler
+logger = logging.getLogger(__name__)
+
+_optional_err = ('Optional dependency line_profiler missing from python '
+                 'environment. Cannot run profiler.')
+try:
+    from line_profiler import LineProfiler
+    has_line_profiler = True
+except ImportError:
+    has_line_profiler = False
+    logger.debug(_optional_err)
 
 
 # Global profiler instance
@@ -15,9 +26,29 @@ profiler = None
 def get_profiler():
     """Returns the global profiler instance, creating it if necessary."""
     global profiler
-    if profiler is None:
+    if not has_line_profiler:
+        raise ImportError(_optional_err)
+    elif profiler is None:
         profiler = LineProfiler()
     return profiler
+
+
+@contextmanager
+def profiler_context(module_names=[], filename=None):
+    """Context manager for profiling the cli typhos application."""
+    if not module_names:
+        setup_profiler()
+    else:
+        setup_profiler(module_names)
+
+    toggle_profiler(True)
+    yield
+    toggle_profiler(False)
+
+    if filename is None:
+        print_results()
+    else:
+        save_results(filename)
 
 
 def setup_profiler(module_names=['typhos']):
@@ -29,6 +60,8 @@ def setup_profiler(module_names=['typhos']):
     limit the scope by passing a particular submodule,
     e.g. module_names=['typhos.display']
     """
+    profiler = get_profiler()
+
     functions = set()
     for module_name in module_names:
         modules = get_submodules(module_name)
@@ -36,7 +69,6 @@ def setup_profiler(module_names=['typhos']):
             native_functions = get_native_functions(module)
             functions.update(native_functions)
 
-    profiler = get_profiler()
     for function in functions:
         profiler.add_function(function)
 
