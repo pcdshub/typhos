@@ -1,3 +1,4 @@
+caproto
 codecov
 doctr
 flake8
