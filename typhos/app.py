@@ -1,6 +1,7 @@
 """This module defines methods for launching full typhos applications."""
 import logging
 
+from qtpy.QtCore import QTimer
 from qtpy.QtWidgets import QApplication, QMainWindow
 
 from .suite import TyphosSuite
