@@ -521,7 +521,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     def __init__(self, parent=None, *, scrollable=True,
                  composite_heuristics=True, embedded_templates=None,
                  detailed_templates=None, engineering_templates=None,
-                 display_type='detailed_screen', **kwargs):
+                 display_type='detailed_screen', nested=False, **kwargs):
 
         self._composite_heuristics = composite_heuristics
         self._current_template = None
@@ -531,6 +531,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self._scrollable = False
         self._searched = False
         self._hide_empty = False
+        self._nested = nested
 
         self.templates = {name: [] for name in DisplayTypes.names}
         self._display_type = normalize_display_type(display_type)
@@ -1050,6 +1051,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     def _tx(self, value):
         """Receive information from happi channel"""
         self.add_device(value['obj'], macros=value['md'])
+
+    def __repr__(self):
+        return (
+            f'<{self.__class__.__name__} at {hex(id(self))} '
+            f'device={self.device_class}[{self.device_name!r}] '
+            f'nested={self._nested}'
+            f'>'
+        )
 
 
 def toggle_display(widget, force_state=None):
