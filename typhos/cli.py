@@ -117,6 +117,8 @@ def create_suite(devices, cfg=None, fake_devices=False):
     """Create a TyphosSuite from a list of device names."""
     if devices:
         loaded_devs = create_devices(devices, cfg=cfg, fake_devices=fake_devices)
+    else:
+        loaded_devs = []
     if loaded_devs or not devices:
        return suite_from_devices(loaded_devs)
 
