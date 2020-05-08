@@ -3,6 +3,8 @@ import logging
 
 from qtpy.QtWidgets import QApplication, QMainWindow
 
+from .suite import TyphosSuite
+
 logger = logging.getLogger(__name__)
 qapp = None
 
@@ -29,7 +31,7 @@ def launch_suite(suite):
 def launch_from_devices(devices, auto_exit=False):
     """Alternate entry point for non-cli testing of loader."""
     app = get_qapp()
-    suite = typhos.TyphosSuite.from_devices(devices)
+    suite = TyphosSuite.from_devices(devices)
     if auto_exit:
         timer = QTimer(suite)
         timer.singleShot(0, app.exit)
