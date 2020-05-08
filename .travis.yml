@@ -59,6 +59,7 @@ script:
       coverage run run_tests.py --show-capture=no --benchmark-only
     else
       coverage run run_tests.py --show-capture=no
+    fi
   - coverage report -m
 
   # Build docs
