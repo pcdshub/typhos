@@ -74,7 +74,7 @@ def get_qapp():
 
 
 def typhos_cli_setup(args):
-    """Setup logging and style, or show version."""
+    """Setup logging and style"""
     # Logging Level handling
     logging.getLogger().addHandler(logging.NullHandler())
     shown_logger = logging.getLogger('typhos')
@@ -120,7 +120,7 @@ def create_suite(devices, cfg=None, fake_devices=False):
     else:
         loaded_devs = []
     if loaded_devs or not devices:
-       return suite_from_devices(loaded_devs)
+       return typhos.TyphosSuite.from_devices(loaded_devs)
 
 
 def create_devices(devices_arg, cfg=None, fake_devices=False):
@@ -185,26 +185,6 @@ def create_devices(devices_arg, cfg=None, fake_devices=False):
     return loaded_devs
 
 
-def suite_from_devices(devices):
-    """Creates an empty suite and fills it with input Ophyd devices."""
-    logger.debug("Creating empty TyphosSuite ...")
-    suite = typhos.TyphosSuite()
-    logger.info("Loading Tools ...")
-    tools = dict(suite.default_tools)
-    for name, tool in tools.items():
-        suite.add_tool(name, tool())
-    if devices:
-        logger.info("Adding devices ...")
-    for device in devices:
-        try:
-            suite.add_device(device)
-            suite.show_subdisplay(device)
-        except Exception:
-            logger.exception("Unable to add %r to TyphosSuite",
-                             device.name)
-    return suite
-
-
 def launch_suite(suite):
     """Creates a main window and execs the application."""
     window = QMainWindow()
@@ -219,7 +199,7 @@ def launch_suite(suite):
 def launch_from_devices(devices, auto_exit=False):
     """Alternate entry point for non-cli testing of loader."""
     app = get_qapp()
-    suite = suite_from_devices(devices)
+    suite = typhos.TyphosSuite.from_devices(devices)
     if auto_exit:
         timer = QTimer(suite)
         timer.singleShot(0, app.exit)
