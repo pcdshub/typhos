@@ -6,6 +6,8 @@ arbitrary profiling modules.
 """
 from contextlib import contextmanager
 from multiprocessing import Process
+import signal
+import os
 import uuid
 
 from caproto.server import pvproperty, PVGroup, run
@@ -120,7 +122,8 @@ def caproto_context(device_class, prefix):
     proc = Process(target=run_caproto_ioc, args=(device_class, prefix))
     proc.start()
     yield
-    proc.terminate()
+    if proc.is_alive():
+        os.kill(proc.pid, signal.SIGKILL)
 
 
 def random_prefix():
