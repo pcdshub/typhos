@@ -17,10 +17,10 @@ from ..cli import launch_from_devices
 
 # Create the test classes
 FlatSoft = make_test_device_class(name='FlatSoft', signal_class=Signal,
-                                  include_prefix=False, num_signals=1000)
+                                  include_prefix=False, num_signals=1000,
                                   subdevice_layers=1, subdevice_spread=1)
 FlatEpic = make_test_device_class(name='FlatEpic', signal_class=EpicsSignal,
-                                  include_prefix=True, num_signals=1000)
+                                  include_prefix=True, num_signals=1000,
                                   subdevice_layers=1, subdevice_spread=1)
 WideSoft = make_test_device_class(name='WideSoft', signal_class=Signal,
                                   include_prefix=False, num_signals=1,
@@ -64,7 +64,7 @@ def run_caproto_ioc(device_class, prefix):
     """
     Runs a dummy caproto IOC.
 
-    Includes all the PVs that device_class will have if instantiate with
+    Includes all the PVs that device_class will have if instantiated with
     prefix.
 
     Assumes only basic :class:`ophyd.Component` instances in the class
@@ -138,7 +138,7 @@ def test_flat_soft(auto_exit=True):
 @register_benchmark
 def test_flat_epics_no_connect(auto_exit=True):
     """Launch typhos using a flat device with failed EPICS connections."""
-    launch_from_devices([FlatEpics('TEST:', name='test')],
+    launch_from_devices([FlatEpic('TEST:', name='test')],
                         auto_exit=auto_exit)
 
 
@@ -146,6 +146,6 @@ def test_flat_epics_no_connect(auto_exit=True):
 def test_flat_epics_caproto(auto_exit=True):
     """Launch typhos using a flat device backed by caproto."""
     prefix = random_prefix()
-    with caproto_context(FlatEpics, prefix):
-        launch_from_devices([FlatEpics(prefix, name='test')],
+    with caproto_context(FlatEpic, prefix):
+        launch_from_devices([FlatEpic(prefix, name='test')],
                             auto_exit=auto_exit)
