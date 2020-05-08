@@ -21,6 +21,8 @@ matrix:
       env: LINT_PYTHON=typhos
     - python: 3.6
       env: BUILD_DOCS=1
+    - python: 3.6
+      env: BENCHMARK=1
     - python: 3.7.3  # # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
     - python: 3.8
 
@@ -52,7 +54,11 @@ before_script:
   - sleep 1
 
 script:
-  - coverage run run_tests.py --show-capture=no
+  - |
+    if [[ "$BENCHMARK" == "1" ]]; then
+      coverage run run_tests.py --show-capture=no --benchmark-enable
+    else
+      coverage run run_tests.py --show-capture=no --benchmark-skip
   - coverage report -m
 
   # Build docs
