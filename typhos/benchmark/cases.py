@@ -152,5 +152,10 @@ def run_benchmarks(benchmarks):
             test()
     else:
         for benchmark in benchmarks:
-            test = benchmark_tests[benchmark]
+            try:
+                test = benchmark_tests[benchmark]
+            except KeyError:
+                raise RuntimeError(f'{benchmark} is not a valid benchmark. '
+                                   f'The full list of valid benchmarks is '
+                                   f'{list(benchmark_tests.keys())}')
             test()
