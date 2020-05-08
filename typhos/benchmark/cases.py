@@ -4,7 +4,9 @@ A collection of benchmarks to run for typhos.
 These are included as standalone functions to make it easy to pass them into
 arbitrary profiling modules.
 """
+from collections import namedtuple
 from contextlib import contextmanager
+from functools import partial
 from multiprocessing import Process
 import signal
 import os
@@ -13,53 +15,23 @@ import uuid
 from caproto.server import pvproperty, PVGroup, run
 from ophyd.signal import Signal, EpicsSignal, EpicsSignalBase
 
-from .device import make_test_device_class
+from .device import make_test_device_class as make_cls
 from ..cli import launch_from_devices
 
 
-# Create the test classes
-FlatSoft = make_test_device_class(name='FlatSoft', signal_class=Signal,
-                                  include_prefix=False, num_signals=1000,
-                                  subdevice_layers=1, subdevice_spread=1)
-FlatEpic = make_test_device_class(name='FlatEpic', signal_class=EpicsSignal,
-                                  include_prefix=True, num_signals=1000,
-                                  subdevice_layers=1, subdevice_spread=1)
-WideSoft = make_test_device_class(name='WideSoft', signal_class=Signal,
-                                  include_prefix=False, num_signals=1,
-                                  subdevice_layers=1, subdevice_spread=1000)
-WideEpic = make_test_device_class(name='WideEpics', signal_class=EpicsSignal,
-                                  include_prefix=True, num_signals=1,
-                                  subdevice_layers=1, subdevice_spread=1000)
-DeepSoft = make_test_device_class(name='DeepSoft', signal_class=Signal,
-                                  include_prefix=False, num_signals=1,
-                                  subdevice_layers=1000, subdevice_spread=1)
-DeepEpic = make_test_device_class(name='DeepEpic', signal_class=EpicsSignal,
-                                  include_prefix=True, num_signals=1,
-                                  subdevice_layers=1000, subdevice_spread=1)
-CubeSoft = make_test_device_class(name='CubeSoft', signal_class=Signal,
-                                  include_prefix=False, num_signals=10,
-                                  subdevice_layers=10, subdevice_spread=10)
-CubeEpic = make_test_device_class(name='CubeEpic', signal_class=EpicsSignal,
-                                  include_prefix=True, num_signals=10,
-                                  subdevice_layers=10, subdevice_spread=10)
+# Define matrix of testing parameters
+Shape = namedtuple('Shape', ['num_signals', 'subdevice_layers',
+                             'subdevice_spread'])
+SHAPES = dict(flat=Shape(1000, 1, 1),
+              deep=Shape(1, 1000, 1),
+              wide=Shape(1, 1, 1000),
+              cube=Shape(10, 10, 10))
 
-benchmark_registry = {}
+Test = namedtuple('Test', ['signal_class', 'include_prefix', 'start_ioc'])
+TESTS = dict(soft=Test(Signal, False, False),
+             connect=Test(EpicsSignal, True, True),
+             noconnect=Test(EpicsSignal, True, False))
 
-
-def run_benchmarks(benchmarks):
-    if not benchmarks:
-        for test in benchmark_registry.values():
-            test()
-    else:
-        for benchmark in benchmarks:
-            test = benchmark_registry[benchmark]
-            test()
-
-
-def register_benchmark(benchmark):
-    global benchmark_registry
-    benchmark_registry[benchmark.__name__] = benchmark
-    return benchmark
 
 
 def run_caproto_ioc(device_class, prefix):
@@ -131,24 +103,54 @@ def random_prefix():
     return str(uuid.uuid4())[:8] + ':'
 
 
-@register_benchmark
-def test_flat_soft(auto_exit=True):
-    """Launch typhos using a flat device with no EPICS connections."""
-    launch_from_devices([FlatSoft('TEST:', name='test')],
-                        auto_exit=auto_exit)
+@contextmanager
+def nullcontext():
+    """Stand-in for py3.7's contextlib.nullcontext"""
+    yield
 
 
-@register_benchmark
-def test_flat_epics_no_connect(auto_exit=True):
-    """Launch typhos using a flat device with failed EPICS connections."""
-    launch_from_devices([FlatEpic('TEST:', name='test')],
-                        auto_exit=auto_exit)
-
-
-@register_benchmark
-def test_flat_epics_caproto(auto_exit=True):
-    """Launch typhos using a flat device backed by caproto."""
+def generic_benchmark(cls, start_ioc, auto_exit=True):
+    """Catch-all for simple benchmarks"""
     prefix = random_prefix()
-    with caproto_context(FlatEpic, prefix):
-        launch_from_devices([FlatEpic(prefix, name='test')],
+    if start_ioc:
+        context = caproto_context(cls, prefix)
+    else:
+        context = nullcontext()
+    with context:
+        launch_from_devices([cls(prefix, name='test')],
                             auto_exit=auto_exit)
+
+
+def make_tests():
+    """Returns all test classes and their associated tests."""
+    classes = {}
+    tests = {}
+    for shape_name, shape in SHAPES.items():
+        for test_name, test in TESTS.items():
+            cls_name = shape_name.title() + test_name.title()
+            cls = make_cls(name=cls_name,
+                           signal_class=test.signal_class,
+                           include_prefix=test.include_prefix,
+                           num_signals=shape.num_signals,
+                           subdevice_layers=shape.subdevice_layers,
+                           subdevice_spread=shape.subdevice_spread)
+            classes[cls_name] = cls
+
+            full_test_name = shape_name + '_' + test_name
+            test = partial(generic_benchmark, cls, test.start_ioc)
+            tests[full_test_name] = test
+
+    return classes, tests
+
+
+benchmark_classes, benchmark_tests = make_tests()
+
+
+def run_benchmarks(benchmarks):
+    if not benchmarks:
+        for test in benchmark_tests.values():
+            test()
+    else:
+        for benchmark in benchmarks:
+            test = benchmark_tests[benchmark]
+            test()
