@@ -17,10 +17,29 @@ from ..cli import launch_from_devices
 
 # Create the test classes
 FlatSoft = make_test_device_class(name='FlatSoft', signal_class=Signal,
-                                  include_prefix=False, num_signals=100)
-FlatEpics = make_test_device_class(name='FlatEpics', signal_class=EpicsSignal,
-                                   include_prefix=True, num_signals=100)
-
+                                  include_prefix=False, num_signals=1000)
+                                  subdevice_layers=1, subdevice_spread=1)
+FlatEpic = make_test_device_class(name='FlatEpic', signal_class=EpicsSignal,
+                                  include_prefix=True, num_signals=1000)
+                                  subdevice_layers=1, subdevice_spread=1)
+WideSoft = make_test_device_class(name='WideSoft', signal_class=Signal,
+                                  include_prefix=False, num_signals=1,
+                                  subdevice_layers=1, subdevice_spread=1000)
+WideEpic = make_test_device_class(name='WideEpics', signal_class=EpicsSignal,
+                                  include_prefix=True, num_signals=1,
+                                  subdevice_layers=1, subdevice_spread=1000)
+DeepSoft = make_test_device_class(name='DeepSoft', signal_class=Signal,
+                                  include_prefix=False, num_signals=1,
+                                  subdevice_layers=1000, subdevice_spread=1)
+DeepEpic = make_test_device_class(name='DeepEpic', signal_class=EpicsSignal,
+                                  include_prefix=True, num_signals=1,
+                                  subdevice_layers=1000, subdevice_spread=1)
+CubeSoft = make_test_device_class(name='CubeSoft', signal_class=Signal,
+                                  include_prefix=False, num_signals=10,
+                                  subdevice_layers=10, subdevice_spread=10)
+CubeEpic = make_test_device_class(name='CubeEpic', signal_class=EpicsSignal,
+                                  include_prefix=True, num_signals=10,
+                                  subdevice_layers=10, subdevice_spread=10)
 
 benchmark_registry = {}
 
