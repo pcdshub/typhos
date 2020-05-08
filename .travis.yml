@@ -56,9 +56,9 @@ before_script:
 script:
   - |
     if [[ "$BENCHMARK" == "1" ]]; then
-      coverage run run_tests.py --show-capture=no --benchmark-enable
+      coverage run run_tests.py --show-capture=no --benchmark-only
     else
-      coverage run run_tests.py --show-capture=no --benchmark-skip
+      coverage run run_tests.py --show-capture=no
   - coverage report -m
 
   # Build docs
