@@ -14,4 +14,4 @@ def test_benchmark(test_function, benchmark):
 
     These typically just open and close a particular typhos screen.
     """
-    benchmark(benchmark_registry[test_function])
+    benchmark(benchmark_tests[test_function])
