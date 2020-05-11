@@ -18,10 +18,11 @@ from ..utils import nullcontext
 # Define matrix of testing parameters
 Shape = namedtuple('Shape', ['num_signals', 'subdevice_layers',
                              'subdevice_spread'])
-SHAPES = dict(flat=Shape(1000, 1, 1),
-              deep=Shape(1, 1000, 1),
-              wide=Shape(1, 1, 1000),
-              cube=Shape(10, 10, 10))
+# total_signals == num_signals * (subdevice_spread ** subdevice_layers)
+SHAPES = dict(flat=Shape(100, 1, 1),
+              deep=Shape(100, 100, 1),
+              wide=Shape(1, 1, 100),
+              cube=Shape(4, 2, 5))
 
 Test = namedtuple('Test', ['signal_class', 'include_prefix', 'start_ioc'])
 TESTS = dict(soft=Test(Signal, False, False),
