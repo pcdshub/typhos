@@ -39,6 +39,5 @@ def launch_from_devices(devices, auto_exit=False):
     app = get_qapp()
     suite = TyphosSuite.from_devices(devices)
     if auto_exit:
-        timer = QTimer(suite)
-        timer.singleShot(0, app.exit)
+        QTimer.singleShot(0, app.exit)
     return launch_suite(suite)
