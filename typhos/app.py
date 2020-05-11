@@ -14,8 +14,12 @@ def get_qapp():
     """Returns the global QApplication, creating it if necessary."""
     global qapp
     if qapp is None:
-        logger.debug("Creating QApplication ...")
-        qapp = QApplication([])
+        if QApplication.instance() is None:
+            logger.debug("Creating QApplication ...")
+            qapp = QApplication([])
+        else:
+            logger.debug("Using existing QApplication")
+            qapp = QApplication.instance()
     return qapp
 
 
