@@ -108,20 +108,27 @@ def is_native(obj, module):
 
 
 def get_native_functions(module):
-    """Returns all functions and methods defined in module."""
+    """Returns a set of all functions and methods defined in module."""
     return get_native_methods(module, module)
 
 
-def get_native_methods(cls, module):
-    """Returns all methods defined in cls that belong to module."""
-    native_methods = []
+def get_native_methods(cls, module, *, native_methods=None, seen=None):
+    """Returns a set of all methods defined in cls that belong to module."""
+    if native_methods is None:
+        native_methods = set()
+    if seen is None:
+        seen = set()
     for obj in cls.__dict__.values():
-        if isclass(obj):
-            inner_methods = get_native_methods(obj, module)
-            native_methods.extend(inner_methods)
+        if obj in seen:
+            continue
+        seen.add(obj)
+        if not is_native(obj, module):
+            continue
+        elif isclass(obj):
+            get_native_methods(obj, module, native_methods=native_methods,
+                               seen=seen)
         elif isfunction(obj):
-            if is_native(obj, module):
-                native_methods.append(obj)
+            native_methods.add(obj)
     return native_methods
 
 
