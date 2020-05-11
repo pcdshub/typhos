@@ -15,6 +15,8 @@ from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
 from .utils import TyphosBase, clean_name, flatten_tree, save_suite
 
 logger = logging.getLogger(__name__)
+# Use non-None sentinel value since None means no tools
+DEFAULT_TOOLS = object()
 
 
 class SidebarParameter(ptypes.Parameter):
@@ -380,7 +382,7 @@ class TyphosSuite(TyphosBase):
                                  device.name, type(tool))
 
     @classmethod
-    def from_device(cls, device, parent=None, tools=dict(), pin=False,
+    def from_device(cls, device, parent=None, tools=DEFAULT_TOOLS, pin=False,
                     **kwargs):
         """
         Create a new TyphosSuite from an :class:`ophyd.Device`
@@ -406,7 +408,7 @@ class TyphosSuite(TyphosBase):
                                 **kwargs)
 
     @classmethod
-    def from_devices(cls, devices, parent=None, tools=dict(), pin=False,
+    def from_devices(cls, devices, parent=None, tools=DEFAULT_TOOLS, pin=False,
                      **kwargs):
         """
         Create a new TyphosSuite from an iterator of :class:`ophyd.Device`
@@ -431,7 +433,7 @@ class TyphosSuite(TyphosBase):
         suite = cls(parent=parent, pin=pin)
         if tools is not None:
             logger.info("Loading Tools ...")
-            if not tools:
+            if tools is DEFAULT_TOOLS:
                 logger.debug("Using default TyphosSuite tools ...")
                 tools = cls.default_tools
             for name, tool in tools.items():
