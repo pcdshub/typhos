@@ -33,12 +33,9 @@ def get_profiler():
 
 
 @contextmanager
-def profiler_context(module_names=[], filename=None):
+def profiler_context(module_names=None, filename=None):
     """Context manager for profiling the cli typhos application."""
-    if not module_names:
-        setup_profiler()
-    else:
-        setup_profiler(module_names)
+    setup_profiler(module_names=module_names)
 
     toggle_profiler(True)
     yield
@@ -50,7 +47,7 @@ def profiler_context(module_names=[], filename=None):
         save_results(filename)
 
 
-def setup_profiler(module_names=['typhos']):
+def setup_profiler(module_names=None):
     """
     Sets up the global profiler.
 
@@ -59,6 +56,9 @@ def setup_profiler(module_names=['typhos']):
     limit the scope by passing a particular submodule,
     e.g. module_names=['typhos.display']
     """
+    if module_names is None:
+        module_names = ['typhos']
+
     profiler = get_profiler()
 
     functions = set()

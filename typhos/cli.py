@@ -196,8 +196,11 @@ def typhos_cli(args):
 
     if any((args.profile_modules is not None, args.profile_output,
             args.benchmark is not None)):
-        context = profiler_context(module_names=args.profile_modules,
-                                   filename=args.profile_output)
+        if args.profile_modules:
+            context = profiler_context(module_names=args.profile_modules,
+                                       filename=args.profile_output)
+        else:
+            context = profiler_context(filename=args.profile_output)
     else:
         context = nullcontext()
 
