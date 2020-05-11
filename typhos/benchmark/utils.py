@@ -128,7 +128,11 @@ def get_native_methods(cls, module, *, native_methods=None, seen=None):
     if seen is None:
         seen = set()
     for obj in cls.__dict__.values():
-        if obj in seen:
+        try:
+            if obj in seen:
+                continue
+        except TypeError:
+            # Unhashable type, definitely not a class or function
             continue
         seen.add(obj)
         if not is_native(obj, module):
