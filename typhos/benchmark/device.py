@@ -9,7 +9,8 @@ Note that this currently only supports devices with uniform signals.
 In the future it can be expanded to have Kind information, different
 data types to test different widget types, etc.
 """
-from ophyd.device import Device, Component as Cpt
+from ophyd.device import (Component as Cpt,
+                          create_device_from_components as create_device)
 from ophyd.signal import Signal
 
 
@@ -64,7 +65,7 @@ def make_test_device_class(name='TestClass', signal_class=Signal,
             sig_cpt = Cpt(signal_class)
         signals[f'signum{nsig}'] = sig_cpt
 
-    SignalHolder = type('SignalHolder', (Device,), signals)
+    SignalHolder = create_device('SignalHolder', **signals)
 
     if all((subdevice_layers > 0, subdevice_spread > 0)):
         PrevClass = SignalHolder
@@ -72,10 +73,10 @@ def make_test_device_class(name='TestClass', signal_class=Signal,
             subdevices = {}
             for ndev in range(subdevice_spread):
                 subdevices[f'devnum{ndev}'] = Cpt(PrevClass, f'PREFIX{ndev}:')
-            ThisClass = type(f'Layer{subdevice_layers}', (Device,), subdevices)
+            ThisClass = create_device(f'Layer{subdevice_layers}', **subdevices)
             PrevClass = ThisClass
             subdevice_layers -= 1
     else:
         ThisClass = SignalHolder
 
-    return type(name, (ThisClass,), {})
+    return create_device(name, base_class=ThisClass)
