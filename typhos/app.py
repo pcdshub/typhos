@@ -25,7 +25,7 @@ def launch_suite(suite):
     window.setCentralWidget(suite)
     window.show()
     logger.info("Launching application ...")
-    QApplication.instance().exec_()
+    get_qapp().exec_()
     logger.info("Execution complete!")
     return window
 
