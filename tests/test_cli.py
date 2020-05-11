@@ -3,7 +3,8 @@ import os
 import pytest
 
 import typhos
-from typhos.cli import QApplication, typhos_cli
+from typhos.app import QApplication
+from typhos.cli import typhos_cli
 
 from . import conftest
 
