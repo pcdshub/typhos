@@ -38,8 +38,8 @@ def generic_benchmark(cls, start_ioc, auto_exit=True):
     else:
         context = nullcontext()
     with context:
-        launch_from_devices([cls(prefix, name='test')],
-                            auto_exit=auto_exit)
+        return launch_from_devices([cls(prefix, name='test')],
+                                   auto_exit=auto_exit)
 
 
 def make_tests():
