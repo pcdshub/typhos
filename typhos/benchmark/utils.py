@@ -103,8 +103,17 @@ def random_prefix():
 
 
 def is_native(obj, module):
-    """Returns True if obj was defined in module."""
-    return module.__name__ in obj.__module__
+    """
+    Determines if obj was defined in module.
+
+    Returns True if obj was defined in this module.
+    Returns False if obj was not defined in this module.
+    Returns None if we can't figure it out, e.g. if this is a primitive type.
+    """
+    try:
+        return module.__name__ in obj.__module__
+    except AttributeError:
+        return None
 
 
 def get_native_functions(module):
