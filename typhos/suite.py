@@ -389,19 +389,19 @@ class TyphosSuite(TyphosBase):
 
         Parameters
         ----------
-        device: ophyd.Device
+        device : ophyd.Device
 
-        children: bool, optional
+        children : bool, optional
             Choice to include child Device components
 
-        parent: QWidgets
+        parent : QWidget
 
-        tools: dict, optional
+        tools : dict, optional
             Tools to load for the object. ``dict`` should be name, class pairs.
             By default these will be ``.default_tools``, but ``None`` can be
             passed to avoid tool loading completely.
 
-        kwargs:
+        **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
         return cls.from_devices([device], parent=parent, tools=tools, pin=pin,
@@ -415,19 +415,19 @@ class TyphosSuite(TyphosBase):
 
         Parameters
         ----------
-        device: ophyd.Device
+        device : ophyd.Device
 
-        children: bool, optional
+        children : bool, optional
             Choice to include child Device components
 
-        parent: QWidgets
+        parent : QWidget
 
-        tools: dict, optional
+        tools : dict, optional
             Tools to load for the object. ``dict`` should be name, class pairs.
             By default these will be ``.default_tools``, but ``None`` can be
             passed to avoid tool loading completely.
 
-        kwargs:
+        **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
         suite = cls(parent=parent, pin=pin)
