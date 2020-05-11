@@ -4,7 +4,7 @@ Module using line_profiler to measure code performance and diagnose slowdowns.
 import logging
 from contextlib import contextmanager
 
-from .utils import get_native_functions
+from .utils import get_native_functions, get_submodules
 
 logger = logging.getLogger(__name__)
 
