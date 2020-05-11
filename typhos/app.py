@@ -9,6 +9,7 @@ from .suite import TyphosSuite
 logger = logging.getLogger(__name__)
 qapp = None
 
+
 def get_qapp():
     """Returns the global QApplication, creating it if necessary."""
     global qapp

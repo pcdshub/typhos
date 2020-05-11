@@ -108,11 +108,12 @@ def _create_happi_client(cfg):
 def create_suite(device_names, cfg=None, fake_devices=False):
     """Create a TyphosSuite from a list of device names."""
     if device_names:
-        devices = create_devices(device_names, cfg=cfg, fake_devices=fake_devices)
+        devices = create_devices(device_names, cfg=cfg,
+                                 fake_devices=fake_devices)
     else:
         devices = []
     if devices or not device_names:
-       return typhos.TyphosSuite.from_devices(devices)
+        return typhos.TyphosSuite.from_devices(devices)
 
 
 def create_devices(device_names, cfg=None, fake_devices=False):
@@ -177,7 +178,6 @@ def create_devices(device_names, cfg=None, fake_devices=False):
     return devices
 
 
-
 def typhos_run(device_names, cfg=None, fake_devices=False):
     """Run the central typhos part of typhos."""
     with typhos.utils.no_device_lazy_load():
@@ -208,7 +208,7 @@ def typhos_cli(args):
             suite = None
         else:
             suite = typhos_run(args.devices, cfg=args.happi_cfg,
-                                fake_devices=args.fake_device)
+                               fake_devices=args.fake_device)
         return suite
 
 
