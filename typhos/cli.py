@@ -7,8 +7,6 @@ import re
 import sys
 
 import coloredlogs
-from qtpy.QtCore import QTimer
-from qtpy.QtWidgets import QApplication, QMainWindow
 
 import pcdsutils
 import typhos
