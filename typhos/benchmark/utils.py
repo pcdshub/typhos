@@ -66,7 +66,7 @@ def yield_all_suffixes(device_class):
 
 def get_suffix(walk):
     """
-    Returns the full pvname suffix from a ComponentWalk instance
+    Returns the full pvname suffix from a ComponentWalk instance.
 
     This means everything after the top-level device's prefix.
     Assumes that walk is an :class:`ophyd.signal.EpicsSignalBase`
