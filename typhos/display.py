@@ -495,11 +495,30 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     Parameters
     ----------
-    name: str, optional
-        Name to displayed at the top of the panel
+    parent: QWidget, optional
+        The parent widget.
 
-    image: str, optional
-        Path to image file to displayed at the header
+    scrollable: bool, optional
+        If ``True``, put the loaded template into a :class:`QScrollArea`.
+        Otherwise, the display widget will go directly in this widget's layout.
+
+    composite_heuristics : bool, optional
+        Enable composite heuristics, which may change the suggested detailed
+        screen based on the contents of the added device.  See also
+        :meth:`.suggest_composite_screen`.
+
+    embedded_templates : list, optional
+        List of embedded templates to use in addition to those found on disk.
+
+    detailed_templates : list, optional
+        List of detailed templates to use in addition to those found on disk.
+
+    engineering_templates : list, optional
+        List of engineering templates to use in addition to those found on
+        disk.
+
+    display_type : DisplayTypes, optional
+        The default display type.
 
     parent: QWidget, optional
     """

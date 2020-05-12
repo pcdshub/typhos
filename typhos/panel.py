@@ -650,7 +650,7 @@ class CompositeSignalPanel(SignalPanel):
         """
         logger.debug('%s adding sub-device: %s (%s)', self.__class__.__name__,
                      device.name, device.__class__.__name__)
-        container = display.TyphosDeviceDisplay(name=name, scrollable=False,
+        container = display.TyphosDeviceDisplay(scrollable=False,
                                                 composite_heuristics=True,
                                                 nested=True)
         self._containers[name] = container
