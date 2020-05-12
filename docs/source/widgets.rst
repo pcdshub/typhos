@@ -7,7 +7,7 @@ need if a user opts to create their display by hand instead of automatically
 generating one. If you would just like a widget for an ``ophyd.Signal``, there
 is a function available:
 
-.. autofunction:: typhos.panel.signal_widget
+.. autofunction:: typhos.widgets.create_signal_widget
 
 Panels
 ======
@@ -19,8 +19,25 @@ hides and shows the contents. Each variation in Typhos is documented below.
 .. autosummary::
    :toctree: generated
 
-   typhos.panel.SignalPanel
-   typhos.func.FunctionPanel
+
+Basic Signal Panels
+===================
+
+.. autoclass:: typhos.panel.SignalPanel
+   :members:
+
+.. autoclass:: typhos.panel.CompositeSignalPanel
+   :members:
+
+
+Composite Signal Panels
+=======================
+
+.. autoclass:: typhos.panel.CompositeSignalPanel
+   :members:
+
+.. autoclass:: typhos.panel.TyphosCompositeSignalPanel
+   :members:
 
 
 TyphosPositionerWidget
@@ -30,7 +47,11 @@ TyphosPositionerWidget
    :members:
 
 
-TyphosMethodButton
-==================
+Functions and Methods
+=====================
+
+.. autoclass:: typhos.func.FunctionPanel
+    :members:
+
 .. autoclass:: typhos.TyphosMethodButton
    :members:

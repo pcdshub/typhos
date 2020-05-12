@@ -583,7 +583,7 @@ def is_fake_device_class(cls):
 
 def code_from_device_repr(device):
     """
-    Return code to create a device from its :builtin:`repr` information
+    Return code to create a device from its ``repr`` information.
 
     Parameters
     ----------

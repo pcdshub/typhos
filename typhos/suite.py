@@ -211,7 +211,15 @@ class TyphosSuite(TyphosBase):
 
     @property
     def top_level_groups(self):
-        """Get top-level groups as in ``{name: QGroupParameterItem}``."""
+        """
+        Get top-level groups.
+
+        This is of the form:
+
+        .. code:: python
+
+            {'name': QGroupParameterItem}
+        """
         root = self._tree.invisibleRootItem()
         return dict((root.child(idx).param.name(),
                      root.child(idx).param)
