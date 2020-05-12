@@ -1,3 +1,15 @@
+"""
+Layouts and container widgets that show a "panel" of signals.
+
+Layouts:
+    * :class:`SignalPanel`
+    * :class:`CompositeSignalPanel`
+
+Container widgets:
+    * :class:`TyphosSignalPanel`
+    * :class:`TyphosCompositeSignalPanel`
+"""
+
 import functools
 import logging
 from functools import partial
@@ -18,7 +30,14 @@ logger = logging.getLogger(__name__)
 
 
 class SignalOrder:
-    """Option to sort signals"""
+    """
+    Options for sorting signals.
+
+    This can be used as a base class for subclasses of
+    :class:`QtWidgets.QWidget`, allowing this to be used in
+    :class:`QtCore.Property` and therefore in the Qt designer.
+    """
+
     byKind = 0
     byName = 1
 
@@ -34,6 +53,7 @@ def _get_component_sorter(signal_order, *, kind_order=None):
     ----------
     signal_order : SignalOrder
         Order for signals
+
     kind_order : list, optional
         Order for Kinds, defaulting to ``DEFAULT_KIND_ORDER``.
     """
@@ -64,14 +84,39 @@ class SignalPanelRowLabel(QtWidgets.QLabel):
 
 class SignalPanel(QtWidgets.QGridLayout):
     """
-    Base panel display for EPICS signals
+    Basic panel layout for :class:`ophyd.Signal` and other ophyd objects.
+
+    This panel does not support hierarchical display of signals; rather, it
+    flattens a device hierarchy showing all signals in the same area.
 
     Parameters
     ----------
     signals : OrderedDict, optional
         Signals to include in the panel
         Parent of panel
+
+    Attributes
+    ----------
+    loading_complete : QtCore.Signal
+        A signal indicating that loading of the panel has completed.
+
+    NUM_COLS : int
+        The number of columns in the layout.
+
+    COL_LABEL  : int
+        The column number for the row label.
+
+    COL_READBACK : int
+        The column number for the readback widget.
+
+    COL_SETPOINT : int
+        The column number for the setpoint widget.
+
+    See also
+    --------
+    :class:`CompositeSignalPanel`
     """
+
     NUM_COLS = 3
     COL_LABEL = 0
     COL_READBACK = 1
@@ -99,7 +144,14 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     @property
     def signals(self):
-        """Return all instantiated signals, omitting components."""
+        """
+        Get all instantiated signals, omitting components.
+
+        Returns
+        -------
+        signals : dict
+            With the form: ``{signal_name: signal}``
+        """
         return {
             name: info['signal']
             for name, info in self.signal_name_to_info.items()
@@ -108,28 +160,40 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     @property
     def visible_signals(self):
-        """Return all visible signals, omitting components."""
+        """
+        Get all signals visible according to filters, omitting components.
+
+        Returns
+        -------
+        signals : dict
+            With the form: ``{signal_name: signal}``
+        """
         return {
             name: info['signal']
             for name, info in self.signal_name_to_info.items()
             if info['signal'] is not None and info['visible']
         }
 
-    @property
-    def visible_elements(self):
-        """Return all visible signals and components"""
-        return self.visible_signals
+    visible_elements = visible_signals
 
     @property
     def row_count(self):
-        """
-        The number of filled-in rows
-        """
+        """Get the number of filled-in rows."""
         return self._row_count
 
     @QtCore.Slot(object, SignalWidgetInfo)
     def _got_signal_widget_info(self, obj, info):
-        """Received information on how to make widgets for ``obj``"""
+        """
+        Slot: Received information on how to make widgets for ``obj``.
+
+        Parameters
+        ----------
+        obj : ophyd.OphydObj
+            The object that corresponds to the given widget information.
+
+        info : SignalWidgetInfo
+            The associated widget information.
+        """
         try:
             sig_info = self.signal_name_to_info[obj.name]
         except KeyError:
@@ -170,7 +234,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             self.loading_complete.emit(list(self.signal_name_to_info))
 
     def _create_row_label(self, attr, dotted_name, tooltip):
-        """Create a row label (i.e., the one in column 0)."""
+        """Create a row label (i.e., the one used to display the name)."""
         label_text = self.label_text_from_attribute(attr, dotted_name)
         label = SignalPanelRowLabel(label_text)
         label.setObjectName(dotted_name)
@@ -180,18 +244,24 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     def add_signal(self, signal, name=None, *, tooltip=None):
         """
-        Add a signal to the panel
+        Add a signal to the panel.
 
         The type of widget control that is drawn is dependent on
         :attr:`_read_pv`, and :attr:`_write_pv`. attributes.
+
+        If widget information for the given signal is available in the global
+        cache, the widgets will be created immediately.  Otherwise, a row will
+        be reserved and widgets created upon signal connection and background
+        description callback.
 
         Parameters
         ----------
         signal : EpicsSignal, EpicsSignalRO
             Signal to create a widget
 
-        name : str
-            Name of signal to display
+        name : str, optional
+            The name to be used for the row label.  This defaults to
+            ``signal.name``.
 
         Returns
         -------
@@ -220,9 +290,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         return row
 
     def _connect_signal(self, signal):
-        """
-        Instantiate widgets for the given signal using `_GlobalWidgetTypeCache`
-        """
+        """Instantiate widgets for the given signal using the global cache."""
         monitor = get_global_widget_type_cache()
         item = monitor.get(signal)
         if item is not None:
@@ -230,7 +298,23 @@ class SignalPanel(QtWidgets.QGridLayout):
         # else: - this will happen during a callback
 
     def _add_component(self, device, attr, dotted_name, component):
-        """Add a component which could be instantiated"""
+        """
+        Add a component which may be instantiated later.
+
+        Parameters
+        ----------
+        device : ophyd.Device
+            The parent device for the component.
+
+        attr : str
+            The attribute name of the component.
+
+        dotted_name : str
+            The full dotted name of the component.
+
+        component : ophyd.Component
+            The component itself.
+        """
         if dotted_name in self.signal_name_to_info:
             return
 
@@ -251,13 +335,18 @@ class SignalPanel(QtWidgets.QGridLayout):
         return row
 
     def label_text_from_attribute(self, attr, dotted_name):
-        """Get label text for a given attribute."""
-        # For a basic signal panel, use the full dotted name.
+        """
+        Get label text for a given attribute.
+
+        For a basic signal panel, use the full dotted name.  This is because
+        this panel flattens the device hierarchy, and using only the last
+        attribute name may lead to ambiguity or name clashes.
+        """
         return dotted_name
 
     def add_row(self, *widgets, **kwargs):
         """
-        Add ``widgets`` to the next row
+        Add ``widgets`` to the next row.
 
         If fewer than ``NUM_COLS`` widgets are given, the last widget will be
         adjusted automatically to span the remaining columns.
@@ -265,12 +354,12 @@ class SignalPanel(QtWidgets.QGridLayout):
         Parameters
         ----------
         *widgets
-            List of :class:`QtWidgets.QWidget`
+            List of :class:`QtWidgets.QWidget`.
 
         Returns
         -------
         row : int
-            The row number
+            The row number.
         """
         row = self._row_count
         self._row_count += 1
@@ -282,7 +371,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     def _update_row(self, row, widgets, **kwargs):
         """
-        Update ``row`` to contain ``widgets``
+        Update ``row`` to contain ``widgets``.
 
         If fewer widgets than ``NUM_COLS`` are given, the last widget will be
         adjusted automatically to span the remaining columns.
@@ -291,10 +380,12 @@ class SignalPanel(QtWidgets.QGridLayout):
         ----------
         row : int
             The row number
+
         widgets : list of :class:`QtWidgets.QWidget`
             If ``None`` is found, the cell will be skipped.
+
         **kwargs
-            Passed into ``addWidget``
+            Passed into ``addWidget``.
         """
         for col, item in enumerate(widgets[:-1]):
             if item is not None:
@@ -309,16 +400,18 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     def add_pv(self, read_pv, name, write_pv=None):
         """
-        Add PVs to the SignalPanel
+        Add a row, given PV names.
 
         Parameters
         ---------
         read_pv : str
-            The readback PV name
+            The readback PV name.
+
         name : str
-            Name of signal to display
+            Name of signal to display.
+
         write_pv : str, optional
-            The setpoint PV name
+            The setpoint PV name.
 
         Returns
         -------
@@ -337,7 +430,15 @@ class SignalPanel(QtWidgets.QGridLayout):
     @staticmethod
     def _apply_name_filter(filter_by, *items):
         """
-        Apply the name filter
+        Apply the name filter.
+
+        Parameters
+        ----------
+        filter_by : str
+            The name filter text.
+
+        *items
+            A list of strings to check for matches with.
         """
         if not filter_by:
             return True
@@ -346,14 +447,42 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     def _should_show(self, kind, name, *, kinds, name_filter):
         """
-        Based on the current filter settings, should ``signal`` be shown?
+        Based on the filter settings, indicate if ``signal`` should be shown.
+
+        Parameters
+        ----------
+        kind : ophyd.Kind
+            The kind of the signal.
+
+        name : str
+            The name of the signal.
+
+        kinds : list of :class:`ophyd.Kind`
+            Kinds that should be shown.
+
+        name_filter : str
+            Name filter text.
+
+        Returns
+        -------
+        should_show : bool
         """
         if kind not in kinds:
             return False
         return self._apply_name_filter(name_filter, name)
 
     def _set_visible(self, signal_name, visible):
-        """Change the visibility of ``signal_name`` to ``visible``."""
+        """
+        Change the visibility of ``signal_name`` to ``visible``.
+
+        Parameters
+        ----------
+        signal_name : str
+            The signal name to change the visibility of.
+
+        visible : bool
+            Change the visibility of the row to this.
+        """
         info = self.signal_name_to_info[signal_name]
         info['visible'] = bool(visible)
         row = info['row']
@@ -392,7 +521,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     def filter_signals(self, kinds, name_filter=None):
         """
-        Filter signals based on the given kinds
+        Filter signals based on the given kinds.
 
         Parameters
         ----------
@@ -412,7 +541,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     @property
     def _filter_settings(self):
-        """Current filter settings from the owner widget."""
+        """Get the current filter settings from the owner widget."""
         return self.parent().filter_settings
 
     def add_device(self, device):
@@ -435,8 +564,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     def _maybe_add_signal(self, device, attr, dotted_name, component):
         """
-        Based on the current filter settings, add either the signal or a
-        component stub.
+        With the filter settings, add either the signal or a component stub.
 
         If the component does not match the current filter settings, a
         stub will be added that can be filled in later should the filter
@@ -449,10 +577,13 @@ class SignalPanel(QtWidgets.QGridLayout):
         ----------
         device : ophyd.Device
             The device owner
+
         attr : str
             The signal's attribute name
+
         dotted_name : str
             The signal's dotted name
+
         component : ophyd.Component
             The component class used to generate the instance
         """
@@ -481,7 +612,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         return self._add_component(device, attr, dotted_name, component)
 
     def clear(self):
-        """Clear the SignalPanel"""
+        """Clear the SignalPanel."""
         logger.debug("Clearing layout %r ...", self)
         utils.clear_layout(self)
         self._devices.clear()
@@ -490,8 +621,17 @@ class SignalPanel(QtWidgets.QGridLayout):
 
 class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     """
-    Panel of Signals for Device
+    Panel of Signals for a given device, using :class:`SignalPanel`.
+
+    Parameters
+    ----------
+    parent : QtWidgets.QWidget, optional
+        The parent widget.
+
+    init_channel : str, optional
+        The PyDM channel with which to initialize the widget.
     """
+
     Q_ENUMS(SignalOrder)  # Necessary for display in Designer
     SignalOrder = SignalOrder  # For convenience
     # From top of page to bottom
@@ -548,7 +688,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
     @property
     def show_kinds(self):
-        """A list of the :class:`ophyd.Kind` that should be shown."""
+        """Get a list of the :class:`ophyd.Kind` that should be shown."""
         return [kind for kind in Kind if self._kinds[kind.name]]
 
     # Kind Configuration pyqtProperty
@@ -569,8 +709,9 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
                            partial(_set_kind, kind='omitted'),
                            doc='Show ophyd.Kind.omitted signals')
 
-    @Property(str, doc='Filter signals by name')
+    @Property(str)
     def nameFilter(self):
+        """Get or set the current name filter."""
         return self._name_filter
 
     @nameFilter.setter
@@ -581,7 +722,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
     @Property(SignalOrder)
     def sortBy(self):
-        """Order signals will be placed in layout"""
+        """Get or set the order that the signals will be placed in layout."""
         return self._signal_order
 
     @sortBy.setter
@@ -617,7 +758,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
     def open_context_menu(self, ev):
         """
-        Handler for when the Default Context Menu is requested.
+        Open a context menu when the Default Context Menu is requested.
 
         Parameters
         ----------
@@ -628,6 +769,31 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
 
 class CompositeSignalPanel(SignalPanel):
+    """
+    Composite panel layout for :class:`ophyd.Signal` and other ophyd objects.
+
+    Contrasted to :class:`SignalPanel`, this class retains the hierarchy built
+    into an :class:`ophyd.Device` hierarchy.  Individual signals mix in with
+    sub-device displays, which may or may not have custom screens.
+
+    Attributes
+    ----------
+    loading_complete : QtCore.Signal
+        A signal indicating that loading of the panel has completed.
+
+    NUM_COLS : int
+        The number of columns in the layout.
+
+    COL_LABEL  : int
+        The column number for the row label.
+
+    COL_READBACK : int
+        The column number for the readback widget.
+
+    COL_SETPOINT : int
+        The column number for the setpoint widget.
+    """
+
     def __init__(self):
         super().__init__(signals=None)
         self._containers = {}
@@ -676,7 +842,7 @@ class CompositeSignalPanel(SignalPanel):
 
     @property
     def visible_elements(self):
-        """Return all visible signals and components"""
+        """Return all visible signals and components."""
         sigs = self.visible_signals
         containers = {
             name: cont
@@ -687,4 +853,16 @@ class CompositeSignalPanel(SignalPanel):
 
 
 class TyphosCompositeSignalPanel(TyphosSignalPanel):
+    """
+    Hierarchical panel for a device, using :class:`CompositeSignalPanel`.
+
+    Parameters
+    ----------
+    parent : QtWidgets.QWidget, optional
+        The parent widget.
+
+    init_channel : str, optional
+        The PyDM channel with which to initialize the widget.
+    """
+
     _panel_class = CompositeSignalPanel
