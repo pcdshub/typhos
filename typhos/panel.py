@@ -52,6 +52,16 @@ def _get_component_sorter(signal_order, *, kind_order=None):
             }.get(signal_order, name_sorter)
 
 
+class SignalPanelRowLabel(QtWidgets.QLabel):
+    """
+    A row label for a signal panel.
+
+    This subclass does not contain any special functionality currently, but
+    remains a special class for ease of stylesheet configuration and label
+    disambiguation.
+    """
+
+
 class SignalPanel(QtWidgets.QGridLayout):
     """
     Base panel display for EPICS signals
@@ -162,7 +172,7 @@ class SignalPanel(QtWidgets.QGridLayout):
     def _create_row_label(self, attr, dotted_name, tooltip):
         """Create a row label (i.e., the one in column 0)."""
         label_text = self.label_text_from_attribute(attr, dotted_name)
-        label = QtWidgets.QLabel(label_text)
+        label = SignalPanelRowLabel(label_text)
         label.setObjectName(dotted_name + '_row_label')
         if tooltip is not None:
             label.setToolTip(tooltip)

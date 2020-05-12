@@ -371,14 +371,6 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 class TyphosTitleLabel(QtWidgets.QLabel):
     toggle_requested = QtCore.Signal()
 
-    def __init__(self, text):
-        super().__init__(text)
-
-        font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.TitleFont)
-        font.setPointSizeF(14.0)
-        font.setBold(True)
-        self.setFont(font)
-
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.toggle_requested.emit()

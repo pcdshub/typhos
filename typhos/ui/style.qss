@@ -65,8 +65,13 @@ TyphosBase TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
     border: 2px solid red;
 }
 
+SignalPanelRowLabel {
+    font: 12px sans-serif;
+}
+
 TyphosTitleLabel {
     border: none;
+    font: 16px bold serif;
 }
 
 TyphosTitleLabel:hover {
