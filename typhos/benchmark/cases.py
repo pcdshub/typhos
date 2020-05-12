@@ -12,6 +12,7 @@ from ophyd.signal import Signal, EpicsSignal
 from .device import make_test_device_class as make_cls
 from .utils import caproto_context, random_prefix
 from ..app import launch_from_devices
+from ..suite import TyphosSuite
 from ..utils import nullcontext
 
 
@@ -30,22 +31,47 @@ TESTS = dict(soft=Test(Signal, False, False),
              noconnect=Test(EpicsSignal, True, False))
 
 
-def generic_benchmark(cls, start_ioc, auto_exit=True):
-    """Catch-all for simple benchmarks"""
+def profiler_benchmark(cls, start_ioc, auto_exit=True):
+    """
+    Catch-all for simple profiler benchmarks.
+
+    This handles the case where we want to do interactive diagnosis with the
+    profiler and launch a screen.
+    """
     prefix = random_prefix()
+    with benchmark_context(start_ioc, prefix):
+        return launch_from_devices([cls(prefix, name='test')],
+                                   auto_exit=auto_exit)
+
+
+def unittest_benchmark(cls, start_ioc):
+    """
+    Catch-all for simple pytest benchmarking
+
+    This handles the case where we want to put our faith in qtbot to execute
+    the launching of the screen. Therefore, we return the tools to the unit
+    test instead of launching the screen ourselves.
+    """
+    prefix = random_prefix()
+    context = benchmark_context(start_ioc, cls, prefix)
+    suite = TyphosSuite.from_device(cls(prefix, name='test'))
+    return suite, context
+
+
+def benchmark_context(start_ioc, cls, prefix):
+    """Context manager that starts an ioc, or not."""
     if start_ioc:
         context = caproto_context(cls, prefix)
     else:
         context = nullcontext()
-    with context:
-        return launch_from_devices([cls(prefix, name='test')],
-                                   auto_exit=auto_exit)
+    return context
 
 
 def make_tests():
     """Returns all test classes and their associated tests."""
     classes = {}
-    tests = {}
+    profiler_tests = {}
+    unit_tests = {}
     for shape_name, shape in SHAPES.items():
         for test_name, test in TESTS.items():
             cls_name = shape_name.title() + test_name.title()
@@ -58,25 +84,36 @@ def make_tests():
             classes[cls_name] = cls
 
             full_test_name = shape_name + '_' + test_name
-            test = partial(generic_benchmark, cls, test.start_ioc)
-            tests[full_test_name] = test
+            profiler_test = partial(profiler_benchmark, cls, test.start_ioc)
+            profiler_tests[full_test_name] = profiler_test
+            unit_test = partial(unittest_benchmark, cls, test.start_ioc)
+            unit_tests[full_test_name] = unit_test
 
-    return classes, tests
+    return classes, profiler_tests, unit_tests
 
 
-benchmark_classes, benchmark_tests = make_tests()
+benchmark_classes, profiler_tests, unit_tests = make_tests()
 
 
 def run_benchmarks(benchmarks):
     if not benchmarks:
-        for test in benchmark_tests.values():
-            test()
+        for test in profiler_tests.values():
+            test(auto_exit=True)
     else:
         for benchmark in benchmarks:
-            try:
-                test = benchmark_tests[benchmark]
-            except KeyError:
-                raise RuntimeError(f'{benchmark} is not a valid benchmark. '
-                                   f'The full list of valid benchmarks is '
-                                   f'{list(benchmark_tests.keys())}')
-            test()
+            test = get_profiler_test(benchmark)
+            test(auto_exit=True)
+
+
+def interactive_benchmark(benchmark):
+    test = get_profiler_test(benchmark)
+    return test(auto_exit=False)
+
+
+def get_profiler_test(benchmark):
+    try:
+        return profiler_tests[benchmark]
+    except KeyError:
+        raise RuntimeError(f'{benchmark} is not a valid benchmark. '
+                           f'The full list of valid benchmarks is '
+                           f'{list(benchmark_tests.keys())}')
