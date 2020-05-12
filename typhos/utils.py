@@ -663,7 +663,7 @@ def subscription_context(*objects, callback, event_type=None, run=True):
         Ophyd objects (signals) to monitor
     callback : callable
         Callback to run, with same signature as that of
-        :meth:``ophyd.OphydObj.subscribe``
+        :meth:`ophyd.OphydObj.subscribe`.
     event_type : str, optional
         The event type to subscribe to
     run : bool, optional
@@ -733,7 +733,7 @@ def subscription_context_device(device, callback, event_type=None, run=True, *,
         ophyd Device to monitor
     callback : callable
         Callback to run, with same signature as that of
-        :meth:``ophyd.OphydObj.subscribe``
+        :meth:`ophyd.OphydObj.subscribe`
     event_type : str, optional
         The event type to subscribe to
     run : bool, optional
@@ -848,7 +848,7 @@ def connection_status_monitor(*signals, callback):
         Signals to monitor
     callback : callable
         Callback to run, with same signature as that of
-        :meth:``ophyd.OphydObj.subscribe``. ``obj`` and ``connected`` are
+        :meth:`ophyd.OphydObj.subscribe`. ``obj`` and ``connected`` are
         guaranteed kwargs.
     '''
 
@@ -974,7 +974,7 @@ class ThreadPoolWorker(QtCore.QRunnable):
     Parameters
     ----------
     func : callable
-        The function to call during :meth:``.run``
+        The function to call during :meth:`.run`
     *args
         Arguments for the function call
     **kwargs

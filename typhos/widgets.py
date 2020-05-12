@@ -28,6 +28,23 @@ class SignalWidgetInfo(
             'SignalWidgetInfo',
             'read_cls read_kwargs write_cls write_kwargs'
         )):
+    """
+    Provides information on how to create signal widgets: class and kwargs.
+
+    Parameters
+    ----------
+    read_cls : type
+        The readback widget class.
+
+    read_kwargs : dict
+        The readback widget initialization keyword arguments.
+
+    write_cls : type
+        The setpoint widget class.
+
+    write_kwargs : dict
+        The setpoint widget initialization keyword arguments.
+    """
 
     @classmethod
     def from_signal(cls, obj, desc=None):
@@ -38,6 +55,7 @@ class SignalWidgetInfo(
         ----------
         obj : :class:`ophyd.OphydObj`
             The object
+
         desc : dict, optional
             The object description, if available.
         """

@@ -33,7 +33,7 @@ Related Projects
 - `ophyd <https://github.com/bluesky/ophyd/>`_
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Tutorial
    :hidden:
 
@@ -44,7 +44,7 @@ Related Projects
    python_methods.rst
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: API Documentation
    :hidden:
 

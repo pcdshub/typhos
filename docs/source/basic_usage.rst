@@ -26,8 +26,8 @@ alternatively and be constructed using the ``from_device`` classmethod.
 
 
 .. autoclass:: typhos.utils.TyphosBase
-   :members:
-   :noindex:
+    :members:
+    :noindex:
 
 
 Interpreting a Device
@@ -118,9 +118,10 @@ the various attributes allows us to see how our signals are organized.
     # Configuration information
     motor.read_configuration()
 
-The :class:`.TyphosSignalPanel` will render these, allowing us to select a subset
-of the signals to display based on their kind. Below both the ``QtDesigner``
-using ``happi`` and the corresponding ``Python`` code is shown as well:
+The :class:`.TyphosSignalPanel` will render these, allowing us to select a
+subset of the signals to display based on their kind. Below both the
+``QtDesigner`` using ``happi`` and the corresponding ``Python`` code is shown
+as well:
 
 .. ipython:: python
 
@@ -186,7 +187,7 @@ Using the StyleSheet
 ====================
 While it is no means a requirement, Typhos ships with two stylesheets to
 improve the look of the widgets. By default this isn't activated, but can be
-configured with :func:`typhos.use_stylesheet`. The operator can elect whether to use
-the "light" or "dark" stylesheets by using the optional ``dark`` keyword. This
-method also handles setting the "Fusion" ``QStyle`` which helps make the
-interface have an operating system independent look and feel.
+configured with :func:`typhos.use_stylesheet`. The operator can elect whether
+to use the "light" or "dark" stylesheets by using the optional ``dark``
+keyword. This method also handles setting the "Fusion" ``QStyle`` which helps
+make the interface have an operating system independent look and feel.

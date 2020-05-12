@@ -526,7 +526,8 @@ class SignalPanel(QtWidgets.QGridLayout):
         Parameters
         ----------
         kinds : list of :class:`ophyd.Kind`
-            If given
+            List of kinds to show.
+
         name_filter : str, optional
             Additionally filter signals by name
         """
@@ -811,6 +812,7 @@ class CompositeSignalPanel(SignalPanel):
         ----------
         device : ophyd.Device
             The device to add
+
         name : str
             The name/label to go with the device
         """
