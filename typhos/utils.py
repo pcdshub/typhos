@@ -19,7 +19,7 @@ from qtpy.QtGui import QColor, QMovie, QPainter
 from qtpy.QtWidgets import QWidget
 
 import ophyd.sim
-from ophyd import Device, Kind
+from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.exception import raise_to_operator  # noqa
 
@@ -83,56 +83,6 @@ def is_signal_ro(signal):
     introspection in the ophyd library. Until that day we need to check classes
     """
     return isinstance(signal, (SignalRO, EpicsSignalRO, ophyd.sim.SynSignalRO))
-
-
-def grab_kind(device, kind):
-    """
-    Grab all signals of a specific Kind from a Device instance
-
-    Parameters
-    ----------
-    device : ophyd.Device
-        The device instance to introspect
-    kind : Kind or str
-        The kind to search for
-
-    Returns
-    -------
-    signals : dict
-        Keyed on attribute name, the signals dict contains GrabKindItem named
-        tuples, which have attributes {attr, component, signal}.
-    """
-    # Accept actual Kind or string value
-    if not isinstance(kind, Kind):
-        kind = Kind[kind]
-    # Find the right attribute store
-    kind_attr = {Kind.hinted: device.read_attrs,
-                 Kind.normal: device.read_attrs,
-                 Kind.config: device.configuration_attrs,
-                 Kind.omitted: [attr for attr in device.component_names
-                                if attr not in device.read_attrs +
-                                device.configuration_attrs]}[kind]
-    # Return that kind filtered for devices
-    signals = collections.OrderedDict()
-    for attr in kind_attr:
-        if '.' in attr:
-            hierarchy = attr.split('.')
-            attr_name = hierarchy.pop()
-            dev = device
-            for dev_name in hierarchy:
-                dev = getattr(dev, dev_name)
-        else:
-            dev = device
-            attr_name = attr
-
-        signal = getattr(dev, attr_name)
-        klass = dev.__class__
-
-        if signal.kind >= kind and not isinstance(signal, Device):
-            cpt = getattr(klass, attr_name)
-            signals[attr] = GrabKindItem(attr=attr_name, component=cpt,
-                                         signal=signal)
-    return signals
 
 
 def channel_name(pv, protocol='ca'):
