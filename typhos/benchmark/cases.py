@@ -39,7 +39,7 @@ def profiler_benchmark(cls, start_ioc, auto_exit=True):
     profiler and launch a screen.
     """
     prefix = random_prefix()
-    with benchmark_context(start_ioc, prefix):
+    with benchmark_context(start_ioc, cls, prefix):
         return launch_from_devices([cls(prefix, name='test')],
                                    auto_exit=auto_exit)
 
@@ -96,13 +96,15 @@ benchmark_classes, profiler_tests, unit_tests = make_tests()
 
 
 def run_benchmarks(benchmarks):
+    windows = []
     if not benchmarks:
         for test in profiler_tests.values():
-            test(auto_exit=True)
+            windows.append(test(auto_exit=True))
     else:
         for benchmark in benchmarks:
             test = get_profiler_test(benchmark)
-            test(auto_exit=True)
+            windows.append(test(auto_exit=True))
+    return windows
 
 
 def interactive_benchmark(benchmark):
@@ -115,5 +117,5 @@ def get_profiler_test(benchmark):
         return profiler_tests[benchmark]
     except KeyError:
         raise RuntimeError(f'{benchmark} is not a valid benchmark. '
-                           f'The full list of valid benchmarks is '
+                           'The full list of valid benchmarks is '
                            f'{list(benchmark_tests.keys())}')

@@ -207,8 +207,8 @@ def typhos_cli(args):
     with context:
         typhos_cli_setup(args)
         if args.benchmark is not None:
-            run_benchmarks(args.benchmark)
-            suite = None
+            # Note: actually a list of suites
+            suite = run_benchmarks(args.benchmark)
         else:
             suite = typhos_run(args.devices, cfg=args.happi_cfg,
                                fake_devices=args.fake_device)

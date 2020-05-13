@@ -71,3 +71,33 @@ def test_cli_class(monkeypatch, qapp, qtbot, klass, name, happi_cfg):
 def test_cli_class_invalid(qtbot):
     window = typhos_cli(["non.Valid.ClassName[]"])
     assert window is None
+
+
+def test_cli_profile_modules(monkeypatch, capsys, qapp, qtbot):
+    monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
+    window = typhos_cli(['ophyd.sim.SynAxis[]', '--profile-modules',
+                         'typhos.suite'])
+    qtbot.addWidget(window)
+    output = capsys.readouterr()
+    assert 'add_device' in output.out
+
+
+@pytest.mark.skip(reason='Breaks the test suite')
+def test_cli_benchmark(monkeypatch, capsys, qapp, qtbot):
+    monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
+    windows = typhos_cli(['ophyd.sim.SynAxis[]', '--benchmark',
+                          'flat_soft'])
+    qtbot.addWidget(windows[0])
+    output = capsys.readouterr()
+    assert 'add_device' in output.out
+
+
+def test_cli_profile_output(monkeypatch, capsys, qapp, qtbot):
+    monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
+    path_obj = conftest.MODULE_PATH / 'artifacts' / 'prof'
+    window = typhos_cli(['ophyd.sim.SynAxis[]', '--profile-output',
+                         str(path_obj)])
+    qtbot.addWidget(window)
+    output = capsys.readouterr()
+    assert 'add_device' not in output.out
+    assert path_obj.exists()

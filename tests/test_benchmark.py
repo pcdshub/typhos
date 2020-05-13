@@ -3,7 +3,9 @@ Run the benchmark test cases using pytest-benchmark
 """
 import pytest
 
+import typhos.benchmark.utils as utils
 from typhos.benchmark.cases import unit_tests
+from typhos.benchmark.profile import profiler_context
 from typhos.suite import TyphosSuite
 
 from .conftest import save_image
@@ -11,7 +13,7 @@ from .conftest import save_image
 
 # Name the test cases using the keys, run using the values
 @pytest.mark.parametrize('unit_test_name', unit_tests.keys())
-def test_benchmark(unit_test_name, qtbot, benchmark):
+def test_benchmark(unit_test_name, qapp, qtbot, benchmark):
     """
     Run all registered benchmarks.
 
@@ -27,3 +29,11 @@ def inner_benchmark(unit_test, qtbot):
         qtbot.add_widget(suite)
         qtbot.wait_active(suite)
     return suite
+
+
+def test_profiler(capsys):
+    """Super basic test that hits most functions here"""
+    with profiler_context(['typhos.benchmark.utils']):
+        utils.get_native_functions(utils)
+    output = capsys.readouterr()
+    assert 'get_native_functions' in output.out
