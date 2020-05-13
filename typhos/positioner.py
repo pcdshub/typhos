@@ -287,7 +287,7 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
         This will lag behind the actual state of the positioner in order to
         prevent unnecessary rapid movements
         """
-        return getattr(self, '_moving', False)
+        return self._moving
 
     @moving.setter
     def moving(self, value):
