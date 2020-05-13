@@ -15,10 +15,9 @@ class TyphosStatusThread(QThread):
     status : ophyd.status.StatusBase
         The status object.
 
-    delay_draw : float, optional
-        Do not draw anything until a certain amount of time has passed. This
-        avoids rapid flashes for statuses that complete quickly. Units of
-        seconds.
+    start_delay : float, optional
+        Delay emitting ``status_started``. This avoids rapid flashes for
+        statuses that complete quickly. Units of seconds.
 
     timeout : float, optional
         Timeout for considering status complete.
@@ -35,10 +34,10 @@ class TyphosStatusThread(QThread):
     status_started = Signal()
     status_finished = Signal(bool)
 
-    def __init__(self, status, delay_draw=0., timeout=10.0, parent=None):
+    def __init__(self, status, start_delay=0., timeout=10.0, parent=None):
         super().__init__(parent=parent)
         self.status = status
-        self.delay_draw = delay_draw
+        self.start_delay = start_delay
         self.timeout = timeout
 
     def run(self):
@@ -49,7 +48,7 @@ class TyphosStatusThread(QThread):
             return
 
         # Wait to emit to avoid too much flashing
-        time.sleep(self.delay_draw)
+        time.sleep(self.start_delay)
         self.status_started.emit()
         try:
             if self.status.wait(timeout=self.timeout):

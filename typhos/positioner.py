@@ -164,8 +164,8 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
             status = self.devices[0].set(float(value))
             logger.debug("Setting up new status thread ...")
             self._status_thread = TyphosStatusThread(
-                                        status,
-                                        lag=self._min_visible_operation)
+                status, start_delay=self._min_visible_operation
+            )
             self._status_thread.status_started.connect(self.move_changed)
             self._status_thread.status_finished.connect(self.done_moving)
             self._status_thread.start()
