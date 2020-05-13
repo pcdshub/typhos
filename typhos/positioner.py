@@ -214,29 +214,29 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
             raise Exception("No Device configured for widget!")
         return self._readback.get()
 
-    @_linked_attribute('_readback_attr', 'ui.user_readback')
+    @_linked_attribute('readback_attribute', 'ui.user_readback')
     def _link_readback(self, signal, widget):
         """Link the positioner readback with the ui element."""
         self._readback = signal
 
-    @_linked_attribute('_low_limit_switch_attr', 'ui.low_limit_switch')
+    @_linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch')
     def _link_low_limit_switch(self, signal, widget):
         """Link the positioner lower limit switch with the ui element."""
         if signal is None:
             widget.hide()
 
-    @_linked_attribute('_high_limit_switch_attr', 'ui.high_limit_switch')
+    @_linked_attribute('high_limit_switch_attribute', 'ui.high_limit_switch')
     def _link_high_limit_switch(self, signal, widget):
         """Link the positioner high limit switch with the ui element."""
         if signal is None:
             widget.hide()
 
-    @_linked_attribute('_low_limit_attr', 'ui.low_limit')
+    @_linked_attribute('low_limit_switch_attribute', 'ui.low_limit')
     def _link_low_limit(self, signal, widget):
         """Link the positioner lower limit with the ui element."""
         return signal is not None
 
-    @_linked_attribute('_high_limit_attr', 'ui.high_limit')
+    @_linked_attribute('high_limit_switch_attribute', 'ui.high_limit')
     def _link_high_limit(self, signal, widget):
         """Link the positioner high limit with the ui element."""
         return signal is not None
