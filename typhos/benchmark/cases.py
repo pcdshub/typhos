@@ -118,4 +118,4 @@ def get_profiler_test(benchmark):
     except KeyError:
         raise RuntimeError(f'{benchmark} is not a valid benchmark. '
                            'The full list of valid benchmarks is '
-                           f'{list(benchmark_tests.keys())}')
+                           f'{list(profiler_tests.keys())}')
