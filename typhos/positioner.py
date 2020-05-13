@@ -6,11 +6,8 @@ import os.path
 from qtpy import uic
 from qtpy.QtCore import Property, Slot
 
-from .plugins import register_signal
+from . import plugins, utils, widgets
 from .status import TyphosStatusThread
-from .utils import (TyphosBase, channel_from_signal, raise_to_operator,
-                    reload_widget_stylesheet, ui_dir)
-from .widgets import TyphosDesignerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +25,9 @@ def _link_signal_to_widget(signal, widget):
         The widget with which to connect the signal.
     """
     if signal is not None:
-        register_signal(signal)
+        plugins.register_signal(signal)
         if widget is not None:
-            widget.channel = channel_from_signal(signal)
+            widget.channel = utils.channel_from_signal(signal)
 
 
 def _linked_attribute(property_attr, widget_attr):
@@ -87,7 +84,7 @@ def _linked_attribute(property_attr, widget_attr):
     return wrapper
 
 
-class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
+class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     """
     Widget to interact with an ``ophyd.Positioner``
 
@@ -123,7 +120,7 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
     Stop           Device.stop()
     ============== ===========================================================
     """
-    ui_template = os.path.join(ui_dir, 'positioner.ui')
+    ui_template = os.path.join(utils.ui_dir, 'positioner.ui')
     _readback_attr = 'user_readback'
     _low_limit_switch_attr = 'low_limit_switch'
     _high_limit_switch_attr = 'high_limit_switch'
@@ -156,7 +153,7 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
             # Clear any old statuses
             if self._status_thread and self._status_thread.isRunning():
                 logger.debug("Clearing current active status")
-                self._status_thread.terminate()
+                self._status_thread.disconnect()
             self._status_thread = None
             self._last_move = None
             # Call the set
@@ -173,8 +170,8 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
             logger.exception("Error setting %r to %r",
                              self.devices, value)
             self._last_move = False
-            reload_widget_stylesheet(self, cascade=True)
-            raise_to_operator(exc)
+            utils.reload_widget_stylesheet(self, cascade=True)
+            utils.raise_to_operator(exc)
 
     def tweak(self, offset):
         """Tweak by the given ``offset``."""
@@ -293,7 +290,7 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
     def moving(self, value):
         if value != self._moving:
             self._moving = value
-            reload_widget_stylesheet(self, cascade=True)
+            utils.reload_widget_stylesheet(self, cascade=True)
 
     @Property(bool, designable=False)
     def successful_move(self):

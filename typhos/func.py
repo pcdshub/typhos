@@ -574,7 +574,8 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
                 # done. However, it is good to catch this to make sure that we
                 # only have one active thread at a time
                 logger.debug("Removing running TyphosStatusThread!")
-                self._status_thread.terminate()
+                self._status_thread.disconnect()
+
             self._status_thread = None
             logger.debug("Setting up new status thread ...")
             self._status_thread = TyphosStatusThread(

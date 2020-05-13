@@ -45,17 +45,21 @@ class TyphosStatusThread(QThread):
         # Don't do anything if we are handed a finished status
         if self.status.done:
             logger.debug("Status already completed.")
+            self.status_finished.emit(self.status.success)
             return
 
         # Wait to emit to avoid too much flashing
         time.sleep(self.start_delay)
         self.status_started.emit()
         try:
-            if self.status.wait(timeout=self.timeout):
-                logger.debug("Status completed!")
-                self.status_finished.emit(self.status.success)
-        except TimeoutError:
-            logger.error("Status %r did not complete in %s seconds",
-                         self.status, self.timeout)
-        except RuntimeError:
+            self.status.wait(timeout=self.timeout)
+            logger.debug("Status completed!")
+            self.status_finished.emit(self.status.success)
+        except TimeoutError as ex:
+            # May be a WaitTimeoutError or a StatusTimeoutError
+            logger.error("%s: Status %r did not complete in %s seconds",
+                         type(ex).__name__, self.status, self.timeout)
+            self.status_finished.emit(False)
+        except Exception:
             logger.exception('Status wait failed')
+            self.status_finished.emit(False)
