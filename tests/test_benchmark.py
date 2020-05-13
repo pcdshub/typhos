@@ -6,7 +6,6 @@ import pytest
 import typhos.benchmark.utils as utils
 from typhos.benchmark.cases import unit_tests
 from typhos.benchmark.profile import profiler_context
-from typhos.suite import TyphosSuite
 
 from .conftest import save_image
 
