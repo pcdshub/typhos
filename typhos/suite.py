@@ -93,12 +93,18 @@ class TyphosSuite(TyphosBase):
     ----------
     parent : QWidget, optional
     """
+
+    DEFAULT_TITLE = 'Typhos Suite'
+    DEFAULT_TITLE_DEVICE = 'Typhos Suite - {device.name}'
+
     default_tools = {'Log': TyphosLogDisplay,
                      'StripTool': TyphosTimePlot,
                      'Console': TyphosConsole}
 
     def __init__(self, parent=None, *, pin=False):
         super().__init__(parent=parent)
+
+        self._update_title()
 
         self._tree = ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
@@ -328,6 +334,20 @@ class TyphosSuite(TyphosBase):
                     for param in self.top_level_groups['Tools'].childs]
         return []
 
+    def _update_title(self, device=None):
+        """
+        Update the window title, optionally with a device.
+
+        Parameters
+        ----------
+        device : ophyd.Device, optional
+            Device to indicate in the title.
+        """
+        title_fmt = (self.DEFAULT_TITLE if device is None
+                     else self.DEFAULT_TITLE_DEVICE)
+
+        self.setWindowTitle(title_fmt.format(self=self, device=device))
+
     def add_device(self, device, children=True, category='Devices'):
         """
         Add a device to the ``TyphosSuite``
@@ -344,6 +364,7 @@ class TyphosSuite(TyphosBase):
             the "Devices" group
         """
         super().add_device(device)
+        self._update_title(device)
         # Create DeviceParameter and add to top level category
         dev_param = DeviceParameter(device, subdevices=children)
         self._add_to_sidebar(dev_param, category)
