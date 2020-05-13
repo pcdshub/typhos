@@ -179,7 +179,11 @@ class TyphosTimePlot(utils.TyphosBase):
             return
 
         if signal.name in signal.root.hints.get('fields', []):
-            self.add_curve(utils.channel_from_signal(signal), name=name)
+            try:
+                self.add_curve(utils.channel_from_signal(signal), name=name)
+            except RuntimeError:
+                logger.debug('Attempted to add curve while plot tearing down',
+                             exc_info=True)
 
     def add_device(self, device):
         """Add a device and it's component signals to the plot"""
