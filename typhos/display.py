@@ -35,7 +35,7 @@ DEFAULT_TEMPLATES = {
     for name in DisplayTypes.names
 }
 
-DETAILED_TREE_TEMPLATE = (utils.ui_dir / f'detailed_tree.ui').resolve()
+DETAILED_TREE_TEMPLATE = (utils.ui_dir / 'detailed_tree.ui').resolve()
 DEFAULT_TEMPLATES['detailed_screen'].append(DETAILED_TREE_TEMPLATE)
 
 DEFAULT_TEMPLATES_FLATTEN = [f for _, files in DEFAULT_TEMPLATES.items()
