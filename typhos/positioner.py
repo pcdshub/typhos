@@ -15,6 +15,24 @@ from .widgets import TyphosDesignerMixin
 logger = logging.getLogger(__name__)
 
 
+def _link_signal_to_widget(signal, widget):
+    """
+    Registers the signal with PyDM, and sets the widget channel.
+
+    Parameters
+    ----------
+    signal : ophyd.OphydObj
+        The signal to use.
+
+    widget : QtWidgets.QWidget
+        The widget with which to connect the signal.
+    """
+    if signal is not None:
+        register_signal(signal)
+        if widget is not None:
+            widget.channel = channel_from_signal(signal)
+
+
 def _linked_attribute(property_attr, widget_attr):
     """
     Decorator which connects a device signal with a widget.
@@ -51,12 +69,18 @@ def _linked_attribute(property_attr, widget_attr):
             except AttributeError:
                 signal = None
             else:
-                register_signal(signal)
-                if widget is not None:
-                    widget.channel = channel_from_signal(signal)
+                # Fall short of an `isinstance(signal, OphydObj) check here:
+                try:
+                    _link_signal_to_widget(signal, widget)
+                except Exception:
+                    logger.exception(
+                        'device.%s => self.%s (signal: %s widget: %s)',
+                        device_attr, widget_attr, signal, widget)
+                    signal = None
+                else:
+                    logger.debug('device.%s => self.%s (signal=%s widget=%s)',
+                                 device_attr, widget_attr, signal, widget)
 
-            logger.debug('device.%s => self.%s (signal: %s widget: %s)',
-                         device_attr, widget_attr, signal, widget)
             return func(self, signal, widget)
 
         return wrapped
