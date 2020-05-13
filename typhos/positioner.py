@@ -97,19 +97,32 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
             reload_widget_stylesheet(self, cascade=True)
             raise_to_operator(exc)
 
-    @Slot()
-    def positive_tweak(self):
-        """Tweak positive by the amount listed in ``ui.tweak_value``"""
-        setpoint = self._get_position() + float(self.tweak_value.text())
+    def tweak(self, offset):
+        """Tweak by the given ``offset``."""
+        try:
+            setpoint = self._get_position() + float(offset)
+        except Exception:
+            logger.exception('Tweak failed')
+            return
+
         self.ui.set_value.setText(str(setpoint))
         self.set()
 
     @Slot()
+    def positive_tweak(self):
+        """Tweak positive by the amount listed in ``ui.tweak_value``"""
+        try:
+            self.tweak(float(self.tweak_value.text()))
+        except Exception:
+            logger.exception('Tweak failed')
+
+    @Slot()
     def negative_tweak(self):
         """Tweak negative by the amount listed in ``ui.tweak_value``"""
-        setpoint = self._get_position() - float(self.tweak_value.text())
-        self.ui.set_value.setText(str(setpoint))
-        self.set()
+        try:
+            self.tweak(-float(self.tweak_value.text()))
+        except Exception:
+            logger.exception('Tweak failed')
 
     @Slot()
     def stop(self):
