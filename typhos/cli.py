@@ -184,6 +184,8 @@ def typhos_cli(args):
         if suite:
             window = QMainWindow()
             window.setCentralWidget(suite)
+            window.setWindowTitle(suite.windowTitle())
+            window.setUnifiedTitleAndToolBarOnMac(True)
             window.show()
             logger.info("Launching application ...")
             QApplication.instance().exec_()
