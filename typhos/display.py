@@ -52,7 +52,7 @@ def normalize_display_type(display_type):
     Parameters
     ----------
     display_type : DisplayTypes, str, or int
-        The display type
+        The display type.
 
     Returns
     -------
@@ -172,11 +172,11 @@ class TyphosDisplayConfigButton(TyphosToolButton):
             The panels to filter upon triggering of menu actions.
 
         base_menu : QMenu
-            The menu to add actions to
+            The menu to add actions to.
 
         only : bool
-            False - create "Show Kind" actions
-            True - create "Show only Kind" actions
+            False - create "Show Kind" actions.
+            True - create "Show only Kind" actions.
         """
         for kind, prop in self._kind_to_property.items():
             def selected(new_value, *, prop=prop):
@@ -210,7 +210,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
             The panels to filter upon triggering of menu actions.
 
         base_menu : QMenu
-            The menu to add actions to
+            The menu to add actions to.
         """
         def text_filter_updated():
             text = line_edit.text().strip()
@@ -262,7 +262,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
             The panels to filter upon triggering of menu actions.
 
         base_menu : QMenu
-            The menu to add actions to
+            The menu to add actions to.
         """
         def handle_menu(checked):
             self.device_display.hideEmpty = checked
@@ -298,6 +298,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
                           ...
                           Show only hinted
             Filter by name
+            Hide Empty Panels
         """
         base_menu = QtWidgets.QMenu(parent=self)
 
@@ -340,7 +341,7 @@ class TyphosDisplaySwitcherButton(TyphosToolButton):
         self.templates = None
 
     def _clicked(self):
-        """Clicked callback - set thet template."""
+        """Clicked callback - set the template."""
         if self.templates is None:
             logger.warning('set_device_display not called on %s', self)
             return
@@ -575,10 +576,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     Parameters
     ----------
-    parent: QWidget, optional
+    parent : QWidget, optional
         The parent widget.
 
-    scrollable: bool, optional
+    scrollable : bool, optional
         If ``True``, put the loaded template into a :class:`QScrollArea`.
         Otherwise, the display widget will go directly in this widget's layout.
 
@@ -972,10 +973,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         Parameters
         ----------
-        device: ophyd.Device
-            The device to add
+        device : ophyd.Device
+            The device to add.
 
-        macros: dict, optional
+        macros : dict, optional
             Additional macros to use/replace the defaults.
         """
         # We only allow one device at a time
@@ -1043,7 +1044,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         Returns
         -------
         composite : bool
-            If True, favor the composite screen
+            If True, favor the composite screen.
         """
         num_devices = 0
         num_signals = 0
@@ -1081,16 +1082,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         Parameters
         ----------
-        device: ophyd.Device
+        device : ophyd.Device
 
-        template :str, optional
-            Set the ``display_template``
+        template : str, optional
+            Set the ``display_template``.
 
-        macros: dict, optional
-            Macro substitutions to be placed in template
+        macros : dict, optional
+            Macro substitutions to be placed in template.
 
         **kwargs
-            Passed to the class init
+            Passed to the class init.
         """
         display = cls(**kwargs)
         # Reset the template if provided
@@ -1112,14 +1113,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         ----------
         klass : str or class
 
-        template :str, optional
-            Set the ``display_template``
+        template : str, optional
+            Set the ``display_template``.
 
-        macros: dict, optional
-            Macro substitutions to be placed in template
+        macros : dict, optional
+            Macro substitutions to be placed in template.
 
         **kwargs
-            Extra arguments are used at device instantiation
+            Extra arguments are used at device instantiation.
 
         Returns
         -------
@@ -1139,7 +1140,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         """
         Get the list of specific screens for a given device class.
 
-        That is, screens that are not default Typhos-provided screens
+        That is, screens that are not default Typhos-provided screens.
         """
         return [
             template for template in utils.find_templates_for_class(
@@ -1169,7 +1170,7 @@ def toggle_display(widget, force_state=None):
     Parameters
     ----------
     widget : QWidget
-        The widget in which to look for Panels
+        The widget in which to look for Panels.
 
     force_state : bool
         If set to True or False, it will change visibility to the value of
@@ -1209,7 +1210,7 @@ def hide_empty(widget, process_widget=True):
     Parameters
     ----------
     widget : QWidget
-        The widget in which to start the recursive search
+        The widget in which to start the recursive search.
 
     process_widget : bool
         Whether or not to process the visibility for the widget.

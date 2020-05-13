@@ -1,13 +1,14 @@
 import logging
 
-from pydm.widgets.logdisplay import PyDMLogDisplay
 from qtpy.QtWidgets import QVBoxLayout
+
+from pydm.widgets.logdisplay import PyDMLogDisplay
 
 from ..utils import TyphosBase
 
 
 class TyphosLogDisplay(TyphosBase):
-    """Typhos Logging Display"""
+    """Typhos Logging Display."""
     def __init__(self, level=logging.INFO, parent=None):
         super().__init__(parent=parent)
         # Set the logname to be non-existant so that we do not attach to the
@@ -20,7 +21,7 @@ class TyphosLogDisplay(TyphosBase):
         self.layout().addWidget(self.logdisplay)
 
     def add_device(self, device):
-        """Add a device to the logging display"""
+        """Add a device to the logging display."""
         super().add_device(device)
         # If this is the first device
         if len(self.devices) == 1:
