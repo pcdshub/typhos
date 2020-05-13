@@ -173,7 +173,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         """Create a row label (i.e., the one in column 0)."""
         label_text = self.label_text_from_attribute(attr, dotted_name)
         label = SignalPanelRowLabel(label_text)
-        label.setObjectName(dotted_name + '_row_label')
+        label.setObjectName(dotted_name)
         if tooltip is not None:
             label.setToolTip(tooltip)
         return label
