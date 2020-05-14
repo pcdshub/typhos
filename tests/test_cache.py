@@ -1,25 +1,59 @@
 import random
 
 import pytest
+import pytestqt
 
 import ophyd
 import typhos.cache
 
 
+def ensure_cache_clear(qtbot, signal, cache):
+    """
+    Really, really ensure the cache is clear.
+
+    Waits for up to 1s to ensure no new signals are emitted from previous tests
+    that could interfere with later tests.
+
+    Parameters
+    ----------
+    qtbot : pytestqt.QtBot
+        The qtbot helper.
+
+    signal : QtCore.Signal
+        A signal to wait for.
+            The qtbot helper.
+
+    cache : object
+        Cache object with ``clear`` method.
+    """
+    cache.clear()
+
+    # Ensure no callbacks are still in flight
+    try:
+        with qtbot.wait_signal(signal, timeout=1000):
+            ...
+    except pytestqt.exceptions.TimeoutError:
+        ...
+
+    cache.clear()
+
+
 @pytest.fixture(scope='function')
-def describe_cache():
+def describe_cache(qtbot):
     cache = typhos.cache.get_global_describe_cache()
-    cache.clear()
+
+    ensure_cache_clear(qtbot, cache.new_description, cache)
     yield cache
-    cache.clear()
+    ensure_cache_clear(qtbot, cache.new_description, cache)
 
 
 @pytest.fixture(scope='function')
-def type_cache(describe_cache):
+def type_cache(qtbot, describe_cache):
     cache = typhos.cache.get_global_widget_type_cache()
-    cache.clear()
+
+    ensure_cache_clear(qtbot, cache.widgets_determined, cache)
     yield cache
-    cache.clear()
+    ensure_cache_clear(qtbot, cache.widgets_determined, cache)
 
 
 @pytest.fixture(scope='function')
