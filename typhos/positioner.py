@@ -101,7 +101,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     Widget         Attribute Selection
     ============== ===========================================================
     User Readback  The ``readback_attribute`` property is used, which defaults
-                   to ``user_readback``.
+                   to ``user_readback``. Linked to UI element
+                   ``user_readback``.
+
+    User Setpoint  The ``setpoint_attribute`` property is used, which defaults
+                   to ``user_setpoint``. Linked to UI element
+                   ``user_setpoint``.
 
     Limit Switches The ``low_limit_switch_attribute`` and
                    ``high_limit_switch_attribute`` properties are used, which
@@ -122,6 +127,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     """
     ui_template = os.path.join(utils.ui_dir, 'positioner.ui')
     _readback_attr = 'user_readback'
+    _setpoint_attr = 'user_setpoint'
     _low_limit_switch_attr = 'low_limit_switch'
     _high_limit_switch_attr = 'high_limit_switch'
     _low_limit_attr = 'low_limit'
@@ -131,6 +137,9 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def __init__(self, parent=None):
         self._moving = False
         self._last_move = None
+        self._readback = None
+        self._setpoint = None
+        self._status_thread = None
         super().__init__(parent=parent)
         # Instantiate UI
         self.ui = uic.loadUi(self.ui_template, self)
@@ -139,36 +148,45 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
-        self._readback = None
+
+    def _clear_status_thread(self):
+        """Clear a previous status thread."""
+        if self._status_thread is None:
+            return
+
+        logger.debug("Clearing current active status")
+        self._status_thread.disconnect()
         self._status_thread = None
+
+    def _start_status_thread(self, status):
+        """Start the status monitoring thread for the given status object."""
+        self._status_thread = thread = TyphosStatusThread(
+            status, start_delay=self._min_visible_operation
+        )
+        thread.status_started.connect(self.move_changed)
+        thread.status_finished.connect(self.done_moving)
+        thread.start()
+
+    def _set(self, value):
+        """Inner `set` routine - call device.set() and monitor the status."""
+        self._clear_status_thread()
+        self._last_move = None
+
+        logger.debug("Setting device %r to %r", self.device, value)
+        status = self.device.set(float(value))
+        self._start_status_thread(status)
 
     @Slot()
     def set(self):
         """Set the device to the value configured by ``ui.set_value``"""
-        value = self.ui.set_value.text()
+        if not self.device:
+            return
+
         try:
-            # Check that we have a device configured
-            if not self.devices:
-                raise Exception("No Device configured for widget!")
-            # Clear any old statuses
-            if self._status_thread and self._status_thread.isRunning():
-                logger.debug("Clearing current active status")
-                self._status_thread.disconnect()
-            self._status_thread = None
-            self._last_move = None
-            # Call the set
-            logger.debug("Setting device %r to %r", self.devices[0], value)
-            status = self.devices[0].set(float(value))
-            logger.debug("Setting up new status thread ...")
-            self._status_thread = TyphosStatusThread(
-                status, start_delay=self._min_visible_operation
-            )
-            self._status_thread.status_started.connect(self.move_changed)
-            self._status_thread.status_finished.connect(self.done_moving)
-            self._status_thread.start()
+            value = self.ui.set_value.text()
+            self._set(value)
         except Exception as exc:
-            logger.exception("Error setting %r to %r",
-                             self.devices, value)
+            logger.exception("Error setting %r to %r", self.devices, value)
             self._last_move = False
             utils.reload_widget_stylesheet(self, cascade=True)
             utils.raise_to_operator(exc)
@@ -215,6 +233,11 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def _link_readback(self, signal, widget):
         """Link the positioner readback with the ui element."""
         self._readback = signal
+
+    @_linked_attribute('setpoint_attribute', 'ui.user_setpoint')
+    def _link_setpoint(self, signal, widget):
+        """Link the positioner setpoint with the ui element."""
+        self._setpoint = signal
 
     @_linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch')
     def _link_low_limit_switch(self, signal, widget):
@@ -270,6 +293,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         super().add_device(device)
 
         self._link_readback()
+        self._link_setpoint()
         self._link_low_limit_switch()
         self._link_high_limit_switch()
 
@@ -310,6 +334,15 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     @readback_attribute.setter
     def readback_attribute(self, value):
         self._readback_attr = value
+
+    @Property(str, designable=True)
+    def setpoint_attribute(self):
+        """The attribute name for the setpoint signal."""
+        return self._setpoint_attr
+
+    @setpoint_attribute.setter
+    def setpoint_attribute(self, value):
+        self._setpoint_attr = value
 
     @Property(str, designable=True)
     def low_limit_switch_attribute(self):
