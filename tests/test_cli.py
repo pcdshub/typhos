@@ -82,9 +82,9 @@ def test_cli_profile_modules(monkeypatch, capsys, qapp, qtbot):
     assert 'add_device' in output.out
 
 
-@pytest.mark.skip(reason='Breaks the test suite')
 def test_cli_benchmark(monkeypatch, capsys, qapp, qtbot):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
+    monkeypatch.setattr(QApplication, 'exit', lambda x: 1)
     windows = typhos_cli(['ophyd.sim.SynAxis[]', '--benchmark',
                           'flat_soft'])
     qtbot.addWidget(windows[0])
