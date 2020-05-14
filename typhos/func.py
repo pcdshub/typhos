@@ -581,14 +581,20 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
             self._status_thread = TyphosStatusThread(
                 status, start_delay=self._min_visible_operation,
                 timeout=self._max_allowed_operation)
-            self._status_thread.status_started.connect(
-                                    partial(self.setEnabled, False))
-            self._status_thread.status_finished.connect(
-                                    partial(self.setEnabled, True))
+
+            def status_started():
+                self.setEnabled(False)
+
+            def status_finished(result):
+                self.setEnabled(True)
+
+            self._status_thread.status_started.connect(status_started)
+            self._status_thread.status_finished.connect(status_finished)
+
             # Connect the finished signal so that even in the worst case
             # scenario, we re-enable the button. Almost always the button will
             # be ended by the status_finished signal
-            self._status_thread.finished.connect(partial(self.setEnabled,
+            self._status_thread.finished.connect(partial(status_finished,
                                                          True))
             logger.debug("Starting TyphosStatusThread ...")
             self._status_thread.start()

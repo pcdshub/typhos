@@ -163,7 +163,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             status, start_delay=self._min_visible_operation
         )
         thread.status_started.connect(self.move_changed)
-        thread.status_finished.connect(self.done_moving)
+        thread.status_finished.connect(self._status_finished)
         thread.start()
 
     def _set(self, value):
@@ -388,8 +388,9 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         logger.debug("Begin showing move in TyphosPositionerWidget")
         self.moving = True
 
-    def done_moving(self, success):
-        """Called when a move is complete"""
+    def _status_finished(self, result):
+        """Called when a move is complete."""
+        success = not isinstance(result, Exception)
         logger.debug("Completed move in TyphosPositionerWidget (success=%s)",
                      success)
         self._last_move = success

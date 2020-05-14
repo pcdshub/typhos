@@ -6,9 +6,19 @@ from qtpy.QtCore import QThread, Signal
 logger = logging.getLogger(__name__)
 
 
+class GenericStatusFailure(Exception):
+    """A stand-in for a status value of ``False`` with no detailed info."""
+
+
 class TyphosStatusThread(QThread):
     """
     Thread which monitors an ophyd Status object and emits start/stop signals.
+
+    The ``status_started`` signal may be emitted after ``start_delay`` seconds,
+    unless the status has already completed.
+
+    The ``status_finished`` signal is guaranteed to be emitted with a status
+    boolean indicating success or failure, or timeout.
 
     Parameters
     ----------
@@ -32,7 +42,7 @@ class TyphosStatusThread(QThread):
 
     """
     status_started = Signal()
-    status_finished = Signal(bool)
+    status_finished = Signal(object)
 
     def __init__(self, status, start_delay=0., timeout=10.0, parent=None):
         super().__init__(parent=parent)
@@ -45,7 +55,8 @@ class TyphosStatusThread(QThread):
         # Don't do anything if we are handed a finished status
         if self.status.done:
             logger.debug("Status already completed.")
-            self.status_finished.emit(self.status.success)
+            self.status_finished.emit(
+                self.status.success or GenericStatusFailure())
             return
 
         # Wait to emit to avoid too much flashing
@@ -53,13 +64,16 @@ class TyphosStatusThread(QThread):
         self.status_started.emit()
         try:
             self.status.wait(timeout=self.timeout)
-            logger.debug("Status completed!")
-            self.status_finished.emit(self.status.success)
         except TimeoutError as ex:
             # May be a WaitTimeoutError or a StatusTimeoutError
             logger.error("%s: Status %r did not complete in %s seconds",
                          type(ex).__name__, self.status, self.timeout)
-            self.status_finished.emit(False)
-        except Exception:
+            finished_value = ex
+        except Exception as ex:
             logger.exception('Status wait failed')
-            self.status_finished.emit(False)
+            finished_value = ex
+        else:
+            finished_value = self.status.success or GenericStatusFailure()
+
+        logger.debug("Emitting finished: %r", finished_value)
+        self.status_finished.emit(finished_value)
