@@ -254,12 +254,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         if signal is None:
             widget.hide()
 
-    @_linked_attribute('low_limit_switch_attribute', 'ui.low_limit')
+    @_linked_attribute('low_limit_attribute', 'ui.low_limit')
     def _link_low_limit(self, signal, widget):
         """Link the positioner lower limit with the ui element."""
         return signal is not None
 
-    @_linked_attribute('high_limit_switch_attribute', 'ui.high_limit')
+    @_linked_attribute('high_limit_attribute', 'ui.high_limit')
     def _link_high_limit(self, signal, widget):
         """Link the positioner high limit with the ui element."""
         return signal is not None
