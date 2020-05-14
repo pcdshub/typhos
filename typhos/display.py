@@ -568,9 +568,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     """
     Main display for a single ophyd Device.
 
-    This contains the widgets for all of the root devices signals, any methods
-    you would like to display, and an optional image. By typhos convention, the
-    base initialization sets up the widgets and the :meth:`.from_device` class
+    This contains the widgets for all of the root devices signals, and any
+    methods you would like to display. By typhos convention, the base
+    initialization sets up the widgets and the :meth:`.from_device` class
     method will automatically populate the resulting display.
 
     Parameters
