@@ -28,8 +28,6 @@ class TyphosTimePlot(utils.TyphosBase):
     parent : QWidget
     """
 
-    hint_limit = 20
-
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         # Setup layout
@@ -172,18 +170,6 @@ class TyphosTimePlot(utils.TyphosBase):
         except ValueError:
             # Signal already added
             return
-
-        if len(self.channel_to_curve) >= self.hint_limit:
-            logger.debug('Too many hinted signals (at limit of %d)',
-                         self.hint_limit)
-            return
-
-        if signal.name in signal.root.hints.get('fields', []):
-            try:
-                self.add_curve(utils.channel_from_signal(signal), name=name)
-            except RuntimeError:
-                logger.debug('Attempted to add curve while plot tearing down',
-                             exc_info=True)
 
     def add_device(self, device):
         """Add a device and it's component signals to the plot."""
