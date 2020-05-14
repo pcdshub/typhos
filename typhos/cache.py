@@ -49,7 +49,7 @@ def get_global_display_path_cache():
 
 class _GlobalDescribeCache(QtCore.QObject):
     """
-    Cache of ophyd object descriptions
+    Cache of ophyd object descriptions.
 
     ``obj.describe()`` is called in a thread from the global QThreadPool, and
     new results are marked by the Signal ``new_description``.
@@ -60,10 +60,10 @@ class _GlobalDescribeCache(QtCore.QObject):
     Attributes
     ----------
     connect_thread : :class:`ObjectConnectionMonitorThread`
-        The thread which monitors connection status
+        The thread which monitors connection status.
 
     cache : dict
-        The cache holding descriptions, keyed on ``obj``
+        The cache holding descriptions, keyed on ``obj``.
     """
 
     new_description = QtCore.Signal(object, dict)
@@ -139,7 +139,7 @@ class _GlobalDescribeCache(QtCore.QObject):
         Parameters
         ----------
         obj : :class:`ophyd.OphydObj`
-            The object to get the description of
+            The object to get the description of.
 
         Returns
         -------
@@ -156,7 +156,7 @@ class _GlobalDescribeCache(QtCore.QObject):
 
 class _GlobalWidgetTypeCache(QtCore.QObject):
     """
-    Cache of ophyd object Typhos widget types
+    Cache of ophyd object Typhos widget types.
 
     ``obj.describe()`` is called using :class:`_GlobalDescribeCache` and are
     therefore threaded and run in the background.  New results are marked by
@@ -169,7 +169,7 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
     Attributes
     ----------
     describe_cache : :class:`_GlobalDescribeCache`
-        The describe cache, used for determining widget types
+        The describe cache, used for determining widget types.
 
     cache : dict
         The cache holding widget type information.
@@ -211,7 +211,7 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
         Parameters
         ----------
         obj : :class:`ophyd.OphydObj`
-            The object to get the widget types
+            The object to get the widget types.
 
         Returns
         -------
@@ -237,21 +237,21 @@ TYPHOS_DISPLAY_PATH_CACHE_TIME = int(
 
 class _CachedPath:
     """
-    A wrapper around pathlib.Path to support repeated globbing
+    A wrapper around pathlib.Path to support repeated globbing.
 
     Parameters
     ----------
     path : pathlib.Path
-        The path to cache
+        The path to cache.
 
     Attributes
     ----------
     path : pathlib.Path
-        The underlying path
+        The underlying path.
     cache : list
-        The cache of filenames
+        The cache of filenames.
     _update_time : float
-        The last time the cache was updated
+        The last time the cache was updated.
     stale_threshold : float, optional
         The time (in seconds) after which to update the path cache.  This
         happens on the next glob, and not on a timer-basis.
@@ -291,12 +291,12 @@ class _CachedPath:
         return time.monotonic() - self._update_time
 
     def update(self):
-        """Update the file list"""
+        """Update the file list."""
         self.cache = os.listdir(self.path)
         self._update_time = time.monotonic()
 
     def glob(self, pattern):
-        """Glob a pattern"""
+        """Glob a pattern."""
         if self.cache is None:
             self.update()
         elif self.time_since_last_update > self.stale_threshold:
@@ -320,8 +320,8 @@ class _GlobalDisplayPathCache:
     A cache for all configured display paths.
 
     All paths from `utils.DISPLAY_PATHS` will be included:
-        1. Environment variable ``PYDM_DISPLAYS_PATH``
-        2. Typhos package built-in paths
+        1. Environment variable ``PYDM_DISPLAYS_PATH``.
+        2. Typhos package built-in paths.
     """
 
     def __init__(self):

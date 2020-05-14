@@ -6,7 +6,7 @@ EPICS is a flexible and powerful controls system to access to experimental
 information, however, the relation and meaning of process variables is often
 obscure. Many of the user interfaces for EPICS information reflect this, as
 walls of buttons and flashing lights bombard the user with little thought to
-structure or cohesion. 
+structure or cohesion.
 
 Typhos addresses this by providing an automated way to generate screens based
 on a provided hierarchy of devices and signals. Built using PyDM, a PyQt based
@@ -21,7 +21,7 @@ function, but still allow access to more advanced signals.
 Instead of reinventing a new way to specify device structures, Typhos uses
 `Ophyd`, a library to abstract EPICS information into consistently structured
 Python objects. Originally built for scripting experimental procedures at
-NSLSII, Ophyd represents devices as combinations of components which are
+NSLS-II, Ophyd represents devices as combinations of components which are
 either signals or nested devices. Then, either at runtime or by using the
 defaults of the representative Python class, these signals are sorted into
 different categories based on their relevance to operators. Typhos uses this
@@ -30,10 +30,10 @@ information to craft user interfaces.
 Related Projects
 ----------------
 - `pydm <https://github.com/slaclab/pydm/>`_
-- `ophyd <https://github.com/NSLS-II/ophyd/>`_
+- `ophyd <https://github.com/bluesky/ophyd/>`_
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Tutorial
    :hidden:
 
@@ -44,7 +44,7 @@ Related Projects
    python_methods.rst
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: API Documentation
    :hidden:
 

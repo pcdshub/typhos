@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 def _make_jupyter_widget_with_kernel(kernel_name):
     """
-    Start a kernel, connect to it, and create a RichJupyterWidget to use it
+    Start a kernel, connect to it, and create a RichJupyterWidget to use it.
 
     Parameters
     ----------
     kernel_name : str
-        Kernel name to use
+        Kernel name to use.
     """
     kernel_manager = QtKernelManager(kernel_name=kernel_name)
     kernel_manager.start_kernel()
@@ -33,13 +33,13 @@ def _make_jupyter_widget_with_kernel(kernel_name):
 
 class TyphosConsole(utils.TyphosBase):
     """
-    IPython Widget for Typhos Display
+    IPython Widget for Typhos Display.
 
     This widget handles starting a ``JupyterKernel`` and connecting an IPython
     console in which the user can type Python commands. It is important to note
     that the kernel in which commands are executed is a completely separate
     process. This protects the user against locking themselves out of the GUI,
-    but makes it difficult to pass the Device.
+    but makes it difficult to pass the Device..
 
     To get around this caveat, this widget uses ``happi`` to pass the Device
     between the processes. This is not a strict requirement, but if ``happi``
@@ -100,7 +100,7 @@ class TyphosConsole(utils.TyphosBase):
                 not self._shutting_down)
 
     def _add_pending_devices(self):
-        """Add devices that were requested prior to the kernel being ready"""
+        """Add devices that were requested prior to the kernel being ready."""
         with self._ready_lock:
             self._kernel_is_ready = True
 
@@ -114,7 +114,7 @@ class TyphosConsole(utils.TyphosBase):
         self._pending_devices = []
 
     def _wait_for_readiness(self):
-        """Wait for the kernel to show the prompt"""
+        """Wait for the kernel to show the prompt."""
 
         def looks_ready(text):
             return any(line.startswith('In ') for line in text.splitlines())
@@ -129,7 +129,7 @@ class TyphosConsole(utils.TyphosBase):
         return default
 
     def shutdown(self, *, block=False):
-        """Shutdown the Jupyter Kernel"""
+        """Shutdown the Jupyter Kernel."""
         client = self.jupyter_widget.kernel_client
         if self._shutting_down:
             logger.debug("Kernel is already shutting down")
@@ -161,13 +161,13 @@ class TyphosConsole(utils.TyphosBase):
     @property
     def _plain_text(self):
         """
-        Text in the console
+        Text in the console.
         """
         return self.jupyter_widget._control.toPlainText()
 
     def execute(self, script, *, echo=True, check_readiness=True):
         """
-        Execute some code in the console
+        Execute some code in the console.
         """
         if echo:
             # Can't seem to get `interactive` or `hidden=False` working:

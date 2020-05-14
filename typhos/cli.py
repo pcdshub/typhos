@@ -7,14 +7,16 @@ import re
 import sys
 
 import coloredlogs
-from qtpy.QtWidgets import QApplication, QMainWindow
 
 import pcdsutils
 import typhos
 from ophyd.sim import clear_fake_device, make_fake_device
+from typhos.app import get_qapp, launch_suite
+from typhos.benchmark.profile import profiler_context
+from typhos.benchmark.cases import run_benchmarks
+from typhos.utils import nullcontext
 
 logger = logging.getLogger(__name__)
-app = None
 
 # Argument Parser Setup
 parser = argparse.ArgumentParser(description='Create a TyphosSuite for '
@@ -42,6 +44,21 @@ parser.add_argument('--dark', action='store_true',
                     help='Use the QDarkStyleSheet shipped with Typhos')
 parser.add_argument('--stylesheet',
                     help='Additional stylesheet options')
+parser.add_argument('--profile-modules', nargs='*',
+                    help='Submodules to profile during the execution. '
+                         'If no specific modules are specified, '
+                         'profiles all submodules of typhos. '
+                         'Turns on line profiling.')
+parser.add_argument('--profile-output',
+                    help='Filename to output the profile results to. '
+                         'If omitted, prints results to stdout. '
+                         'Turns on line profiling.')
+parser.add_argument('--benchmark', nargs='*',
+                    help='Runs the specified benchmarking tests instead of '
+                         'launching a screen. '
+                         'If no specific tests are specified, '
+                         'runs all of them. '
+                         'Turns on line profiling.')
 
 
 # Append to module docs
@@ -49,7 +66,7 @@ __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 
 
 def typhos_cli_setup(args):
-    global app
+    """Setup logging and style."""
     # Logging Level handling
     logging.getLogger().addHandler(logging.NullHandler())
     shown_logger = logging.getLogger('typhos')
@@ -64,22 +81,15 @@ def typhos_cli_setup(args):
                         fmt=log_fmt)
     logger.debug("Set logging level of %r to %r", shown_logger.name, level)
 
-    # Version endpoint
-    if args.version:
-        print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
-        return
-
     # Deal with stylesheet
-    if not app:
-        logger.debug("Creating QApplication ...")
-        app = QApplication([])
+    qapp = get_qapp()
 
     logger.debug("Applying stylesheet ...")
     typhos.use_stylesheet(dark=args.dark)
     if args.stylesheet:
         logger.info("Loading QSS file %r ...", args.stylesheet)
         with open(args.stylesheet, 'r') as handle:
-            app.setStyleSheet(handle.read())
+            qapp.setStyleSheet(handle.read())
 
 
 def _create_happi_client(cfg):
@@ -95,8 +105,19 @@ def _create_happi_client(cfg):
     return happi.Client.from_config(cfg=cfg)
 
 
-def create_suite(devices, cfg=None, fake_devices=False):
-    """Create a TyphosSuite from a list of device names"""
+def create_suite(device_names, cfg=None, fake_devices=False):
+    """Create a TyphosSuite from a list of device names."""
+    if device_names:
+        devices = create_devices(device_names, cfg=cfg,
+                                 fake_devices=fake_devices)
+    else:
+        devices = []
+    if devices or not device_names:
+        return typhos.TyphosSuite.from_devices(devices)
+
+
+def create_devices(device_names, cfg=None, fake_devices=False):
+    """Returns a list of devices to be included in the typhos suite."""
     logger.debug("Accessing Happi Client ...")
 
     try:
@@ -106,15 +127,15 @@ def create_suite(devices, cfg=None, fake_devices=False):
         happi_client = None
 
     # Load and add each device
-    loaded_devs = list()
+    devices = list()
 
     klass_regex = re.compile(
         r'([a-zA-Z][a-zA-Z\.\_]*)\[(\{.+})*[\,]*\]'  # noqa
     )
 
-    for device in devices:
-        logger.info("Loading %r ...", device)
-        result = klass_regex.findall(device)
+    for device_name in device_names:
+        logger.info("Loading %r ...", device_name)
+        result = klass_regex.findall(device_name)
         if len(result) > 0:
             try:
                 klass, args = result[0]
@@ -134,7 +155,7 @@ def create_suite(devices, cfg=None, fake_devices=False):
                             default_kwargs[arg] = 'FAKE'
 
                 device = klass(**default_kwargs)
-                loaded_devs.append(device)
+                devices.append(device)
 
             except Exception:
                 logger.exception("Unable to load class entry: %s with args %s",
@@ -142,55 +163,58 @@ def create_suite(devices, cfg=None, fake_devices=False):
         else:
             if not happi_client:
                 logger.error("Happi not available. Unable to load entry: %r",
-                             device)
+                             device_name)
                 continue
             if fake_devices:
                 raise NotImplementedError("Fake devices from happi not "
                                           "supported yet")
             try:
-                device = happi_client.load_device(name=device)
-                loaded_devs.append(device)
+                device = happi_client.load_device(name=device_name)
+                devices.append(device)
             except Exception:
-                logger.exception("Unable to load Happi entry: %r", device)
+                logger.exception("Unable to load Happi entry: %r", device_name)
         if fake_devices:
             clear_fake_device(device)
-    if loaded_devs or not devices:
-        logger.debug("Creating empty TyphosSuite ...")
-        suite = typhos.TyphosSuite()
-        logger.info("Loading Tools ...")
-        tools = dict(suite.default_tools)
-        for name, tool in tools.items():
-            suite.add_tool(name, tool())
-        if devices:
-            logger.info("Adding devices ...")
-        for device in loaded_devs:
-            try:
-                suite.add_device(device)
-                suite.show_subdisplay(device)
-            except Exception:
-                logger.exception("Unable to add %r to TyphosSuite",
-                                 device.name)
-        return suite
+    return devices
+
+
+def typhos_run(device_names, cfg=None, fake_devices=False):
+    """Run the central typhos part of typhos."""
+    with typhos.utils.no_device_lazy_load():
+        suite = create_suite(device_names, cfg=cfg, fake_devices=fake_devices)
+    if suite:
+        return launch_suite(suite)
 
 
 def typhos_cli(args):
-    """Command Line Application for Typhos"""
+    """Command Line Application for Typhos."""
     args = parser.parse_args(args)
-    typhos_cli_setup(args)
-    if not args.version:
-        with typhos.utils.no_device_lazy_load():
-            suite = create_suite(args.devices, cfg=args.happi_cfg,
-                                 fake_devices=args.fake_device)
-        if suite:
-            window = QMainWindow()
-            window.setCentralWidget(suite)
-            window.show()
-            logger.info("Launching application ...")
-            QApplication.instance().exec_()
-            logger.info("Execution complete!")
-            return window
+
+    if args.version:
+        print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
+        return
+
+    if any((args.profile_modules is not None, args.profile_output,
+            args.benchmark is not None)):
+        if args.profile_modules:
+            context = profiler_context(module_names=args.profile_modules,
+                                       filename=args.profile_output)
+        else:
+            context = profiler_context(filename=args.profile_output)
+    else:
+        context = nullcontext()
+
+    with context:
+        typhos_cli_setup(args)
+        if args.benchmark is not None:
+            # Note: actually a list of suites
+            suite = run_benchmarks(args.benchmark)
+        else:
+            suite = typhos_run(args.devices, cfg=args.happi_cfg,
+                               fake_devices=args.fake_device)
+        return suite
 
 
 def main():
-    """Execute the ``typhos_cli`` with command line arguments"""
+    """Execute the ``typhos_cli`` with command line arguments."""
     typhos_cli(sys.argv[1:])
