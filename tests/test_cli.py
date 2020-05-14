@@ -95,6 +95,8 @@ def test_cli_benchmark(monkeypatch, capsys, qapp, qtbot):
 def test_cli_profile_output(monkeypatch, capsys, qapp, qtbot):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
     path_obj = conftest.MODULE_PATH / 'artifacts' / 'prof'
+    if not path_obj.parent.exists():
+        path_obj.parent.mkdir(parents=True)
     window = typhos_cli(['ophyd.sim.SynAxis[]', '--profile-output',
                          str(path_obj)])
     qtbot.addWidget(window)
