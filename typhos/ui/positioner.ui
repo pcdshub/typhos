@@ -156,7 +156,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,1,1,0,0">
+       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,1,1,0,0,0">
         <property name="spacing">
          <number>10</number>
         </property>
@@ -276,16 +276,6 @@
          </layout>
         </item>
         <item>
-         <widget class="QLabel" name="status_label">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="stop_button">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -319,6 +309,16 @@
           </property>
           <property name="flat">
            <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="status_label">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
