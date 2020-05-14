@@ -269,7 +269,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         device = self.device
         try:
             low_limit, high_limit = device.limits
-        except AttributeError:
+        except Exception:
             ...
         else:
             if low_limit < high_limit:
