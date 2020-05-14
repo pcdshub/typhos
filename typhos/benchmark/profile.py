@@ -54,7 +54,7 @@ def setup_profiler(module_names=None):
     Includes all functions and classes from all submodules of the given
     modules. This defaults to everything in the typhos module, but you can
     limit the scope by passing a particular submodule,
-    e.g. module_names=['typhos.display']
+    e.g. module_names=['typhos.display'].
     """
     if module_names is None:
         module_names = ['typhos']

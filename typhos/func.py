@@ -1,5 +1,5 @@
 """
-Display an arbitrary Python function inside our PyQt UI
+Display an arbitrary Python function inside our PyQt UI.
 
 The class :class:`.FunctionDisplay` uses the function annotation language
 described in PEP 3107 to automatically create a widget based on the arguments
@@ -33,10 +33,10 @@ logger = logging.getLogger(__name__)
 
 class ParamWidget(QWidget):
     """
-    Generic Parameter Widget
+    Generic Parameter Widget.
 
     This creates the QLabel for the parameter and defines the interface
-    required for subclasses of the ParamWidget
+    required for subclasses of the ParamWidget.
     """
     def __init__(self, parameter,  default=inspect._empty, parent=None):
         super().__init__(parent=parent)
@@ -62,15 +62,15 @@ class ParamWidget(QWidget):
 
 class ParamCheckBox(ParamWidget):
     """
-    QCheckBox for operator control of boolean values
+    QCheckBox for operator control of boolean values.
 
     Parameters
     ----------
     parameter : str
-        Name of parameter this widget controls
+        Name of parameter this widget controls.
 
     default : bool, optional
-        Default state of the box
+        Default state of the box.
 
     parent : QWidget, optional
     """
@@ -84,19 +84,19 @@ class ParamCheckBox(ParamWidget):
 
     def get_param_value(self):
         """
-        Return the checked state of the QCheckBox
+        Return the checked state of the QCheckBox.
         """
         return self.param_control.isChecked()
 
 
 class ParamLineEdit(ParamWidget):
     """
-    QLineEdit for typed user entry control
+    QLineEdit for typed user entry control.
 
     Parameter
     ---------
     parameter : str
-        Name of parameter this widget controls
+        Name of parameter this widget controls.
 
     _type : type
         Type to convert the text to before sending it to the function. All
@@ -106,7 +106,7 @@ class ParamLineEdit(ParamWidget):
 
     default : bool, optional
         Default text for the QLineEdit. This if automatically populated into
-        the QLineEdit field and it is also set as the ``placeHolderText``
+        the QLineEdit field and it is also set as the ``placeHolderText``.
 
     parent : QWidget, optional
     """
@@ -130,7 +130,7 @@ class ParamLineEdit(ParamWidget):
 
     def get_param_value(self):
         """
-        Return the current value of the QLineEdit converted to :attr:`._type`
+        Return the current value of the QLineEdit converted to :attr:`._type`.
         """
         # Cast the current text into our type
         try:
@@ -145,12 +145,12 @@ class ParamLineEdit(ParamWidget):
 
 def parse_numpy_docstring(docstring):
     '''
-    Parse a numpy docstring for summary and parameter information
+    Parse a numpy docstring for summary and parameter information.
 
     Parameters
     ----------
     docstring : str
-        Docstring to parse
+        Docstring to parse.
 
     Returns
     -------
@@ -172,7 +172,7 @@ def parse_numpy_docstring(docstring):
 
 class FunctionDisplay(QGroupBox):
     """
-    Display controls for an annotated function in a QGroupBox
+    Display controls for an annotated function in a QGroupBox.
 
     In order to display function arguments in the user interface, the class
     must be aware of what the type is of each of the parameters. Instead of
@@ -194,7 +194,7 @@ class FunctionDisplay(QGroupBox):
     Attributes
     ----------
     accepted_types : list
-        List of types FunctionDisplay can create widgets for
+        List of types FunctionDisplay can create widgets for.
 
     Parameters
     ----------
@@ -202,17 +202,17 @@ class FunctionDisplay(QGroupBox):
 
     name : str, optional
         Name to label the box with, by default this will be the function
-        meeting
+        meeting.
 
     annotations : dict, optional
         If the function your are creating a display for is not annotated, you
         may manually supply types for parameters by passing in a dictionary of
-        name to type mapping
+        name to type mapping.
 
     hide_params : list, optional
         List of parameters to exclude from the display. These should have
         appropriate defaults. By default, ``self``, ``args`` and ``kwargs`` are
-        all excluded
+        all excluded.
 
     parent : QWidget, optional
     """
@@ -302,7 +302,7 @@ class FunctionDisplay(QGroupBox):
     @property
     def required_params(self):
         """
-        Required parameters
+        Required parameters.
         """
         parameters = self.signature.parameters
         return [param.parameter for param in self.param_controls
@@ -311,7 +311,7 @@ class FunctionDisplay(QGroupBox):
     @property
     def optional_params(self):
         """
-        Optional parameters
+        Optional parameters.
         """
         parameters = self.signature.parameters
         return [param.parameter for param in self.param_controls
@@ -320,11 +320,11 @@ class FunctionDisplay(QGroupBox):
     @Slot()
     def execute(self):
         """
-        Execute :attr:`.func`
+        Execute :attr:`.func`.
 
         This takes the parameters configured by the :attr:`.param_controls`
         widgets and passes them into the given callable. All generated
-        exceptions are captured and logged
+        exceptions are captured and logged.
         """
         logger.info("Executing %s ...", self.name)
         # If our function does not take any argument
@@ -359,18 +359,18 @@ class FunctionDisplay(QGroupBox):
 
     def add_parameter(self, name, _type, default=inspect._empty, tooltip=None):
         """
-        Add a parameter to the function display
+        Add a parameter to the function display.
 
         Parameters
         ----------
         name : str
-            Parameter name
+            Parameter name.
 
         _type : type
-            Type of variable that we are expecting the user to input
+            Type of variable that we are expecting the user to input.
 
         default : any, optional
-            Default value for the parameter
+            Default value for the parameter.
 
         tooltip : str, optional
             Tooltip to use for the control widget.  If not specified, docstring
@@ -380,7 +380,7 @@ class FunctionDisplay(QGroupBox):
         Returns
         -------
         widget : QWidget
-            The generated widget
+            The generated widget.
         """
         if tooltip is None:
             tooltip_header = f'{name} - {_type.__name__}'
@@ -436,22 +436,22 @@ class FunctionDisplay(QGroupBox):
         return cntrl
 
     def sizeHint(self):
-        """Suggested size"""
+        """Suggested size."""
         return QSize(175, 100)
 
 
 class FunctionPanel(TogglePanel):
     """
-    Function Panel
+    Function Panel.
 
     Similar to :class:`.SignalPanel` but instead displays a set of function
     widgets arranged in a row. Each provided method has a
-    :class:`.FunctionDisplay` generated for it an added to the layout
+    :class:`.FunctionDisplay` generated for it an added to the layout.
 
     Parameters
     ----------
     methods : list of callables, optional
-        List of callables to add to the FunctionPanel
+        List of callables to add to the FunctionPanel.
 
     parent : QWidget
     """
@@ -474,16 +474,16 @@ class FunctionPanel(TogglePanel):
 
     def add_method(self, func, *args, **kwargs):
         """
-        Add a :class:`.FunctionDisplay`
+        Add a :class:`.FunctionDisplay`.
 
         Parameters
         ----------
         func : callable
-            Annotated callable function
+            Annotated callable function.
 
         args, kwargs:
             All additional parameters are passed directly to the
-            :class:`.FunctionDisplay` constructor
+            :class:`.FunctionDisplay` constructor.
         """
         # Create method display
         func_name = kwargs.get('name', func.__name__)
@@ -500,7 +500,7 @@ class FunctionPanel(TogglePanel):
 
 class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
     """
-    QPushButton to access a method of a Device
+    QPushButton to access a method of a Device.
 
     The function provided by the loaded device and the :attr:`.method_name`
     will be run when the button is clicked. If ``use_status`` is set to True,
@@ -519,7 +519,7 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
 
     def add_device(self, device):
         """
-        Add a new device to the widget
+        Add a new device to the widget.
 
         Parameters
         ----------
@@ -530,7 +530,7 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
 
     @Property(str)
     def method_name(self):
-        """Name of method on provided Device to execute"""
+        """Name of method on provided Device to execute."""
         return self._method
 
     @method_name.setter
@@ -540,7 +540,7 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
     @Property(bool)
     def use_status(self):
         """
-        Use the status to enable and disable the button
+        Use the status to enable and disable the button.
         """
         return self._use_status
 
@@ -550,7 +550,7 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
 
     @Slot()
     def execute(self):
-        """Execute the method given by ``method_name``"""
+        """Execute the method given by ``method_name``."""
         if not self.devices:
             logger.error("No device loaded into the object")
             return
@@ -595,7 +595,7 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
 
     @classmethod
     def from_device(cls, device, parent=None):
-        """Create a TyphosMethodButton from a device"""
+        """Create a TyphosMethodButton from a device."""
         instance = cls(parent=parent)
         instance.add_device(device)
         return instance

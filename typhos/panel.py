@@ -52,7 +52,7 @@ def _get_component_sorter(signal_order, *, kind_order=None):
     Parameters
     ----------
     signal_order : SignalOrder
-        Order for signals
+        Order for signals.
 
     kind_order : list, optional
         Order for Kinds, defaulting to ``DEFAULT_KIND_ORDER``.
@@ -92,8 +92,8 @@ class SignalPanel(QtWidgets.QGridLayout):
     Parameters
     ----------
     signals : OrderedDict, optional
-        Signals to include in the panel
-        Parent of panel
+        Signals to include in the panel.
+        Parent of panel.
 
     Attributes
     ----------
@@ -114,7 +114,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     See also
     --------
-    :class:`CompositeSignalPanel`
+    :class:`CompositeSignalPanel`.
     """
 
     NUM_COLS = 3
@@ -150,7 +150,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         Returns
         -------
         signals : dict
-            With the form: ``{signal_name: signal}``
+            With the form: ``{signal_name: signal}``.
         """
         return {
             name: info['signal']
@@ -166,7 +166,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         Returns
         -------
         signals : dict
-            With the form: ``{signal_name: signal}``
+            With the form: ``{signal_name: signal}``.
         """
         return {
             name: info['signal']
@@ -257,7 +257,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         Parameters
         ----------
         signal : EpicsSignal, EpicsSignalRO
-            Signal to create a widget
+            Signal to create a widget.
 
         name : str, optional
             The name to be used for the row label.  This defaults to
@@ -267,7 +267,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         -------
         row : int
             Row number that the signal information was added to in the
-            `SignalPanel.layout()``
+            `SignalPanel.layout()``.
         """
         name = name or signal.name
         if signal.name in self.signal_name_to_info:
@@ -379,7 +379,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         Parameters
         ----------
         row : int
-            The row number
+            The row number.
 
         widgets : list of :class:`QtWidgets.QWidget`
             If ``None`` is found, the cell will be skipped.
@@ -417,7 +417,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         -------
         row : int
             Row number that the signal information was added to in the
-            `SignalPanel.layout()``
+            `SignalPanel.layout()``.
         """
         logger.debug("Adding PV %s", name)
         # Configure optional write PV settings
@@ -529,7 +529,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             List of kinds to show.
 
         name_filter : str, optional
-            Additionally filter signals by name
+            Additionally filter signals by name.
         """
         for name, info in self.signal_name_to_info.items():
             item = info['signal'] or info['component']
@@ -577,16 +577,16 @@ class SignalPanel(QtWidgets.QGridLayout):
         Parameters
         ----------
         device : ophyd.Device
-            The device owner
+            The device owner.
 
         attr : str
-            The signal's attribute name
+            The signal's attribute name.
 
         dotted_name : str
-            The signal's dotted name
+            The signal's dotted name.
 
         component : ophyd.Component
-            The component class used to generate the instance
+            The component class used to generate the instance.
         """
         if component.lazy:
             kind = component.kind
@@ -811,10 +811,10 @@ class CompositeSignalPanel(SignalPanel):
         Parameters
         ----------
         device : ophyd.Device
-            The device to add
+            The device to add.
 
         name : str
-            The name/label to go with the device
+            The name/label to go with the device.
         """
         logger.debug('%s adding sub-device: %s (%s)', self.__class__.__name__,
                      device.name, device.__class__.__name__)

@@ -966,10 +966,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         The full dictionary of macros is built with the following order of
         precedence::
 
-           1. Macros from the device metadata itself
-           2. If available, `name`, and `prefix` will be added from the device
+           1. Macros from the device metadata itself.
+           2. If available, `name`, and `prefix` will be added from the device.
            3. The argument ``macros`` is then used to fill/update the final
-              macro dictionary
+              macro dictionary.
 
         Parameters
         ----------
@@ -1107,7 +1107,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         Create a new TyphosDeviceDisplay from a Device class.
 
         Loads the signals in to the appropriate positions and sets the title to
-        a cleaned version of the device name
+        a cleaned version of the device name.
 
         Parameters
         ----------

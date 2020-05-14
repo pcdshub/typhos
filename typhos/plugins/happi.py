@@ -34,7 +34,7 @@ class HappiConnection(PyDMConnection):
         self.add_listener(channel)
 
     def add_listener(self, channel):
-        """Add a new channel to the existing connection"""
+        """Add a new channel to the existing connection."""
         super().add_listener(channel)
         # Connect our channel to the signal
         self.tx.connect(channel.tx_slot, QtCore.Qt.QueuedConnection)

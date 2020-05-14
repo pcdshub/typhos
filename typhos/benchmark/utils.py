@@ -1,5 +1,5 @@
 """
-Helpful functions that don't belong in a more specific submodule
+Helpful functions that don't belong in a more specific submodule.
 """
 import importlib
 import logging

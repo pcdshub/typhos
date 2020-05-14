@@ -242,7 +242,7 @@ class _CachedPath:
     Parameters
     ----------
     path : pathlib.Path
-        The path to cache
+        The path to cache.
 
     Attributes
     ----------
