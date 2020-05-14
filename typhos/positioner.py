@@ -85,16 +85,16 @@ def _linked_attribute(property_attr, widget_attr):
 
 class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     """
-    Widget to interact with an ``ophyd.Positioner``
+    Widget to interact with a :class:`ophyd.Positioner`.
 
     Standard positioner motion requires a large amount of context for
     operators. For most motors, it may not be enough to simply have a text
     field where setpoints can be punched in. Instead, information like soft
     limits and hardware limit switches are crucial for a full understanding of
     the position and behavior of a motor. The widget will work with any object
-    that implements ``set``, however to get other relevant information, we also
-    duck-type to see if we can find other useful signals.  Below is a table of
-    attributes that the widget looks for to inform screen design:
+    that implements the method ``set``, however to get other relevant
+    information, we see if we can find other useful signals.  Below is a table
+    of attributes that the widget looks for to inform screen design.
 
     ============== ===========================================================
     Widget         Attribute Selection
@@ -124,6 +124,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     Stop           Device.stop()
     ============== ===========================================================
     """
+
     ui_template = os.path.join(utils.ui_dir, 'positioner.ui')
     _readback_attr = 'user_readback'
     _setpoint_attr = 'user_setpoint'
