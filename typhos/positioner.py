@@ -3,8 +3,7 @@ import logging
 import operator
 import os.path
 
-from qtpy import uic
-from qtpy.QtCore import Property, Slot
+from qtpy import QtCore, uic
 
 from . import plugins, utils, widgets
 from .status import TyphosStatusThread
@@ -176,7 +175,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         status = self.device.set(float(value))
         self._start_status_thread(status)
 
-    @Slot()
+    @QtCore.Slot()
     def set(self):
         """Set the device to the value configured by ``ui.set_value``"""
         if not self.device:
@@ -202,7 +201,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.ui.set_value.setText(str(setpoint))
         self.set()
 
-    @Slot()
+    @QtCore.Slot()
     def positive_tweak(self):
         """Tweak positive by the amount listed in ``ui.tweak_value``"""
         try:
@@ -210,7 +209,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         except Exception:
             logger.exception('Tweak failed')
 
-    @Slot()
+    @QtCore.Slot()
     def negative_tweak(self):
         """Tweak negative by the amount listed in ``ui.tweak_value``"""
         try:
@@ -218,7 +217,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         except Exception:
             logger.exception('Tweak failed')
 
-    @Slot()
+    @QtCore.Slot()
     def stop(self):
         """Stop device"""
         for device in self.devices:
@@ -238,6 +237,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def _link_setpoint(self, signal, widget):
         """Link the positioner setpoint with the ui element."""
         self._setpoint = signal
+        if signal is not None:
+            # Seed the set_value text with the user_setpoint channel value.
+            if hasattr(widget, 'textChanged'):
+                widget.textChanged.connect(self._user_setpoint_update)
 
     @_linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch')
     def _link_low_limit_switch(self, signal, widget):
@@ -300,7 +303,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         if not (self._link_low_limit() and self._link_high_limit()):
             self._link_limits_by_limits_attr()
 
-    @Property(bool, designable=False)
+    @QtCore.Property(bool, designable=False)
     def moving(self):
         """
         Current state of widget
@@ -316,17 +319,17 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             self._moving = value
             utils.reload_widget_stylesheet(self, cascade=True)
 
-    @Property(bool, designable=False)
+    @QtCore.Property(bool, designable=False)
     def successful_move(self):
         """The last requested move was successful"""
         return self._last_move is True
 
-    @Property(bool, designable=False)
+    @QtCore.Property(bool, designable=False)
     def failed_move(self):
         """The last requested move failed"""
         return self._last_move is False
 
-    @Property(str, designable=True)
+    @QtCore.Property(str, designable=True)
     def readback_attribute(self):
         """The attribute name for the readback signal."""
         return self._readback_attr
@@ -335,7 +338,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def readback_attribute(self, value):
         self._readback_attr = value
 
-    @Property(str, designable=True)
+    @QtCore.Property(str, designable=True)
     def setpoint_attribute(self):
         """The attribute name for the setpoint signal."""
         return self._setpoint_attr
@@ -344,7 +347,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def setpoint_attribute(self, value):
         self._setpoint_attr = value
 
-    @Property(str, designable=True)
+    @QtCore.Property(str, designable=True)
     def low_limit_switch_attribute(self):
         """The attribute name for the low limit switch signal."""
         return self._low_limit_switch_attr
@@ -353,7 +356,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def low_limit_switch_attribute(self, value):
         self._low_limit_switch_attr = value
 
-    @Property(str, designable=True)
+    @QtCore.Property(str, designable=True)
     def high_limit_switch_attribute(self):
         """The attribute name for the high limit switch signal."""
         return self._high_limit_switch_attr
@@ -362,7 +365,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def high_limit_switch_attribute(self, value):
         self._high_limit_switch_attr = value
 
-    @Property(str, designable=True)
+    @QtCore.Property(str, designable=True)
     def low_limit_attribute(self):
         """The attribute name for the low limit signal."""
         return self._low_limit_attr
@@ -371,7 +374,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def low_limit_attribute(self, value):
         self._low_limit_attr = value
 
-    @Property(str, designable=True)
+    @QtCore.Property(str, designable=True)
     def high_limit_attribute(self):
         """The attribute name for the high limit signal."""
         return self._high_limit_attr
@@ -391,3 +394,16 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
                      success)
         self._last_move = success
         self.moving = False
+
+    @QtCore.Slot(str)
+    def _user_setpoint_update(self, text):
+        """Qt slot - indicating the ``user_setpoint`` widget text changed."""
+        try:
+            text = text.strip().split(' ')[0]
+            text = text.strip()
+        except Exception:
+            return
+
+        # Update set_value if it's not being edited.
+        if not self.ui.set_value.hasFocus():
+            self.ui.set_value.setText(text)
