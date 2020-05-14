@@ -140,10 +140,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._readback = None
         self._setpoint = None
         self._status_thread = None
+
         super().__init__(parent=parent)
-        # Instantiate UI
+
         self.ui = uic.loadUi(self.ui_template, self)
-        # Connect signals to slots
         self.ui.set_value.returnPressed.connect(self.set)
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
@@ -389,11 +389,28 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         logger.debug("Begin showing move in TyphosPositionerWidget")
         self.moving = True
 
+    def _set_status_text(self, text, *, max_length=60):
+        """Set the status text label to ``text``."""
+        if len(text) >= max_length:
+            self.ui.status_label.setToolTip(text)
+            text = text[:max_length] + '...'
+        else:
+            self.ui.status_label.setToolTip('')
+
+        self.ui.status_label.setText(text)
+
     def _status_finished(self, result):
         """Called when a move is complete."""
+        if isinstance(result, Exception):
+            text = f'{result.__class__.__name__}: {result}'
+        else:
+            text = ''
+
+        self._set_status_text(text)
+
         success = not isinstance(result, Exception)
-        logger.debug("Completed move in TyphosPositionerWidget (success=%s)",
-                     success)
+        logger.debug("Completed move in TyphosPositionerWidget (result=%r)",
+                     result)
         self._last_move = success
         self.moving = False
 
