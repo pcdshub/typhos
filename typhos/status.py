@@ -51,7 +51,7 @@ class TyphosStatusThread(QThread):
         self.timeout = timeout
 
     def run(self):
-        """Start following a new motion"""
+        """Monitor status object status and emit signals."""
         # Don't do anything if we are handed a finished status
         if self.status.done:
             logger.debug("Status already completed.")
