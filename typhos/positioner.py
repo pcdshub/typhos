@@ -402,7 +402,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def _status_finished(self, result):
         """Called when a move is complete."""
         if isinstance(result, Exception):
-            text = f'{result.__class__.__name__}: {result}'
+            text = f'<b>{result.__class__.__name__}</b> {result}'
         else:
             text = ''
 
