@@ -15,6 +15,8 @@ from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
 from .utils import TyphosBase, clean_name, flatten_tree, save_suite
 
 logger = logging.getLogger(__name__)
+# Use non-None sentinel value since None means no tools
+DEFAULT_TOOLS = object()
 
 
 class SidebarParameter(ptypes.Parameter):
@@ -328,7 +330,7 @@ class TyphosSuite(TyphosBase):
 
     @property
     def tools(self):
-        """Tools loaded into the TyphosDeviceDisplay"""
+        """Tools loaded into the TyphosSuite"""
         if 'Tools' in self.top_level_groups:
             return [param.value()
                     for param in self.top_level_groups['Tools'].childs]
@@ -380,41 +382,74 @@ class TyphosSuite(TyphosBase):
                                  device.name, type(tool))
 
     @classmethod
-    def from_device(cls, device, parent=None, tools=dict(), pin=False,
+    def from_device(cls, device, parent=None, tools=DEFAULT_TOOLS, pin=False,
                     **kwargs):
         """
-        Create a new TyphosDeviceDisplay from an ophyd.Device
+        Create a new TyphosSuite from an :class:`ophyd.Device`
 
         Parameters
         ----------
-        device: ophyd.Device
+        device : ophyd.Device
 
-        children: bool, optional
+        children : bool, optional
             Choice to include child Device components
 
-        parent: QWidgets
+        parent : QWidget
 
-        tools: dict, optional
+        tools : dict, optional
             Tools to load for the object. ``dict`` should be name, class pairs.
             By default these will be ``.default_tools``, but ``None`` can be
             passed to avoid tool loading completely.
 
-        kwargs:
+        **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
-        display = cls(parent=parent, pin=pin)
+        return cls.from_devices([device], parent=parent, tools=tools, pin=pin,
+                                **kwargs)
+
+    @classmethod
+    def from_devices(cls, devices, parent=None, tools=DEFAULT_TOOLS, pin=False,
+                     **kwargs):
+        """
+        Create a new TyphosSuite from an iterator of :class:`ophyd.Device`
+
+        Parameters
+        ----------
+        device : ophyd.Device
+
+        children : bool, optional
+            Choice to include child Device components
+
+        parent : QWidget
+
+        tools : dict, optional
+            Tools to load for the object. ``dict`` should be name, class pairs.
+            By default these will be ``.default_tools``, but ``None`` can be
+            passed to avoid tool loading completely.
+
+        **kwargs :
+            Passed to :meth:`TyphosSuite.add_device`
+        """
+        suite = cls(parent=parent, pin=pin)
         if tools is not None:
-            if not tools:
+            logger.info("Loading Tools ...")
+            if tools is DEFAULT_TOOLS:
                 logger.debug("Using default TyphosSuite tools ...")
                 tools = cls.default_tools
-                for name, tool in tools.items():
-                    try:
-                        display.add_tool(name, tool())
-                    except Exception:
-                        logger.exception("Unable to load %s", type(tool))
-        display.add_device(device, **kwargs)
-        display.show_subdisplay(device)
-        return display
+            for name, tool in tools.items():
+                try:
+                    suite.add_tool(name, tool())
+                except Exception:
+                    logger.exception("Unable to load %s", type(tool))
+        logger.info("Adding devices ...")
+        for device in devices:
+            try:
+                suite.add_device(device, **kwargs)
+                suite.show_subdisplay(device)
+            except Exception:
+                logger.exception("Unable to add %r to TyphosSuite",
+                                 device.name)
+        return suite
 
     def save(self):
         """

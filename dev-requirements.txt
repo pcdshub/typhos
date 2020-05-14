@@ -1,8 +1,11 @@
+caproto
 codecov
 doctr
 flake8
 ipython
+line_profiler
 pytest
+pytest-benchmark
 pytest-qt
 pytest-timeout
 sphinx

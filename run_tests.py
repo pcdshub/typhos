@@ -10,7 +10,8 @@ import pytest
 if __name__ == '__main__':
     # Show output results from every test function
     # Show the message output for skipped and expected failures
-    args = ['-v', '-vrxs']
+    # Skip the benchmarking
+    args = ['-v', '-vrxs', '--benchmark-skip']
 
     # Add extra arguments
     if len(sys.argv) > 1:

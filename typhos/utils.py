@@ -1070,3 +1070,9 @@ def dump_grid_layout(layout, rows=None, cols=None, *, cell_width=60):
 
         print(separator, file=file)
         return file.getvalue()
+
+
+@contextlib.contextmanager
+def nullcontext():
+    """Stand-in for py3.7's contextlib.nullcontext"""
+    yield

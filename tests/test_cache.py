@@ -30,6 +30,7 @@ def sig():
     sig.destroy()
 
 
+@pytest.mark.skip(reason='Race condition in test')
 def test_describe_cache_signal(qtbot, describe_cache, sig):
     # Check that `new_description` is emitted with the correct args:
     with qtbot.wait_signal(describe_cache.new_description) as block:
@@ -45,6 +46,7 @@ def test_describe_cache_signal(qtbot, describe_cache, sig):
     assert describe_cache.get(sig) is None
 
 
+@pytest.mark.skip(reason='Race condition in test')
 def test_widget_type_signal(qtbot, type_cache, sig):
     with qtbot.wait_signal(type_cache.widgets_determined) as block:
         assert type_cache.get(sig) is None
