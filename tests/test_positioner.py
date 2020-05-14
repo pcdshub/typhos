@@ -111,9 +111,9 @@ def test_positioner_widget_last_move(motor_widget, qtbot):
     motor, widget = motor_widget
     assert not widget.successful_move
     assert not widget.failed_move
-    widget.done_moving(True)
+    widget._status_finished(True)
     assert widget.successful_move
     assert not widget.failed_move
-    widget.done_moving(False)
+    widget._status_finished(Exception())
     assert not widget.successful_move
     assert widget.failed_move
