@@ -16,48 +16,47 @@ class Listener(QWidget):
 
 
 @pytest.fixture(scope='function')
-def threaded_status(qtbot):
+def status(qtbot):
     status = Status()
+    return status
+
+
+@pytest.fixture(scope='function')
+def listener(qtbot, status):
     listener = Listener()
-    thread = TyphosStatusThread(status)
     qtbot.addWidget(listener)
+    return listener
+
+
+@pytest.fixture(scope='function')
+def thread(qtbot, status, listener):
+    thread = TyphosStatusThread(status)
     thread.status_started.connect(listener.started)
     thread.status_finished.connect(listener.finished)
-    yield listener, thread, status
+    yield thread
     if thread.isRunning():
         thread.quit()
 
 
-def test_previously_done_status_in_thread(threaded_status):
-    listener, thread, status = threaded_status
-    status._finished()
+def test_previously_done_status_in_thread(listener, status, thread):
+    status.set_finished()
     status.wait()
     thread.run()
     assert not listener.started.called
-    assert not listener.finished.called
+    assert listener.finished.called
 
 
-def test_status_finished_during_lag(threaded_status):
-    listener, thread, status = threaded_status
-    thread.lag = 3
-    thread.start()
-    status._finished()
-    thread.wait()
-    assert not listener.started.called
-    assert not listener.finished.called
-
-
-def test_status_thread_completed(qtbot, threaded_status):
-    listener, thread, status = threaded_status
+def test_status_thread_completed(qtbot, listener, status, thread):
     thread.start()
     qtbot.waitUntil(lambda: listener.started.called, timeout=2000)
-    status._finished()
+    status.set_finished()
     qtbot.waitUntil(lambda: listener.finished.called, timeout=2000)
 
 
-def test_status_thread_timeout(threaded_status):
-    listener, thread, status = threaded_status
+def test_status_thread_timeout(listener, thread, status):
     thread.timeout = 0.01
     thread.run()
     assert listener.started.called
-    assert not listener.finished.called
+
+    ex, = listener.finished.call_args[0]
+    assert isinstance(ex, TimeoutError)
