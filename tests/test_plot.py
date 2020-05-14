@@ -1,8 +1,6 @@
 """
-Module Docstring
+Tests for the plot tool.
 """
-import time
-
 import pytest
 
 from ophyd import EpicsSignal, Signal
@@ -64,13 +62,7 @@ def test_device_plot(motor, qapp, qtbot):
     dtp = TyphosTimePlot.from_device(motor)
     qtbot.addWidget(dtp)
 
-    # Update happens in a background thread
-    t0 = time.time()
-    while time.time() - t0 < 1:
-        qapp.processEvents()
-        time.sleep(0.1)
+    def all_signals_listed():
+        assert dtp.signal_combo.count() == len(motor.component_names)
 
-    # Add the hint
-    assert len(dtp.timechart.chart.curves) == 1
-    # Added all the signals
-    assert dtp.signal_combo.count() == len(motor.component_names)
+    qtbot.wait_until(all_signals_listed)
