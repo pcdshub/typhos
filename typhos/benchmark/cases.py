@@ -46,7 +46,7 @@ def profiler_benchmark(cls, start_ioc, auto_exit=True):
 
 def unittest_benchmark(cls, start_ioc):
     """
-    Catch-all for simple pytest benchmarking
+    Catch-all for simple pytest benchmarking.
 
     This handles the case where we want to put our faith in qtbot to execute
     the launching of the screen. Therefore, we return the tools to the unit

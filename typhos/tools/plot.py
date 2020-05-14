@@ -18,14 +18,14 @@ logger = logging.getLogger(__name__)
 
 class TyphosTimePlot(utils.TyphosBase):
     """
-    Generalized widget for plotting Ophyd signals
+    Generalized widget for plotting Ophyd signals.
 
     This widget is a ``TimeChartDisplay`` wrapped with some convenient
     functions for adding signals by their attribute name.
 
     Parameters
     ----------
-    parent: QWidget
+    parent : QWidget
     """
 
     hint_limit = 20
@@ -63,28 +63,28 @@ class TyphosTimePlot(utils.TyphosBase):
     @property
     def channel_to_curve(self):
         """
-        A dictionary of channel_name to curve
+        A dictionary of channel_name to curve.
         """
         return dict(self.timechart.channel_map)
 
     def add_available_signal(self, signal, name):
         """
-        Add an Ophyd signal to the list of available channels
+        Add an Ophyd signal to the list of available channels.
 
         If the Signal is not an EPICS Signal object you are responsible for
         registering this yourself, if not already done.
 
         Parameters
         ----------
-        signal: ophyd.Signal
+        signal : ophyd.Signal
 
-        name: str
-            Alias for signal to display in QComboBox
+        name : str
+            Alias for signal to display in QComboBox.
 
         Raises
         ------
         ValueError
-            If a signal of the same name already is available
+            If a signal of the same name already is available.
         """
         if name in self._available_signals:
             raise ValueError('Signal already available')
@@ -98,23 +98,23 @@ class TyphosTimePlot(utils.TyphosBase):
 
     def add_curve(self, channel, name=None, color=None, **kwargs):
         """
-        Add a curve to the plot
+        Add a curve to the plot.
 
         Parameters
         ----------
         channel : str
-            PyDMChannel address
+            PyDMChannel address.
 
         name : str, optional
             Name of TimePlotCurveItem. If None is given, the ``channel`` is
             used.
 
-        color: QColor, optional
+        color : QColor, optional
             Color to display line in plot. If None is given, a QColor will be
-            chosen randomly
+            chosen randomly.
 
-        kwargs:
-            Passed to ``timechart.add_y_channel``
+        **kwargs
+            Passed to :meth:`timechart.add_y_channel`.
         """
         name = name or channel
         # Create a random color if None is supplied
@@ -127,13 +127,13 @@ class TyphosTimePlot(utils.TyphosBase):
     @Slot()
     def remove_curve(self, name):
         """
-        Remove a curve from the plot
+        Remove a curve from the plot.
 
         Parameters
         ----------
-        name: str
+        name : str
             Name of the curve to remove. This should match the name given
-            during the call of :meth:`.add_curve`
+            during the call of :meth:`.add_curve`.
         """
         logger.debug("Removing %s from TyphosTimePlot ...", name)
         self.timechart.remove_curve(name)
@@ -141,10 +141,10 @@ class TyphosTimePlot(utils.TyphosBase):
     @Slot()
     def creation_requested(self):
         """
-        Reaction to ``create_button`` press
+        Reaction to ``create_button`` press.
 
         Observes the state of the selection widgets and makes the appropriate
-        call to :meth:`.add_curve`
+        call to :meth:`.add_curve`.
         """
         # Find requested channel
         name = self.signal_combo.currentText()
@@ -186,7 +186,7 @@ class TyphosTimePlot(utils.TyphosBase):
                              exc_info=True)
 
     def add_device(self, device):
-        """Add a device and it's component signals to the plot"""
+        """Add a device and it's component signals to the plot."""
         super().add_device(device)
 
         cache = get_global_describe_cache()

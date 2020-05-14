@@ -4,9 +4,10 @@ Module Docstring
 import logging
 
 import numpy as np
+from qtpy.QtCore import Qt, Slot
+
 from ophyd.utils.epics_pvs import _type_map
-from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
-from qtpy.QtCore import Slot, Qt
+from pydm.data_plugins.plugin import PyDMConnection, PyDMPlugin
 
 from ..utils import raise_to_operator
 
@@ -17,7 +18,7 @@ signal_registry = dict()
 
 def register_signal(signal):
     """
-    Add a new Signal to the registry
+    Add a new Signal to the registry.
 
     The Signal object is kept within ``signal_registry`` for reference by name
     in the :class:`.SignalConnection`. Signals can be added multiple times and
@@ -32,20 +33,20 @@ def register_signal(signal):
 
 class SignalConnection(PyDMConnection):
     """
-    Connection to monitor an Ophyd Signal
+    Connection to monitor an Ophyd Signal.
 
     This is meant as a generalized connection to any type of Ophyd Signal. It
     handles reporting updates to listeners as well as pushing new values that
-    users request in the PyDM interface back to the underlying signal
+    users request in the PyDM interface back to the underlying signal.
 
     The signal `data_type` is used to inform PyDM on the Python type that the
     signal will expect and emit. It is expected that this type is static
-    through the execution of the application
+    through the execution of the application.
 
     Attributes
     ----------
     signal : ophyd.Signal
-        Stored signal object
+        Stored signal object.
     """
     supported_types = [int, float, str, np.ndarray]
 
@@ -63,13 +64,13 @@ class SignalConnection(PyDMConnection):
 
     def cast(self, value):
         """
-        Cast a value to the correct Python type based on ``signal_type``
+        Cast a value to the correct Python type based on ``signal_type``.
 
         If ``signal_type`` is not set, the result of ``ophyd.Signal.describe``
         is used to determine what the correct Python type for value is. We need
         to be aware of the correct Python type so that we can emit the value
         through the correct signal and convert values returned by the widget to
-        the correct type before handing them to Ophyd Signal
+        the correct type before handing them to Ophyd Signal.
         """
         # If this is the first time we are receiving a new value note the type
         # We make the assumption that signals do not change types during a
@@ -94,11 +95,11 @@ class SignalConnection(PyDMConnection):
     @Slot(np.ndarray)
     def put_value(self, new_val):
         """
-        Pass a value from the UI to Signal
+        Pass a value from the UI to Signal.
 
         We are not guaranteed that this signal is writeable so catch exceptions
         if they are created. We attempt to cast the received value into the
-        reported type of the signal unless it is of type ``np.ndarray``
+        reported type of the signal unless it is of type ``np.ndarray``.
         """
         try:
             new_val = self.cast(new_val)
@@ -110,7 +111,7 @@ class SignalConnection(PyDMConnection):
 
     def send_new_value(self, value=None, **kwargs):
         """
-        Update the UI with a new value from the Signal
+        Update the UI with a new value from the Signal.
         """
         try:
             value = self.cast(value)
@@ -121,11 +122,11 @@ class SignalConnection(PyDMConnection):
 
     def add_listener(self, channel):
         """
-        Add a listener channel to this connection
+        Add a listener channel to this connection.
 
         This attaches values input by the user to the `send_new_value` function
         in order to update the Signal object in addition to the default setup
-        performed in PyDMConnection
+        performed in PyDMConnection.
         """
         # Perform the default connection setup
         logger.debug("Adding %r ...", channel)
@@ -170,10 +171,10 @@ class SignalConnection(PyDMConnection):
 
     def remove_listener(self, channel, destroying=False, **kwargs):
         """
-        Remove a listener channel from this connection
+        Remove a listener channel from this connection.
 
         This removes the `send_new_value` connections from the channel in
-        addition to the default disconnection performed in PyDMConnection
+        addition to the default disconnection performed in PyDMConnection.
         """
         logger.debug("Removing %r ...", channel)
         # Disconnect put_value from outgoing channel
@@ -189,17 +190,17 @@ class SignalConnection(PyDMConnection):
         logger.debug("Successfully removed %r", channel)
 
     def close(self):
-        """Unsubscribe from the Ophyd signal"""
+        """Unsubscribe from the Ophyd signal."""
         self.signal.unsubscribe(self._cid)
 
 
 class SignalPlugin(PyDMPlugin):
-    """Plugin registered with PyDM to handle SignalConnection"""
+    """Plugin registered with PyDM to handle SignalConnection."""
     protocol = 'sig'
     connection_class = SignalConnection
 
     def add_connection(self, channel):
-        """Add a connection to a channel"""
+        """Add a connection to a channel."""
         try:
             # Add a PyDMConnection for the channel
             super().add_connection(channel)

@@ -66,7 +66,7 @@ __doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
 
 
 def typhos_cli_setup(args):
-    """Setup logging and style"""
+    """Setup logging and style."""
     # Logging Level handling
     logging.getLogger().addHandler(logging.NullHandler())
     shown_logger = logging.getLogger('typhos')

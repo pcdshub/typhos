@@ -1,4 +1,5 @@
 __all__ = ['use_stylesheet', 'register_signal', 'load_suite',
+           'TyphosCompositeSignalPanel',
            'TyphosDeviceDisplay',
            'TyphosSuite',
            'TyphosSignalPanel',
@@ -9,7 +10,7 @@ __all__ = ['use_stylesheet', 'register_signal', 'load_suite',
 from ._version import get_versions
 from .display import TyphosDeviceDisplay
 from .func import TyphosMethodButton
-from .panel import TyphosSignalPanel
+from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
 from .plugins import register_signal
 from .positioner import TyphosPositionerWidget
 from .suite import TyphosSuite

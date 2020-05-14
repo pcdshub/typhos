@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
     """
-    Widget to interact with an ``ophyd.Positioner``
+    Widget to interact with an ``ophyd.Positioner``.
 
     Standard positioner motion requires a large amount of context for
     operators. For most motors, it may not be enough to simply have a text
@@ -46,7 +46,7 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
                    expected to take a ``float`` and return a ``status`` object
                    that indicates the motion completeness. Must be implemented.
 
-    Stop           Device.stop()
+    Stop           Device.stop().
     ============== ===========================================================
     """
     ui_template = os.path.join(ui_dir, 'positioner.ui')
@@ -68,7 +68,7 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
 
     @Slot()
     def set(self):
-        """Set the device to the value configured by ``ui.set_value``"""
+        """Set the device to the value configured by ``ui.set_value``."""
         value = self.ui.set_value.text()
         try:
             # Check that we have a device configured
@@ -99,21 +99,21 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
 
     @Slot()
     def positive_tweak(self):
-        """Tweak positive by the amount listed in ``ui.tweak_value``"""
+        """Tweak positive by the amount listed in ``ui.tweak_value``."""
         setpoint = self._get_position() + float(self.tweak_value.text())
         self.ui.set_value.setText(str(setpoint))
         self.set()
 
     @Slot()
     def negative_tweak(self):
-        """Tweak negative by the amount listed in ``ui.tweak_value``"""
+        """Tweak negative by the amount listed in ``ui.tweak_value``."""
         setpoint = self._get_position() - float(self.tweak_value.text())
         self.ui.set_value.setText(str(setpoint))
         self.set()
 
     @Slot()
     def stop(self):
-        """Stop device"""
+        """Stop device."""
         for device in self.devices:
             device.stop()
 
@@ -123,7 +123,7 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
         return self._readback.get()
 
     def add_device(self, device):
-        """Add a device to the widget"""
+        """Add a device to the widget."""
         # Add device to cache
         self.devices.clear()  # only one device allowed
         super().add_device(device)
@@ -175,10 +175,10 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
     @Property(bool, designable=False)
     def moving(self):
         """
-        Current state of widget
+        Current state of widget.
 
         This will lag behind the actual state of the positioner in order to
-        prevent unnecessary rapid movements
+        prevent unnecessary rapid movements.
         """
         return getattr(self, '_moving', False)
 
@@ -190,21 +190,21 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
 
     @Property(bool, designable=False)
     def successful_move(self):
-        """The last requested move was successful"""
+        """The last requested move was successful."""
         return self._last_move is True
 
     @Property(bool, designable=False)
     def failed_move(self):
-        """The last requested move failed"""
+        """The last requested move failed."""
         return self._last_move is False
 
     def move_changed(self):
-        """Called when a move is begun"""
+        """Called when a move is begun."""
         logger.debug("Begin showing move in TyphosPositionerWidget")
         self.moving = True
 
     def done_moving(self, success):
-        """Called when a move is complete"""
+        """Called when a move is complete."""
         logger.debug("Completed move in TyphosPositionerWidget (success=%s)",
                      success)
         self._last_move = success

@@ -1,10 +1,11 @@
 import logging
 
-from happi import Client
-from happi.loader import from_container
-from happi.errors import SearchError
-from pydm.data_plugins.plugin import PyDMPlugin, PyDMConnection
 from qtpy import QtCore
+
+from happi import Client
+from happi.errors import SearchError
+from happi.loader import from_container
+from pydm.data_plugins.plugin import PyDMConnection, PyDMPlugin
 
 
 class HappiClientState:
@@ -16,16 +17,16 @@ logger = logging.getLogger(__name__)
 
 def register_client(client):
     """
-    Register a Happi Client to be used with the DataPlugin
+    Register a Happi Client to be used with the DataPlugin.
 
     This is not required to be called by the user, if your environment is setup
-    such that ``happi.Client.from_config`` will return the desired client
+    such that :meth:`happi.Client.from_config` will return the desired client.
     """
     HappiClientState.client = client
 
 
 class HappiConnection(PyDMConnection):
-    """A PyDMConnection to the Happi Database"""
+    """A PyDMConnection to the Happi Database."""
     tx = QtCore.Signal(dict)
 
     def __init__(self, channel, address, protocol=None, parent=None):
@@ -33,7 +34,7 @@ class HappiConnection(PyDMConnection):
         self.add_listener(channel)
 
     def add_listener(self, channel):
-        """Add a new channel to the existing connection"""
+        """Add a new channel to the existing connection."""
         super().add_listener(channel)
         # Connect our channel to the signal
         self.tx.connect(channel.tx_slot, QtCore.Qt.QueuedConnection)
@@ -56,7 +57,7 @@ class HappiConnection(PyDMConnection):
         self.tx.emit({'obj': obj, 'md': md})
 
     def remove_listener(self, channel, destroying=False, **kwargs):
-        """Remove a channel from the database connection"""
+        """Remove a channel from the database connection."""
         super().remove_listener(channel, destroying=destroying, **kwargs)
         if not destroying:
             self.tx.disconnect(channel.tx_slot)
