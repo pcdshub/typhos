@@ -152,7 +152,10 @@ def create_devices(device_names, cfg=None, fake_devices=False):
                     # This might fail, but is best effort
                     for arg in inspect.getfullargspec(klass).args:
                         if arg not in default_kwargs and arg != 'self':
-                            default_kwargs[arg] = 'FAKE'
+                            if arg == 'prefix':
+                                default_kwargs[arg] = 'FAKE_PREFIX:'
+                            else:
+                                default_kwargs[arg] = 'FAKE'
 
                 device = klass(**default_kwargs)
                 devices.append(device)
