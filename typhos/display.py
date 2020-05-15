@@ -10,10 +10,10 @@ from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
 
 import ophyd
 import pcdsutils
-import pcdsutils.qt
 import pydm.display
 import pydm.exception
 import pydm.utilities
+from pcdsutils.qt import forward_property
 
 from . import cache
 from . import panel as typhos_panel
@@ -531,37 +531,35 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.label.toggle_requested.connect(toggle)
 
     # Make designable properties from the title label available here as well
-    locals().update(**pcdsutils.qt.forward_properties(
-        locals_dict=locals(),
-        attr_name='label',
-        cls=QtWidgets.QLabel,
-        superclasses=[QtWidgets.QFrame],
-        condition=('alignment', 'buddy', 'font', 'indent', 'margin',
-                   'openExternalLinks', 'pixmap', 'spacing', 'text',
-                   'textFormat', 'textInteractionFlags', 'wordWrap',
-                   ),
-    ))
+    label_alignment = forward_property('label', QtWidgets.QLabel, 'alignment')
+    label_font = forward_property('label', QtWidgets.QLabel, 'font')
+    label_indent = forward_property('label', QtWidgets.QLabel, 'indent')
+    label_margin = forward_property('label', QtWidgets.QLabel, 'margin')
+    label_openExternalLinks = forward_property('label', QtWidgets.QLabel,
+                                               'openExternalLinks')
+    label_pixmap = forward_property('label', QtWidgets.QLabel, 'pixmap')
+    label_text = forward_property('label', QtWidgets.QLabel, 'text')
+    label_textFormat = forward_property('label', QtWidgets.QLabel,
+                                        'textFormat')
+    label_textInteractionFlags = forward_property('label', QtWidgets.QLabel,
+                                                  'textInteractionFlags')
+    label_wordWrap = forward_property('label', QtWidgets.QLabel, 'wordWrap')
 
     # Make designable properties from the grid_layout
-    locals().update(**pcdsutils.qt.forward_properties(
-        locals_dict=locals(),
-        attr_name='grid_layout',
-        cls=QtWidgets.QHBoxLayout,
-        superclasses=[QtWidgets.QFrame],
-        prefix='layout_',
-        condition=('margin', 'spacing'),
-        )
-    )
+    layout_margin = forward_property('grid_layout', QtWidgets.QHBoxLayout,
+                                     'margin')
+    layout_spacing = forward_property('grid_layout', QtWidgets.QHBoxLayout,
+                                      'spacing')
 
     # Make designable properties from the underline
-    locals().update(**pcdsutils.qt.forward_properties(
-        locals_dict=locals(),
-        attr_name='underline',
-        cls=QtWidgets.QFrame,
-        superclasses=[QtWidgets.QFrame],
-        prefix='underline_',
-        condition=('palette', 'styleSheet', 'lineWidth', 'midLineWidth'),
-    ))
+    underline_palette = forward_property('underline', QtWidgets.QFrame,
+                                         'palette')
+    underline_styleSheet = forward_property('underline', QtWidgets.QFrame,
+                                            'styleSheet')
+    underline_lineWidth = forward_property('underline', QtWidgets.QFrame,
+                                           'lineWidth')
+    underline_midLineWidth = forward_property('underline', QtWidgets.QFrame,
+                                              'midLineWidth')
 
 
 class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
