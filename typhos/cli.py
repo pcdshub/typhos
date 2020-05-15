@@ -12,8 +12,8 @@ import pcdsutils
 import typhos
 from ophyd.sim import clear_fake_device, make_fake_device
 from typhos.app import get_qapp, launch_suite
-from typhos.benchmark.profile import profiler_context
 from typhos.benchmark.cases import run_benchmarks
+from typhos.benchmark.profile import profiler_context
 from typhos.utils import nullcontext
 
 logger = logging.getLogger(__name__)
@@ -141,7 +141,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
                 klass, args = result[0]
                 klass = pcdsutils.utils.import_helper(klass)
 
-                default_kwargs = {"name": "device"}
+                default_kwargs = {"name": klass.__name__}
                 if args:
                     kwargs = ast.literal_eval(args)
                     default_kwargs.update(kwargs)
