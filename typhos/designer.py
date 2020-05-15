@@ -1,5 +1,3 @@
-import logging
-
 from pydm.widgets.qtplugin_base import qtplugin_factory
 
 from .display import (TyphosDeviceDisplay, TyphosDisplaySwitcher,
@@ -7,9 +5,6 @@ from .display import (TyphosDeviceDisplay, TyphosDisplaySwitcher,
 from .func import TyphosMethodButton
 from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
 from .positioner import TyphosPositionerWidget
-
-logger = logging.getLogger(__name__)
-logger.info("Loading Typhos QtDesigner plugins ...")
 
 group_name = 'Typhos Widgets'
 TyphosSignalPanelPlugin = qtplugin_factory(TyphosSignalPanel,
