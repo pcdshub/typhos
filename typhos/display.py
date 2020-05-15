@@ -714,13 +714,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 action = menu.addAction(os.path.split(filename)[-1])
                 action.triggered.connect(switch_template)
 
-        def refresh_templates():
-            self.search_for_templates()
-            self.load_best_template()
-
         base_menu.addSeparator()
         refresh_action = base_menu.addAction("Refresh Templates")
-        refresh_action.triggered.connect(refresh_templates)
+        refresh_action.triggered.connect(self._refresh_templates)
+
+    def _refresh_templates(self):
+        """Context menu 'Refresh Templates' clicked."""
+        # Force an update of the display cache.
+        cache.get_global_display_path_cache().update()
+        self.search_for_templates()
+        self.load_best_template()
 
     def generate_context_menu(self):
         """
