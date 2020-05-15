@@ -39,7 +39,8 @@ def test_cli_no_entry(monkeypatch, qtbot, happi_cfg):
 def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
     with open('test.qss', 'w+') as handle:
-        handle.write("TyphosDeviceDisplay {qproperty-force_template: 'test.ui'}")
+        handle.write(
+            "TyphosDeviceDisplay {qproperty-force_template: 'test.ui'}")
     style = qapp.styleSheet()
     window = typhos_cli(['test_motor', '--stylesheet', 'test.qss',
                         '--happi-cfg', happi_cfg])
@@ -52,7 +53,7 @@ def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
 
 
 @pytest.mark.parametrize('klass, name', [
-    ("ophyd.sim.SynAxis[]", "device"),
+    ("ophyd.sim.SynAxis[]", "SynAxis"),
     ("ophyd.sim.SynAxis[{'name':'foo'}]", "foo")
 ])
 def test_cli_class(monkeypatch, qapp, qtbot, klass, name, happi_cfg):
