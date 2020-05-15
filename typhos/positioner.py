@@ -112,10 +112,11 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
                    default to ``low_limit_switch`` and ``high_limit_switch``,
                    respectively.
 
-    Soft Limits    The ``low_limit_attribute`` and ``high_limit_attribute``
-                   properties are used, which default to ``low_limit`` and
-                   ``high_limit``, respectively.  As a fallback, the ``limit``
-                   property on the device may be queried directly.
+    Soft Limits    The ``low_limit_travel_attribute`` and
+                   ``high_limit_travel_attribute`` properties are used, which
+                   default to ``low_limit_travel`` and ``high_limit_travel``,
+                   respectively.  As a fallback, the ``limit`` property on the
+                   device may be queried directly.
 
     Set and Tweak  Both of these methods simply use ``Device.set`` which is
                    expected to take a ``float`` and return a ``status`` object
@@ -130,8 +131,8 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     _setpoint_attr = 'user_setpoint'
     _low_limit_switch_attr = 'low_limit_switch'
     _high_limit_switch_attr = 'high_limit_switch'
-    _low_limit_attr = 'low_limit'
-    _high_limit_attr = 'high_limit'
+    _low_limit_travel_attr = 'low_limit_travel'
+    _high_limit_travel_attr = 'high_limit_travel'
     _min_visible_operation = 0.1
 
     def __init__(self, parent=None):
@@ -255,14 +256,14 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         if signal is None:
             widget.hide()
 
-    @_linked_attribute('low_limit_attribute', 'ui.low_limit')
-    def _link_low_limit(self, signal, widget):
-        """Link the positioner lower limit with the ui element."""
+    @_linked_attribute('low_limit_travel_attribute', 'ui.low_limit')
+    def _link_low_travel(self, signal, widget):
+        """Link the positioner lower travel limit with the ui element."""
         return signal is not None
 
-    @_linked_attribute('high_limit_attribute', 'ui.high_limit')
-    def _link_high_limit(self, signal, widget):
-        """Link the positioner high limit with the ui element."""
+    @_linked_attribute('high_limit_travel_attribute', 'ui.high_limit')
+    def _link_high_travel(self, signal, widget):
+        """Link the positioner high travel limit with the ui element."""
         return signal is not None
 
     def _link_limits_by_limits_attr(self):
@@ -301,7 +302,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._link_low_limit_switch()
         self._link_high_limit_switch()
 
-        if not (self._link_low_limit() and self._link_high_limit()):
+        if not (self._link_low_travel() and self._link_high_travel()):
             self._link_limits_by_limits_attr()
 
     @QtCore.Property(bool, designable=False)
@@ -367,22 +368,22 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._high_limit_switch_attr = value
 
     @QtCore.Property(str, designable=True)
-    def low_limit_attribute(self):
+    def low_limit_travel_attribute(self):
         """The attribute name for the low limit signal."""
-        return self._low_limit_attr
+        return self._low_limit_travel_attr
 
-    @low_limit_attribute.setter
-    def low_limit_attribute(self, value):
-        self._low_limit_attr = value
+    @low_limit_travel_attribute.setter
+    def low_limit_travel_attribute(self, value):
+        self._low_limit_travel_attr = value
 
     @QtCore.Property(str, designable=True)
-    def high_limit_attribute(self):
-        """The attribute name for the high limit signal."""
-        return self._high_limit_attr
+    def high_limit_travel_attribute(self):
+        """The attribute name for the high (soft) limit travel signal."""
+        return self._high_limit_travel_attr
 
-    @high_limit_attribute.setter
-    def high_limit_attribute(self, value):
-        self._high_limit_attr = value
+    @high_limit_travel_attribute.setter
+    def high_limit_travel_attribute(self, value):
+        self._high_limit_travel_attr = value
 
     def move_changed(self):
         """Called when a move is begun"""
