@@ -329,6 +329,12 @@ class _GlobalDisplayPathCache:
         for path in utils.DISPLAY_PATHS:
             self.add_path(path)
 
+    def update(self):
+        """Force a reload of all paths in the cache."""
+        logger.debug('Clearing global path cache.')
+        for path in self.paths:
+            path.cache = None
+
     def add_path(self, path):
         """
         Add a path to be searched during ``glob``.
@@ -338,6 +344,7 @@ class _GlobalDisplayPathCache:
         path : pathlib.Path or str
             The path to add.
         """
+        logger.debug('Path added to _GlobalDisplayPathCache: %s', path)
         path = pathlib.Path(path).expanduser().resolve()
         path = _CachedPath(
             path, stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME)
