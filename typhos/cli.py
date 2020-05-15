@@ -12,8 +12,8 @@ import pcdsutils
 import typhos
 from ophyd.sim import clear_fake_device, make_fake_device
 from typhos.app import get_qapp, launch_suite
-from typhos.benchmark.profile import profiler_context
 from typhos.benchmark.cases import run_benchmarks
+from typhos.benchmark.profile import profiler_context
 from typhos.utils import nullcontext
 
 logger = logging.getLogger(__name__)
@@ -141,7 +141,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
                 klass, args = result[0]
                 klass = pcdsutils.utils.import_helper(klass)
 
-                default_kwargs = {"name": "device"}
+                default_kwargs = {"name": klass.__name__}
                 if args:
                     kwargs = ast.literal_eval(args)
                     default_kwargs.update(kwargs)
@@ -152,7 +152,10 @@ def create_devices(device_names, cfg=None, fake_devices=False):
                     # This might fail, but is best effort
                     for arg in inspect.getfullargspec(klass).args:
                         if arg not in default_kwargs and arg != 'self':
-                            default_kwargs[arg] = 'FAKE'
+                            if arg == 'prefix':
+                                default_kwargs[arg] = 'FAKE_PREFIX:'
+                            else:
+                                default_kwargs[arg] = 'FAKE'
 
                 device = klass(**default_kwargs)
                 devices.append(device)
@@ -160,6 +163,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
             except Exception:
                 logger.exception("Unable to load class entry: %s with args %s",
                                  klass, args)
+                continue
         else:
             if not happi_client:
                 logger.error("Happi not available. Unable to load entry: %r",
