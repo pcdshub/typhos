@@ -163,6 +163,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
             except Exception:
                 logger.exception("Unable to load class entry: %s with args %s",
                                  klass, args)
+                continue
         else:
             if not happi_client:
                 logger.error("Happi not available. Unable to load entry: %r",
