@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>325</width>
-    <height>167</height>
+    <width>333</width>
+    <height>210</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -132,6 +132,9 @@
           <property name="styleSheet">
            <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
           </property>
+          <property name="text">
+           <string>low_limit</string>
+          </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
@@ -153,7 +156,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="value_layout" stretch="1,1,1,0">
+       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,1,1,0,0,0">
         <property name="spacing">
          <number>10</number>
         </property>
@@ -180,11 +183,27 @@
           <property name="styleSheet">
            <string notr="true"/>
           </property>
+          <property name="text">
+           <string>user_readback</string>
+          </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
           <property name="showUnits" stdset="0">
            <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="PyDMLineEdit" name="user_setpoint">
+          <property name="maximumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string/>
           </property>
          </widget>
         </item>
@@ -293,6 +312,29 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QLabel" name="status_label">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </item>
       <item>
@@ -371,6 +413,9 @@
           <property name="styleSheet">
            <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
           </property>
+          <property name="text">
+           <string>high_limit</string>
+          </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
@@ -406,6 +451,11 @@
    <class>PyDMByteIndicator</class>
    <extends>QWidget</extends>
    <header>pydm.widgets.byte</header>
+  </customwidget>
+  <customwidget>
+   <class>PyDMLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>pydm.widgets.line_edit</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>327</width>
-    <height>225</height>
+    <height>242</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,7 +43,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="main_layout" stretch="0,0,2">
+  <layout class="QVBoxLayout" name="main_layout" stretch="0,0,0,2">
    <property name="spacing">
     <number>3</number>
    </property>
@@ -81,6 +81,19 @@
       <string/>
      </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <spacer name="verticalSpacer">

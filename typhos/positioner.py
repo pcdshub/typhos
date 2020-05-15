@@ -1,119 +1,227 @@
+import functools
 import logging
+import operator
 import os.path
 
-from qtpy import uic
-from qtpy.QtCore import Property, Slot
+from qtpy import QtCore, uic
 
-from ophyd import Device
-
-from .plugins import register_signal
+from . import plugins, utils, widgets
 from .status import TyphosStatusThread
-from .utils import (TyphosBase, channel_from_signal, grab_kind,
-                    raise_to_operator, reload_widget_stylesheet, ui_dir)
-from .widgets import TyphosDesignerMixin
 
 logger = logging.getLogger(__name__)
 
 
-class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
+def _link_signal_to_widget(signal, widget):
     """
-    Widget to interact with an ``ophyd.Positioner``.
+    Registers the signal with PyDM, and sets the widget channel.
+
+    Parameters
+    ----------
+    signal : ophyd.OphydObj
+        The signal to use.
+
+    widget : QtWidgets.QWidget
+        The widget with which to connect the signal.
+    """
+    if signal is not None:
+        plugins.register_signal(signal)
+        if widget is not None:
+            widget.channel = utils.channel_from_signal(signal)
+
+
+def _linked_attribute(property_attr, widget_attr):
+    """
+    Decorator which connects a device signal with a widget.
+
+    Retrieves the signal from the device, registers it with PyDM, and sets the
+    widget channel.
+
+    Parameters
+    ----------
+    property_attr : str
+        This is one level of indirection, allowing for the component attribute
+        to be configurable by way of designable properties.
+        In short, this looks like:
+            ``getattr(self.device, getattr(self, property_attr))``
+        The component attribute name may include multiple levels (e.g.,
+        ``'cpt1.cpt2.low_limit'``).
+
+    widget_attr : str
+        The attribute name of the widget, referenced from ``self``.
+        The component attribute name may include multiple levels (e.g.,
+        ``'ui.low_limit'``).
+    """
+    get_widget_attr = operator.attrgetter(widget_attr)
+
+    def wrapper(func):
+        @functools.wraps(func)
+        def wrapped(self):
+            widget = get_widget_attr(self)
+            device_attr = getattr(self, property_attr)
+            get_device_attr = operator.attrgetter(device_attr)
+
+            try:
+                signal = get_device_attr(self.device)
+            except AttributeError:
+                signal = None
+            else:
+                # Fall short of an `isinstance(signal, OphydObj) check here:
+                try:
+                    _link_signal_to_widget(signal, widget)
+                except Exception:
+                    logger.exception(
+                        'device.%s => self.%s (signal: %s widget: %s)',
+                        device_attr, widget_attr, signal, widget)
+                    signal = None
+                else:
+                    logger.debug('device.%s => self.%s (signal=%s widget=%s)',
+                                 device_attr, widget_attr, signal, widget)
+
+            return func(self, signal, widget)
+
+        return wrapped
+    return wrapper
+
+
+class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
+    """
+    Widget to interact with a :class:`ophyd.Positioner`.
 
     Standard positioner motion requires a large amount of context for
     operators. For most motors, it may not be enough to simply have a text
     field where setpoints can be punched in. Instead, information like soft
     limits and hardware limit switches are crucial for a full understanding of
     the position and behavior of a motor. The widget will work with any object
-    that implements ``set``, however to get other relevant information, we also
-    duck-type to see if we can find other useful signals.  Below is a table of
-    attributes that the widget looks for to inform screen design:
+    that implements the method ``set``, however to get other relevant
+    information, we see if we can find other useful signals.  Below is a table
+    of attributes that the widget looks for to inform screen design.
 
     ============== ===========================================================
     Widget         Attribute Selection
     ============== ===========================================================
-    User Readback  The widget first searches for a ``Signal`` called
-                   ``user_readback``. If this is not found the
-                   **first** hint is used.
+    User Readback  The ``readback_attribute`` property is used, which defaults
+                   to ``user_readback``. Linked to UI element
+                   ``user_readback``.
 
-    Limit Switches Attributes ``low_limit_switch`` and ``high_limit_switch``
-                   are queried. If these are not found the widgets are hidden.
+    User Setpoint  The ``setpoint_attribute`` property is used, which defaults
+                   to ``user_setpoint``. Linked to UI element
+                   ``user_setpoint``.
 
-    Soft Limits    The widget first looks for ``low_limit`` and ``high_limit``
-                   signals. If these do not exist, we look for ``limits`` and
-                   sets the text to match the returned tuple from this method.
+    Limit Switches The ``low_limit_switch_attribute`` and
+                   ``high_limit_switch_attribute`` properties are used, which
+                   default to ``low_limit_switch`` and ``high_limit_switch``,
+                   respectively.
+
+    Soft Limits    The ``low_limit_travel_attribute`` and
+                   ``high_limit_travel_attribute`` properties are used, which
+                   default to ``low_limit_travel`` and ``high_limit_travel``,
+                   respectively.  As a fallback, the ``limit`` property on the
+                   device may be queried directly.
 
     Set and Tweak  Both of these methods simply use ``Device.set`` which is
                    expected to take a ``float`` and return a ``status`` object
                    that indicates the motion completeness. Must be implemented.
 
-    Stop           Device.stop().
+    Stop           Device.stop()
     ============== ===========================================================
     """
-    ui_template = os.path.join(ui_dir, 'positioner.ui')
+
+    ui_template = os.path.join(utils.ui_dir, 'positioner.ui')
+    _readback_attr = 'user_readback'
+    _setpoint_attr = 'user_setpoint'
+    _low_limit_switch_attr = 'low_limit_switch'
+    _high_limit_switch_attr = 'high_limit_switch'
+    _low_limit_travel_attr = 'low_limit_travel'
+    _high_limit_travel_attr = 'high_limit_travel'
     _min_visible_operation = 0.1
 
     def __init__(self, parent=None):
         self._moving = False
         self._last_move = None
+        self._readback = None
+        self._setpoint = None
+        self._status_thread = None
+
         super().__init__(parent=parent)
-        # Instantiate UI
+
         self.ui = uic.loadUi(self.ui_template, self)
-        # Connect signals to slots
         self.ui.set_value.returnPressed.connect(self.set)
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
-        self._readback = None
+
+    def _clear_status_thread(self):
+        """Clear a previous status thread."""
+        if self._status_thread is None:
+            return
+
+        logger.debug("Clearing current active status")
+        self._status_thread.disconnect()
         self._status_thread = None
 
-    @Slot()
+    def _start_status_thread(self, status):
+        """Start the status monitoring thread for the given status object."""
+        self._status_thread = thread = TyphosStatusThread(
+            status, start_delay=self._min_visible_operation
+        )
+        thread.status_started.connect(self.move_changed)
+        thread.status_finished.connect(self._status_finished)
+        thread.start()
+
+    def _set(self, value):
+        """Inner `set` routine - call device.set() and monitor the status."""
+        self._clear_status_thread()
+        self._last_move = None
+
+        logger.debug("Setting device %r to %r", self.device, value)
+        status = self.device.set(float(value))
+        self._start_status_thread(status)
+
+    @QtCore.Slot()
     def set(self):
-        """Set the device to the value configured by ``ui.set_value``."""
-        value = self.ui.set_value.text()
+        """Set the device to the value configured by ``ui.set_value``"""
+        if not self.device:
+            return
+
         try:
-            # Check that we have a device configured
-            if not self.devices:
-                raise Exception("No Device configured for widget!")
-            # Clear any old statuses
-            if self._status_thread and self._status_thread.isRunning():
-                logger.debug("Clearing current active status")
-                self._status_thread.terminate()
-            self._status_thread = None
-            self._last_move = None
-            # Call the set
-            logger.debug("Setting device %r to %r", self.devices[0], value)
-            status = self.devices[0].set(float(value))
-            logger.debug("Setting up new status thread ...")
-            self._status_thread = TyphosStatusThread(
-                                        status,
-                                        lag=self._min_visible_operation)
-            self._status_thread.status_started.connect(self.move_changed)
-            self._status_thread.status_finished.connect(self.done_moving)
-            self._status_thread.start()
+            value = self.ui.set_value.text()
+            self._set(value)
         except Exception as exc:
-            logger.exception("Error setting %r to %r",
-                             self.devices, value)
+            logger.exception("Error setting %r to %r", self.devices, value)
             self._last_move = False
-            reload_widget_stylesheet(self, cascade=True)
-            raise_to_operator(exc)
+            utils.reload_widget_stylesheet(self, cascade=True)
+            utils.raise_to_operator(exc)
 
-    @Slot()
+    def tweak(self, offset):
+        """Tweak by the given ``offset``."""
+        try:
+            setpoint = self._get_position() + float(offset)
+        except Exception:
+            logger.exception('Tweak failed')
+            return
+
+        self.ui.set_value.setText(str(setpoint))
+        self.set()
+
+    @QtCore.Slot()
     def positive_tweak(self):
-        """Tweak positive by the amount listed in ``ui.tweak_value``."""
-        setpoint = self._get_position() + float(self.tweak_value.text())
-        self.ui.set_value.setText(str(setpoint))
-        self.set()
+        """Tweak positive by the amount listed in ``ui.tweak_value``"""
+        try:
+            self.tweak(float(self.tweak_value.text()))
+        except Exception:
+            logger.exception('Tweak failed')
 
-    @Slot()
+    @QtCore.Slot()
     def negative_tweak(self):
-        """Tweak negative by the amount listed in ``ui.tweak_value``."""
-        setpoint = self._get_position() - float(self.tweak_value.text())
-        self.ui.set_value.setText(str(setpoint))
-        self.set()
+        """Tweak negative by the amount listed in ``ui.tweak_value``"""
+        try:
+            self.tweak(-float(self.tweak_value.text()))
+        except Exception:
+            logger.exception('Tweak failed')
 
-    @Slot()
+    @QtCore.Slot()
     def stop(self):
-        """Stop device."""
+        """Stop device"""
         for device in self.devices:
             device.stop()
 
@@ -122,90 +230,200 @@ class TyphosPositionerWidget(TyphosBase, TyphosDesignerMixin):
             raise Exception("No Device configured for widget!")
         return self._readback.get()
 
+    @_linked_attribute('readback_attribute', 'ui.user_readback')
+    def _link_readback(self, signal, widget):
+        """Link the positioner readback with the ui element."""
+        self._readback = signal
+
+    @_linked_attribute('setpoint_attribute', 'ui.user_setpoint')
+    def _link_setpoint(self, signal, widget):
+        """Link the positioner setpoint with the ui element."""
+        self._setpoint = signal
+        if signal is not None:
+            # Seed the set_value text with the user_setpoint channel value.
+            if hasattr(widget, 'textChanged'):
+                widget.textChanged.connect(self._user_setpoint_update)
+
+    @_linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch')
+    def _link_low_limit_switch(self, signal, widget):
+        """Link the positioner lower limit switch with the ui element."""
+        if signal is None:
+            widget.hide()
+
+    @_linked_attribute('high_limit_switch_attribute', 'ui.high_limit_switch')
+    def _link_high_limit_switch(self, signal, widget):
+        """Link the positioner high limit switch with the ui element."""
+        if signal is None:
+            widget.hide()
+
+    @_linked_attribute('low_limit_travel_attribute', 'ui.low_limit')
+    def _link_low_travel(self, signal, widget):
+        """Link the positioner lower travel limit with the ui element."""
+        return signal is not None
+
+    @_linked_attribute('high_limit_travel_attribute', 'ui.high_limit')
+    def _link_high_travel(self, signal, widget):
+        """Link the positioner high travel limit with the ui element."""
+        return signal is not None
+
+    def _link_limits_by_limits_attr(self):
+        """Link limits by using ``device.limits``."""
+        device = self.device
+        try:
+            low_limit, high_limit = device.limits
+        except Exception:
+            ...
+        else:
+            if low_limit < high_limit:
+                self.ui.low_limit.setText(str(low_limit))
+                self.ui.high_limit.setText(str(high_limit))
+                return
+
+        # If not found or invalid, hide them:
+        self.ui.low_limit.hide()
+        self.ui.high_limit.hide()
+
+    @property
+    def device(self):
+        """The associated device."""
+        try:
+            return self.devices[0]
+        except Exception:
+            ...
+
     def add_device(self, device):
-        """Add a device to the widget."""
+        """Add a device to the widget"""
         # Add device to cache
         self.devices.clear()  # only one device allowed
         super().add_device(device)
-        # Limit switches
-        for limit_switch in ('low_limit_switch',
-                             'high_limit_switch'):
-            # If our device has a limit switch attach it
-            if getattr(device, limit_switch, False):
-                widget = getattr(self.ui, limit_switch)
-                limit = getattr(device, limit_switch)
-                limit_chan = channel_from_signal(limit)
-                register_signal(limit)
-                widget.channel = limit_chan
-            # Otherwise, hide it the widget
-            else:
-                getattr(self.ui, limit_switch).hide()
-        # User Readback
-        if hasattr(device, 'user_readback'):
-            self._readback = device.user_readback
-        else:
-            # Let us assume it is the first hint
-            hinted = list(grab_kind(device, 'hinted').values())[0]
-            self._readback = hinted.signal
-        register_signal(self._readback)
-        self.ui.user_readback.channel = channel_from_signal(self._readback)
-        # Limit values
-        # Look for limit signals first
-        if isinstance(device, Device):
-            limit_signals = ('low_limit' in device.component_names
-                             and 'high_limit' in device.component_names)
-            # Use raw signals to keep widget updated
-            if limit_signals:
-                register_signal(device.low_limit)
-                low_lim_chan = channel_from_signal(device.low_limit)
-                self.ui.low_limit.channel = low_lim_chan
-                register_signal(device.high_limit)
-                high_lim_chan = channel_from_signal(device.high_limit)
-                self.ui.high_limit.channel = high_lim_chan
-                return
-        # Check that we have limits at all, or if they are implemented
-        if hasattr(device, 'limits') and device.limits[0] < device.limits[1]:
-            self.ui.low_limit.setText(str(device.limits[0]))
-            self.ui.high_limit.setText(str(device.limits[1]))
-        # Look for limit value components
-        else:
-            self.ui.low_limit.hide()
-            self.ui.high_limit.hide()
 
-    @Property(bool, designable=False)
+        self._link_readback()
+        self._link_setpoint()
+        self._link_low_limit_switch()
+        self._link_high_limit_switch()
+
+        if not (self._link_low_travel() and self._link_high_travel()):
+            self._link_limits_by_limits_attr()
+
+    @QtCore.Property(bool, designable=False)
     def moving(self):
         """
-        Current state of widget.
+        Current state of widget
 
         This will lag behind the actual state of the positioner in order to
-        prevent unnecessary rapid movements.
+        prevent unnecessary rapid movements
         """
-        return getattr(self, '_moving', False)
+        return self._moving
 
     @moving.setter
     def moving(self, value):
         if value != self._moving:
             self._moving = value
-            reload_widget_stylesheet(self, cascade=True)
+            utils.reload_widget_stylesheet(self, cascade=True)
 
-    @Property(bool, designable=False)
+    @QtCore.Property(bool, designable=False)
     def successful_move(self):
-        """The last requested move was successful."""
+        """The last requested move was successful"""
         return self._last_move is True
 
-    @Property(bool, designable=False)
+    @QtCore.Property(bool, designable=False)
     def failed_move(self):
-        """The last requested move failed."""
+        """The last requested move failed"""
         return self._last_move is False
 
+    @QtCore.Property(str, designable=True)
+    def readback_attribute(self):
+        """The attribute name for the readback signal."""
+        return self._readback_attr
+
+    @readback_attribute.setter
+    def readback_attribute(self, value):
+        self._readback_attr = value
+
+    @QtCore.Property(str, designable=True)
+    def setpoint_attribute(self):
+        """The attribute name for the setpoint signal."""
+        return self._setpoint_attr
+
+    @setpoint_attribute.setter
+    def setpoint_attribute(self, value):
+        self._setpoint_attr = value
+
+    @QtCore.Property(str, designable=True)
+    def low_limit_switch_attribute(self):
+        """The attribute name for the low limit switch signal."""
+        return self._low_limit_switch_attr
+
+    @low_limit_switch_attribute.setter
+    def low_limit_switch_attribute(self, value):
+        self._low_limit_switch_attr = value
+
+    @QtCore.Property(str, designable=True)
+    def high_limit_switch_attribute(self):
+        """The attribute name for the high limit switch signal."""
+        return self._high_limit_switch_attr
+
+    @high_limit_switch_attribute.setter
+    def high_limit_switch_attribute(self, value):
+        self._high_limit_switch_attr = value
+
+    @QtCore.Property(str, designable=True)
+    def low_limit_travel_attribute(self):
+        """The attribute name for the low limit signal."""
+        return self._low_limit_travel_attr
+
+    @low_limit_travel_attribute.setter
+    def low_limit_travel_attribute(self, value):
+        self._low_limit_travel_attr = value
+
+    @QtCore.Property(str, designable=True)
+    def high_limit_travel_attribute(self):
+        """The attribute name for the high (soft) limit travel signal."""
+        return self._high_limit_travel_attr
+
+    @high_limit_travel_attribute.setter
+    def high_limit_travel_attribute(self, value):
+        self._high_limit_travel_attr = value
+
     def move_changed(self):
-        """Called when a move is begun."""
+        """Called when a move is begun"""
         logger.debug("Begin showing move in TyphosPositionerWidget")
         self.moving = True
 
-    def done_moving(self, success):
+    def _set_status_text(self, text, *, max_length=60):
+        """Set the status text label to ``text``."""
+        if len(text) >= max_length:
+            self.ui.status_label.setToolTip(text)
+            text = text[:max_length] + '...'
+        else:
+            self.ui.status_label.setToolTip('')
+
+        self.ui.status_label.setText(text)
+
+    def _status_finished(self, result):
         """Called when a move is complete."""
-        logger.debug("Completed move in TyphosPositionerWidget (success=%s)",
-                     success)
+        if isinstance(result, Exception):
+            text = f'<b>{result.__class__.__name__}</b> {result}'
+        else:
+            text = ''
+
+        self._set_status_text(text)
+
+        success = not isinstance(result, Exception)
+        logger.debug("Completed move in TyphosPositionerWidget (result=%r)",
+                     result)
         self._last_move = success
         self.moving = False
+
+    @QtCore.Slot(str)
+    def _user_setpoint_update(self, text):
+        """Qt slot - indicating the ``user_setpoint`` widget text changed."""
+        try:
+            text = text.strip().split(' ')[0]
+            text = text.strip()
+        except Exception:
+            return
+
+        # Update set_value if it's not being edited.
+        if not self.ui.set_value.hasFocus():
+            self.ui.set_value.setText(text)

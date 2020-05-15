@@ -7,12 +7,12 @@ import pytest
 import simplejson as json
 from qtpy.QtCore import QRect
 from qtpy.QtGui import QPaintEvent
-from qtpy.QtWidgets import QMessageBox, QWidget
+from qtpy.QtWidgets import QWidget
 
 import typhos
 from ophyd import Component as Cpt
-from ophyd import Device, Kind
-from typhos.utils import (TyphosBase, clean_name, grab_kind, load_suite,
+from ophyd import Device
+from typhos.utils import (TyphosBase, clean_name, load_suite,
                           no_device_lazy_load, saved_template, use_stylesheet)
 
 
@@ -39,16 +39,6 @@ def test_stylesheet(qtbot):
     qtbot.addWidget(widget)
     use_stylesheet(widget=widget)
     use_stylesheet(widget=widget, dark=True)
-
-
-def test_grab_kind(motor):
-    assert len(grab_kind(motor, 'hinted')) == len(motor.hints['fields'])
-    assert len(grab_kind(motor, 'normal')) == len(motor.read_attrs)
-    assert len(grab_kind(motor, Kind.config)) == len(motor.configuration_attrs)
-    omitted = (len(motor.component_names)
-               - len(motor.read_attrs)
-               - len(motor.configuration_attrs))
-    assert len(grab_kind(motor, 'omitted')) == omitted
 
 
 # Check to see that we were installed via CONDA. If not, we can not expect the
@@ -137,9 +127,11 @@ Class1.full_name = Class1.__module__ + '.' + Class1.__name__
      pytest.param(
          Class1, 'detailed',
          # Expected
-         [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui', 'Class1.ui'],
+         [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui',
+          'Class1.ui'],
          # Create these:
-         ['a.ui', Class1.full_name + '.detailed.ui', 'Class1.detailed.ui', 'Class1.ui'],
+         ['a.ui', Class1.full_name + '.detailed.ui', 'Class1.detailed.ui',
+          'Class1.ui'],
      ),
      pytest.param(
          Class1, 'detailed',
