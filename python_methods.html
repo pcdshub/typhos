@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Including Python Code &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
+  <title>Including Python Code &mdash; Typhos 1.0.0+1.g28afb90 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Command Line Utilities" href="cli.html" />
+    <link rel="next" title="Release History" href="release_notes.html" />
     <link rel="prev" title="Application Connections" href="connections.html" /> 
 </head>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.5.0+28.gf69532a
+                1.0.0+1.g28afb90
               </div>
             
           
@@ -84,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
@@ -94,14 +94,16 @@
 <li class="toctree-l2"><a class="reference internal" href="#adding-methods">Adding Methods</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
 </ul>
 
             
@@ -183,7 +185,7 @@ type annotations for each parameter. It also determines which parameters are
 optional and which are not. Boolean variables are given QCheckboxes, while
 others are given QLineEdits for entry. Optional keywords are also hidden from
 the user unless they choose to expand the tab. Using
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">FunctionPanel.add_method()</span></code> would look like this:</p>
+<a class="reference internal" href="widgets.html#typhos.func.FunctionPanel.add_method" title="typhos.func.FunctionPanel.add_method"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FunctionPanel.add_method()</span></code></a> would look like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">panel</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">hide_params</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -203,7 +205,7 @@ variable.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cli.html" class="btn btn-neutral float-right" title="Command Line Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="release_notes.html" class="btn btn-neutral float-right" title="Release History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="connections.html" class="btn btn-neutral float-left" title="Application Connections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

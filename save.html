@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Saving and Loading &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
+  <title>Saving and Loading &mdash; Typhos 1.0.0+1.g28afb90 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.5.0+28.gf69532a
+                1.0.0+1.g28afb90
               </div>
             
           
@@ -84,21 +84,23 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
 </ul>
 
             
@@ -168,10 +170,10 @@
 <p><a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSuite</span></code></a> objects can be stored for later use. The devices that
 were loaded into the suite via <a class="reference internal" href="display.html#typhos.TyphosSuite.add_device" title="typhos.TyphosSuite.add_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">TyphosSuite.add_device()</span></code></a> will be added
 once again assuming that they are stored in a <code class="docutils literal notranslate"><span class="pre">happi</span></code> database.</p>
-<dl class="method">
+<dl class="py method">
 <dt>
 <code class="sig-prename descclassname">TyphosSuite.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/suite.html#TyphosSuite.save"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Save the TyphosSuite to a file using <a class="reference internal" href="utils.html#typhos.utils.save_suite" title="typhos.utils.save_suite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">typhos.utils.save_suite()</span></code></a></p>
+<dd><p>Save suite settings to a file using <a class="reference internal" href="utils.html#typhos.utils.save_suite" title="typhos.utils.save_suite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">typhos.utils.save_suite()</span></code></a>.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">QFileDialog</span></code> will be used to query the user for the desired
 location of the created Python file</p>
 <p>The template will be of the form:</p>

@@ -347,6 +347,7 @@ typhos.tools.TyphosTimePlot
       ~TyphosTimePlot.PdmPhysicalDpiY
       ~TyphosTimePlot.PdmWidth
       ~TyphosTimePlot.PdmWidthMM
+      ~TyphosTimePlot.channel_to_curve
       ~TyphosTimePlot.customContextMenuRequested
       ~TyphosTimePlot.destroyed
       ~TyphosTimePlot.objectNameChanged

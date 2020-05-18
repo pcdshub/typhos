@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.tools.TyphosTimePlot &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
+  <title>typhos.tools.TyphosTimePlot &mdash; Typhos 1.0.0+1.g28afb90 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.5.0+28.gf69532a
+                1.0.0+1.g28afb90
               </div>
             
           
@@ -84,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tools.html">Supported Tools</a><ul class="current">
@@ -99,14 +99,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../cli.html">Command Line Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../display.html">Suite and Displays</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../plugins.html">Typhos Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html#cache-utilities">Cache Utilities</a></li>
 </ul>
 
             
@@ -175,10 +177,10 @@
             
   <div class="section" id="typhos-tools-typhostimeplot">
 <h1>typhos.tools.TyphosTimePlot<a class="headerlink" href="#typhos-tools-typhostimeplot" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="typhos.tools.TyphosTimePlot">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.tools.</code><code class="sig-name descname">TyphosTimePlot</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/typhos/tools/plot.html#TyphosTimePlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.tools.TyphosTimePlot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generalized widget for plotting Ophyd signals</p>
+<em class="property">class </em><code class="sig-prename descclassname">typhos.tools.</code><code class="sig-name descname">TyphosTimePlot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/typhos/tools/plot.html#TyphosTimePlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.tools.TyphosTimePlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generalized widget for plotting Ophyd signals.</p>
 <p>This widget is a <code class="docutils literal notranslate"><span class="pre">TimeChartDisplay</span></code> wrapped with some convenient
 functions for adding signals by their attribute name.</p>
 <dl class="field-list simple">
@@ -186,9 +188,9 @@ functions for adding signals by their attribute name.</p>
 <dd class="field-odd"><p><strong>parent</strong> (<em>QWidget</em>) – </p>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="typhos.tools.TyphosTimePlot.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/typhos/tools/plot.html#TyphosTimePlot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.tools.TyphosTimePlot.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/typhos/tools/plot.html#TyphosTimePlot.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.tools.TyphosTimePlot.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 
@@ -223,17 +225,17 @@ functions for adding signals by their attribute name.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">addAction</span></code>(self, QAction)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">addActions</span></code>(self, object)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">addActions</span></code>(self, Iterable[QAction])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_available_signal</span></code>(signal, name)</p></td>
-<td><p>Add an Ophyd signal to the list of available channels</p></td>
+<td><p>Add an Ophyd signal to the list of available channels.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_curve</span></code>(channel[, name, color])</p></td>
-<td><p>Add a curve to the plot</p></td>
+<td><p>Add a curve to the plot.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_device</span></code>(device)</p></td>
-<td><p>Add a device and it’s component signals to the plot</p></td>
+<td><p>Add a device and it’s component signals to the plot.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">adjustSize</span></code>(self)</p></td>
 <td><p></p></td>
@@ -305,7 +307,7 @@ functions for adding signals by their attribute name.</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">creation_requested</span></code>()</p></td>
-<td><p>Reaction to <code class="docutils literal notranslate"><span class="pre">create_button</span></code> press</p></td>
+<td><p>Reaction to <code class="docutils literal notranslate"><span class="pre">create_button</span></code> press.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cursor</span></code>(self)</p></td>
 <td><p></p></td>
@@ -749,7 +751,7 @@ functions for adding signals by their attribute name.</p>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_curve</span></code>(name)</p></td>
-<td><p>Remove a curve from the plot</p></td>
+<td><p>Remove a curve from the plot.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">render</span></code>(self, QPaintDevice, targetOffset, …)</p></td>
 <td><p>render(self, QPainter, targetOffset: QPoint = QPoint(), sourceRegion: QRegion = QRegion(), flags: Union[QWidget.RenderFlags, QWidget.RenderFlag] = QWidget.RenderFlags(QWidget.DrawWindowBackground|QWidget.DrawChildren))</p></td>
@@ -1183,25 +1185,28 @@ functions for adding signals by their attribute name.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PdmWidthMM</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">customContextMenuRequested</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_to_curve</span></code></p></td>
+<td><p>A dictionary of channel_name to curve.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">customContextMenuRequested</span></code></p></td>
 <td><p>customContextMenuRequested(self, QPoint) [signal]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">destroyed</span></code></p></td>
-<td><p>destroyed(self, QObject = None) [signal]</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">destroyed</span></code></p></td>
+<td><p>QObject = None) [signal]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">objectNameChanged</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">objectNameChanged</span></code></p></td>
 <td><p>objectNameChanged(self, str) [signal]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">staticMetaObject</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">windowIconChanged</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">windowIconChanged</span></code></p></td>
 <td><p>windowIconChanged(self, QIcon) [signal]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">windowIconTextChanged</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">windowIconTextChanged</span></code></p></td>
 <td><p>windowIconTextChanged(self, str) [signal]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">windowTitleChanged</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">windowTitleChanged</span></code></p></td>
 <td><p>windowTitleChanged(self, str) [signal]</p></td>
 </tr>
 </tbody>

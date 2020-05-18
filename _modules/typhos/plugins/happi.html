@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.plugins.happi &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
+  <title>typhos.plugins.happi &mdash; Typhos 1.0.0+1.g28afb90 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.5.0+28.gf69532a
+                1.0.0+1.g28afb90
               </div>
             
           
@@ -82,21 +82,23 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../display.html">Suite and Displays</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhos Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html#cache-utilities">Cache Utilities</a></li>
 </ul>
 
             
@@ -162,11 +164,12 @@
   <h1>Source code for typhos.plugins.happi</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span>
+
 <span class="kn">from</span> <span class="nn">happi</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">happi.loader</span> <span class="kn">import</span> <span class="n">from_container</span>
 <span class="kn">from</span> <span class="nn">happi.errors</span> <span class="kn">import</span> <span class="n">SearchError</span>
-<span class="kn">from</span> <span class="nn">pydm.data_plugins.plugin</span> <span class="kn">import</span> <span class="n">PyDMPlugin</span><span class="p">,</span> <span class="n">PyDMConnection</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Signal</span>
+<span class="kn">from</span> <span class="nn">happi.loader</span> <span class="kn">import</span> <span class="n">from_container</span>
+<span class="kn">from</span> <span class="nn">pydm.data_plugins.plugin</span> <span class="kn">import</span> <span class="n">PyDMConnection</span><span class="p">,</span> <span class="n">PyDMPlugin</span>
 
 
 <span class="k">class</span> <span class="nc">HappiClientState</span><span class="p">:</span>
@@ -178,27 +181,27 @@
 
 <div class="viewcode-block" id="register_client"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.register_client">[docs]</a><span class="k">def</span> <span class="nf">register_client</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Register a Happi Client to be used with the DataPlugin</span>
+<span class="sd">    Register a Happi Client to be used with the DataPlugin.</span>
 
 <span class="sd">    This is not required to be called by the user, if your environment is setup</span>
-<span class="sd">    such that ``happi.Client.from_config`` will return the desired client</span>
+<span class="sd">    such that :meth:`happi.Client.from_config` will return the desired client.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">HappiClientState</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span></div>
 
 
 <div class="viewcode-block" id="HappiConnection"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.HappiConnection">[docs]</a><span class="k">class</span> <span class="nc">HappiConnection</span><span class="p">(</span><span class="n">PyDMConnection</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A PyDMConnection to the Happi Database&quot;&quot;&quot;</span>
-    <span class="n">tx</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;A PyDMConnection to the Happi Database.&quot;&quot;&quot;</span>
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HappiConnection.add_listener"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.HappiConnection.add_listener">[docs]</a>    <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a new channel to the existing connection&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Add a new channel to the existing connection.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
         <span class="c1"># Connect our channel to the signal</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">tx_slot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">tx_slot</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">%r</span><span class="s2"> from happi Client&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
             <span class="n">device</span><span class="p">,</span> <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -218,7 +221,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">emit</span><span class="p">({</span><span class="s1">&#39;obj&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">:</span> <span class="n">md</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="HappiConnection.remove_listener"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.HappiConnection.remove_listener">[docs]</a>    <span class="k">def</span> <span class="nf">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove a channel from the database connection&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Remove a channel from the database connection.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="n">destroying</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">destroying</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">channel</span><span class="o">.</span><span class="n">tx_slot</span><span class="p">)</span></div></div>

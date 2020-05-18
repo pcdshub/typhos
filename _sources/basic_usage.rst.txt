@@ -7,13 +7,13 @@ by the operator:
 * **TyphosSuite** : The overall view for a Typhos window. It allows the
   operator to view all of the loaded components and tools.
 * **TyphosDeviceDisplay** : This is the widget created for a standard
-  ``ophyd.Device``. Signals are organized based on their ``Kind`` and
+  ``ophyd.Device``. Signals can be organized based on their ``Kind`` and
   description.
 * **typhos.tools** : These are widgets that interface with external
   applications. While you may have other GUIs for these systems,
   ``typhos.tools`` are built especially to handle the handshaking between all
   the information stored on your device and the tool you are interfacing with.
-  This saves your operator clicks and ensures consistency in use. 
+  This saves your operator clicks and ensures consistency in use.
 
 All three of the widgets listed above share a similar API for creation.
 Instantiating the object by itself handles loading the container widgets and
@@ -26,8 +26,8 @@ alternatively and be constructed using the ``from_device`` classmethod.
 
 
 .. autoclass:: typhos.utils.TyphosBase
-   :members:
-   :noindex:
+    :members:
+    :noindex:
 
 
 Interpreting a Device
@@ -50,22 +50,22 @@ create any widgets:
 
 .. ipython:: python
     :suppress:
-    
+
     from ophyd.sim import motor
 
 
 
 Using Happi
 ^^^^^^^^^^^
-``happi`` is not a requirement for using ``typhos``. However, it is certainly
-recommended. For more information, visit the `GitHub
-<https://github.com/pcdshub/happi/>`_ repository. The main purpose of the
-package is to store information on our Ophyd objects so that we can load them
-in a variety of contexts. If you do not use ``happi`` you will need to create
-your objects and displays in the same process.
+While ``happi`` is not a requirement for using ``typhos``, it is recommended.
+For more information, visit the `GitHub <https://github.com/pcdshub/happi/>`_
+repository. The main purpose of the package is to store information on our
+Ophyd objects so that we can load them in a variety of contexts. If you do not
+use ``happi`` you will need to create your objects and displays in the same
+process.
 
 Here is a quick example if you wanted to get a feel for what ``typhos`` looks
-like with `happi``
+like with `happi``:
 
 .. code:: python
 
@@ -94,9 +94,9 @@ We can now check that we can load the complete ``SynAxis`` object.
 
 Display Signals
 ^^^^^^^^^^^^^^^
-The first thing we'll talk about is showing a group of signals
-associated with our ``motor`` object in a basic form called a
-:class:`.`TyphosSignalPanel`. Simply inspecting the device reveals a few
+The first thing we'll talk about is showing a group of signals associated with
+our ``motor`` object in a basic form called a
+:class:`~typhos.TyphosSignalPanel`.  Simply inspecting the device reveals a few
 signals for us to display
 
 .. ipython:: python
@@ -110,7 +110,7 @@ attributes are inspected. For more information see the `ophyd documentation
 the various attributes allows us to see how our signals are organized.
 
 .. ipython:: python
- 
+
     # Most important signal(s)
     motor.hints
     # Important signals, all hints will be found here as well
@@ -118,9 +118,10 @@ the various attributes allows us to see how our signals are organized.
     # Configuration information
     motor.read_configuration()
 
-The :class:`.TyphosSignalPanel` will render these, allowing us to select a subset
-of the signals to display based on their kind. Below both the ``QtDesigner``
-using ``happi`` and the corresponding ``Python`` code is shown as well:
+The :class:`.TyphosSignalPanel` will render these, allowing us to select a
+subset of the signals to display based on their kind. Below both the
+``QtDesigner`` using ``happi`` and the corresponding ``Python`` code is shown
+as well:
 
 .. ipython:: python
 
@@ -150,10 +151,10 @@ shown:
 
 .. ipython:: python
 
-    from typhos import TyphosDeviceDisplay 
+    from typhos import TyphosDeviceDisplay
     display = TyphosDeviceDisplay.from_device(motor)
 
-    
+
 .. figure:: /_static/device_display.gif
    :scale: 100%
    :align: center
@@ -167,7 +168,7 @@ the ``TyphosSuited.default_tools`` to control which ``typhos.tools`` are
 loaded.
 
 .. code:: python
-    
+
     from ophyd.sim import motor
     from qtpy.QtWidgets import QApplication
     import typhos
@@ -186,7 +187,7 @@ Using the StyleSheet
 ====================
 While it is no means a requirement, Typhos ships with two stylesheets to
 improve the look of the widgets. By default this isn't activated, but can be
-configured with :func:`typhos.use_stylesheet`. The operator can elect whether to use
-the "light" or "dark" stylesheets by using the optional ``dark`` keyword. This
-method also handles setting the "Fusion" ``QStyle`` which helps make the
-interface have an operating system independent look and feel.
+configured with :func:`typhos.use_stylesheet`. The operator can elect whether
+to use the "light" or "dark" stylesheets by using the optional ``dark``
+keyword. This method also handles setting the "Fusion" ``QStyle`` which helps
+make the interface have an operating system independent look and feel.

@@ -69,6 +69,7 @@ typhos.tools.TyphosConsole
       ~TyphosConsole.enterEvent
       ~TyphosConsole.event
       ~TyphosConsole.eventFilter
+      ~TyphosConsole.execute
       ~TyphosConsole.find
       ~TyphosConsole.findChild
       ~TyphosConsole.findChildren
@@ -346,6 +347,11 @@ typhos.tools.TyphosConsole
       ~TyphosConsole.PdmWidthMM
       ~TyphosConsole.customContextMenuRequested
       ~TyphosConsole.destroyed
+      ~TyphosConsole.device_added
+      ~TyphosConsole.kernel_is_alive
+      ~TyphosConsole.kernel_is_ready
+      ~TyphosConsole.kernel_ready
+      ~TyphosConsole.kernel_shut_down
       ~TyphosConsole.objectNameChanged
       ~TyphosConsole.staticMetaObject
       ~TyphosConsole.windowIconChanged

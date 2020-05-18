@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.tools.plot &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
+  <title>typhos.tools.plot &mdash; Typhos 1.0.0+1.g28afb90 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.5.0+28.gf69532a
+                1.0.0+1.g28afb90
               </div>
             
           
@@ -82,21 +82,23 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../display.html">Suite and Displays</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhos Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html#cache-utilities">Cache Utilities</a></li>
 </ul>
 
             
@@ -163,47 +165,49 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Typhos Plotting Interface</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="c1">############</span>
-<span class="c1"># Standard #</span>
-<span class="c1">############</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="c1">###############</span>
-<span class="c1"># Third Party #</span>
-<span class="c1">###############</span>
-<span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Device</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QComboBox</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span>
+                            <span class="n">QVBoxLayout</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">timechart.displays.main_display</span> <span class="kn">import</span> <span class="n">TimeChartDisplay</span>
 <span class="kn">from</span> <span class="nn">timechart.utilities.utils</span> <span class="kn">import</span> <span class="n">random_color</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Slot</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QComboBox</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QLabel</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span>
-                            <span class="n">QHBoxLayout</span><span class="p">)</span>
-<span class="c1">##########</span>
-<span class="c1"># Module #</span>
-<span class="c1">##########</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">channel_from_signal</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">TyphosBase</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">..cache</span> <span class="kn">import</span> <span class="n">get_global_describe_cache</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TyphosTimePlot"><a class="viewcode-back" href="../../../generated/typhos.tools.TyphosTimePlot.html#typhos.tools.TyphosTimePlot">[docs]</a><span class="k">class</span> <span class="nc">TyphosTimePlot</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosTimePlot"><a class="viewcode-back" href="../../../generated/typhos.tools.TyphosTimePlot.html#typhos.tools.TyphosTimePlot">[docs]</a><span class="k">class</span> <span class="nc">TyphosTimePlot</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generalized widget for plotting Ophyd signals</span>
+<span class="sd">    Generalized widget for plotting Ophyd signals.</span>
 
 <span class="sd">    This widget is a ``TimeChartDisplay`` wrapped with some convenient</span>
 <span class="sd">    functions for adding signals by their attribute name.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    parent: QWidget</span>
+<span class="sd">    parent : QWidget</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="TyphosTimePlot.__init__"><a class="viewcode-back" href="../../../generated/typhos.tools.TyphosTimePlot.html#typhos.tools.TyphosTimePlot.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="c1"># Setup layout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="c1"># Make sure we can add signals</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItemModel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_proxy_model</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSortFilterProxyModel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_proxy_model</span><span class="o">.</span><span class="n">setSourceModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_available_signals</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_proxy_model</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_label</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s1">&#39;Available Signals: &#39;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_create</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Connect&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_combo_label</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -214,64 +218,84 @@
         <span class="c1"># Add timechart</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span> <span class="o">=</span> <span class="n">TimeChartDisplay</span><span class="p">(</span><span class="n">show_pv_add_panel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="o">.</span><span class="n">channel_map</span></div>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">get_global_describe_cache</span><span class="p">()</span>
+        <span class="n">cache</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_description</span><span class="p">,</span>
+                                      <span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">channel_to_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A dictionary of channel_name to curve.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="o">.</span><span class="n">channel_map</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_available_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add an Ophyd signal to the list of available channels</span>
+<span class="sd">        Add an Ophyd signal to the list of available channels.</span>
 
 <span class="sd">        If the Signal is not an EPICS Signal object you are responsible for</span>
 <span class="sd">        registering this yourself, if not already done.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        signal: ophyd.Signal</span>
+<span class="sd">        signal : ophyd.Signal</span>
 
-<span class="sd">        name: str</span>
-<span class="sd">            Alias for signal to display in QComboBox</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Alias for signal to display in QComboBox.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If a signal of the same name already is available.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_available_signals</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Signal already available&#39;</span><span class="p">)</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_available_signals</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStandardItem</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">UserRole</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">appendRow</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add a curve to the plot</span>
+<span class="sd">        Add a curve to the plot.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        channel : str</span>
-<span class="sd">            PyDMChannel address</span>
+<span class="sd">            PyDMChannel address.</span>
 
 <span class="sd">        name : str, optional</span>
 <span class="sd">            Name of TimePlotCurveItem. If None is given, the ``channel`` is</span>
 <span class="sd">            used.</span>
 
-<span class="sd">        color: QColor, optional</span>
+<span class="sd">        color : QColor, optional</span>
 <span class="sd">            Color to display line in plot. If None is given, a QColor will be</span>
-<span class="sd">            chosen randomly</span>
+<span class="sd">            chosen randomly.</span>
 
-<span class="sd">        kwargs:</span>
-<span class="sd">            Passed to ``timechart.add_y_channel``</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Passed to :meth:`timechart.add_y_channel`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">channel</span>
         <span class="c1"># Create a random color if None is supplied</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">color</span><span class="p">:</span>
             <span class="n">color</span> <span class="o">=</span> <span class="n">random_color</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%s</span><span class="s2"> to plot ...&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
-        <span class="c1"># TODO: Until https://github.com/slaclab/timechart/pull/32 is in</span>
-        <span class="c1"># a release, the pv_name and curve_name need to be the same</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="o">.</span><span class="n">add_y_channel</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">curve_name</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="o">.</span><span class="n">add_y_channel</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span> <span class="n">curve_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                                      <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">remove_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove a curve from the plot</span>
+<span class="sd">        Remove a curve from the plot.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        name: str</span>
+<span class="sd">        name : str</span>
 <span class="sd">            Name of the curve to remove. This should match the name given</span>
-<span class="sd">            during the call of :meth:`.add_curve`</span>
+<span class="sd">            during the call of :meth:`.add_curve`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing </span><span class="si">%s</span><span class="s2"> from TyphosTimePlot ...&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timechart</span><span class="o">.</span><span class="n">remove_curve</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -279,10 +303,10 @@
     <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">creation_requested</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Reaction to ``create_button`` press</span>
+<span class="sd">        Reaction to ``create_button`` press.</span>
 
 <span class="sd">        Observes the state of the selection widgets and makes the appropriate</span>
-<span class="sd">        call to :meth:`.add_curve`</span>
+<span class="sd">        call to :meth:`.add_curve`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Find requested channel</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_combo</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
@@ -291,36 +315,36 @@
         <span class="c1"># Add to the plot</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_curve</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
+    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_new_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">desc</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">dotted_name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;dtype&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">desc</span><span class="p">:</span>
+            <span class="c1"># Marks an error in retrieving the description</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Ignoring signal without description </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Only include scalars</span>
+        <span class="k">if</span> <span class="n">desc</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;integer&#39;</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Ignoring non-scalar signal </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Add to list of available signal</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_available_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c1"># Signal already added</span>
+            <span class="k">return</span>
+
     <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a device and it&#39;s component signals to the plot&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Add a device and it&#39;s component signals to the plot.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="c1"># Sort through components</span>
-        <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="n">device</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">sub</span><span class="p">)</span>
-                              <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">_sub_devices</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">subdevice</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding signals for </span><span class="si">%s</span><span class="s2"> to plot ...&quot;</span><span class="p">,</span> <span class="n">subdevice</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">subdevice</span><span class="o">.</span><span class="n">component_names</span><span class="p">:</span>
-                <span class="c1"># Find all signals</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">subdevice</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
-                        <span class="c1"># Only include scalars</span>
-                        <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="n">sig</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;integer&#39;</span><span class="p">,</span>
-                                                                 <span class="s1">&#39;number&#39;</span><span class="p">):</span>
-                            <span class="c1"># Make component name</span>
-                            <span class="n">name</span> <span class="o">=</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="n">subdevice</span> <span class="o">!=</span> <span class="n">device</span><span class="p">:</span>
-                                <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">clean_name</span><span class="p">(</span><span class="n">subdevice</span><span class="p">),</span> <span class="n">name</span><span class="p">))</span>
-                            <span class="c1"># Add to list of available signals</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">add_available_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-                            <span class="c1"># Automatically plot if in Device hints</span>
-                            <span class="k">if</span> <span class="n">sig</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">subdevice</span><span class="o">.</span><span class="n">hints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fields&#39;</span><span class="p">,</span> <span class="p">[]):</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">add_curve</span><span class="p">(</span><span class="n">channel_from_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">),</span>
-                                               <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%s</span><span class="s2"> to &quot;</span>
-                                         <span class="s2">&quot;plot-able signals&quot;</span><span class="p">,</span>
-                                         <span class="n">component</span><span class="p">)</span></div>
+
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">get_global_describe_cache</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">signal</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_all_signals_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span>
+                                                        <span class="n">include_lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_new_description</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

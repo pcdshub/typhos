@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Application Connections &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
+  <title>Application Connections &mdash; Typhos 1.0.0+1.g28afb90 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.5.0+28.gf69532a
+                1.0.0+1.g28afb90
               </div>
             
           
@@ -84,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
@@ -98,14 +98,16 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
 </ul>
 
             
@@ -176,7 +178,7 @@
 <h2>Ophyd Signals<a class="headerlink" href="#ophyd-signals" title="Permalink to this headline">¶</a></h2>
 <p>Typhos takes advantage of the flexible data plugin system contained within
 <code class="docutils literal notranslate"><span class="pre">PyDM</span></code> and the abstraction of the “control layer” within <code class="docutils literal notranslate"><span class="pre">Ophyd</span></code>. In the
-<a class="reference internal" href="generated/typhos.signal.SignalPanel.html#typhos.signal.SignalPanel" title="typhos.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, objects signals are queried for their type. If these are
+<a class="reference internal" href="widgets.html#typhos.panel.SignalPanel" title="typhos.panel.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, objects signals are queried for their type. If these are
 determined to be coming from <code class="docutils literal notranslate"><span class="pre">EPICS</span></code> the data plugin configured within
 <code class="docutils literal notranslate"><span class="pre">PyDM</span></code> is used directly, any other kind of signal goes through the generic
 <a class="reference internal" href="plugins.html#typhos.plugins.SignalPlugin" title="typhos.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a>. This uses the subscription system contained within
@@ -196,7 +198,7 @@ plugin.</p>
 <span class="n">PyDMWidget</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="s1">&#39;sig://this_signal&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Note that this is all done for you if you use the <a class="reference internal" href="generated/typhos.signal.SignalPanel.html#typhos.signal.SignalPanel" title="typhos.signal.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, but
+<p>Note that this is all done for you if you use the <a class="reference internal" href="widgets.html#typhos.panel.SignalPanel" title="typhos.panel.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, but
 maybe useful if you would like to use the <a class="reference internal" href="plugins.html#typhos.plugins.SignalPlugin" title="typhos.plugins.SignalPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPlugin</span></code></a> directly.</p>
 <div class="section" id="inclusion-of-metadata">
 <h3>Inclusion of Metadata<a class="headerlink" href="#inclusion-of-metadata" title="Permalink to this headline">¶</a></h3>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Typhos &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
+  <title>Typhos &mdash; Typhos 1.0.0+1.g28afb90 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.5.0+28.gf69532a
+                1.0.0+1.g28afb90
               </div>
             
           
@@ -83,21 +83,23 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
 </ul>
 
             
@@ -164,15 +166,6 @@
             
   <div class="section" id="typhos">
 <h1>Typhos<a class="headerlink" href="#typhos" title="Permalink to this headline">¶</a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><strong>This package was renamed.</strong></p>
-<p>The previous name Typhon was renamed as Typhos due to PyPI name collision.
-For now we offer backwards compatibility but it is strongly recommended
-that you update all references in your code.</p>
-<p>The compatibility layer will be dropped soon after two releases of this
-package.</p>
-</div>
 <p>EPICS is a flexible and powerful controls system to access to experimental
 information, however, the relation and meaning of process variables is often
 obscure. Many of the user interfaces for EPICS information reflect this, as
@@ -190,7 +183,7 @@ function, but still allow access to more advanced signals.</p>
 <p>Instead of reinventing a new way to specify device structures, Typhos uses
 <cite>Ophyd</cite>, a library to abstract EPICS information into consistently structured
 Python objects. Originally built for scripting experimental procedures at
-NSLSII, Ophyd represents devices as combinations of components which are
+NSLS-II, Ophyd represents devices as combinations of components which are
 either signals or nested devices. Then, either at runtime or by using the
 defaults of the representative Python class, these signals are sorted into
 different categories based on their relevance to operators. Typhos uses this
@@ -199,7 +192,7 @@ information to craft user interfaces.</p>
 <h2>Related Projects<a class="headerlink" href="#related-projects" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/slaclab/pydm/">pydm</a></p></li>
-<li><p><a class="reference external" href="https://github.com/NSLS-II/ophyd/">ophyd</a></p></li>
+<li><p><a class="reference external" href="https://github.com/bluesky/ophyd/">ophyd</a></p></li>
 </ul>
 <div class="toctree-wrapper compound">
 </div>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Command Line Utilities &mdash; Typhos 0.5.0+28.gf69532a documentation</title>
+  <title>Command Line Utilities &mdash; Typhos 1.0.0+1.g28afb90 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Display Types" href="display.html" />
-    <link rel="prev" title="Including Python Code" href="python_methods.html" /> 
+    <link rel="next" title="Suite and Displays" href="display.html" />
+    <link rel="prev" title="Release History" href="release_notes.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.5.0+28.gf69532a
+                1.0.0+1.g28afb90
               </div>
             
           
@@ -84,21 +84,23 @@
               
             
             
-              <p class="caption"><span class="caption-text">Tutorial</span></p>
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Command Line Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="display.html">Display Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
 <li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Plugins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
 </ul>
 
             
@@ -166,25 +168,44 @@
   <div class="section" id="module-typhos.cli">
 <span id="command-line-utilities"></span><h1>Command Line Utilities<a class="headerlink" href="#module-typhos.cli" title="Permalink to this headline">¶</a></h1>
 <p>This module defines the <code class="docutils literal notranslate"><span class="pre">typhos</span></code> command line utility</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>usage: __main__.py [-h] [--happi-cfg HAPPI_CFG] [--version] [--verbose]
-                   [--dark] [--stylesheet STYLESHEET]
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>usage: __main__.py [-h] [--happi-cfg HAPPI_CFG] [--fake-device] [--version]
+                   [--verbose] [--dark] [--stylesheet STYLESHEET]
+                   [--profile-modules [PROFILE_MODULES [PROFILE_MODULES ...]]]
+                   [--profile-output PROFILE_OUTPUT]
+                   [--benchmark [BENCHMARK [BENCHMARK ...]]]
                    [devices [devices ...]]
 
 Create a TyphosSuite for device/s stored in a Happi Database
 
 positional arguments:
-  devices               Device names to load in the TyphosSuite
+  devices               Device names to load in the TyphosSuite or class name
+                        with parameters on the format:
+                        package.ClassName[{&quot;param1&quot;:&quot;val1&quot;,...}]
 
 optional arguments:
   -h, --help            show this help message and exit
   --happi-cfg HAPPI_CFG
                         Location of happi configuration file if not specified
                         by $HAPPI_CFG environment variable
+  --fake-device         Create fake devices with no EPICS connections. This
+                        does not yet work for happi devices. An example
+                        invocation: typhos --fake-device ophyd.EpicsMotor[]
   --version, -V         Current version and location of Typhos installation.
   --verbose, -v         Show the debug logging stream
   --dark                Use the QDarkStyleSheet shipped with Typhos
   --stylesheet STYLESHEET
                         Additional stylesheet options
+  --profile-modules [PROFILE_MODULES [PROFILE_MODULES ...]]
+                        Submodules to profile during the execution. If no
+                        specific modules are specified, profiles all
+                        submodules of typhos. Turns on line profiling.
+  --profile-output PROFILE_OUTPUT
+                        Filename to output the profile results to. If omitted,
+                        prints results to stdout. Turns on line profiling.
+  --benchmark [BENCHMARK [BENCHMARK ...]]
+                        Runs the specified benchmarking tests instead of
+                        launching a screen. If no specific tests are
+                        specified, runs all of them. Turns on line profiling.
 </pre></div>
 </div>
 </div>
@@ -197,10 +218,10 @@ optional arguments:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="display.html" class="btn btn-neutral float-right" title="Display Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="display.html" class="btn btn-neutral float-right" title="Suite and Displays" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="python_methods.html" class="btn btn-neutral float-left" title="Including Python Code" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="release_notes.html" class="btn btn-neutral float-left" title="Release History" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
