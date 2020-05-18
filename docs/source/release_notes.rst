@@ -58,7 +58,7 @@ Compatibility / fixes
 -  ``TyphosTimePlot`` no longer automatically adds signals to the plot.
 -  Removed internally-used ``typhos.utils.grab_kind``.
 -  OSX layout of ``TyphosSuite`` should be improved using the unified title and
-  toolbar.
+   toolbar.
 
 v0.7.0 (2020-03-09)
 ===================
