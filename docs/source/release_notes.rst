@@ -3,6 +3,51 @@
 =================
 
 
+v0.8.0 (2020-05-18)
+===================
+
+Description
+-----------
+
+A major new feature release with added views for complex devices and
+simplified configurability.
+
+Enhancements / What's New
+-------------------------
+
+-  Panels: New ``TyphosCompositeSignalPanel``, which composes multiple
+   ``TyphosDisplay``\ s in a tree-like view.
+-  Benchmarking: new profiling tools accessible in the command-line
+   ``typhos`` tool, allowing for per-line profiling of standardized
+   devices. (``--benchmark``)
+-  Template discovery: templates are discovered based on screen macros
+   and class inheritance structure, with the fallback of built-in
+   templates.
+-  New command-line options for testing with mock devices
+   (``--fake-device``).
+-  Performance: Major performance improvements by way of background
+   threading of signal description determination, display path caching,
+   and connection status monitoring to reduce GUI thread blocking.
+-  Display: Adds a "display switcher" tool for easy access to different
+   screen types.
+-  Display: Adds a "configuration" button to displays.
+-  Filtering: Filter panel contents by kinds.
+-  Filtering: Filter panel contents by signal names.
+-  Setpoint history: a history of previous setpoints has been added to
+   the context menu in ``TyphosLineEdit``.
+-  Positioners have been reworked to be less magical.
+
+Compatibility / fixes
+---------------------
+
+-  The deprecated name ``Typhon`` has been removed, as planned.
+-  Python 3.8 is now being included in the test suite.
+-  Happi is now completely optional.
+-  Popped-out widgets such as plots will persist even when the parent
+   display is closed.
+-  Font sizes should be more consistent on various DPI displays.
+
+
 v0.7.0 (2020-03-09)
 ===================
 
@@ -185,9 +230,6 @@ Bug Fixes
 
 v0.1.0 (2017-12-15)
 ===================
-
-Initial Release
-===============
 
 The initial release of Typhon. This serves as a proof of concept for the
 automation of PyDM screen building as informed by the structure of an
