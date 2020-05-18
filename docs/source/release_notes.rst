@@ -46,6 +46,7 @@ Compatibility / fixes
 -  Popped-out widgets such as plots will persist even when the parent
    display is closed.
 -  Font sizes should be more consistent on various DPI displays.
+-  Module ``typhos.signal`` has been renamed to ``typhos.panel``.
 
 
 v0.7.0 (2020-03-09)
