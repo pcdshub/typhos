@@ -2,8 +2,7 @@
  Release History
 =================
 
-
-v0.8.0 (2020-05-18)
+v1.0.0 (2020-05-18)
 ===================
 
 Description
@@ -11,6 +10,9 @@ Description
 
 A major new feature release with added views for complex devices and
 simplified configurability.
+
+As planned, the deprecated import name ``typhon`` and the ``typhon``
+command-line tool have been removed.
 
 Enhancements / What's New
 -------------------------
@@ -35,19 +37,28 @@ Enhancements / What's New
 -  Filtering: Filter panel contents by signal names.
 -  Setpoint history: a history of previous setpoints has been added to
    the context menu in ``TyphosLineEdit``.
--  Positioners have been reworked to be less magical.
+-  Positioner widgets have been redesigned to be less magical and more fault-
+   tolerant.  Adds designable properties that allow for specification of
+   attribute names.
+-  Anything that inherits from ``PositionerBase`` will have the template as an
+   option (``EpicsMotor``, ``PCDSMotorBase``, etc.)
+-  Reworked default templates to remove the ``miscellaneous`` panel.  Omitted
+   signals may still be shown by way of panel context menus or configuration
+   menus.
 
 Compatibility / fixes
 ---------------------
 
--  The deprecated name ``Typhon`` has been removed, as planned.
 -  Python 3.8 is now being included in the test suite.
 -  Happi is now completely optional.
 -  Popped-out widgets such as plots will persist even when the parent
    display is closed.
 -  Font sizes should be more consistent on various DPI displays.
 -  Module ``typhos.signal`` has been renamed to ``typhos.panel``.
-
+-  ``TyphosTimePlot`` no longer automatically adds signals to the plot.
+-  Removed internally-used ``typhos.utils.grab_kind``.
+-  OSX layout of ``TyphosSuite`` should be improved using the unified title and
+  toolbar.
 
 v0.7.0 (2020-03-09)
 ===================
