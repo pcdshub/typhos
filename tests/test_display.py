@@ -43,19 +43,26 @@ def test_device_display(device, motor, qtbot):
             utils.get_all_signals_from_device(device, filter_by=filter_by)
         )
 
-    def check_read_panel(device):
-        '''normal or hinted signals'''
+    def check_hint_panel(device):
         device_signals = signals_from_device(device, ophyd.Kind.hinted)
-        assert device_signals == signals_from_panel('read_panel')
+        if 'motor_setpoint' in device_signals:
+            # Signal is renamed and not reflected here
+            device_signals.remove('motor_setpoint')
+            device_signals.add('motor')
+        assert device_signals == signals_from_panel('hint_panel')
+
+    def check_read_panel(device):
+        device_signals = signals_from_device(device, ophyd.Kind.normal)
+        assert device_signals == signals_from_panel('normal_panel')
 
     def check_config_panel(device):
-        '''just config signals'''
         device_signals = signals_from_device(device, ophyd.Kind.config)
         assert device_signals == signals_from_panel('config_panel')
 
     panel = typhos.display.TyphosDeviceDisplay.from_device(
         motor, composite_heuristics=False)
     qtbot.addWidget(panel)
+    check_hint_panel(motor)
     check_read_panel(motor)
     check_config_panel(motor)
 

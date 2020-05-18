@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>341</width>
-    <height>533</height>
+    <width>556</width>
+    <height>641</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="TyphosDisplayTitle" name="TyphosDisplayTitle">
      <property name="toolTip">
@@ -29,6 +29,12 @@
    </item>
    <item>
     <widget class="TyphosPositionerWidget" name="TyphosPositionerWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="toolTip">
       <string/>
      </property>
@@ -36,6 +42,12 @@
    </item>
    <item>
     <widget class="QTabWidget" name="signal_tab">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -69,12 +81,6 @@
      <property name="documentMode">
       <bool>false</bool>
      </property>
-     <property name="tabsClosable">
-      <bool>false</bool>
-     </property>
-     <property name="movable">
-      <bool>false</bool>
-     </property>
      <property name="tabBarAutoHide">
       <bool>false</bool>
      </property>
@@ -82,7 +88,7 @@
       <attribute name="title">
        <string>Normal</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QHBoxLayout" name="misc_tab_layout">
        <property name="leftMargin">
         <number>2</number>
        </property>
@@ -111,11 +117,11 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>305</width>
+            <width>520</width>
             <height>215</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
+          <layout class="QVBoxLayout" name="verticalLayout">
            <property name="leftMargin">
             <number>2</number>
            </property>
@@ -133,6 +139,14 @@
              <property name="toolTip">
               <string/>
              </property>
+             <property name="whatsThis">
+              <string>
+    Panel of Signals for Device
+    </string>
+             </property>
+             <property name="showHints" stdset="0">
+              <bool>false</bool>
+             </property>
              <property name="showNormal" stdset="0">
               <bool>true</bool>
              </property>
@@ -143,6 +157,19 @@
               <bool>false</bool>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="normal_spacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
@@ -188,8 +215,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>520</width>
+            <height>215</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -207,6 +234,12 @@
            </property>
            <item>
             <widget class="TyphosSignalPanel" name="config_panel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="toolTip">
               <string/>
              </property>
@@ -226,82 +259,18 @@
              </property>
             </widget>
            </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="misc_tab">
-      <attribute name="title">
-       <string>Miscellaneous</string>
-      </attribute>
-      <layout class="QHBoxLayout" name="misc_tab_layout">
-       <property name="leftMargin">
-        <number>2</number>
-       </property>
-       <property name="topMargin">
-        <number>2</number>
-       </property>
-       <property name="rightMargin">
-        <number>2</number>
-       </property>
-       <property name="bottomMargin">
-        <number>2</number>
-       </property>
-       <item>
-        <widget class="QScrollArea" name="misc_scroll">
-         <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="sizeAdjustPolicy">
-          <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
-         </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="misc_widget">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>98</width>
-            <height>28</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <property name="leftMargin">
-            <number>2</number>
-           </property>
-           <property name="topMargin">
-            <number>2</number>
-           </property>
-           <property name="rightMargin">
-            <number>2</number>
-           </property>
-           <property name="bottomMargin">
-            <number>2</number>
-           </property>
            <item>
-            <widget class="TyphosSignalPanel" name="misc_panel">
-             <property name="toolTip">
-              <string/>
+            <spacer name="config_spacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
              </property>
-             <property name="whatsThis">
-              <string>
-    Panel of Signals for Device
-    </string>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
              </property>
-             <property name="showHints" stdset="0">
-              <bool>false</bool>
-             </property>
-             <property name="showNormal" stdset="0">
-              <bool>false</bool>
-             </property>
-             <property name="showConfig" stdset="0">
-              <bool>false</bool>
-             </property>
-            </widget>
+            </spacer>
            </item>
           </layout>
          </widget>
