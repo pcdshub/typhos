@@ -747,6 +747,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     def generate_context_menu(self):
         """Generate a context menu for this TyphosSignalPanel."""
         menu = QtWidgets.QMenu(parent=self)
+        menu.addSection('Kinds')
         for kind, property_name in self._kind_to_property.items():
             def selected(new_value, *, name=property_name):
                 setattr(self, name, new_value)

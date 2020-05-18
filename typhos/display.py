@@ -310,14 +310,15 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         if not panels:
             return base_menu
 
+        base_menu.addSection('Templates')
         display._generate_template_menu(base_menu)
 
+        base_menu.addSection('Filters')
         filter_menu = base_menu.addMenu("&Kind filter")
         self.create_kind_filter_menu(panels, filter_menu, only=False)
         filter_menu.addSeparator()
         self.create_kind_filter_menu(panels, filter_menu, only=True)
 
-        base_menu.addSeparator()
         self.create_name_filter_menu(panels, base_menu)
 
         base_menu.addSeparator()
@@ -651,8 +652,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._scroll_area)
 
-        self.setContextMenuPolicy(Qt.DefaultContextMenu)
-        self.contextMenuEvent = self.open_context_menu
         self.scrollable = scrollable
 
     @Property(bool)
@@ -714,7 +713,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 action = menu.addAction(os.path.split(filename)[-1])
                 action.triggered.connect(switch_template)
 
-        base_menu.addSeparator()
         refresh_action = base_menu.addAction("Refresh Templates")
         refresh_action.triggered.connect(self._refresh_templates)
 
@@ -724,29 +722,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         cache.get_global_display_path_cache().update()
         self.search_for_templates()
         self.load_best_template()
-
-    def generate_context_menu(self):
-        """
-        Generate the context menu and populate it with any loaded tools.
-
-        Returns
-        -------
-        QMenu
-        """
-        base_menu = QtWidgets.QMenu(parent=self)
-        self._generate_template_menu(base_menu)
-        return base_menu
-
-    def open_context_menu(self, ev):
-        """
-        Open the instance-specific context menu.
-
-        Parameters
-        ----------
-        ev : QEvent
-        """
-        menu = self.generate_context_menu()
-        menu.exec_(self.mapToGlobal(ev.pos()))
 
     @property
     def current_template(self):
