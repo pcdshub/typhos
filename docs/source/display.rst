@@ -28,13 +28,7 @@ Standardized Display Title
 .. autoclass:: typhos.display.TyphosDisplayTitle
    :members:
 
-Template Switcher
------------------
-
-.. autoclass:: typhos.display.TyphosDisplaySwitcherButton
-   :members:
-
-.. autoclass:: typhos.display.TyphosDisplayTitle
+.. autoclass:: typhos.display.TyphosDisplaySwitcher
    :members:
 
 .. autoclass:: typhos.display.TyphosTitleLabel
