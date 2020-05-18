@@ -10,9 +10,6 @@ Utility Functions
 Cache Utilities
 ###############
 
-.. automodule:: typhos.cache
-    :members:
-
 Path caching
 ============
 
