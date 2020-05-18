@@ -33,23 +33,24 @@ Related Projects
 - `ophyd <https://github.com/bluesky/ophyd/>`_
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Tutorial
-   :hidden:
+    :maxdepth: 2
+    :caption: User Documentation
+    :hidden:
 
-   basic_usage.rst
-   tools.rst
-   save.rst
-   connections.rst
-   python_methods.rst
+    basic_usage.rst
+    tools.rst
+    save.rst
+    connections.rst
+    python_methods.rst
+    release_notes.rst
 
 .. toctree::
-   :maxdepth: 3
-   :caption: API Documentation
-   :hidden:
+    :maxdepth: 3
+    :caption: Developer Documentation
+    :hidden:
 
-   cli.rst
-   display.rst
-   widgets.rst
-   plugins.rst
-   utils.rst
+    cli.rst
+    display.rst
+    widgets.rst
+    plugins.rst
+    utils.rst
