@@ -166,9 +166,21 @@ def random_color():
 
 
 class TyphosLoading(QtWidgets.QLabel):
+    """
+    A QLabel with an animation for loading status.
+
+    Attributes
+    ----------
+    LOADING_TIMEOUT_MS : int
+        The timeout value in milliseconds for when to stop the animation
+        and replace it with a default timeout message.
+
+    """
+    LOADING_TIMEOUT_MS = 10000
     loading_gif = None
-    """Simple widget that displays a loading GIF"""
+
     def __init__(self, *args, **kwargs):
+
         super().__init__(*args, **kwargs)
         self._icon_size = QSize(32, 32)
         if TyphosLoading.loading_gif is None:
@@ -178,6 +190,16 @@ class TyphosLoading(QtWidgets.QLabel):
         self._animation.setScaledSize(self._icon_size)
         self.setMovie(self._animation)
         self._animation.start()
+        if self.LOADING_TIMEOUT_MS > 0:
+            QtCore.QTimer.singleShot(self.LOADING_TIMEOUT_MS,
+                                     self._handle_timeout)
+
+    def _handle_timeout(self):
+        self._animation.stop()
+        self.setMovie(None)
+        self.setText("Loading Timeout")
+        self.setToolTip("Could not complete operation after "
+                        f"{self.LOADING_TIMEOUT_MS/1000} seconds.")
 
     @property
     def iconSize(self):
