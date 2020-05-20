@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.utils &mdash; Typhos 1.0.0+3.gf519b44 documentation</title>
+  <title>typhos.utils &mdash; Typhos 1.0.0+8.g595cc9c documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                1.0.0+3.gf519b44
+                1.0.0+8.g595cc9c
               </div>
             
           
@@ -330,9 +330,21 @@
 
 
 <div class="viewcode-block" id="TyphosLoading"><a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosLoading">[docs]</a><span class="k">class</span> <span class="nc">TyphosLoading</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A QLabel with an animation for loading status.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    LOADING_TIMEOUT_MS : int</span>
+<span class="sd">        The timeout value in milliseconds for when to stop the animation</span>
+<span class="sd">        and replace it with a default timeout message.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOADING_TIMEOUT_MS</span> <span class="o">=</span> <span class="mi">10000</span>
     <span class="n">loading_gif</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="sd">&quot;&quot;&quot;Simple widget that displays a loading GIF&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span> <span class="o">=</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">TyphosLoading</span><span class="o">.</span><span class="n">loading_gif</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -342,6 +354,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">setScaledSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMovie</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOADING_TIMEOUT_MS</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LOADING_TIMEOUT_MS</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_handle_timeout</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_handle_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMovie</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Loading Timeout&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s2">&quot;Could not complete operation after &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">LOADING_TIMEOUT_MS</span><span class="o">/</span><span class="mi">1000</span><span class="si">}</span><span class="s2"> seconds.&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">iconSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
