@@ -83,3 +83,7 @@ QLineEdit#menu_action {
     border-style: outset;
     border-color: black;
 }
+
+TyphosLoading {
+    color: red;
+}

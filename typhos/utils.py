@@ -198,7 +198,6 @@ class TyphosLoading(QtWidgets.QLabel):
         self._animation.stop()
         self.setMovie(None)
         self.setText("Loading Timeout")
-        self.setStyleSheet("color: red;")
         self.setToolTip("Could not complete operation after "
                         f"{self.LOADING_TIMEOUT_MS/1000} seconds.")
 
