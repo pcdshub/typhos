@@ -175,15 +175,11 @@ class TyphosLoading(QtWidgets.QLabel):
         The timeout value in milliseconds for when to stop the animation
         and replace it with a default timeout message.
 
-    Parameters
-    ----------
-    enable_timeout : bool
-        Whether or not to stop the animation after a timeout value.
     """
     LOADING_TIMEOUT_MS = 10000
     loading_gif = None
 
-    def __init__(self, enable_timeout=True, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
         self._icon_size = QSize(32, 32)
@@ -194,7 +190,7 @@ class TyphosLoading(QtWidgets.QLabel):
         self._animation.setScaledSize(self._icon_size)
         self.setMovie(self._animation)
         self._animation.start()
-        if enable_timeout:
+        if self.LOADING_TIMEOUT_MS > 0:
             QtCore.QTimer.singleShot(self.LOADING_TIMEOUT_MS,
                                      self._handle_timeout)
 
