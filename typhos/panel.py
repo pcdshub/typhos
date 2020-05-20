@@ -490,7 +490,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             item = self.itemAtPosition(row, col)
             if item:
                 widget = item.widget()
-                if widget:
+                if widget is not None:
                     widget.setVisible(visible)
 
         if not visible or info['signal'] is not None:
