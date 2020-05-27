@@ -846,6 +846,11 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if widget:
             widget.setObjectName('display_widget')
 
+            if widget.layout() is None and widget.minimumSize().width() == 0:
+                # If the widget has no layout, use a fixed size for it.
+                # Without this, the widget may not display at all.
+                widget.setMinimumSize(widget.size())
+
         self._display_widget = widget
         self._current_template = template
 
