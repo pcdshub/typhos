@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.display &mdash; Typhos 1.0.0+8.g595cc9c documentation</title>
+  <title>typhos.display &mdash; Typhos 1.0.1+2.g1dc84c9 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                1.0.0+8.g595cc9c
+                1.0.1+2.g1dc84c9
               </div>
             
           
@@ -1009,6 +1009,11 @@
 
         <span class="k">if</span> <span class="n">widget</span><span class="p">:</span>
             <span class="n">widget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;display_widget&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">widget</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">widget</span><span class="o">.</span><span class="n">minimumSize</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># If the widget has no layout, use a fixed size for it.</span>
+                <span class="c1"># Without this, the widget may not display at all.</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">setMinimumSize</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">size</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_display_widget</span> <span class="o">=</span> <span class="n">widget</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span> <span class="o">=</span> <span class="n">template</span>

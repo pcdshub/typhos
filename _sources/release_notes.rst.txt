@@ -2,6 +2,28 @@
  Release History
 =================
 
+
+v1.0.1 (2020-05-20)
+===================
+
+Description
+-----------
+
+A bug fix release with a minor addition.
+
+Enhancements / What's New
+-------------------------
+-  TyphosLoading now takes in a timeout value to switch the animation
+   with a text message stating that the operation timed-out after X
+   seconds.
+
+
+Compatibility / fixes
+---------------------
+
+-  Combobox widgets were appearing when switching or refreshing templates.
+
+
 v1.0.0 (2020-05-18)
 ===================
 
