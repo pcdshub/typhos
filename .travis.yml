@@ -18,6 +18,7 @@ env:
 
     - PIP_EXTRAS="PyQt5 happi"
 
+
 jobs:
   allow_failures:
     - name: "Python 3.6 - PIP"
