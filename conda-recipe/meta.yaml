@@ -7,29 +7,49 @@ package:
 source:
     path: ..
 
+build:
+  noarch: python
+  entry_points:
+    - typhos = typhos.cli:main
+
 requirements:
-    build:
-      - python
-      - setuptools
-
-
-    run:
-      - python
-      - coloredlogs
-      - happi >=1.3.0
-      - numpy
-      - ophyd >=1.5.0
-      - pcdsutils
-      - pyqtgraph
-      - pydm >=1.6.0
-      - qdarkstyle
-      - qtawesome
-      - qtconsole
-      - qtpy
-      - timechart
-      - numpydoc
+  host:
+    - python >=3.6
+    - pip
+  run:
+    - python >=3.6
+    - pyqt >=5
+    - qtpy
+    - coloredlogs
+    - numpy
+    - numpydoc
+    - ophyd >=1.5.0
+    - pcdsutils
+    - pydm
+    - pyqtgraph
+    - qdarkstyle
+    - qtawesome
+    - qtconsole
+    - timechart
 
 about:
   home: https://github.com/pcdshub/typhos
-  license: SLAC Open License
-  summary: Automatic User Interface Creation from Ophyd Devices
+  doc_url: https://pcdshub.github.io/typhos
+  dev_url: https://github.com/pcdshub/typhos
+  summary: 'Automatic-yet-customizable Graphical User Interface Generation for Ophyd Devices'
+  license: SLAC Open
+  license_family: OTHER
+  license_file: LICENSE.md
+
+test:
+  imports:
+    - typhos
+    - typhos.cli
+  commands:
+    - typhos --help
+
+extra:
+  recipe-maintainers:
+    - klauer
+    - hhslepicka
+    - zllentz
