@@ -1,91 +1,31 @@
-dist: xenial
-language: python
+version: ~> 1.0
 
-services:
-    - xvfb
-
-addons:
-    apt:
-      packages:
-        - herbstluftwm
-        - libxkbcommon-x11-0
 env:
   global:
-    - OFFICIAL_REPO="pcdshub/typhos"
     - secure: "hBCzCVHaSb43+jT7b+hwjB2Xb0nfJqjoTNA7fVye7f23zgYGTemlCuRJUeAKjnwqKdfuevNklSRabMNnoI2zW3T19VV4KdwrmyA/o0O1tsR3qjvXXARd1MTte37ZM2XTMSs4Nxhea5HpXzy8BQXGFNvkZuGmhgNJCoIgaNv047MM3t8lnBRhJNXWc9OaYhqRQ8zw+beezGMdosV4AgOVTr+6K1aZcUOVDsI3sgib0sPq9zcCnaCsolZgJGb2iXUVrxZ2uNeEhKgKk7FScEgiLanaKiUJLOUeQoG5DczVdtfhDRLfbLk8bc7IfRZtaeVCaTgjvwb2ZW7LTi1rXhoy9jsNzKwROUrwsho8S710N7VYTENIbWqAvR7ZwYuGTdwtQiOXvjPvaYhPByK0XCUi98P65s/JDhwKE7mki4QD7E3aAxBJc0h9tzRjZVpG7k+iZuPHy93CEHwkbZFPGFYrDd29kWpNavsBrEQtRxbUkvjjA9vUKaNXBakm9VIO7MAyYFdj8vx9BovQ35Rw5O0kpF7jwY6pch9fBrVKI+G1iTDs/hOx8Qf8mPsb8pltCar3DRIxXd9nNGmR6seb0BGnA2l8cCcYa6VcnfLZecJnYOLwi0/n8i0d3YK6dN/r0hY2MPNKnwb1Fkr29HnObRrcq9zoPgdNRsl+9Z75JcQBghk="
 
-matrix:
-  include:
-    - name: flake8 linting
-      python: 3.6
-      env: LINT_PYTHON=typhos
-    - python: 3.6
-      env: BUILD_DOCS=1
-    - python: 3.6
-      env: BENCHMARK=1
-    - python: 3.7.3  # # Pinned due to PyQt bug. Remove when PyQt 5.13.1 is available
-    - python: 3.8
+    - DOCTR_VERSIONS_MENU="1"
+    - DOCS_REQUIREMENTS="dev-requirements.txt requirements.txt"
+    - PYTHON_LINT_OPTIONS="typhos"
 
-install:
-  - git clone --depth 1 git://github.com/pcdshub/pcds-ci-helpers.git
-  - source pcds-ci-helpers/travis/init.sh
+    - CONDA_PACKAGE="typhos"
+    - CONDA_RECIPE_FOLDER="conda-recipe"
+    - CONDA_EXTRAS="pip pyqt=5 happi"
+    - CONDA_REQUIREMENTS="dev-requirements.txt"
 
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - conda config --set always_yes yes --set changeps1 no
-  - conda install conda-build anaconda-client
-  - conda update -q conda conda-build
-  - conda config --remove channels defaults
-  - conda config --add channels conda-forge
-  # Useful for debugging
-  - conda info -a
-  - conda build -q conda-recipe --python $TRAVIS_PYTHON_VERSION --output-folder bld-dir
-  - conda config --add channels "file://`pwd`/bld-dir"
-  # Manage conda environment
-  - conda create -n typhos-env python=$TRAVIS_PYTHON_VERSION typhos pip pyqt --file dev-requirements.txt
-  - source activate typhos-env
-  # Useful for debugging
-  - conda list
+    - BENCHMARK_PYTHON="3.6"
+    - BENCHMARK_COMMAND="--benchmark-only"
 
-before_script:
-  # Run windows manager
-  - "herbstluftwm &"
-  - sleep 1
+    - PIP_EXTRAS="PyQt5 happi"
 
-script:
-  - |
-    if [[ "$BENCHMARK" == "1" ]]; then
-      coverage run run_tests.py --show-capture=no --benchmark-only
-    else
-      coverage run run_tests.py --show-capture=no
-    fi
-  - coverage report -m
-
-  # Build docs
-  - set -e
-  - |
-    if [[ -n "$DOCTR_DEPLOY_ENCRYPTION_KEY_PCDSHUB_TYPHOS" && "$BUILD_DOCS" == "1" ]]; then
-      # Create HTML documentation
-      pushd docs
-      make html
-      popd
-      #Publish docs.
-      doctr deploy . --built-docs docs/build/html --deploy-branch-name gh-pages
-    fi
-
-after_success:
-  - codecov
-  - |
-    if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == $OFFICIAL_REPO && $TRAVIS_BRANCH == $TRAVIS_TAG  && $TRAVIS_TAG != '' && $BUILD ]]; then
-      export ANACONDA_API_TOKEN=$CONDA_UPLOAD_TOKEN_TAG
-      anaconda upload bld-dir/linux-64/*.tar.bz2
-    fi
-  - |
-    if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == $OFFICIAL_REPO && $TRAVIS_BRANCH == 'master' && $BUILD ]]; then
-      export ANACONDA_API_TOKEN=$CONDA_UPLOAD_TOKEN_DEV
-      anaconda upload bld-dir/linux-64/*.tar.bz2
-    fi
+jobs:
+  allow_failures:
+    - name: "Python 3.6 - PIP"
 
 after_failure:
   - cat logs/run_tests_log.txt
+
+import:
+  - pcdshub/pcds-ci-helpers:travis/shared_configs/setup-env-ui.yml
+  - pcdshub/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml
+  - pcdshub/pcds-ci-helpers:travis/shared_configs/python-benchmark.yml
