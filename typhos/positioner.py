@@ -1,5 +1,6 @@
 import functools
 import logging
+import math
 import operator
 import os.path
 
@@ -133,6 +134,8 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     _high_limit_switch_attr = 'high_limit_switch'
     _low_limit_travel_attr = 'low_limit_travel'
     _high_limit_travel_attr = 'high_limit_travel'
+    _velocity_attr = 'velocity'
+    _acceleration_attr = 'acceleration'
     _min_visible_operation = 0.1
 
     def __init__(self, parent=None):
@@ -168,13 +171,35 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         thread.status_finished.connect(self._status_finished)
         thread.start()
 
+    def _get_timeout(self, value, settle_time):
+        """Use positioner's configuration to select a timeout."""
+        pos_sig = getattr(self.device, self._readback_attr, None)
+        vel_sig = getattr(self.device, self._velocity_attr, None)
+        acc_sig = getattr(self.device, self._acceleration_attr, None)
+        # Not enough info == no timeout
+        if pos_sig is None or vel_sig is None:
+            return math.inf
+        delta = abs(pos_sig.get() - value)
+        speed = vel_sig.get()
+        # Bad speed == no timeout
+        if speed == 0:
+            return math.inf
+        # Bad acceleration == ignore acceleration
+        if acc_sig is None:
+            acc_time = 0
+        else:
+            acc_time = acc_sig.get()
+        # This time is always greater than the kinematic calc
+        return delta/speed + 2 * acc_time + abs(settle_time)
+
     def _set(self, value):
         """Inner `set` routine - call device.set() and monitor the status."""
         self._clear_status_thread()
         self._last_move = None
 
         logger.debug("Setting device %r to %r", self.device, value)
-        status = self.device.set(float(value))
+        timeout = self._get_timeout(value, 5)
+        status = self.device.set(float(value), timeout=timeout)
         self._start_status_thread(status)
 
     @QtCore.Slot()
