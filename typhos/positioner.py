@@ -410,6 +410,24 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def high_limit_travel_attribute(self, value):
         self._high_limit_travel_attr = value
 
+    @QtCore.Property(str, designable=True)
+    def velocity_attribute(self):
+        """The attribute name for the velocity signal."""
+        return self._velocity_attr
+
+    @velocity_attribute.setter
+    def velocity_attribute(self, value):
+        self._velocity_attr = value
+
+    @QtCore.Property(str, designable=True)
+    def acceleration_attribute(self):
+        """The attribute name for the acceleration time signal."""
+        return self._acceleration_attr
+
+    @acceleration_attribute.setter
+    def acceleration_attribute(self, value):
+        self._acceleration_attr = value
+
     def move_changed(self):
         """Called when a move is begun"""
         logger.debug("Begin showing move in TyphosPositionerWidget")
