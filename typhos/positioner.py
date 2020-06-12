@@ -171,7 +171,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         thread.status_finished.connect(self._status_finished)
         thread.start()
 
-    def _get_timeout(self, value, settle_time):
+    def _get_timeout(self, set_position, settle_time):
         """Use positioner's configuration to select a timeout."""
         pos_sig = getattr(self.device, self._readback_attr, None)
         vel_sig = getattr(self.device, self._velocity_attr, None)
@@ -179,7 +179,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         # Not enough info == no timeout
         if pos_sig is None or vel_sig is None:
             return math.inf
-        delta = abs(pos_sig.get() - value)
+        delta = pos_sig.get() - set_position
         speed = vel_sig.get()
         # Bad speed == no timeout
         if speed == 0:
@@ -190,16 +190,17 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         else:
             acc_time = acc_sig.get()
         # This time is always greater than the kinematic calc
-        return delta/speed + 2 * acc_time + abs(settle_time)
+        return abs(delta/speed) + 2 * abs(acc_time) + abs(settle_time)
 
     def _set(self, value):
         """Inner `set` routine - call device.set() and monitor the status."""
         self._clear_status_thread()
         self._last_move = None
+        set_position = float(value)
 
         logger.debug("Setting device %r to %r", self.device, value)
-        timeout = self._get_timeout(value, 5)
-        status = self.device.set(float(value), timeout=timeout)
+        timeout = self._get_timeout(set_position, 5)
+        status = self.device.set(set_position, timeout=timeout)
         self._start_status_thread(status)
 
     @QtCore.Slot()
