@@ -21,6 +21,10 @@ class SimMotor(SynAxis):
     # TODO: fix upstream - Mock interferes with @required_for_connection
     stop._required_for_connection = False
 
+    # PositionerBase has a timeout arg, SynAxis does not
+    def set(self, value, timeout=None):
+        return super().set(value)
+
 
 @pytest.fixture(scope='function')
 def motor_widget(qtbot):
