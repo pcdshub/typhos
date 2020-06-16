@@ -162,10 +162,11 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._status_thread.disconnect()
         self._status_thread = None
 
-    def _start_status_thread(self, status):
+    def _start_status_thread(self, status, timeout):
         """Start the status monitoring thread for the given status object."""
         self._status_thread = thread = TyphosStatusThread(
-            status, start_delay=self._min_visible_operation
+            status, start_delay=self._min_visible_operation,
+            timeout=timeout
         )
         thread.status_started.connect(self.move_changed)
         thread.status_finished.connect(self._status_finished)
@@ -198,10 +199,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._last_move = None
         set_position = float(value)
 
-        logger.debug("Setting device %r to %r", self.device, value)
         timeout = self._get_timeout(set_position, 5)
-        status = self.device.set(set_position, timeout=timeout)
-        self._start_status_thread(status)
+        logger.debug("Setting device %r to %r with timeout %r",
+                     self.device, value, timeout)
+        # Send timeout through thread because status timeout stops the move
+        status = self.device.set(set_position)
+        self._start_status_thread(status, timeout)
 
     @QtCore.Slot()
     def set(self):
