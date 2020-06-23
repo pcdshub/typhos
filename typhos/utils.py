@@ -18,6 +18,7 @@ from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QMovie, QPainter
 from qtpy.QtWidgets import QWidget
 
+import ophyd
 import ophyd.sim
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
@@ -1048,3 +1049,41 @@ def dump_grid_layout(layout, rows=None, cols=None, *, cell_width=60):
 def nullcontext():
     """Stand-in for py3.7's contextlib.nullcontext"""
     yield
+
+
+def get_component(obj):
+    """
+    Get the component that made the given object.
+
+    Parameters
+    ----------
+    obj : ophyd.OphydItem
+        The ophyd item for which to get the component.
+
+    Returns
+    -------
+    component : ophyd.Component
+        The component, if available.
+    """
+    return getattr(type(obj.parent), obj.attr_name)
+
+
+def get_metadata(cpt):
+    """
+    Get "variety" metadata from a component or signal.
+
+    Parameters
+    ----------
+    cpt : ophyd.Component or ophyd.OphydItem
+        The component / ophyd item to get the metadata for.
+
+    Returns
+    -------
+    metadata : dict
+        The metadata, if set. Otherwise an empty dictionary.  This metadata is
+        guaranteed to be valid according to the known schemas.
+    """
+    if not isinstance(cpt, ophyd.Component):
+        cpt = get_component(cpt)
+
+    return getattr(cpt, '_variety_metadata', {})
