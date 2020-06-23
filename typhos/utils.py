@@ -1068,7 +1068,7 @@ def get_component(obj):
     return getattr(type(obj.parent), obj.attr_name)
 
 
-def get_metadata(cpt):
+def get_variety_metadata(cpt):
     """
     Get "variety" metadata from a component or signal.
 

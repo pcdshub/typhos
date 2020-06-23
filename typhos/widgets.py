@@ -1,5 +1,6 @@
 import collections
 import datetime
+import inspect
 import logging
 
 import qtawesome as qta
@@ -504,6 +505,119 @@ class WaveformDialogButton(SignalDialogButton):
                                 parent=self)
 
 
+# def variety_metadata_to_kwargs(variety, cls, ):
+variety_to_widget_class = {
+    'command': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'command-proc': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'command-enum': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'command-setpoint-tracks-readback': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'tweakable': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'array-timeseries': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'array-histogram': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'array-image': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'array-nd': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'scalar': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'scalar-range': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'bitmask': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'text': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'text-multiline': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'text-enum': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+
+    'enum': SignalWidgetInfo(
+        read_cls=None,
+        read_kwargs={},
+        write_cls=None,
+        write_kwargs={}),
+}
+
+
+def _get_scalar_widget_class(desc, variety_md, read_only):
+    # Check for enum_strs, if so create a QCombobox
+    if read_only:
+        return TyphosLabel
+
+    if 'enum_strs' in desc:
+        # Create a QCombobox if the widget has enum_strs
+        return TyphosComboBox
+
+    # Otherwise a LineEdit will suffice
+    return TyphosLineEdit
+
+
 def widget_type_from_description(signal, desc, read_only=False):
     """
     Determine which widget class should be used for the given signal
@@ -536,6 +650,7 @@ def widget_type_from_description(signal, desc, read_only=False):
         plugins.register_signal(signal)
         init_channel = utils.channel_name(signal.name, protocol='sig')
 
+    variety_metadata = utils.get_variety_metadata(signal)
     kwargs = {
         'init_channel': init_channel,
     }
@@ -543,22 +658,20 @@ def widget_type_from_description(signal, desc, read_only=False):
     # Unshaped data
     shape = desc.get('shape', [])
     dtype = desc.get('dtype', '')
+    # variety = variety_metadata.get('variety')
+
     try:
         dimensions = len(shape)
     except TypeError:
         dimensions = 0
 
+    # if variety:
+    #     widget_cls = _get_widget_class_from_variety(
+    #         desc, variety_metadata, read_only)
+
     if dimensions == 0:
-        # Check for enum_strs, if so create a QCombobox
-        if read_only:
-            widget_cls = TyphosLabel
-        else:
-            if 'enum_strs' in desc:
-                # Create a QCombobox if the widget has enum_strs
-                widget_cls = TyphosComboBox
-            else:
-                # Otherwise a LineEdit will suffice
-                widget_cls = TyphosLineEdit
+        widget_cls = _get_scalar_widget_class(desc, variety_metadata,
+                                              read_only)
     elif dimensions == 1:
         # Waveform
         widget_cls = WaveformDialogButton
@@ -571,6 +684,10 @@ def widget_type_from_description(signal, desc, read_only=False):
 
     if dtype == 'string' and widget_cls in (TyphosLabel, TyphosLineEdit):
         kwargs['display_format'] = DisplayFormat.String
+
+    class_signature = inspect.signature(widget_cls)
+    if 'variety_metadata' in class_signature.parameters:
+        kwargs['variety_metadata'] = variety_metadata
 
     return widget_cls, kwargs
 
