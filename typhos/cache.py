@@ -8,8 +8,6 @@ import time
 
 from qtpy import QtCore
 
-import ophyd
-
 from . import utils
 from .widgets import SignalWidgetInfo
 
@@ -87,13 +85,6 @@ class _GlobalDescribeCache(QtCore.QObject):
     def _describe(self, obj):
         """Retrieve the description of ``obj``."""
         try:
-            if isinstance(obj, ophyd.NDDerivedSignal):
-                # Force initial value readout otherwise _readback was never
-                # set and that causes issues with more complex describe
-                # types such as DerivedSignal and NDDerivedSignal.
-                # TODO: This is a temporary fix and must be removed once
-                #       https://github.com/bluesky/ophyd/pull/858 is merged
-                obj.get()
             return obj.describe()[obj.name]
         except Exception:
             logger.error("Unable to connect to %r during widget creation",
