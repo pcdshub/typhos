@@ -199,7 +199,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._last_move = None
         set_position = float(value)
 
-        timeout = self._get_timeout(set_position, 5)
+        try:
+            timeout = self._get_timeout(set_position, 5)
+        except Exception:
+            # Something went wrong, just run without a timeout.
+            logger.exception('Unable to estimate motor timeout.')
+            timeout = math.inf
         logger.debug("Setting device %r to %r with timeout %r",
                      self.device, value, timeout)
         # Send timeout through thread because status timeout stops the move
