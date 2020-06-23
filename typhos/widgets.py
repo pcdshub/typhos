@@ -12,6 +12,7 @@ from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
 
 import pydm
 import pydm.widgets
+import pydm.widgets.enum_button
 from ophyd.signal import EpicsSignalBase
 from pydm.widgets.display_format import DisplayFormat
 
@@ -64,7 +65,10 @@ class SignalWidgetInfo(
         read_cls, read_kwargs = widget_type_from_description(
             obj, desc, read_only=True)
 
-        if utils.is_signal_ro(obj) or issubclass(read_cls, SignalDialogButton):
+        is_read_only = utils.is_signal_ro(obj) or (
+            read_cls is not None and issubclass(read_cls, SignalDialogButton))
+
+        if is_read_only:
             write_cls = None
             write_kwargs = {}
         else:
@@ -137,10 +141,7 @@ class TogglePanel(QWidget):
                 self.contents.hide()
 
 
-_variety_to_widget_class = {
-    'read': {},
-    'write': {},
-}
+_variety_to_widget_class = {}
 
 
 def for_variety(variety, *, read=True, write=True):
@@ -186,11 +187,14 @@ def for_variety(variety, *, read=True, write=True):
         raise ValueError(f'Not a known variety: {variety}')
 
     def wrapper(cls):
+        if variety not in _variety_to_widget_class:
+            _variety_to_widget_class[variety] = {}
+
         if read:
-            _variety_to_widget_class['read'][variety] = cls
+            _variety_to_widget_class[variety]['read'] = cls
 
         if write:
-            _variety_to_widget_class['write'][variety] = cls
+            _variety_to_widget_class[variety]['write'] = cls
 
         if not read and not write:
             raise ValueError('`write` or `read` must be set.')
@@ -341,7 +345,16 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
 
 
 @for_variety_read('enum')
+@for_variety_read('scalar')
+@for_variety_read('scalar-range')
+@for_variety_read('tweakable')
+@for_variety_read('text')
 @for_variety_read('text-enum')
+@for_variety_read('text-multiline')
+@for_variety_read('command')
+@for_variety_read('command-enum')
+@for_variety_read('command-proc')
+@for_variety_read('command-setpoint-tracks-readback')
 @for_variety('array-nd')
 class TyphosLabel(pydm.widgets.PyDMLabel):
     """
@@ -589,14 +602,53 @@ class WaveformDialogButton(SignalDialogButton):
             init_y_channels=[self.channel], parent=self)
 
 
+@for_variety_write('command')
+@for_variety_write('command-proc')
+@for_variety_write('command-setpoint-tracks-readback')  # TODO
+class TyphosCommandButton(pydm.widgets.PyDMPushButton):
+    ...
+
+
+@for_variety_write('command-enum')
+class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
+    ...
+
+
+@for_variety_write('tweakable')
+class TyphosTweakable(pydm.widgets.PyDMLineEdit):
+    ...
+    # TODO tweak functionality from positioner?
+
+
+@for_variety_read('bitmask')
+class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
+    ...
+
+
+@for_variety_write('bitmask')
+class TyphosByteSetpoint(pydm.widgets.PyDMByteIndicator):
+    ...
+
+
+@for_variety_write('scalar-range')
+class TyphosScalarRange(pydm.widgets.PyDMSlider):
+    ...
+
+
 def _get_widget_class_from_variety(desc, variety_md, read_only):
     variety = variety_md['variety']  # a required key
     read_key = 'read' if read_only else 'write'
     try:
-        return _variety_to_widget_class[variety].get(read_key)
+        widget_cls = _variety_to_widget_class[variety].get(read_key)
     except KeyError:
         logger.error('Unsupported variety: %s (%s / %s)', variety,
                      desc, variety_md)
+    else:
+        if widget_cls is None:
+            # TODO: remove
+            logger.error('TODO no widget?: %s (%s / %s)', variety,
+                         desc, variety_md)
+        return widget_cls
 
 
 def _get_scalar_widget_class(desc, variety_md, read_only):
@@ -659,23 +711,23 @@ def widget_type_from_description(signal, desc, read_only=False):
         'init_channel': init_channel,
     }
 
-    # Unshaped data
-    shape = desc.get('shape', [])
-    dtype = desc.get('dtype', '')
-
     if variety_metadata:
         widget_cls = _get_widget_class_from_variety(
             desc, variety_metadata, read_only)
     else:
         try:
-            dimensions = len(shape)
+            dimensions = len(desc.get('shape', []))
         except TypeError:
             dimensions = 0
 
         widget_cls = _get_ndimensional_widget_class(
             dimensions, desc, variety_metadata, read_only)
 
-    if dtype == 'string' and widget_cls in (TyphosLabel, TyphosLineEdit):
+    if widget_cls is None:
+        return None, None
+
+    if desc.get('dtype') == 'string' and widget_cls in (TyphosLabel,
+                                                        TyphosLineEdit):
         kwargs['display_format'] = DisplayFormat.String
 
     class_signature = inspect.signature(widget_cls)
@@ -737,6 +789,9 @@ def create_signal_widget(signal, read_only=False, tooltip=None):
         be able to write back to the widget and if the signal has ``enum_strs``
     """
     widget_cls, kwargs = determine_widget_type(signal, read_only=read_only)
+    if widget_cls is None:
+        return
+
     logger.debug("Creating %s for %s", widget_cls, signal.name)
 
     widget = widget_cls(**kwargs)
