@@ -10,11 +10,9 @@ from qtpy.QtCore import Property, QObject, QSize, Qt, Signal, Slot
 from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
                             QToolBar, QVBoxLayout, QWidget)
 
+import pydm
+import pydm.widgets
 from ophyd.signal import EpicsSignalBase
-from pydm.widgets import (PyDMEnumComboBox, PyDMImageView, PyDMLabel,
-                          PyDMLineEdit, PyDMWaveformPlot)
-from pydm.widgets.base import PyDMWidget
-from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.display_format import DisplayFormat
 
 from . import plugins, utils
@@ -139,13 +137,89 @@ class TogglePanel(QWidget):
                 self.contents.hide()
 
 
-class TyphosComboBox(PyDMEnumComboBox):
-    """
-    Reimplementation of PyDMEnumComboBox to set some custom defaults
-    """
+_variety_to_widget_class = {
+    'read': {},
+    'write': {},
+}
 
 
-class TyphosLineEdit(PyDMLineEdit):
+def for_variety(variety, *, read=True, write=True):
+    """
+    A class wrapper to associate a specific variety with the class.
+
+    Defaults to registering for both read and write widgets.
+
+    Parameters
+    ----------
+    variety : str
+        The variety (e.g., 'command')
+
+    read : bool, optional
+        Use for readback widgets
+
+    write : bool, optional
+        Use for setpoint widgets
+    """
+
+    known_varieties = {
+        'command',
+        'command-proc',
+        'command-enum',
+        'command-setpoint-tracks-readback',
+        'tweakable',
+        'array-timeseries',
+        'array-histogram',
+        'array-image',
+        'array-nd',
+        'scalar',
+        'scalar-range',
+        'bitmask',
+        'text',
+        'text-multiline',
+        'text-enum',
+        'enum',
+    }
+
+    if variety not in known_varieties:
+        # NOTE: not kept in sync with pcdsdevices; so this wrapper may need
+        # updating.
+        raise ValueError(f'Not a known variety: {variety}')
+
+    def wrapper(cls):
+        if read:
+            _variety_to_widget_class['read'][variety] = cls
+
+        if write:
+            _variety_to_widget_class['write'][variety] = cls
+
+        if not read and not write:
+            raise ValueError('`write` or `read` must be set.')
+
+        return cls
+
+    return wrapper
+
+
+def for_variety_read(variety):
+    """`for_variety` shorthand for setting the readback widget class."""
+    return for_variety(variety, read=True, write=False)
+
+
+def for_variety_write(variety):
+    """`for_variety` shorthand for setting the setpoint widget class."""
+    return for_variety(variety, read=False, write=True)
+
+
+@for_variety_write('enum')
+@for_variety_write('text-enum')
+class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
+    ...
+
+
+@for_variety_write('scalar')
+@for_variety_write('text')
+@for_variety_write('text-multiline')  # TODO: new class
+class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
     """
@@ -257,14 +331,19 @@ class TyphosLineEdit(PyDMLineEdit):
         new_unit : str
             The new unit
         """
-        if self._unit != new_unit:
-            super().unit_changed(new_unit)
-            if new_unit.lower() in EXPONENTIAL_UNITS \
-                    and self.displayFormat == PyDMLabel.DisplayFormat.Default:
-                self.displayFormat = PyDMLabel.DisplayFormat.Exponential
+        if self._unit == new_unit:
+            return
+
+        super().unit_changed(new_unit)
+        default = (self.displayFormat == DisplayFormat.Default)
+        if new_unit.lower() in EXPONENTIAL_UNITS and default:
+            self.displayFormat = DisplayFormat.Exponential
 
 
-class TyphosLabel(PyDMLabel):
+@for_variety_read('enum')
+@for_variety_read('text-enum')
+@for_variety('array-nd')
+class TyphosLabel(pydm.widgets.PyDMLabel):
     """
     Reimplementation of PyDMLabel to set some custom defaults
     """
@@ -288,11 +367,13 @@ class TyphosLabel(PyDMLabel):
         new_unit : str
             The new unit
         """
-        if self._unit != new_unit:
-            super().unit_changed(new_unit)
-            if new_unit.lower() in EXPONENTIAL_UNITS \
-                    and self.displayFormat == PyDMLabel.DisplayFormat.Default:
-                self.displayFormat = PyDMLabel.DisplayFormat.Exponential
+        if self._unit == new_unit:
+            return
+
+        super().unit_changed(new_unit)
+        default = (self.displayFormat == DisplayFormat.Default)
+        if new_unit.lower() in EXPONENTIAL_UNITS and default:
+            self.displayFormat = DisplayFormat.Exponential
 
 
 class TyphosSidebarItem(ptypes.ParameterItem):
@@ -371,7 +452,7 @@ class SubDisplay(QDockWidget):
         super().closeEvent(evt)
 
 
-class HappiChannel(PyDMChannel, QObject):
+class HappiChannel(pydm.widgets.channel.PyDMChannel, QObject):
     """
     PyDMChannel to transport Device Information
 
@@ -399,7 +480,7 @@ class HappiChannel(PyDMChannel, QObject):
                          "Ignoring for now ...", self)
 
 
-class TyphosDesignerMixin(PyDMWidget):
+class TyphosDesignerMixin(pydm.widgets.base.PyDMWidget):
     # Unused properties that we don't want visible in designer
     alarmSensitiveBorder = Property(bool, designable=False)
     alarmSensitiveContent = Property(bool, designable=False)
@@ -481,6 +562,7 @@ class SignalDialogButton(QPushButton):
         self.dialog.show()
 
 
+@for_variety_read('array-image')
 class ImageDialogButton(SignalDialogButton):
     """QPushButton to show a 2-d array"""
     text = 'Show Image'
@@ -489,10 +571,12 @@ class ImageDialogButton(SignalDialogButton):
 
     def widget(self):
         """Create PyDMImageView"""
-        return PyDMImageView(parent=self,
-                             image_channel=self.channel)
+        return pydm.widgets.PyDMImageView(
+            parent=self, image_channel=self.channel)
 
 
+@for_variety_read('array-timeseries')
+@for_variety_read('array-histogram')  # TODO: histogram settings?
 class WaveformDialogButton(SignalDialogButton):
     """QPushButton to show a 1-d array"""
     text = 'Show Waveform'
@@ -501,108 +585,18 @@ class WaveformDialogButton(SignalDialogButton):
 
     def widget(self):
         """Create PyDMWaveformPlot"""
-        return PyDMWaveformPlot(init_y_channels=[self.channel],
-                                parent=self)
+        return pydm.widgets.PyDMWaveformPlot(
+            init_y_channels=[self.channel], parent=self)
 
 
-# def variety_metadata_to_kwargs(variety, cls, ):
-variety_to_widget_class = {
-    'command': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'command-proc': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'command-enum': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'command-setpoint-tracks-readback': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'tweakable': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'array-timeseries': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'array-histogram': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'array-image': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'array-nd': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'scalar': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'scalar-range': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'bitmask': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'text': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'text-multiline': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'text-enum': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-
-    'enum': SignalWidgetInfo(
-        read_cls=None,
-        read_kwargs={},
-        write_cls=None,
-        write_kwargs={}),
-}
+def _get_widget_class_from_variety(desc, variety_md, read_only):
+    variety = variety_md['variety']  # a required key
+    read_key = 'read' if read_only else 'write'
+    try:
+        return _variety_to_widget_class[variety].get(read_key)
+    except KeyError:
+        logger.error('Unsupported variety: %s (%s / %s)', variety,
+                     desc, variety_md)
 
 
 def _get_scalar_widget_class(desc, variety_md, read_only):
@@ -616,6 +610,16 @@ def _get_scalar_widget_class(desc, variety_md, read_only):
 
     # Otherwise a LineEdit will suffice
     return TyphosLineEdit
+
+
+def _get_ndimensional_widget_class(dimensions, desc, variety_md, read_only):
+    if dimensions == 0:
+        return _get_scalar_widget_class(desc, variety_md, read_only)
+
+    return {
+        1: WaveformDialogButton,
+        2: ImageDialogButton
+    }.get(dimensions, TyphosLabel)
 
 
 def widget_type_from_description(signal, desc, read_only=False):
@@ -658,29 +662,18 @@ def widget_type_from_description(signal, desc, read_only=False):
     # Unshaped data
     shape = desc.get('shape', [])
     dtype = desc.get('dtype', '')
-    # variety = variety_metadata.get('variety')
 
-    try:
-        dimensions = len(shape)
-    except TypeError:
-        dimensions = 0
-
-    # if variety:
-    #     widget_cls = _get_widget_class_from_variety(
-    #         desc, variety_metadata, read_only)
-
-    if dimensions == 0:
-        widget_cls = _get_scalar_widget_class(desc, variety_metadata,
-                                              read_only)
-    elif dimensions == 1:
-        # Waveform
-        widget_cls = WaveformDialogButton
-    elif dimensions == 2:
-        # B/W image
-        widget_cls = ImageDialogButton
+    if variety_metadata:
+        widget_cls = _get_widget_class_from_variety(
+            desc, variety_metadata, read_only)
     else:
-        raise ValueError(f"Unable to create widget for widget of "
-                         f"shape {len(desc.get('shape'))} from {signal.name}")
+        try:
+            dimensions = len(shape)
+        except TypeError:
+            dimensions = 0
+
+        widget_cls = _get_ndimensional_widget_class(
+            dimensions, desc, variety_metadata, read_only)
 
     if dtype == 'string' and widget_cls in (TyphosLabel, TyphosLineEdit):
         kwargs['display_format'] = DisplayFormat.String
