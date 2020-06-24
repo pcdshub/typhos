@@ -163,22 +163,22 @@ def for_variety(variety, *, read=True, write=True):
     """
 
     known_varieties = {
-        'command',
-        'command-proc',
-        'command-enum',
-        'command-setpoint-tracks-readback',
-        'tweakable',
-        'array-timeseries',
         'array-histogram',
         'array-image',
         'array-nd',
+        'array-timeseries',
+        'bitmask',
+        'command',
+        'command-enum',
+        'command-proc',
+        'command-setpoint-tracks-readback',
+        'enum',
         'scalar',
         'scalar-range',
-        'bitmask',
         'text',
-        'text-multiline',
         'text-enum',
-        'enum',
+        'text-multiline',
+        'tweakable',
     }
 
     if variety not in known_varieties:
@@ -344,18 +344,18 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
             self.displayFormat = DisplayFormat.Exponential
 
 
-@for_variety_read('enum')
-@for_variety_read('scalar')
-@for_variety_read('scalar-range')
-@for_variety_read('tweakable')
-@for_variety_read('text')
-@for_variety_read('text-enum')
-@for_variety_read('text-multiline')
+@for_variety('array-nd')
 @for_variety_read('command')
 @for_variety_read('command-enum')
 @for_variety_read('command-proc')
 @for_variety_read('command-setpoint-tracks-readback')
-@for_variety('array-nd')
+@for_variety_read('enum')
+@for_variety_read('scalar')
+@for_variety_read('scalar-range')
+@for_variety_read('text')
+@for_variety_read('text-enum')
+@for_variety_read('text-multiline')
+@for_variety_read('tweakable')
 class TyphosLabel(pydm.widgets.PyDMLabel):
     """
     Reimplementation of PyDMLabel to set some custom defaults
