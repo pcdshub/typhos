@@ -25,7 +25,15 @@ class MyDevice(ophyd.Device):
                  {'variety': 'command-setpoint-tracks-readback'})
 
     tweakable = Cpt(EpicsSignal, 'tweakable')
-    set_metadata(tweakable, {'variety': 'tweakable', 'delta': 0.5})
+    set_metadata(
+        tweakable,
+        {'variety': 'scalar-tweakable',
+         'delta.value': 0.5,
+         'delta.range': [-1, 1],
+         'range.source': 'value',
+         'range.value': [-1, 1],
+         }
+    )
 
     array_timeseries = Cpt(EpicsSignal, 'array-timeseries')
     set_metadata(array_timeseries, {'variety': 'array-timeseries'})
@@ -34,10 +42,20 @@ class MyDevice(ophyd.Device):
     set_metadata(array_histogram, {'variety': 'array-histogram'})
 
     array_image = Cpt(EpicsSignal, 'array-image')
-    set_metadata(array_image, {'variety': 'array-image'})
+    set_metadata(
+        array_image,
+        {'variety': 'array-image',
+         'shape': (32, 32)
+         }
+    )
 
     array_nd = Cpt(EpicsSignal, 'array-nd')
-    set_metadata(array_nd, {'variety': 'array-nd'})
+    set_metadata(
+        array_nd,
+        {'variety': 'array-nd',
+         'shape': (16, 16, 4)
+         }
+    )
 
     scalar = Cpt(EpicsSignal, 'scalar')
     set_metadata(scalar, {'variety': 'scalar'})
@@ -48,13 +66,13 @@ class MyDevice(ophyd.Device):
     bitmask = Cpt(EpicsSignal, 'bitmask')
     set_metadata(bitmask, {'variety': 'bitmask'})
 
-    text = Cpt(EpicsSignal, 'text')
+    text = Cpt(EpicsSignal, 'text', string=True)
     set_metadata(text, {'variety': 'text'})
 
-    text_multiline = Cpt(EpicsSignal, 'text-multiline')
+    text_multiline = Cpt(EpicsSignal, 'text-multiline', string=True)
     set_metadata(text_multiline, {'variety': 'text-multiline'})
 
-    text_enum = Cpt(EpicsSignal, 'text-enum')
+    text_enum = Cpt(EpicsSignal, 'text-enum', string=True)
     set_metadata(text_enum, {'variety': 'text-enum'})
 
     enum = Cpt(EpicsSignal, 'enum')
@@ -69,13 +87,20 @@ class VarietyIOC(PVGroup):
     command_enum = pvproperty(value=0, name='command-enum')
     command_setpoint_tracks_readback = pvproperty(
         value=0, name='command-setpoint-tracks-readback')
-    tweakable = pvproperty(value=0, name='tweakable')
+    tweakable = pvproperty(value=0, name='tweakable',
+                           lower_ctrl_limit=-5,
+                           upper_ctrl_limit=5,
+                           )
     array_timeseries = pvproperty(value=[0.5] * 30, name='array-timeseries')
     array_histogram = pvproperty(value=[0.5] * 30, name='array-histogram')
     array_image = pvproperty(value=[200] * 1024, name='array-image')
     array_nd = pvproperty(value=[200] * 1024, name='array-nd')
     scalar = pvproperty(value=1.2, name='scalar')
-    scalar_range = pvproperty(value=1.3, name='scalar-range')
+    scalar_range = pvproperty(value=1.3, name='scalar-range',
+                              lower_ctrl_limit=-3.14,
+                              upper_ctrl_limit=3.14,
+                              precision=3,
+                              )
     bitmask = pvproperty(value=0, name='bitmask')
     text = pvproperty(value='the text', name='text')
     text_multiline = pvproperty(value='multiline\ntext', name='text-multiline')

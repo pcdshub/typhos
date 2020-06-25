@@ -23,6 +23,20 @@ logger = logging.getLogger(__name__)
 EXPONENTIAL_UNITS = ['mtorr', 'torr', 'kpa', 'pa']
 
 
+def _warn_unhandled(instance, metadata_key, value):
+    if value is None:
+        return
+
+    logger.warning('%s: Not yet implemented variety handling: key=%s value=%s',
+                   instance.__class__.__name__, metadata_key, value
+                   )
+
+
+def _warn_unhandled_kwargs(instance, kwargs):
+    for key, value in kwargs.items():
+        _warn_unhandled(instance, key, value)
+
+
 class SignalWidgetInfo(
         collections.namedtuple(
             'SignalWidgetInfo',
@@ -175,10 +189,10 @@ def for_variety(variety, *, read=True, write=True):
         'enum',
         'scalar',
         'scalar-range',
+        'scalar-tweakable',
         'text',
         'text-enum',
         'text-multiline',
-        'tweakable',
     }
 
     if variety not in known_varieties:
@@ -352,10 +366,10 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
 @for_variety_read('enum')
 @for_variety_read('scalar')
 @for_variety_read('scalar-range')
+@for_variety_read('scalar-tweakable')
 @for_variety_read('text')
 @for_variety_read('text-enum')
 @for_variety_read('text-multiline')
-@for_variety_read('tweakable')
 class TyphosLabel(pydm.widgets.PyDMLabel):
     """
     Reimplementation of PyDMLabel to set some custom defaults
@@ -614,12 +628,6 @@ class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
     ...
 
 
-@for_variety_write('tweakable')
-class TyphosTweakable(pydm.widgets.PyDMLineEdit):
-    ...
-    # TODO tweak functionality from positioner?
-
-
 @for_variety_read('bitmask')
 class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
     ...
@@ -630,9 +638,87 @@ class TyphosByteSetpoint(pydm.widgets.PyDMByteIndicator):
     ...
 
 
+def _create_variety_property():
+    def fget(self):
+        return self._variety_metadata
+
+    def fset(self, metadata):
+        self._variety_metadata = dict(metadata or {})
+        try:
+            self._use_variety_metadata(**self._variety_metadata)
+        except Exception:
+            logger.exception('Failed to set variety metadata for class %s: %s',
+                             type(self).__name__, metadata)
+
+    return property(fget, fset,
+                    doc='Additional component variety metadata.')
+
+
 @for_variety_write('scalar-range')
 class TyphosScalarRange(pydm.widgets.PyDMSlider):
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self.variety_metadata = variety_metadata
+        self.ophyd_signal = ophyd_signal
+
+    variety_metadata = _create_variety_property()
+
+    def _use_variety_range(self, value, source, **kwargs):
+        """Variety hook for the sub-dictionary "range"."""
+        if source == 'value':
+            if value is not None:
+                low, high = value
+                self.userMinimum = low
+                self.userMaximum = high
+                self.userDefinedLimits = True
+        # elif source == 'use_limits':
+        #     _warn_unhandled(self, 'range.source', source)
+        else:
+            _warn_unhandled(self, 'range.source', source)
+
+        _warn_unhandled_kwargs(self, kwargs)
+
+    def _use_variety_delta(self, value, source, signal=None, **kwargs):
+        """Variety hook for the sub-dictionary "delta"."""
+        # range_ = kwargs.pop('range')  # unhandled
+        if source == 'value':
+            try:
+                self.num_steps = (self.maximum - self.minimum) / value
+            except Exception:
+                logger.exception('Failed to set number of steps with '
+                                 'min=%s, max=%s, delta=%s', self.minimum,
+                                 self.maximum, value)
+        # elif source == 'signal':
+        #     ...
+        else:
+            _warn_unhandled(self, 'delta.source', source)
+
+        _warn_unhandled_kwargs(self, kwargs)
+
+    def _use_variety_metadata(self, variety, display_format=None, delta=None,
+                              **kwargs):
+        """Hook from the property, setting variety_metadata."""
+
+        if display_format is not None:
+            self.displayFormat = getattr(
+                DisplayFormat, display_format.capitalize(),
+                DisplayFormat.Default)
+
+        range_info = kwargs.pop('range', None)
+        if range_info is not None:
+            self._use_variety_range(**range_info)
+
+        if delta is not None:
+            self._use_variety_delta(**delta)
+
+        _warn_unhandled_kwargs(self, kwargs)
+
+
+@for_variety_write('scalar-tweakable')
+class TyphosTweakable(TyphosScalarRange):
     ...
+    # TODO tweak functionality from positioner?
 
 
 def _get_widget_class_from_variety(desc, variety_md, read_only):
@@ -733,6 +819,9 @@ def widget_type_from_description(signal, desc, read_only=False):
     class_signature = inspect.signature(widget_cls)
     if 'variety_metadata' in class_signature.parameters:
         kwargs['variety_metadata'] = variety_metadata
+
+    if 'ophyd_signal' in class_signature.parameters:
+        kwargs['ophyd_signal'] = signal
 
     return widget_cls, kwargs
 
