@@ -180,3 +180,53 @@ def get_referenced_signal(widget, name_or_component):
         name_or_component = name_or_component.attr
 
     return getattr(device, name_or_component)
+
+
+def create_variety_property():
+    """
+    Create a property for widgets that helps in setting variety metadata.
+
+    On setting variety metadata::
+
+        1. self._variety_metadata is updated
+        2. self._update_variety_metadata(**md) is called
+        3. All registered variety key handlers are called.
+    """
+
+    def fget(self):
+        return dict(self._variety_metadata)
+
+    def fset(self, metadata):
+        self._variety_metadata = dict(metadata or {})
+
+        # Catch-all handler for variety metadata.
+        try:
+            if hasattr(self, '_update_variety_metadata'):
+                self._update_variety_metadata(**self._variety_metadata)
+        except Exception:
+            logger.exception('Failed to set variety metadata for class %s: %s',
+                             type(self).__name__, metadata)
+
+        # Optionally, there may be 'handlers' for individual top-level keys.
+        handlers = getattr(self, '_variety_handlers', {})
+        for key, handler_list in handlers.items():
+            for unbound in handler_list:
+                handler = getattr(self, unbound.__name__)
+
+                info = self._variety_metadata.get(key)
+                if info is None:
+                    continue
+
+                try:
+                    if isinstance(info, dict):
+                        handler(**info)
+                    else:
+                        handler(info)
+                except Exception:
+                    logger.exception(
+                        'Failed to set variety metadata for class %s.%s %r: '
+                        '%s', type(self).__name__, handler.__name__, key, info
+                    )
+
+    return property(fget, fset,
+                    doc='Additional component variety metadata.')
