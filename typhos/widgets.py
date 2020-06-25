@@ -569,7 +569,7 @@ def _create_variety_property():
     """
 
     def fget(self):
-        return self._variety_metadata
+        return dict(self._variety_metadata)
 
     def fset(self, metadata):
         self._variety_metadata = dict(metadata or {})
@@ -613,11 +613,18 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
         super().__init__(*args, **kwargs)
-        self.variety_metadata = variety_metadata
         self.ophyd_signal = ophyd_signal
         self._delta_value = None
+        self._delta_signal = None
+        self._delta_signal_sub = None
+        self.variety_metadata = variety_metadata
 
     variety_metadata = _create_variety_property()
+
+    def __dtor__(self):
+        """PyQt5 destructor hook"""
+        # Ensure our delta signal subscription is cleared:
+        self.delta_signal = None
 
     @variety.key_handler('range')
     def _variety_key_handler_range(self, value, source, **kwargs):
@@ -635,11 +642,15 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
         variety._warn_unhandled_kwargs(self, kwargs)
 
     @variety.key_handler('delta')
-    def _variety_key_handler_delta(self, value, source, signal=None, **kwargs):
+    def _variety_key_handler_delta(self, source, value=None, signal=None,
+                                   **kwargs):
         """Variety hook for the sub-dictionary "delta"."""
         if source == 'value':
-            self._delta_value = value
-        # elif source == 'signal':
+            if value is not None:
+                self.delta_value = value
+        elif source == 'signal':
+            if signal is not None:
+                self.delta_signal = variety.get_referenced_signal(self, signal)
         else:
             variety._warn_unhandled(self, 'delta.source', source)
 
@@ -652,9 +663,24 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
         self.displayFormat = getattr(DisplayFormat, value.capitalize(),
                                      DisplayFormat.Default)
 
-    # def _update_variety_metadata(self, variety, display_format=None,
-    #                              **kwargs):
-    #     """Hook from the property, setting variety_metadata."""
+    @property
+    def delta_signal(self):
+        """Delta signal, used as the source for "delta_value"."""
+        return self._delta_signal
+
+    @delta_signal.setter
+    def delta_signal(self, signal):
+        if self._delta_signal is not None:
+            self._delta_signal.unsubscribe(self._delta_signal_sub)
+
+        if signal is None:
+            return
+
+        def update_delta(value, **kwargs):
+            self.delta_value = value
+
+        self._delta_signal_sub = signal.subscribe(update_delta)
+        self._delta_signal = signal
 
     @Property(float, designable=True)
     def delta_value(self):

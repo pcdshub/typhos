@@ -9,6 +9,21 @@ from ophyd import EpicsSignal
 from pcdsdevices.variety import set_metadata
 
 
+class Variants(ophyd.Device):
+    soft_delta = Cpt(ophyd.Signal, value=1)
+
+    tweakable_delta_source = Cpt(EpicsSignal, 'tweakable')
+    set_metadata(
+        tweakable_delta_source,
+        {'variety': 'scalar-tweakable',
+         'delta.signal': 'soft_delta',
+         'delta.source': 'signal',
+         'range.source': 'value',
+         'range.value': [-10, 10],
+         }
+    )
+
+
 class MyDevice(ophyd.Device):
     command = Cpt(EpicsSignal, 'command')
     set_metadata(command, {'variety': 'command'})
@@ -77,6 +92,8 @@ class MyDevice(ophyd.Device):
 
     enum = Cpt(EpicsSignal, 'enum')
     set_metadata(enum, {'variety': 'enum'})
+
+    variants = Cpt(Variants, '')
 
 
 class VarietyIOC(PVGroup):

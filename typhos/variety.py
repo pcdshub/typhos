@@ -152,3 +152,31 @@ def _get_widget_class_from_variety(desc, variety_md, read_only):
             logger.error('TODO no widget?: %s (%s / %s)',
                          variety_md['variety'], desc, variety_md)
         return widget_cls
+
+
+def get_referenced_signal(widget, name_or_component):
+    """
+    Get the signal referenced from metadata.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget which holds the metadata.
+
+    name_or_component : str or ophyd.Component
+        The signal name or ophyd Component.
+    """
+    ophyd_signal = getattr(widget, 'ophyd_signal', None)
+    if ophyd_signal is None:
+        logger.error('Incorrectly configured widget (ophyd_signal unset?)')
+        return
+
+    device = ophyd_signal.parent
+    if device is None:
+        logger.debug('Cannot be used on isolated (non-Device) signal')
+        return
+
+    if hasattr(name_or_component, 'attr'):
+        name_or_component = name_or_component.attr
+
+    return getattr(device, name_or_component)
