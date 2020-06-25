@@ -702,12 +702,15 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
 
         self._delta_value = value
         if self.minimum is not None and self.maximum is not None:
+            self._mute_internal_slider_changes = True
             try:
                 self.num_steps = (self.maximum - self.minimum) / value
             except Exception:
                 logger.exception('Failed to set number of steps with '
                                  'min=%s, max=%s, delta=%s', self.minimum,
                                  self.maximum, value)
+            finally:
+                self._mute_internal_slider_changes = False
 
     def connection_changed(self, connected):
         ret = super().connection_changed(connected)

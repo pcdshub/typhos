@@ -12,11 +12,22 @@ from pcdsdevices.variety import set_metadata
 class Variants(ophyd.Device):
     soft_delta = Cpt(ophyd.Signal, value=1)
 
-    tweakable_delta_source = Cpt(EpicsSignal, 'tweakable')
+    tweakable_delta_source_by_name = Cpt(EpicsSignal, 'tweakable')
     set_metadata(
-        tweakable_delta_source,
+        tweakable_delta_source_by_name,
         {'variety': 'scalar-tweakable',
          'delta.signal': 'soft_delta',
+         'delta.source': 'signal',
+         'range.source': 'value',
+         'range.value': [-10, 10],
+         }
+    )
+
+    tweakable_delta_source_by_component = Cpt(EpicsSignal, 'tweakable')
+    set_metadata(
+        tweakable_delta_source_by_component,
+        {'variety': 'scalar-tweakable',
+         'delta.signal': soft_delta,
          'delta.source': 'signal',
          'range.source': 'value',
          'range.value': [-10, 10],
