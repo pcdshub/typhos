@@ -24,7 +24,7 @@ def _warn_unhandled_kwargs(instance, kwargs):
         _warn_unhandled(instance, key, value)
 
 
-def _set_variety_key_handler(key):
+def key_handler(key):
     """
     A method wrapper to mark a specific variety metadata key with the method.
 
@@ -55,7 +55,7 @@ def _get_variety_handlers(members):
     return handlers
 
 
-def uses_variety_handler(cls):
+def uses_key_handlers(cls):
     """
     Class wrapper to finish variety handler configuration.
 
@@ -68,7 +68,7 @@ def uses_variety_handler(cls):
     return cls
 
 
-def for_variety(variety, *, read=True, write=True):
+def use_for_variety(variety, *, read=True, write=True):
     """
     A class wrapper to associate a specific variety with the class.
 
@@ -128,14 +128,14 @@ def for_variety(variety, *, read=True, write=True):
     return wrapper
 
 
-def for_variety_read(variety):
+def use_for_variety_read(variety):
     """`for_variety` shorthand for setting the readback widget class."""
-    return for_variety(variety, read=True, write=False)
+    return use_for_variety(variety, read=True, write=False)
 
 
-def for_variety_write(variety):
+def use_for_variety_write(variety):
     """`for_variety` shorthand for setting the setpoint widget class."""
-    return for_variety(variety, read=False, write=True)
+    return use_for_variety(variety, read=False, write=True)
 
 
 def _get_widget_class_from_variety(desc, variety_md, read_only):

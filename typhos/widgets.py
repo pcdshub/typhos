@@ -21,7 +21,7 @@ from ophyd.signal import EpicsSignalBase
 from pydm.widgets.display_format import DisplayFormat
 
 from . import plugins, utils, variety
-from .variety import for_variety_read, for_variety_write
+from .variety import use_for_variety_read, use_for_variety_write
 
 logger = logging.getLogger(__name__)
 
@@ -146,15 +146,15 @@ class TogglePanel(QWidget):
                 self.contents.hide()
 
 
-@for_variety_write('enum')
-@for_variety_write('text-enum')
+@use_for_variety_write('enum')
+@use_for_variety_write('text-enum')
 class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
     ...
 
 
-@for_variety_write('scalar')
-@for_variety_write('text')
-@for_variety_write('text-multiline')  # TODO: new class
+@use_for_variety_write('scalar')
+@use_for_variety_write('text')
+@use_for_variety_write('text-multiline')  # TODO: new class
 class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
@@ -276,19 +276,19 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
             self.displayFormat = DisplayFormat.Exponential
 
 
-@for_variety_read('array-nd')
-@for_variety_read('command')
-@for_variety_read('command-enum')
-@for_variety_read('command-proc')
-@for_variety_read('command-setpoint-tracks-readback')
-@for_variety_read('enum')
-@for_variety_read('scalar')
-@for_variety_read('scalar-range')
-@for_variety_read('scalar-tweakable')
-@for_variety_read('text')
-@for_variety_read('text-enum')
-@for_variety_read('text-multiline')
-@for_variety_write('array-nd')
+@use_for_variety_read('array-nd')
+@use_for_variety_read('command')
+@use_for_variety_read('command-enum')
+@use_for_variety_read('command-proc')
+@use_for_variety_read('command-setpoint-tracks-readback')
+@use_for_variety_read('enum')
+@use_for_variety_read('scalar')
+@use_for_variety_read('scalar-range')
+@use_for_variety_read('scalar-tweakable')
+@use_for_variety_read('text')
+@use_for_variety_read('text-enum')
+@use_for_variety_read('text-multiline')
+@use_for_variety_write('array-nd')
 class TyphosLabel(pydm.widgets.PyDMLabel):
     """
     Reimplementation of PyDMLabel to set some custom defaults
@@ -508,7 +508,7 @@ class SignalDialogButton(QPushButton):
         self.dialog.show()
 
 
-@for_variety_read('array-image')
+@use_for_variety_read('array-image')
 class ImageDialogButton(SignalDialogButton):
     """QPushButton to show a 2-d array"""
     text = 'Show Image'
@@ -521,8 +521,8 @@ class ImageDialogButton(SignalDialogButton):
             parent=self, image_channel=self.channel)
 
 
-@for_variety_read('array-timeseries')
-@for_variety_read('array-histogram')  # TODO: histogram settings?
+@use_for_variety_read('array-timeseries')
+@use_for_variety_read('array-histogram')  # TODO: histogram settings?
 class WaveformDialogButton(SignalDialogButton):
     """QPushButton to show a 1-d array"""
     text = 'Show Waveform'
@@ -535,24 +535,24 @@ class WaveformDialogButton(SignalDialogButton):
             init_y_channels=[self.channel], parent=self)
 
 
-@for_variety_write('command')
-@for_variety_write('command-proc')
-@for_variety_write('command-setpoint-tracks-readback')  # TODO
+@use_for_variety_write('command')
+@use_for_variety_write('command-proc')
+@use_for_variety_write('command-setpoint-tracks-readback')  # TODO
 class TyphosCommandButton(pydm.widgets.PyDMPushButton):
     ...
 
 
-@for_variety_write('command-enum')
+@use_for_variety_write('command-enum')
 class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
     ...
 
 
-@for_variety_read('bitmask')
+@use_for_variety_read('bitmask')
 class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
     ...
 
 
-@for_variety_write('bitmask')
+@use_for_variety_write('bitmask')
 class TyphosByteSetpoint(pydm.widgets.PyDMByteIndicator):
     ...
 
@@ -607,8 +607,8 @@ def _create_variety_property():
                     doc='Additional component variety metadata.')
 
 
-@variety.uses_variety_handler
-@for_variety_write('scalar-range')
+@variety.uses_key_handlers
+@use_for_variety_write('scalar-range')
 class TyphosScalarRange(pydm.widgets.PyDMSlider):
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
@@ -619,7 +619,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
 
     variety_metadata = _create_variety_property()
 
-    @variety._set_variety_key_handler('range')
+    @variety.key_handler('range')
     def _variety_key_handler_range(self, value, source, **kwargs):
         """Variety hook for the sub-dictionary "range"."""
         if source == 'value':
@@ -634,7 +634,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
 
         variety._warn_unhandled_kwargs(self, kwargs)
 
-    @variety._set_variety_key_handler('delta')
+    @variety.key_handler('delta')
     def _variety_key_handler_delta(self, value, source, signal=None, **kwargs):
         """Variety hook for the sub-dictionary "delta"."""
         if source == 'value':
@@ -646,7 +646,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
         # range_ = kwargs.pop('range')  # unhandled
         variety._warn_unhandled_kwargs(self, kwargs)
 
-    @variety._set_variety_key_handler('display_format')
+    @variety.key_handler('display_format')
     def _variety_key_handler_display_format(self, value):
         """Variety hook for the sub-dictionary "delta"."""
         self.displayFormat = getattr(DisplayFormat, value.capitalize(),
@@ -690,7 +690,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
         return ret
 
 
-@for_variety_write('scalar-tweakable')
+@use_for_variety_write('scalar-tweakable')
 class TyphosTweakable(TyphosScalarRange):
     ...
     # TODO tweak functionality from positioner?
