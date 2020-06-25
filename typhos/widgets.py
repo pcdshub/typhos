@@ -23,20 +23,6 @@ logger = logging.getLogger(__name__)
 EXPONENTIAL_UNITS = ['mtorr', 'torr', 'kpa', 'pa']
 
 
-def _warn_unhandled(instance, metadata_key, value):
-    if value is None:
-        return
-
-    logger.warning('%s: Not yet implemented variety handling: key=%s value=%s',
-                   instance.__class__.__name__, metadata_key, value
-                   )
-
-
-def _warn_unhandled_kwargs(instance, kwargs):
-    for key, value in kwargs.items():
-        _warn_unhandled(instance, key, value)
-
-
 class SignalWidgetInfo(
         collections.namedtuple(
             'SignalWidgetInfo',
@@ -89,6 +75,65 @@ class SignalWidgetInfo(
             write_cls, write_kwargs = widget_type_from_description(obj, desc)
 
         return cls(read_cls, read_kwargs, write_cls, write_kwargs)
+
+
+def _warn_unhandled(instance, metadata_key, value):
+    if value is None:
+        return
+
+    logger.warning(
+        '%s: Not yet implemented variety handling: key=%s value=%s',
+        instance.__class__.__name__, metadata_key, value
+    )
+
+
+def _warn_unhandled_kwargs(instance, kwargs):
+    for key, value in kwargs.items():
+        _warn_unhandled(instance, key, value)
+
+
+def _set_variety_key_handler(key):
+    """
+    A method wrapper to mark a specific variety metadata key with the method.
+
+    Parameters
+    ----------
+    key : str
+        The variety key (e.g., 'delta')
+    """
+
+    def wrapper(method):
+        assert callable(method)
+        if not hasattr(method, '_variety_handler'):
+            method._variety_handler_keys = set()
+        method._variety_handler_keys.add(key)
+        return method
+
+    return wrapper
+
+
+def _get_variety_handlers(members):
+    handlers = {}
+    for attr, method in members:
+        for key in getattr(method, '_variety_handler_keys', []):
+            if key not in handlers:
+                handlers[key] = [method]
+            handlers[key].append(method)
+
+    return handlers
+
+
+def uses_variety_handler(cls):
+    """
+    Class wrapper to finish variety handler configuration.
+
+    Parameters
+    ----------
+    cls : class
+        The class to wrap.
+    """
+    cls._variety_handlers = _get_variety_handlers(inspect.getmembers(cls))
+    return cls
 
 
 class TogglePanel(QWidget):
@@ -639,21 +684,56 @@ class TyphosByteSetpoint(pydm.widgets.PyDMByteIndicator):
 
 
 def _create_variety_property():
+    """
+    Create a property for widgets that helps in setting variety metadata.
+
+    On setting variety metadata::
+
+        1. self._variety_metadata is updated
+        2. self._update_variety_metadata(**md) is called
+        3. All registered variety key handlers are called.
+    """
+
     def fget(self):
         return self._variety_metadata
 
     def fset(self, metadata):
         self._variety_metadata = dict(metadata or {})
+
+        # Catch-all handler for variety metadata.
         try:
-            self._use_variety_metadata(**self._variety_metadata)
+            if hasattr(self, '_update_variety_metadata'):
+                self._update_variety_metadata(**self._variety_metadata)
         except Exception:
             logger.exception('Failed to set variety metadata for class %s: %s',
                              type(self).__name__, metadata)
+
+        # Optionally, there may be 'handlers' for individual top-level keys.
+        handlers = getattr(self, '_variety_handlers', {})
+        for key, handler_list in handlers.items():
+            for unbound in handler_list:
+                handler = getattr(self, unbound.__name__)
+
+                info = self._variety_metadata.get(key)
+                if info is None:
+                    continue
+
+                try:
+                    if isinstance(info, dict):
+                        handler(**info)
+                    else:
+                        handler(info)
+                except Exception:
+                    logger.exception(
+                        'Failed to set variety metadata for class %s.%s %r: '
+                        '%s', type(self).__name__, handler.__name__, key, info
+                    )
 
     return property(fget, fset,
                     doc='Additional component variety metadata.')
 
 
+@uses_variety_handler
 @for_variety_write('scalar-range')
 class TyphosScalarRange(pydm.widgets.PyDMSlider):
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
@@ -661,10 +741,12 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
         super().__init__(*args, **kwargs)
         self.variety_metadata = variety_metadata
         self.ophyd_signal = ophyd_signal
+        self._delta_value = None
 
     variety_metadata = _create_variety_property()
 
-    def _use_variety_range(self, value, source, **kwargs):
+    @_set_variety_key_handler('range')
+    def _variety_key_handler_range(self, value, source, **kwargs):
         """Variety hook for the sub-dictionary "range"."""
         if source == 'value':
             if value is not None:
@@ -673,46 +755,65 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
                 self.userMaximum = high
                 self.userDefinedLimits = True
         # elif source == 'use_limits':
-        #     _warn_unhandled(self, 'range.source', source)
         else:
             _warn_unhandled(self, 'range.source', source)
 
         _warn_unhandled_kwargs(self, kwargs)
 
-    def _use_variety_delta(self, value, source, signal=None, **kwargs):
+    @_set_variety_key_handler('delta')
+    def _variety_key_handler_delta(self, value, source, signal=None, **kwargs):
         """Variety hook for the sub-dictionary "delta"."""
-        # range_ = kwargs.pop('range')  # unhandled
         if source == 'value':
+            self._delta_value = value
+        # elif source == 'signal':
+        else:
+            _warn_unhandled(self, 'delta.source', source)
+
+        # range_ = kwargs.pop('range')  # unhandled
+        _warn_unhandled_kwargs(self, kwargs)
+
+    @_set_variety_key_handler('display_format')
+    def _variety_key_handler_display_format(self, value):
+        """Variety hook for the sub-dictionary "delta"."""
+        self.displayFormat = getattr(DisplayFormat, value.capitalize(),
+                                     DisplayFormat.Default)
+
+    # def _update_variety_metadata(self, variety, display_format=None,
+    #                              **kwargs):
+    #     """Hook from the property, setting variety_metadata."""
+
+    @Property(float, designable=True)
+    def delta_value(self):
+        """
+        Delta value, an alternative to "num_points" provided by PyDMSlider.
+
+        num_points is calculated using the current min/max and the delta value,
+        if set.
+        """
+        return self._delta_value
+
+    @delta_value.setter
+    def delta_value(self, value):
+        if value is None:
+            self._delta_value = None
+            return
+        if value <= 0.0:
+            return
+
+        self._delta_value = value
+        if self.minimum is not None and self.maximum is not None:
             try:
                 self.num_steps = (self.maximum - self.minimum) / value
             except Exception:
                 logger.exception('Failed to set number of steps with '
                                  'min=%s, max=%s, delta=%s', self.minimum,
                                  self.maximum, value)
-        # elif source == 'signal':
-        #     ...
-        else:
-            _warn_unhandled(self, 'delta.source', source)
 
-        _warn_unhandled_kwargs(self, kwargs)
-
-    def _use_variety_metadata(self, variety, display_format=None, delta=None,
-                              **kwargs):
-        """Hook from the property, setting variety_metadata."""
-
-        if display_format is not None:
-            self.displayFormat = getattr(
-                DisplayFormat, display_format.capitalize(),
-                DisplayFormat.Default)
-
-        range_info = kwargs.pop('range', None)
-        if range_info is not None:
-            self._use_variety_range(**range_info)
-
-        if delta is not None:
-            self._use_variety_delta(**delta)
-
-        _warn_unhandled_kwargs(self, kwargs)
+    def connection_changed(self, connected):
+        ret = super().connection_changed(connected)
+        if connected:
+            self.delta_value = self._delta_value
+        return ret
 
 
 @for_variety_write('scalar-tweakable')
