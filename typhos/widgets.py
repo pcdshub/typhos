@@ -21,6 +21,7 @@ from ophyd.signal import EpicsSignalBase
 from pydm.widgets.display_format import DisplayFormat
 
 from . import plugins, utils, variety
+from .textedit import TyphosTextEdit  # noqa: F401
 from .variety import use_for_variety_read, use_for_variety_write
 
 logger = logging.getLogger(__name__)
@@ -154,7 +155,6 @@ class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
 
 @use_for_variety_write('scalar')
 @use_for_variety_write('text')
-@use_for_variety_write('text-multiline')  # TODO: new class
 class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
