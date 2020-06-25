@@ -548,12 +548,44 @@ class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
 
 
 @use_for_variety_read('bitmask')
+@variety.uses_key_handlers
 class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
-    ...
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ophyd_signal = ophyd_signal
+        self.variety_metadata = variety_metadata
+
+    variety_metadata = variety.create_variety_property()
+
+    def _update_variety_metadata(self, bits, orientation, first_bit, style,
+                                 **kwargs):
+        self.numBits = bits
+        self.orientation = {
+            'horizontal': Qt.Horizontal,
+            'vertical': Qt.Vertical,
+        }[orientation]
+        self.bigEndian = (first_bit == 'most-significant')
+        variety._warn_unhandled_kwargs(self, kwargs)
+
+    @variety.key_handler('style')
+    def _variety_key_handler_style(self, shape, on_color, off_color, **kwargs):
+        """Variety hook for the sub-dictionary "style"."""
+        on_color = QtGui.QColor(on_color)
+        if on_color is not None:
+            self.onColor = on_color
+
+        off_color = QtGui.QColor(off_color)
+        if off_color is not None:
+            self.offColor = off_color
+
+        self.circles = (shape == 'circle')
+
+        variety._warn_unhandled_kwargs(self, kwargs)
 
 
 @use_for_variety_write('bitmask')
-class TyphosByteSetpoint(pydm.widgets.PyDMByteIndicator):
+class TyphosByteSetpoint(TyphosByteIndicator):
     ...
 
 

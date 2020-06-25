@@ -90,7 +90,11 @@ class MyDevice(ophyd.Device):
     set_metadata(scalar_range, {'variety': 'scalar-range'})
 
     bitmask = Cpt(EpicsSignal, 'bitmask')
-    set_metadata(bitmask, {'variety': 'bitmask'})
+    set_metadata(bitmask, {'variety': 'bitmask',
+                           'style': dict(shape='circle',
+                                         on_color='yellow',
+                                         off_color='white')
+                           })
 
     text = Cpt(EpicsSignal, 'text', string=True)
     set_metadata(text, {'variety': 'text'})
