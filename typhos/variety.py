@@ -90,6 +90,7 @@ def use_for_variety(variety, *, read=True, write=True):
         'array-histogram',
         'array-image',
         'array-nd',
+        'array-tabular',
         'array-timeseries',
         'bitmask',
         'command',

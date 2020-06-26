@@ -7,6 +7,7 @@ import datetime
 import inspect
 import logging
 
+import numpy as np
 import qtawesome as qta
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtGui, QtWidgets
@@ -843,6 +844,43 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
 class TyphosTweakable(TyphosScalarRange):
     ...
     # TODO tweak functionality from positioner?
+
+
+@variety.uses_key_handlers
+@use_for_variety_write('array-tabular')
+class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
+    # TODO this class will have to be redone; PyDMWaveformTable appears to be
+    # for a different purpose
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ophyd_signal = ophyd_signal
+        self.variety_metadata = variety_metadata
+
+    variety_metadata = variety.create_variety_property()
+
+    def value_changed(self, value):
+        try:
+            len(value)
+        except TypeError:
+            logger.debug('Non-waveform value? %r', value)
+            return
+
+        shape = self.variety_metadata.get('shape')
+        if shape is not None:
+            expected_length = np.multiply.reduce(shape)
+            if len(value) == expected_length:
+                value = np.array(value).reshape(shape)
+
+        return super().value_changed(value)
+
+    def _update_variety_metadata(self, *, shape=None, tags=None, **kwargs):
+        if shape:
+            # TODO
+            self.columnHeaderLabels = [
+                f'{idx}' for idx in range(max(shape[0], 1))
+            ]
+        variety._warn_unhandled_kwargs(self, kwargs)
 
 
 def _get_scalar_widget_class(desc, variety_md, read_only):

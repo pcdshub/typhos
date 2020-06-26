@@ -34,6 +34,14 @@ class Variants(ophyd.Device):
          }
     )
 
+    array_tabular = Cpt(EpicsSignal, 'array-tabular')
+    set_metadata(
+        array_tabular,
+        {'variety': 'array-tabular',
+         'shape': (3, 3),
+         }
+    )
+
 
 class MyDevice(ophyd.Device):
     command = Cpt(EpicsSignal, 'command-with-enum')
@@ -136,6 +144,7 @@ class VarietyIOC(PVGroup):
                            lower_ctrl_limit=-5,
                            upper_ctrl_limit=5,
                            )
+    array_tabular = pvproperty(value=[1.5] * (3 * 3), name='array-tabular')
     array_timeseries = pvproperty(value=[0.5] * 30, name='array-timeseries')
     array_histogram = pvproperty(value=[0.5] * 30, name='array-histogram')
     array_image = pvproperty(value=[200] * 1024, name='array-image')
