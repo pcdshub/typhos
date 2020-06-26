@@ -230,3 +230,13 @@ def create_variety_property():
 
     return property(fget, fset,
                     doc='Additional component variety metadata.')
+
+
+def get_enum_strings(enum_strings, enum_dict):
+    """Get enum strings from either `enum_strings` or `enum_dict`."""
+    if enum_dict:
+        max_value = max(enum_dict)
+        return [enum_dict.get(idx, '')
+                for idx in range(max_value + 1)]
+
+    return enum_strings

@@ -37,7 +37,12 @@ class Variants(ophyd.Device):
 
 class MyDevice(ophyd.Device):
     command = Cpt(EpicsSignal, 'command-with-enum')
-    set_metadata(command, {'variety': 'command'})
+    set_metadata(command,
+                 {'variety': 'command',
+                  'tags': {'confirm', 'protected'},
+                  'value': 1,
+                  }
+                 )
 
     command_proc = Cpt(EpicsSignal, 'command-without-enum')
     set_metadata(command_proc, {'variety': 'command-proc'})
