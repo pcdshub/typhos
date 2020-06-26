@@ -336,27 +336,23 @@ class TyphosSidebarItem(ptypes.ParameterItem):
         self.toolbar.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.toolbar.setIconSize(QSize(15, 15))
         # Setup the action to open the widget
-        self.open_action = QAction(qta.icon('fa.square',
-                                            color='green'),
-                                   'Open', self.toolbar)
+        self.open_action = QAction(
+            qta.icon('fa.square', color='green'), 'Open', self.toolbar)
         self.open_action.triggered.connect(self.open_requested)
         # Setup the action to embed the widget
-        self.embed_action = QAction(qta.icon('fa.th-large',
-                                             color='yellow'),
-                                    'Embed', self.toolbar)
+        self.embed_action = QAction(
+            qta.icon('fa.th-large', color='yellow'), 'Embed', self.toolbar)
         self.embed_action.triggered.connect(self.embed_requested)
         # Setup the action to hide the widget
-        self.hide_action = QAction(qta.icon('fa.times-circle',
-                                            color='red'),
-                                   'Close', self.toolbar)
+        self.hide_action = QAction(
+            qta.icon('fa.times-circle', color='red'), 'Close', self.toolbar)
         self.hide_action.triggered.connect(self.hide_requested)
         self.hide_action.setEnabled(False)
         # Add actions to toolbars
         self.toolbar.addAction(self.open_action)
         self.toolbar.addAction(self.hide_action)
         if self.param.embeddable:
-            self.toolbar.insertAction(self.hide_action,
-                                      self.embed_action)
+            self.toolbar.insertAction(self.hide_action, self.embed_action)
 
     def open_requested(self, triggered):
         """Request to open display for sidebar item"""
