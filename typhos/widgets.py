@@ -16,6 +16,8 @@ from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
 
 import pydm
 import pydm.widgets
+import pydm.widgets.base
+import pydm.widgets.byte
 import pydm.widgets.enum_button
 from ophyd.signal import EpicsSignalBase
 from pydm.widgets.display_format import DisplayFormat
@@ -558,7 +560,7 @@ class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
 
     variety_metadata = variety.create_variety_property()
 
-    def _update_variety_metadata(self, bits, orientation, first_bit, style,
+    def _update_variety_metadata(self, *, bits, orientation, first_bit, style,
                                  **kwargs):
         self.numBits = bits
         self.orientation = {
@@ -569,7 +571,8 @@ class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
         variety._warn_unhandled_kwargs(self, kwargs)
 
     @variety.key_handler('style')
-    def _variety_key_handler_style(self, shape, on_color, off_color, **kwargs):
+    def _variety_key_handler_style(self, *, shape, on_color, off_color,
+                                   **kwargs):
         """Variety hook for the sub-dictionary "style"."""
         on_color = QtGui.QColor(on_color)
         if on_color is not None:
@@ -584,9 +587,101 @@ class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
         variety._warn_unhandled_kwargs(self, kwargs)
 
 
+class ClickableBitIndicator(pydm.widgets.byte.PyDMBitIndicator):
+    """A bit indicator that emits `clicked` when clicked."""
+    clicked = Signal()
+
+    def mousePressEvent(self, event: QtGui.QMouseEvent):
+        super().mousePressEvent(event)
+        if event.button() == Qt.LeftButton:
+            self.clicked.emit()
+
+
 @use_for_variety_write('bitmask')
-class TyphosByteSetpoint(TyphosByteIndicator):
-    ...
+class TyphosByteSetpoint(TyphosByteIndicator,
+                         pydm.widgets.base.PyDMWritableWidget):
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
+                 **kwargs):
+        # NOTE: need to have these in the signature explicitly
+        super().__init__(*args, variety_metadata=variety_metadata,
+                         ophyd_signal=ophyd_signal, **kwargs)
+
+        self._request_value = 0
+        self._requests_pending = {}
+
+    def _bit_clicked(self, bit):
+        if bit in self._requests_pending:
+            new_value = not self._requests_pending[bit]
+        else:
+            new_value = not bool(self.value & (1 << bit))
+
+        self._requests_pending[bit] = new_value
+
+        new_request = self.value
+        for bit, request in self._requests_pending.items():
+            mask = 1 << bit
+            if request:
+                new_request |= mask
+            else:
+                new_request &= ~mask
+
+        self._request_value = new_request
+        self.send_value_signal[int].emit(self._request_value)
+
+    @Property(int, designable=True)
+    def numBits(self):
+        """
+        Number of bits to interpret.
+
+        Re-implemented from PyDM to support changing of bits.
+        """
+        return self._num_bits
+
+    def value_changed(self, value):
+        """Receive and update the TyphosTextEdit for a new channel value."""
+        for bit, request in list(self._requests_pending.items()):
+            mask = 1 << bit
+            is_set = bool(value & mask)
+            if is_set == request:
+                self._requests_pending.pop(bit, None)
+
+        super().value_changed(value)
+
+    @numBits.setter
+    def numBits(self, new_num_bits):
+        """
+
+        Parameters
+        ----------
+        new_num_bits : int
+        """
+        if new_num_bits < 1:
+            return
+
+        self._num_bits = new_num_bits
+        for indicator in self._indicators:
+            indicator.deleteLater()
+
+        self._indicators = [
+            ClickableBitIndicator(parent=self,
+                                  circle=self.circles)
+            for bit in range(self._num_bits)
+        ]
+
+        for bit, indicator in enumerate(self._indicators):
+            def indicator_clicked(*, bit=bit):
+                self._bit_clicked(bit)
+
+            indicator.clicked.connect(indicator_clicked)
+
+        old_labels = self.labels
+        new_labels = [f"Bit {bit}" for bit in range(self._num_bits)]
+        for bit, old_label in enumerate(old_labels):
+            if bit >= self._num_bits:
+                break
+            new_labels[bit] = old_label
+
+        self.labels = new_labels
 
 
 @variety.uses_key_handlers

@@ -205,7 +205,7 @@ def create_variety_property():
                 self._update_variety_metadata(**self._variety_metadata)
         except Exception:
             logger.exception('Failed to set variety metadata for class %s: %s',
-                             type(self).__name__, metadata)
+                             type(self).__name__, self._variety_metadata)
 
         # Optionally, there may be 'handlers' for individual top-level keys.
         handlers = getattr(self, '_variety_handlers', {})
