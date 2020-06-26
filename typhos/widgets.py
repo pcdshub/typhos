@@ -561,13 +561,17 @@ class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
     variety_metadata = variety.create_variety_property()
 
     def _update_variety_metadata(self, *, bits, orientation, first_bit, style,
-                                 **kwargs):
+                                 meaning=None, **kwargs):
         self.numBits = bits
         self.orientation = {
             'horizontal': Qt.Horizontal,
             'vertical': Qt.Vertical,
         }[orientation]
         self.bigEndian = (first_bit == 'most-significant')
+        # TODO: labels do not display properly
+        # if meaning:
+        #     self.labels = meaning[:bits]
+        #     self.showLabels = True
         variety._warn_unhandled_kwargs(self, kwargs)
 
     @variety.key_handler('style')
@@ -606,36 +610,26 @@ class TyphosByteSetpoint(TyphosByteIndicator,
         super().__init__(*args, variety_metadata=variety_metadata,
                          ophyd_signal=ophyd_signal, **kwargs)
 
-        self._request_value = 0
         self._requests_pending = {}
 
-    def _bit_clicked(self, bit):
-        if bit in self._requests_pending:
-            new_value = not self._requests_pending[bit]
-        else:
-            new_value = not bool(self.value & (1 << bit))
-
-        self._requests_pending[bit] = new_value
-
-        new_request = self.value
+    def _get_setpoint_from_requests(self):
+        setpoint = self.value
         for bit, request in self._requests_pending.items():
             mask = 1 << bit
             if request:
-                new_request |= mask
+                setpoint |= mask
             else:
-                new_request &= ~mask
+                setpoint &= ~mask
+        return setpoint
 
-        self._request_value = new_request
-        self.send_value_signal[int].emit(self._request_value)
+    def _bit_clicked(self, bit):
+        if bit in self._requests_pending:
+            old_value = self._requests_pending[bit]
+        else:
+            old_value = bool(self.value & (1 << bit))
 
-    @Property(int, designable=True)
-    def numBits(self):
-        """
-        Number of bits to interpret.
-
-        Re-implemented from PyDM to support changing of bits.
-        """
-        return self._num_bits
+        self._requests_pending[bit] = not old_value
+        self.send_value_signal[int].emit(self._get_setpoint_from_requests())
 
     def value_changed(self, value):
         """Receive and update the TyphosTextEdit for a new channel value."""
@@ -647,24 +641,26 @@ class TyphosByteSetpoint(TyphosByteIndicator,
 
         super().value_changed(value)
 
-    @numBits.setter
-    def numBits(self, new_num_bits):
+    @Property(int, designable=True)
+    def numBits(self):
         """
+        Number of bits to interpret.
 
-        Parameters
-        ----------
-        new_num_bits : int
+        Re-implemented from PyDM to support changing of bit indicators.
         """
-        if new_num_bits < 1:
+        return self._num_bits
+
+    @numBits.setter
+    def numBits(self, num_bits):
+        if num_bits < 1:
             return
 
-        self._num_bits = new_num_bits
+        self._num_bits = num_bits
         for indicator in self._indicators:
             indicator.deleteLater()
 
         self._indicators = [
-            ClickableBitIndicator(parent=self,
-                                  circle=self.circles)
+            ClickableBitIndicator(parent=self, circle=self.circles)
             for bit in range(self._num_bits)
         ]
 
@@ -674,14 +670,9 @@ class TyphosByteSetpoint(TyphosByteIndicator,
 
             indicator.clicked.connect(indicator_clicked)
 
-        old_labels = self.labels
-        new_labels = [f"Bit {bit}" for bit in range(self._num_bits)]
-        for bit, old_label in enumerate(old_labels):
-            if bit >= self._num_bits:
-                break
-            new_labels[bit] = old_label
-
-        self.labels = new_labels
+        new_labels = [f"Bit {bit}"
+                      for bit in range(len(self.labels), self._num_bits)]
+        self.labels = self.labels + new_labels
 
 
 @variety.uses_key_handlers

@@ -91,9 +91,11 @@ class MyDevice(ophyd.Device):
 
     bitmask = Cpt(EpicsSignal, 'bitmask')
     set_metadata(bitmask, {'variety': 'bitmask',
+                           'bits': 4,
                            'style': dict(shape='circle',
                                          on_color='yellow',
-                                         off_color='white')
+                                         off_color='white'),
+                           'meaning': ['A', 'B', 'C'],
                            })
 
     text = Cpt(EpicsSignal, 'text', string=True)
