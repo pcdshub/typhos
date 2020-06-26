@@ -544,9 +544,34 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
     ...
 
 
+@variety.uses_key_handlers
 @use_for_variety_write('command-enum')
 class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
-    ...
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ophyd_signal = ophyd_signal
+        self.variety_metadata = variety_metadata
+        self._forced_enum_strings = None
+
+    variety_metadata = variety.create_variety_property()
+
+    def enum_strings_changed(self, new_enum_strings):
+        return super().enum_strings_changed(
+            self._forced_enum_strings or new_enum_strings)
+
+    def _update_variety_metadata(self, *, value, enum_strings=None,
+                                 enum_dict=None, tags=None, **kwargs):
+        if enum_strings or enum_dict:
+            if enum_dict:
+                max_value = max(enum_dict)
+                enum_strings = [enum_dict.get(idx, '')
+                                for idx in range(max_value + 1)]
+
+            self._forced_enum_strings = tuple(enum_strings)
+            self.enum_strings_changed(None)  # force an update
+
+        variety._warn_unhandled_kwargs(self, kwargs)
 
 
 @use_for_variety_read('bitmask')
@@ -561,7 +586,7 @@ class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
     variety_metadata = variety.create_variety_property()
 
     def _update_variety_metadata(self, *, bits, orientation, first_bit, style,
-                                 meaning=None, **kwargs):
+                                 meaning=None, tags=None, **kwargs):
         self.numBits = bits
         self.orientation = {
             'horizontal': Qt.Horizontal,

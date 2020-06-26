@@ -36,14 +36,18 @@ class Variants(ophyd.Device):
 
 
 class MyDevice(ophyd.Device):
-    command = Cpt(EpicsSignal, 'command')
+    command = Cpt(EpicsSignal, 'command-with-enum')
     set_metadata(command, {'variety': 'command'})
 
-    command_proc = Cpt(EpicsSignal, 'command-proc')
+    command_proc = Cpt(EpicsSignal, 'command-without-enum')
     set_metadata(command_proc, {'variety': 'command-proc'})
 
-    command_enum = Cpt(EpicsSignal, 'command-enum')
-    set_metadata(command_enum, {'variety': 'command-enum'})
+    command_enum = Cpt(EpicsSignal, 'command-without-enum')
+    set_metadata(command_enum,
+                 {'variety': 'command-enum',
+                  'enum_dict': {0: 'No', 1: 'Yes', 3: 'Metadata-defined'},
+                  }
+                 )
 
     command_setpoint_tracks_readback = Cpt(EpicsSignal,
                                            'command-setpoint-tracks-readback')
@@ -116,9 +120,11 @@ class MyDevice(ophyd.Device):
 class VarietyIOC(PVGroup):
     """
     """
-    command = pvproperty(value=0, name='command')
-    command_proc = pvproperty(value=0, name='command-proc')
-    command_enum = pvproperty(value=0, name='command-enum')
+    command_without_enum = pvproperty(value=0, name='command-without-enum')
+    command_with_enum = pvproperty(value=0, name='command-with-enum',
+                                   enum_strings=['Off', 'On'],
+                                   dtype=caproto.ChannelType.ENUM)
+
     command_setpoint_tracks_readback = pvproperty(
         value=0, name='command-setpoint-tracks-readback')
     tweakable = pvproperty(value=0, name='tweakable',
