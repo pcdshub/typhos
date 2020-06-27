@@ -25,6 +25,7 @@ from pydm.widgets.display_format import DisplayFormat
 
 from . import plugins, utils, variety
 from .textedit import TyphosTextEdit  # noqa: F401
+from .tweakable import TyphosTweakable  # noqa: F401
 from .variety import use_for_variety_read, use_for_variety_write
 
 logger = logging.getLogger(__name__)
@@ -153,7 +154,9 @@ class TogglePanel(QWidget):
 @use_for_variety_write('enum')
 @use_for_variety_write('text-enum')
 class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
-    ...
+    """
+    TODO
+    """
 
 
 @use_for_variety_write('scalar')
@@ -426,6 +429,10 @@ class HappiChannel(pydm.widgets.channel.PyDMChannel, QObject):
 
 
 class TyphosDesignerMixin(pydm.widgets.base.PyDMWidget):
+    """
+    TODO
+    """
+
     # Unused properties that we don't want visible in designer
     alarmSensitiveBorder = Property(bool, designable=False)
     alarmSensitiveContent = Property(bool, designable=False)
@@ -539,6 +546,10 @@ class WaveformDialogButton(SignalDialogButton):
 @use_for_variety_write('command-proc')
 @use_for_variety_write('command-setpoint-tracks-readback')  # TODO
 class TyphosCommandButton(pydm.widgets.PyDMPushButton):
+    """
+    TODO
+    """
+
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -575,6 +586,10 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
 @variety.uses_key_handlers
 @use_for_variety_write('command-enum')
 class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
+    """
+    TODO
+    """
+
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -601,6 +616,10 @@ class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
 @use_for_variety_read('bitmask')
 @variety.uses_key_handlers
 class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
+    """
+    TODO
+    """
+
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -653,6 +672,10 @@ class ClickableBitIndicator(pydm.widgets.byte.PyDMBitIndicator):
 @use_for_variety_write('bitmask')
 class TyphosByteSetpoint(TyphosByteIndicator,
                          pydm.widgets.base.PyDMWritableWidget):
+    """
+    TODO
+    """
+
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
         # NOTE: need to have these in the signature explicitly
@@ -727,6 +750,10 @@ class TyphosByteSetpoint(TyphosByteIndicator,
 @variety.uses_key_handlers
 @use_for_variety_write('scalar-range')
 class TyphosScalarRange(pydm.widgets.PyDMSlider):
+    """
+    TODO
+    """
+
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -777,8 +804,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
     @variety.key_handler('display_format')
     def _variety_key_handler_display_format(self, value):
         """Variety hook for the sub-dictionary "delta"."""
-        self.displayFormat = getattr(DisplayFormat, value.capitalize(),
-                                     DisplayFormat.Default)
+        self.displayFormat = variety.get_display_format(value)
 
     @property
     def delta_signal(self):
@@ -836,15 +862,12 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
         return ret
 
 
-@use_for_variety_write('scalar-tweakable')
-class TyphosTweakable(TyphosScalarRange):
-    ...
-    # TODO tweak functionality from positioner?
-
-
 @variety.uses_key_handlers
 @use_for_variety_write('array-tabular')
 class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
+    """
+    TODO
+    """
     # TODO this class will have to be redone; PyDMWaveformTable appears to be
     # for a different purpose
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
@@ -880,6 +903,9 @@ class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
 
 
 def _get_scalar_widget_class(desc, variety_md, read_only):
+    """
+    TODO
+    """
     # Check for enum_strs, if so create a QCombobox
     if read_only:
         return TyphosLabel
@@ -893,6 +919,9 @@ def _get_scalar_widget_class(desc, variety_md, read_only):
 
 
 def _get_ndimensional_widget_class(dimensions, desc, variety_md, read_only):
+    """
+    TODO
+    """
     if dimensions == 0:
         return _get_scalar_widget_class(desc, variety_md, read_only)
 

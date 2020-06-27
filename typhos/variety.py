@@ -5,6 +5,8 @@ Typhos handling of "variety" metadata and related utilities.
 import inspect
 import logging
 
+from pydm.widgets.display_format import DisplayFormat
+
 logger = logging.getLogger(__name__)
 _variety_to_widget_class = {}
 
@@ -241,3 +243,10 @@ def get_enum_strings(enum_strings, enum_dict):
                 for idx in range(max_value + 1)]
 
     return enum_strings
+
+
+def get_display_format(value):
+    """Get the display format enum value from the variety metadata value."""
+    if value is not None:
+        return getattr(DisplayFormat, value.capitalize(),
+                       DisplayFormat.Default)
