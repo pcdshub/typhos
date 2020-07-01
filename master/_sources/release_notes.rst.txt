@@ -2,6 +2,25 @@
  Release History
 =================
 
+v1.0.2 (2020-07-01)
+===================
+
+Description
+-----------
+
+A bug fix and package maintenance release.
+
+Enhancements / What's New
+-------------------------
+-   PositionerWidget moves set their timeouts based on expected
+    velocity and acceleration, rather than a flat 10 seconds.
+
+Compatibility / fixes
+---------------------
+-   Ensure that widgets with no layout or minimum size are still displayed.
+-   Update local conda recipe to match conda-forge.
+-   Update CI to used shared configurations.
+
 
 v1.0.1 (2020-05-20)
 ===================

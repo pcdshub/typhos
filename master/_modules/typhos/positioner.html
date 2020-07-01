@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.positioner &mdash; Typhos 1.0.1+8.g3971722 documentation</title>
+  <title>typhos.positioner &mdash; Typhos 1.0.2 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -48,7 +49,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home"> Typhos
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Typhos
           
 
           
@@ -58,7 +59,7 @@
             
             
               <div class="version">
-                1.0.1+8.g3971722
+                1.0.2
               </div>
             
           
@@ -75,6 +76,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -104,6 +106,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -142,7 +145,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -164,6 +167,7 @@
   <h1>Source code for typhos.positioner</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 
@@ -297,6 +301,8 @@
     <span class="n">_high_limit_switch_attr</span> <span class="o">=</span> <span class="s1">&#39;high_limit_switch&#39;</span>
     <span class="n">_low_limit_travel_attr</span> <span class="o">=</span> <span class="s1">&#39;low_limit_travel&#39;</span>
     <span class="n">_high_limit_travel_attr</span> <span class="o">=</span> <span class="s1">&#39;high_limit_travel&#39;</span>
+    <span class="n">_velocity_attr</span> <span class="o">=</span> <span class="s1">&#39;velocity&#39;</span>
+    <span class="n">_acceleration_attr</span> <span class="o">=</span> <span class="s1">&#39;acceleration&#39;</span>
     <span class="n">_min_visible_operation</span> <span class="o">=</span> <span class="mf">0.1</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -323,23 +329,54 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_start_status_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_start_status_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Start the status monitoring thread for the given status object.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="n">thread</span> <span class="o">=</span> <span class="n">TyphosStatusThread</span><span class="p">(</span>
-            <span class="n">status</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_visible_operation</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_visible_operation</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
         <span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">status_started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">move_changed</span><span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">status_finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_status_finished</span><span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
+    <span class="k">def</span> <span class="nf">_get_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_position</span><span class="p">,</span> <span class="n">settle_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use positioner&#39;s configuration to select a timeout.&quot;&quot;&quot;</span>
+        <span class="n">pos_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readback_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">vel_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">acc_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acceleration_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># Not enough info == no timeout</span>
+        <span class="k">if</span> <span class="n">pos_sig</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">vel_sig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">pos_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">-</span> <span class="n">set_position</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="n">vel_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="c1"># Bad speed == no timeout</span>
+        <span class="k">if</span> <span class="n">speed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+        <span class="c1"># Bad acceleration == ignore acceleration</span>
+        <span class="k">if</span> <span class="n">acc_sig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">acc_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">acc_time</span> <span class="o">=</span> <span class="n">acc_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="c1"># This time is always greater than the kinematic calc</span>
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="o">/</span><span class="n">speed</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">acc_time</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">settle_time</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inner `set` routine - call device.set() and monitor the status.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clear_status_thread</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">set_position</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting device </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_status_thread</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timeout</span><span class="p">(</span><span class="n">set_position</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># Something went wrong, just run without a timeout.</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Unable to estimate motor timeout.&#39;</span><span class="p">)</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting device </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2"> with timeout </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="c1"># Send timeout through thread because status timeout stops the move</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">set_position</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_status_thread</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TyphosPositionerWidget.set"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.set">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -549,6 +586,24 @@
     <span class="k">def</span> <span class="nf">high_limit_travel_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_high_limit_travel_attr</span> <span class="o">=</span> <span class="n">value</span>
 
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">velocity_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the velocity signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_attr</span>
+
+    <span class="nd">@velocity_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">velocity_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">acceleration_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the acceleration time signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acceleration_attr</span>
+
+    <span class="nd">@acceleration_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">acceleration_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_acceleration_attr</span> <span class="o">=</span> <span class="n">value</span>
+
 <div class="viewcode-block" id="TyphosPositionerWidget.move_changed"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.move_changed">[docs]</a>    <span class="k">def</span> <span class="nf">move_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called when a move is begun&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Begin showing move in TyphosPositionerWidget&quot;</span><span class="p">)</span>
@@ -603,11 +658,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2017, SLAC National Accelerator Laboratory
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -618,7 +681,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

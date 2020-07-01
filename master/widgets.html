@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Widgets &mdash; Typhos 1.0.1+8.g3971722 documentation</title>
+  <title>Widgets &mdash; Typhos 1.0.2 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Typhos Data Plugins for PyDM" href="plugins.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> Typhos
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Typhos
           
 
           
@@ -60,7 +61,7 @@
             
             
               <div class="version">
-                1.0.1+8.g3971722
+                1.0.2
               </div>
             
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -118,6 +120,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -156,7 +159,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Widgets</li>
     
@@ -212,7 +215,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 
 <dl class="py class">
 <dt id="typhos.widgets.SignalWidgetInfo">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">SignalWidgetInfo</code><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">SignalWidgetInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">read_cls</span></em>, <em class="sig-param"><span class="n">read_kwargs</span></em>, <em class="sig-param"><span class="n">write_cls</span></em>, <em class="sig-param"><span class="n">write_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides information on how to create signal widgets: class and kwargs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -790,6 +793,12 @@ that indicates the motion completeness. Must be implemented.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py attribute">
+<dt id="typhos.TyphosPositionerWidget.acceleration_attribute">
+<code class="sig-name descname">acceleration_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.acceleration_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>The attribute name for the acceleration time signal.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.add_device">
 <code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.add_device" title="Permalink to this definition">¶</a></dt>
@@ -892,6 +901,12 @@ prevent unnecessary rapid movements</p>
 <dt id="typhos.TyphosPositionerWidget.tweak">
 <code class="sig-name descname">tweak</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">offset</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak by the given <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="typhos.TyphosPositionerWidget.velocity_attribute">
+<code class="sig-name descname">velocity_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.velocity_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>The attribute name for the velocity signal.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1231,11 +1246,19 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2017, SLAC National Accelerator Laboratory
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1246,7 +1269,6 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
