@@ -918,8 +918,7 @@ class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
     Notes
     -----
     """
-    # TODO this class will have to be redone; PyDMWaveformTable appears to be
-    # for a different purpose
+
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -935,20 +934,39 @@ class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
             logger.debug('Non-waveform value? %r', value)
             return
 
-        shape = self.variety_metadata.get('shape')
-        if shape is not None:
-            expected_length = np.multiply.reduce(shape)
-            if len(value) == expected_length:
-                value = np.array(value).reshape(shape)
+        # shape = self.variety_metadata.get('shape')
+        # if shape is not None:
+        #     expected_length = np.multiply.reduce(shape)
+        #     if len(value) == expected_length:
+        #         value = np.array(value).reshape(shape)
 
         return super().value_changed(value)
+
+    def _calculate_size(self, padding=5):
+        width = self.verticalHeader().width() + padding
+        for col in range(self.columnCount()):
+            width += self.columnWidth(col)
+
+        height = self.horizontalHeader().height() + padding
+        for row in range(self.rowCount()):
+            height += self.rowHeight(row)
+
+        return QSize(width, height)
 
     def _update_variety_metadata(self, *, shape=None, tags=None, **kwargs):
         if shape:
             # TODO
-            self.columnHeaderLabels = [
-                f'{idx}' for idx in range(max(shape[0], 1))
-            ]
+            columns = max(shape[0], 1)
+            rows = max(np.product(shape[1:]), 1)
+            self.setRowCount(rows)
+            self.setColumnCount(columns)
+            self.rowHeaderLabels = [f'{idx}' for idx in range(rows)]
+            self.columnHeaderLabels = [f'{idx}' for idx in range(columns)]
+
+            if rows <= 5 and columns <= 5:
+                full_size = self._calculate_size()
+                self.setFixedSize(full_size)
+
         variety._warn_unhandled_kwargs(self, kwargs)
 
 
