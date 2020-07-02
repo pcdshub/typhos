@@ -113,6 +113,9 @@ Miscellaneous
 .. autoclass:: typhos.widgets.TyphosSidebarItem
    :members:
 
+.. autoclass:: typhos.tweakable.TyphosTweakable
+   :members:
+
 .. autoclass:: typhos.textedit.TyphosTextEdit
    :members:
 

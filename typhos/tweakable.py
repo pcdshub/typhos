@@ -28,6 +28,9 @@ class TyphosTweakable(utils.TyphosBase):
 
     init_channel : str, optional
         The channel to be used by the widget.
+
+    Notes
+    -----
     """
 
     ui_template = utils.ui_dir / 'tweakable.ui'
