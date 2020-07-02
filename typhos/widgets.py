@@ -420,6 +420,7 @@ class HappiChannel(pydm.widgets.channel.PyDMChannel, QObject):
         Slot on widget to accept a dictionary of both the device and metadata
         information
     """
+
     def __init__(self, *, tx_slot, **kwargs):
         super().__init__(**kwargs)
         QObject.__init__(self)
@@ -440,7 +441,7 @@ class HappiChannel(pydm.widgets.channel.PyDMChannel, QObject):
 
 class TyphosDesignerMixin(pydm.widgets.base.PyDMWidget):
     """
-    TODO
+    A mixin class used to display Typhos widgets in the Qt designer.
     """
 
     # Unused properties that we don't want visible in designer
@@ -567,7 +568,11 @@ class WaveformDialogButton(SignalDialogButton):
 @use_for_variety_write('command-setpoint-tracks-readback')  # TODO
 class TyphosCommandButton(pydm.widgets.PyDMPushButton):
     """
-    TODO
+    A pushbutton widget which executes a command by sending a specific value.
+
+    See Also
+    --------
+    :class:`TyphosCommandEnumButton`
 
     Notes
     -----
@@ -610,7 +615,14 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
 @use_for_variety_write('command-enum')
 class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
     """
-    TODO
+    A group of buttons which represent several command options.
+
+    These options can come from directly from the control layer or can be
+    overridden with variety metadata.
+
+    See Also
+    --------
+    :class:`TyphosCommandButton`
 
     Notes
     -----
@@ -643,7 +655,7 @@ class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
 @variety.uses_key_handlers
 class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
     """
-    TODO
+    Displays an integer value as individual, read-only bit indicators.
 
     Notes
     -----
@@ -702,7 +714,7 @@ class ClickableBitIndicator(pydm.widgets.byte.PyDMBitIndicator):
 class TyphosByteSetpoint(TyphosByteIndicator,
                          pydm.widgets.base.PyDMWritableWidget):
     """
-    TODO
+    Displays an integer value as individual, toggleable bit indicators.
 
     Notes
     -----
@@ -783,7 +795,7 @@ class TyphosByteSetpoint(TyphosByteIndicator,
 @use_for_variety_write('scalar-range')
 class TyphosScalarRange(pydm.widgets.PyDMSlider):
     """
-    TODO
+    A slider widget which displays a scalar value with an explicit range.
 
     Notes
     -----
@@ -901,7 +913,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
 @use_for_variety_write('array-tabular')
 class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
     """
-    TODO
+    A table widget which reshapes and displays a given waveform value.
 
     Notes
     -----
@@ -942,7 +954,18 @@ class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
 
 def _get_scalar_widget_class(desc, variety_md, read_only):
     """
-    TODO
+    From a given description, return the widget to use.
+
+    Parameters
+    ----------
+    desc : dict
+        The object description.
+
+    variety_md : dict
+        The variety metadata.  Currently unused.
+
+    read_only : bool
+        Set if used for the readback widget.
     """
     # Check for enum_strs, if so create a QCombobox
     if read_only:
@@ -958,7 +981,21 @@ def _get_scalar_widget_class(desc, variety_md, read_only):
 
 def _get_ndimensional_widget_class(dimensions, desc, variety_md, read_only):
     """
-    TODO
+    From a given description and dimensionality, return the widget to use.
+
+    Parameters
+    ----------
+    dimensions : int
+        The number of dimensions (e.g., 0D or scalar, 1D array, ND array)
+
+    desc : dict
+        The object description.
+
+    variety_md : dict
+        The variety metadata.  Currently unused.
+
+    read_only : bool
+        Set if used for the readback widget.
     """
     if dimensions == 0:
         return _get_scalar_widget_class(desc, variety_md, read_only)
