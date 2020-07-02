@@ -119,9 +119,13 @@ def use_for_variety(variety, *, read=True, write=True):
 
         if read:
             _variety_to_widget_class[variety]['read'] = cls
+            if cls.__doc__ is not None:
+                cls.__doc__ += f'\n    * Used for variety {variety} (readback)'
 
         if write:
             _variety_to_widget_class[variety]['write'] = cls
+            if cls.__doc__ is not None:
+                cls.__doc__ += f'\n    * Used for variety {variety} (setpoint)'
 
         if not read and not write:
             raise ValueError('`write` or `read` must be set.')

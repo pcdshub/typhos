@@ -155,7 +155,8 @@ class TogglePanel(QWidget):
 @use_for_variety_write('text-enum')
 class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
     """
-    TODO
+    Notes
+    -----
     """
 
 
@@ -164,6 +165,9 @@ class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
 class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
+
+    Notes
+    -----
     """
     def __init__(self, *args, display_format=None, **kwargs):
         self._setpoint_history_count = 5
@@ -298,6 +302,9 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
 class TyphosLabel(pydm.widgets.PyDMLabel):
     """
     Reimplementation of PyDMLabel to set some custom defaults
+
+    Notes
+    -----
     """
     def __init__(self, *args, display_format=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -331,6 +338,9 @@ class TyphosLabel(pydm.widgets.PyDMLabel):
 class TyphosSidebarItem(ptypes.ParameterItem):
     """
     Class to display a Device or Tool in the sidebar
+
+    Notes
+    -----
     """
     def __init__(self, param, depth):
         super().__init__(param, depth)
@@ -516,7 +526,12 @@ class SignalDialogButton(QPushButton):
 
 @use_for_variety_read('array-image')
 class ImageDialogButton(SignalDialogButton):
-    """QPushButton to show a 2-d array"""
+    """
+    QPushButton to show a 2-d array.
+
+    Notes
+    -----
+    """
     text = 'Show Image'
     icon = 'fa.camera'
     parent_widget_class = QtWidgets.QMainWindow
@@ -530,7 +545,12 @@ class ImageDialogButton(SignalDialogButton):
 @use_for_variety_read('array-timeseries')
 @use_for_variety_read('array-histogram')  # TODO: histogram settings?
 class WaveformDialogButton(SignalDialogButton):
-    """QPushButton to show a 1-d array"""
+    """
+    QPushButton to show a 1-d array.
+
+    Notes
+    -----
+    """
     text = 'Show Waveform'
     icon = 'fa5s.chart-line'
     parent_widget_class = QtWidgets.QMainWindow
@@ -548,6 +568,9 @@ class WaveformDialogButton(SignalDialogButton):
 class TyphosCommandButton(pydm.widgets.PyDMPushButton):
     """
     TODO
+
+    Notes
+    -----
     """
 
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
@@ -588,6 +611,9 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
 class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
     """
     TODO
+
+    Notes
+    -----
     """
 
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
@@ -618,6 +644,9 @@ class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
 class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
     """
     TODO
+
+    Notes
+    -----
     """
 
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
@@ -674,6 +703,9 @@ class TyphosByteSetpoint(TyphosByteIndicator,
                          pydm.widgets.base.PyDMWritableWidget):
     """
     TODO
+
+    Notes
+    -----
     """
 
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
@@ -752,6 +784,9 @@ class TyphosByteSetpoint(TyphosByteIndicator,
 class TyphosScalarRange(pydm.widgets.PyDMSlider):
     """
     TODO
+
+    Notes
+    -----
     """
 
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
@@ -867,6 +902,9 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
 class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
     """
     TODO
+
+    Notes
+    -----
     """
     # TODO this class will have to be redone; PyDMWaveformTable appears to be
     # for a different purpose

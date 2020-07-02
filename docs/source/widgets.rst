@@ -71,25 +71,49 @@ Functions and Methods
 Miscellaneous
 =============
 
-.. autoclass:: typhos.widgets.TogglePanel
+.. autoclass:: typhos.widgets.ClickableBitIndicator
    :members:
 
-.. autoclass:: typhos.widgets.TyphosComboBox
-   :members:
-
-.. autoclass:: typhos.widgets.TyphosLineEdit
-   :members:
-
-.. autoclass:: typhos.widgets.TyphosLabel
-   :members:
-
-.. autoclass:: typhos.widgets.TyphosSidebarItem
+.. autoclass:: typhos.widgets.ImageDialogButton
    :members:
 
 .. autoclass:: typhos.widgets.SignalDialogButton
    :members:
 
-.. autoclass:: typhos.widgets.ImageDialogButton
+.. autoclass:: typhos.widgets.SubDisplay
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosArrayTable
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosByteIndicator
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosByteSetpoint
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosComboBox
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosCommandButton
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosCommandEnumButton
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosLabel
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosLineEdit
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosScalarRange
+   :members:
+
+.. autoclass:: typhos.widgets.TyphosSidebarItem
+   :members:
+
+.. autoclass:: typhos.textedit.TyphosTextEdit
    :members:
 
 .. autoclass:: typhos.widgets.WaveformDialogButton
