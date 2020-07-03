@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utility Functions &mdash; Typhos 1.0.2 documentation</title>
+  <title>Utility Functions &mdash; Typhos 1.0.2+30.g674686b documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                1.0.2
+                1.0.2+30.g674686b
               </div>
             
           
@@ -517,6 +517,23 @@ for potential templates to show.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="typhos.utils.get_component">
+<code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">get_component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#get_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.get_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the component that made the given object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<em>ophyd.OphydItem</em>) – The ophyd item for which to get the component.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>component</strong> – The component, if available.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ophyd.Component</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="typhos.utils.get_device_from_fake_class">
 <code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">get_device_from_fake_class</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cls</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#get_device_from_fake_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.get_device_from_fake_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the non-fake class, given a fake class</p>
@@ -528,6 +545,24 @@ for potential templates to show.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.8)"><em>type</em></a>) – The fake class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="typhos.utils.get_variety_metadata">
+<code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">get_variety_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cpt</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#get_variety_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.get_variety_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get “variety” metadata from a component or signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cpt</strong> (<em>ophyd.Component</em><em> or </em><em>ophyd.OphydItem</em>) – The component / ophyd item to get the metadata for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>metadata</strong> – The metadata, if set. Otherwise an empty dictionary.  This metadata is
+guaranteed to be valid according to the known schemas.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -684,6 +719,20 @@ for Q_ENUMS.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>dark</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether or not to use the QDarkStyleSheet theme. By default the light
 theme is chosen.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="typhos.utils.widget_to_image">
+<code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">widget_to_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">widget</span></em>, <em class="sig-param"><span class="n">fill_color</span><span class="o">=</span><span class="default_value">19</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#widget_to_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.widget_to_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Paint the given widget in a new QtGui.QImage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The display, as an image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>QtGui.QImage</p>
 </dd>
 </dl>
 </dd></dl>
@@ -886,7 +935,7 @@ returned immediately.  Otherwise, upon connection and successful
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2017, SLAC National Accelerator Laboratory
+        &copy; Copyright 2020, SLAC National Accelerator Laboratory
 
     </p>
   </div>

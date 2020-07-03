@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.display &mdash; Typhos 1.0.2 documentation</title>
+  <title>typhos.display &mdash; Typhos 1.0.2+30.g674686b documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.0.2
+                1.0.2+30.g674686b
               </div>
             
           
@@ -169,7 +169,7 @@
 
 <span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 
 <span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
@@ -490,6 +490,11 @@
 
         <span class="n">base_menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_hide_empty_menu</span><span class="p">(</span><span class="n">panels</span><span class="p">,</span> <span class="n">base_menu</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">DEBUG_MODE</span><span class="p">:</span>
+            <span class="n">base_menu</span><span class="o">.</span><span class="n">addSection</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;&amp;Copy to clipboard&#39;</span><span class="p">)</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">display</span><span class="o">.</span><span class="n">copy_to_clipboard</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">base_menu</span></div></div>
 
@@ -1303,6 +1308,26 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_standard_template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
         <span class="p">]</span>
 
+<div class="viewcode-block" id="TyphosDeviceDisplay.to_image"><a class="viewcode-back" href="../../display.html#typhos.TyphosDeviceDisplay.to_image">[docs]</a>    <span class="k">def</span> <span class="nf">to_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the entire display as a QtGui.QImage.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        QtGui.QImage</span>
+<span class="sd">            The display, as an image.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">widget_to_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_display_widget</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosDeviceDisplay.copy_to_clipboard"><a class="viewcode-back" href="../../display.html#typhos.TyphosDeviceDisplay.copy_to_clipboard">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">copy_to_clipboard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Copy the display image to the clipboard.&quot;&quot;&quot;</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_image</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">clipboard</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGuiApplication</span><span class="o">.</span><span class="n">clipboard</span><span class="p">()</span>
+            <span class="n">clipboard</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span></div>
+
     <span class="nd">@Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Receive information from happi channel.&quot;&quot;&quot;</span>
@@ -1412,7 +1437,7 @@
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2017, SLAC National Accelerator Laboratory
+        &copy; Copyright 2020, SLAC National Accelerator Laboratory
 
     </p>
   </div>

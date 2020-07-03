@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.cache &mdash; Typhos 1.0.2 documentation</title>
+  <title>typhos.cache &mdash; Typhos 1.0.2+30.g674686b documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.0.2
+                1.0.2+30.g674686b
               </div>
             
           
@@ -175,8 +175,6 @@
 
 <span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span>
 
-<span class="kn">import</span> <span class="nn">ophyd</span>
-
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">SignalWidgetInfo</span>
 
@@ -254,13 +252,6 @@
     <span class="k">def</span> <span class="nf">_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Retrieve the description of ``obj``.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">NDDerivedSignal</span><span class="p">):</span>
-                <span class="c1"># Force initial value readout otherwise _readback was never</span>
-                <span class="c1"># set and that causes issues with more complex describe</span>
-                <span class="c1"># types such as DerivedSignal and NDDerivedSignal.</span>
-                <span class="c1"># TODO: This is a temporary fix and must be removed once</span>
-                <span class="c1">#       https://github.com/bluesky/ophyd/pull/858 is merged</span>
-                <span class="n">obj</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span>
@@ -530,7 +521,7 @@
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2017, SLAC National Accelerator Laboratory
+        &copy; Copyright 2020, SLAC National Accelerator Laboratory
 
     </p>
   </div>

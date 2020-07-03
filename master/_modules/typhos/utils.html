@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.utils &mdash; Typhos 1.0.2 documentation</title>
+  <title>typhos.utils &mdash; Typhos 1.0.2+30.g674686b documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                1.0.2
+                1.0.2+30.g674686b
               </div>
             
           
@@ -180,11 +180,12 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">QSize</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="kn">import</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QMovie</span><span class="p">,</span> <span class="n">QPainter</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span>
 
+<span class="kn">import</span> <span class="nn">ophyd</span>
 <span class="kn">import</span> <span class="nn">ophyd.sim</span>
 <span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Device</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
@@ -200,6 +201,7 @@
 <span class="n">ui_dir</span> <span class="o">=</span> <span class="n">MODULE_PATH</span> <span class="o">/</span> <span class="s1">&#39;ui&#39;</span>
 <span class="n">GrabKindItem</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;GrabKindItem&#39;</span><span class="p">,</span>
                                       <span class="p">(</span><span class="s1">&#39;attr&#39;</span><span class="p">,</span> <span class="s1">&#39;component&#39;</span><span class="p">,</span> <span class="s1">&#39;signal&#39;</span><span class="p">))</span>
+<span class="n">DEBUG_MODE</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_DEBUG&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
 
 
 <span class="k">if</span> <span class="n">happi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1215,6 +1217,68 @@
 <span class="k">def</span> <span class="nf">nullcontext</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Stand-in for py3.7&#39;s contextlib.nullcontext&quot;&quot;&quot;</span>
     <span class="k">yield</span></div>
+
+
+<div class="viewcode-block" id="get_component"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_component">[docs]</a><span class="k">def</span> <span class="nf">get_component</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the component that made the given object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : ophyd.OphydItem</span>
+<span class="sd">        The ophyd item for which to get the component.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    component : ophyd.Component</span>
+<span class="sd">        The component, if available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">attr_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_variety_metadata"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_variety_metadata">[docs]</a><span class="k">def</span> <span class="nf">get_variety_metadata</span><span class="p">(</span><span class="n">cpt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get &quot;variety&quot; metadata from a component or signal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cpt : ophyd.Component or ophyd.OphydItem</span>
+<span class="sd">        The component / ophyd item to get the metadata for.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    metadata : dict</span>
+<span class="sd">        The metadata, if set. Otherwise an empty dictionary.  This metadata is</span>
+<span class="sd">        guaranteed to be valid according to the known schemas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cpt</span><span class="p">,</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">cpt</span> <span class="o">=</span> <span class="n">get_component</span><span class="p">(</span><span class="n">cpt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cpt</span><span class="p">,</span> <span class="s1">&#39;_variety_metadata&#39;</span><span class="p">,</span> <span class="p">{})</span></div>
+
+
+<div class="viewcode-block" id="widget_to_image"><a class="viewcode-back" href="../../utils.html#typhos.utils.widget_to_image">[docs]</a><span class="k">def</span> <span class="nf">widget_to_image</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">fill_color</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">transparent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Paint the given widget in a new QtGui.QImage.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    QtGui.QImage</span>
+<span class="sd">        The display, as an image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="n">widget</span><span class="o">.</span><span class="n">height</span><span class="p">(),</span>
+                         <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_ARGB32_Premultiplied</span><span class="p">)</span>
+
+    <span class="n">image</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">fill_color</span><span class="p">)</span>
+    <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+    <span class="n">painter</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">image</span></div>
 </pre></div>
 
            </div>
@@ -1228,7 +1292,7 @@
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2017, SLAC National Accelerator Laboratory
+        &copy; Copyright 2020, SLAC National Accelerator Laboratory
 
     </p>
   </div>

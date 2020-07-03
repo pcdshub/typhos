@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Suite and Displays &mdash; Typhos 1.0.2 documentation</title>
+  <title>Suite and Displays &mdash; Typhos 1.0.2+30.g674686b documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.0.2
+                1.0.2+30.g674686b
               </div>
             
           
@@ -466,6 +466,12 @@ precedence:</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="typhos.TyphosDeviceDisplay.copy_to_clipboard">
+<code class="sig-name descname">copy_to_clipboard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/display.html#TyphosDeviceDisplay.copy_to_clipboard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosDeviceDisplay.copy_to_clipboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy the display image to the clipboard.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="typhos.TyphosDeviceDisplay.current_template">
 <em class="property">property </em><code class="sig-name descname">current_template</code><a class="headerlink" href="#typhos.TyphosDeviceDisplay.current_template" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the current template being displayed.</p>
@@ -603,6 +609,20 @@ a cleaned version of the device name</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="typhos.TyphosDeviceDisplay.to_image">
+<code class="sig-name descname">to_image</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/display.html#TyphosDeviceDisplay.to_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosDeviceDisplay.to_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the entire display as a QtGui.QImage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The display, as an image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>QtGui.QImage</p>
 </dd>
 </dl>
 </dd></dl>
@@ -941,7 +961,7 @@ If not set or set to None, it will flip the current panels state.</p></li>
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2017, SLAC National Accelerator Laboratory
+        &copy; Copyright 2020, SLAC National Accelerator Laboratory
 
     </p>
   </div>
