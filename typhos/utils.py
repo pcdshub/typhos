@@ -13,11 +13,12 @@ import random
 import re
 import threading
 
-from qtpy import QtCore, QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QMovie, QPainter
 from qtpy.QtWidgets import QWidget
 
+import ophyd
 import ophyd.sim
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
@@ -33,6 +34,7 @@ MODULE_PATH = pathlib.Path(__file__).parent.resolve()
 ui_dir = MODULE_PATH / 'ui'
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
+DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
 
 
 if happi is None:
@@ -1048,3 +1050,65 @@ def dump_grid_layout(layout, rows=None, cols=None, *, cell_width=60):
 def nullcontext():
     """Stand-in for py3.7's contextlib.nullcontext"""
     yield
+
+
+def get_component(obj):
+    """
+    Get the component that made the given object.
+
+    Parameters
+    ----------
+    obj : ophyd.OphydItem
+        The ophyd item for which to get the component.
+
+    Returns
+    -------
+    component : ophyd.Component
+        The component, if available.
+    """
+    if obj.parent is None:
+        return None
+
+    return getattr(type(obj.parent), obj.attr_name, None)
+
+
+def get_variety_metadata(cpt):
+    """
+    Get "variety" metadata from a component or signal.
+
+    Parameters
+    ----------
+    cpt : ophyd.Component or ophyd.OphydItem
+        The component / ophyd item to get the metadata for.
+
+    Returns
+    -------
+    metadata : dict
+        The metadata, if set. Otherwise an empty dictionary.  This metadata is
+        guaranteed to be valid according to the known schemas.
+    """
+    if not isinstance(cpt, ophyd.Component):
+        cpt = get_component(cpt)
+
+    return getattr(cpt, '_variety_metadata', {})
+
+
+def widget_to_image(widget, fill_color=QtCore.Qt.transparent):
+    """
+    Paint the given widget in a new QtGui.QImage.
+
+    Returns
+    -------
+    QtGui.QImage
+        The display, as an image.
+    """
+    image = QtGui.QImage(widget.width(), widget.height(),
+                         QtGui.QImage.Format_ARGB32_Premultiplied)
+
+    image.fill(fill_color)
+    pixmap = QtGui.QPixmap(image)
+
+    painter = QtGui.QPainter(pixmap)
+    widget.render(image)
+    painter.end()
+    return image

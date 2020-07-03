@@ -207,9 +207,6 @@ class SignalPanel(QtWidgets.QGridLayout):
         sig_info['widget_info'] = info
         row = sig_info['row']
 
-        read = info.read_cls(**info.read_kwargs)
-        write = info.write_cls(**info.write_kwargs) if info.write_cls else None
-
         # Remove the 'loading...' animation if it's there
         item = self.itemAtPosition(row, self.COL_SETPOINT)
         if item:
@@ -218,10 +215,12 @@ class SignalPanel(QtWidgets.QGridLayout):
                 self.removeItem(item)
                 val_widget.deleteLater()
 
-        # And add the new widgets to the layout:
-        widgets = [None, read]
-        if write is not None:
-            widgets += [write]
+        widgets = [None]
+        if info.read_cls is not None:
+            widgets.append(info.read_cls(**info.read_kwargs))
+
+        if info.write_cls is not None:
+            widgets.append(info.write_cls(**info.write_kwargs))
 
         self._update_row(row, widgets)
 

@@ -19,9 +19,13 @@
 #
 import os
 import sys
+
+from datetime import datetime
+
 import sphinx_rtd_theme
+
 module_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'../../')
-sys.path.insert(0,module_path)
+sys.path.insert(0, module_path)
 
 
 # -- General configuration ------------------------------------------------
@@ -58,7 +62,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Typhos'
-copyright = '2017, SLAC National Accelerator Laboratory'
+copyright = f'{datetime.now().year}, SLAC National Accelerator Laboratory'
 author = 'SLAC National Accelerator Laboratory'
 
 # The version info for the project you're documenting, acts as replacement for

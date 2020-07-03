@@ -2,7 +2,7 @@
 
 import enum
 import logging
-import os.path
+import os
 import pathlib
 
 from qtpy import QtCore, QtGui, QtWidgets
@@ -323,6 +323,11 @@ class TyphosDisplayConfigButton(TyphosToolButton):
 
         base_menu.addSeparator()
         self.create_hide_empty_menu(panels, base_menu)
+
+        if utils.DEBUG_MODE:
+            base_menu.addSection('Debug')
+            action = base_menu.addAction('&Copy to clipboard')
+            action.triggered.connect(display.copy_to_clipboard)
 
         return base_menu
 
@@ -1135,6 +1140,26 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 device_cls, 'detailed', utils.DISPLAY_PATHS)
             if not utils.is_standard_template(template)
         ]
+
+    def to_image(self):
+        """
+        Return the entire display as a QtGui.QImage.
+
+        Returns
+        -------
+        QtGui.QImage
+            The display, as an image.
+        """
+        if self._display_widget is not None:
+            return utils.widget_to_image(self._display_widget)
+
+    @Slot()
+    def copy_to_clipboard(self):
+        """Copy the display image to the clipboard."""
+        image = self.to_image()
+        if image is not None:
+            clipboard = QtGui.QGuiApplication.clipboard()
+            clipboard.setImage(image)
 
     @Slot(object)
     def _tx(self, value):
