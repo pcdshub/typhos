@@ -127,7 +127,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     ============== ===========================================================
     """
 
-    ui_template = os.path.join(utils.ui_dir, 'positioner.ui')
+    ui_template = os.path.join(utils.ui_dir, 'widgets', 'positioner.ui')
     _readback_attr = 'user_readback'
     _setpoint_attr = 'user_setpoint'
     _low_limit_switch_attr = 'low_limit_switch'
