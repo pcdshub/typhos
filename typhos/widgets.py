@@ -1116,7 +1116,7 @@ def determine_widget_type(signal, read_only=False):
                      signal.name)
         desc = {}
 
-    return widget_type_from_description(signal, desc)
+    return widget_type_from_description(signal, desc, read_only=read_only)
 
 
 def create_signal_widget(signal, read_only=False, tooltip=None):
