@@ -34,11 +34,11 @@ _DisplayTypes = utils.pyqt_class_from_enum(DisplayTypes)
 DisplayTypes.names = [view.name for view in DisplayTypes]
 
 DEFAULT_TEMPLATES = {
-    name: [(utils.ui_dir / f'{name}.ui').resolve()]
+    name: [(utils.ui_dir / 'core' / f'{name}.ui').resolve()]
     for name in DisplayTypes.names
 }
 
-DETAILED_TREE_TEMPLATE = (utils.ui_dir / 'detailed_tree.ui').resolve()
+DETAILED_TREE_TEMPLATE = (utils.ui_dir / 'core' / 'detailed_tree.ui').resolve()
 DEFAULT_TEMPLATES['detailed_screen'].append(DETAILED_TREE_TEMPLATE)
 
 DEFAULT_TEMPLATES_FLATTEN = [f for _, files in DEFAULT_TEMPLATES.items()
