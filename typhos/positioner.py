@@ -1,87 +1,13 @@
-import functools
 import logging
 import math
-import operator
 import os.path
 
 from qtpy import QtCore, uic
 
-from . import plugins, utils, widgets
+from . import utils, widgets
 from .status import TyphosStatusThread
 
 logger = logging.getLogger(__name__)
-
-
-def _link_signal_to_widget(signal, widget):
-    """
-    Registers the signal with PyDM, and sets the widget channel.
-
-    Parameters
-    ----------
-    signal : ophyd.OphydObj
-        The signal to use.
-
-    widget : QtWidgets.QWidget
-        The widget with which to connect the signal.
-    """
-    if signal is not None:
-        plugins.register_signal(signal)
-        if widget is not None:
-            widget.channel = utils.channel_from_signal(signal)
-
-
-def _linked_attribute(property_attr, widget_attr):
-    """
-    Decorator which connects a device signal with a widget.
-
-    Retrieves the signal from the device, registers it with PyDM, and sets the
-    widget channel.
-
-    Parameters
-    ----------
-    property_attr : str
-        This is one level of indirection, allowing for the component attribute
-        to be configurable by way of designable properties.
-        In short, this looks like:
-            ``getattr(self.device, getattr(self, property_attr))``
-        The component attribute name may include multiple levels (e.g.,
-        ``'cpt1.cpt2.low_limit'``).
-
-    widget_attr : str
-        The attribute name of the widget, referenced from ``self``.
-        The component attribute name may include multiple levels (e.g.,
-        ``'ui.low_limit'``).
-    """
-    get_widget_attr = operator.attrgetter(widget_attr)
-
-    def wrapper(func):
-        @functools.wraps(func)
-        def wrapped(self):
-            widget = get_widget_attr(self)
-            device_attr = getattr(self, property_attr)
-            get_device_attr = operator.attrgetter(device_attr)
-
-            try:
-                signal = get_device_attr(self.device)
-            except AttributeError:
-                signal = None
-            else:
-                # Fall short of an `isinstance(signal, OphydObj) check here:
-                try:
-                    _link_signal_to_widget(signal, widget)
-                except Exception:
-                    logger.exception(
-                        'device.%s => self.%s (signal: %s widget: %s)',
-                        device_attr, widget_attr, signal, widget)
-                    signal = None
-                else:
-                    logger.debug('device.%s => self.%s (signal=%s widget=%s)',
-                                 device_attr, widget_attr, signal, widget)
-
-            return func(self, signal, widget)
-
-        return wrapped
-    return wrapper
 
 
 class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
@@ -264,12 +190,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             raise Exception("No Device configured for widget!")
         return self._readback.get()
 
-    @_linked_attribute('readback_attribute', 'ui.user_readback')
+    @utils.linked_attribute('readback_attribute', 'ui.user_readback')
     def _link_readback(self, signal, widget):
         """Link the positioner readback with the ui element."""
         self._readback = signal
 
-    @_linked_attribute('setpoint_attribute', 'ui.user_setpoint')
+    @utils.linked_attribute('setpoint_attribute', 'ui.user_setpoint')
     def _link_setpoint(self, signal, widget):
         """Link the positioner setpoint with the ui element."""
         self._setpoint = signal
@@ -278,24 +204,24 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             if hasattr(widget, 'textChanged'):
                 widget.textChanged.connect(self._user_setpoint_update)
 
-    @_linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch')
+    @utils.linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch')
     def _link_low_limit_switch(self, signal, widget):
         """Link the positioner lower limit switch with the ui element."""
         if signal is None:
             widget.hide()
 
-    @_linked_attribute('high_limit_switch_attribute', 'ui.high_limit_switch')
+    @utils.linked_attribute('high_limit_switch_attribute', 'ui.high_limit_switch')
     def _link_high_limit_switch(self, signal, widget):
         """Link the positioner high limit switch with the ui element."""
         if signal is None:
             widget.hide()
 
-    @_linked_attribute('low_limit_travel_attribute', 'ui.low_limit')
+    @utils.linked_attribute('low_limit_travel_attribute', 'ui.low_limit')
     def _link_low_travel(self, signal, widget):
         """Link the positioner lower travel limit with the ui element."""
         return signal is not None
 
-    @_linked_attribute('high_limit_travel_attribute', 'ui.high_limit')
+    @utils.linked_attribute('high_limit_travel_attribute', 'ui.high_limit')
     def _link_high_travel(self, signal, widget):
         """Link the positioner high travel limit with the ui element."""
         return signal is not None
