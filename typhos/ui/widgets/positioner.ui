@@ -156,7 +156,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,1,1,0,0,0">
+       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,0,1,0,0,0">
         <property name="spacing">
          <number>10</number>
         </property>
@@ -208,20 +208,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="set_value">
-          <property name="minimumSize">
-           <size>
-            <width>20</width>
-            <height>25</height>
-           </size>
+         <layout class="QVBoxLayout" name="setpoint_layout">
+          <property name="spacing">
+           <number>0</number>
           </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="tweak_layout" stretch="0,1,0">

@@ -25,6 +25,7 @@ import ophyd.sim
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.exception import raise_to_operator  # noqa
+from pydm.widgets.base import PyDMWritableWidget
 
 from typhos import plugins
 
@@ -73,13 +74,15 @@ class SignalRO(ophyd.sim.SynSignalRO):
         return self._value
 
 
-def channel_from_signal(signal):
+def channel_from_signal(signal, read=True):
     """
     Create a PyDM address from arbitrary signal type
     """
     # Add an item
     if isinstance(signal, EpicsSignalBase):
-        return channel_name(signal._read_pv.pvname)
+        if read:
+            return channel_name(signal._read_pv.pvname)
+        return channel_name(signal._write_pv.pvname)
     return channel_name(signal.name, protocol='sig')
 
 
@@ -1135,10 +1138,11 @@ def link_signal_to_widget(signal, widget):
     if signal is not None:
         plugins.register_signal(signal)
         if widget is not None:
-            widget.channel = channel_from_signal(signal)
+            read = not isinstance(widget, PyDMWritableWidget)
+            widget.channel = channel_from_signal(signal, read=read)
 
 
-def linked_attribute(property_attr, widget_attr):
+def linked_attribute(property_attr, widget_attr, hide_unavailable=False):
     """
     Decorator which connects a device signal with a widget.
 
@@ -1159,6 +1163,9 @@ def linked_attribute(property_attr, widget_attr):
         The attribute name of the widget, referenced from ``self``.
         The component attribute name may include multiple levels (e.g.,
         ``'ui.low_limit'``).
+    hide_unavailable : bool
+        Whether or not to hide widgets for which the device signal is not
+        available
     """
     get_widget_attr = operator.attrgetter(widget_attr)
 
@@ -1185,6 +1192,10 @@ def linked_attribute(property_attr, widget_attr):
                 else:
                     logger.debug('device.%s => self.%s (signal=%s widget=%s)',
                                  device_attr, widget_attr, signal, widget)
+
+            if signal is None and hide_unavailable:
+                print(f'Skipping unavailable property ({property_attr} | {widget_attr}) for {self.device} ')
+                widget.setVisible(False)
 
             return func(self, signal, widget)
 

@@ -2,7 +2,7 @@ import logging
 import math
 import os.path
 
-from qtpy import QtCore, uic
+from qtpy import QtCore, uic, QtWidgets
 
 from . import utils, widgets
 from .status import TyphosStatusThread
@@ -74,7 +74,6 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         super().__init__(parent=parent)
 
         self.ui = uic.loadUi(self.ui_template, self)
-        self.ui.set_value.returnPressed.connect(self.set)
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
@@ -137,6 +136,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         status = self.device.set(set_position)
         self._start_status_thread(status, timeout)
 
+    @QtCore.Slot(int)
+    def combo_set(self, index):
+        self.set()
+
     @QtCore.Slot()
     def set(self):
         """Set the device to the value configured by ``ui.set_value``"""
@@ -190,12 +193,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             raise Exception("No Device configured for widget!")
         return self._readback.get()
 
-    @utils.linked_attribute('readback_attribute', 'ui.user_readback')
+    @utils.linked_attribute('readback_attribute', 'ui.user_readback', True)
     def _link_readback(self, signal, widget):
         """Link the positioner readback with the ui element."""
         self._readback = signal
 
-    @utils.linked_attribute('setpoint_attribute', 'ui.user_setpoint')
+    @utils.linked_attribute('setpoint_attribute', 'ui.user_setpoint', True)
     def _link_setpoint(self, signal, widget):
         """Link the positioner setpoint with the ui element."""
         self._setpoint = signal
@@ -204,24 +207,27 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             if hasattr(widget, 'textChanged'):
                 widget.textChanged.connect(self._user_setpoint_update)
 
-    @utils.linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch')
+    @utils.linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch',
+                            True)
     def _link_low_limit_switch(self, signal, widget):
         """Link the positioner lower limit switch with the ui element."""
         if signal is None:
             widget.hide()
 
-    @utils.linked_attribute('high_limit_switch_attribute', 'ui.high_limit_switch')
+    @utils.linked_attribute('high_limit_switch_attribute',
+                            'ui.high_limit_switch', True)
     def _link_high_limit_switch(self, signal, widget):
         """Link the positioner high limit switch with the ui element."""
         if signal is None:
             widget.hide()
 
-    @utils.linked_attribute('low_limit_travel_attribute', 'ui.low_limit')
+    @utils.linked_attribute('low_limit_travel_attribute', 'ui.low_limit', True)
     def _link_low_travel(self, signal, widget):
         """Link the positioner lower travel limit with the ui element."""
         return signal is not None
 
-    @utils.linked_attribute('high_limit_travel_attribute', 'ui.high_limit')
+    @utils.linked_attribute('high_limit_travel_attribute', 'ui.high_limit',
+                            True)
     def _link_high_travel(self, signal, widget):
         """Link the positioner high travel limit with the ui element."""
         return signal is not None
@@ -243,6 +249,31 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.ui.low_limit.hide()
         self.ui.high_limit.hide()
 
+    def _define_setpoint_widget(self):
+        """
+        Leverage information at describe to define whether to use a PyDMLineEdit
+        or a PyDMEnumCombobox as setpoint widget.
+        """
+        try:
+            print(f'Trying to fetch setpoint signal for: {self.device}.')
+            setpoint_signal = getattr(self.device, self.setpoint_attribute)
+            selection = setpoint_signal.enum_strs is not None
+        except Exception as ex:
+            print(f'Trying to fetch setpoint signal failed for : {self.device}. Error: {ex}')
+            selection = False
+
+        print(f'Setpoint signal is selection? {selection}')
+
+        if selection:
+            self.ui.set_value = QtWidgets.QComboBox()
+            self.ui.set_value.addItems(setpoint_signal.enum_strs)
+            self.ui.set_value.currentIndexChanged.connect(self.set)
+        else:
+            self.ui.set_value = QtWidgets.QLineEdit()
+            self.ui.set_value.returnPressed.connect(self.set)
+
+        self.ui.setpoint_layout.addWidget(self.ui.set_value)
+
     @property
     def device(self):
         """The associated device."""
@@ -257,6 +288,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.devices.clear()  # only one device allowed
         super().add_device(device)
 
+        self._define_setpoint_widget()
         self._link_readback()
         self._link_setpoint()
         self._link_low_limit_switch()
