@@ -255,14 +255,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         or a PyDMEnumCombobox as setpoint widget.
         """
         try:
-            print(f'Trying to fetch setpoint signal for: {self.device}.')
             setpoint_signal = getattr(self.device, self.setpoint_attribute)
             selection = setpoint_signal.enum_strs is not None
         except Exception as ex:
-            print(f'Trying to fetch setpoint signal failed for : {self.device}. Error: {ex}')
             selection = False
-
-        print(f'Setpoint signal is selection? {selection}')
 
         if selection:
             self.ui.set_value = QtWidgets.QComboBox()

@@ -1194,7 +1194,6 @@ def linked_attribute(property_attr, widget_attr, hide_unavailable=False):
                                  device_attr, widget_attr, signal, widget)
 
             if signal is None and hide_unavailable:
-                print(f'Skipping unavailable property ({property_attr} | {widget_attr}) for {self.device} ')
                 widget.setVisible(False)
 
             return func(self, signal, widget)
