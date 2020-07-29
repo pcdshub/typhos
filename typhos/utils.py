@@ -1155,7 +1155,7 @@ def linked_attribute(property_attr, widget_attr, hide_unavailable=False):
         This is one level of indirection, allowing for the component attribute
         to be configurable by way of designable properties.
         In short, this looks like:
-            ``getattr(self.device, getattr(self, property_attr))``
+        ``getattr(self.device, getattr(self, property_attr))``
         The component attribute name may include multiple levels (e.g.,
         ``'cpt1.cpt2.low_limit'``).
 
@@ -1163,6 +1163,7 @@ def linked_attribute(property_attr, widget_attr, hide_unavailable=False):
         The attribute name of the widget, referenced from ``self``.
         The component attribute name may include multiple levels (e.g.,
         ``'ui.low_limit'``).
+
     hide_unavailable : bool
         Whether or not to hide widgets for which the device signal is not
         available
