@@ -1,6 +1,7 @@
 caproto
 codecov
 doctr
+doctr-versions-menu
 flake8
 ipython
 line_profiler
