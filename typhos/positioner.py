@@ -207,8 +207,8 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             if hasattr(widget, 'textChanged'):
                 widget.textChanged.connect(self._user_setpoint_update)
 
-    @utils.linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch',
-                            True)
+    @utils.linked_attribute('low_limit_switch_attribute',
+                            'ui.low_limit_switch', True)
     def _link_low_limit_switch(self, signal, widget):
         """Link the positioner lower limit switch with the ui element."""
         if signal is None:
@@ -251,13 +251,13 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
 
     def _define_setpoint_widget(self):
         """
-        Leverage information at describe to define whether to use a PyDMLineEdit
-        or a PyDMEnumCombobox as setpoint widget.
+        Leverage information at describe to define whether to use a
+        PyDMLineEdit or a PyDMEnumCombobox as setpoint widget.
         """
         try:
             setpoint_signal = getattr(self.device, self.setpoint_attribute)
             selection = setpoint_signal.enum_strs is not None
-        except Exception as ex:
+        except Exception:
             selection = False
 
         if selection:
