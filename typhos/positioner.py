@@ -268,6 +268,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             self.ui.set_value = QtWidgets.QComboBox()
             self.ui.set_value.addItems(setpoint_signal.enum_strs)
             self.ui.set_value.currentIndexChanged.connect(self.set)
+            self.ui.tweak_widget.setVisible(False)
         else:
             self.ui.set_value = QtWidgets.QLineEdit()
             self.ui.set_value.returnPressed.connect(self.set)
@@ -436,4 +437,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
 
         # Update set_value if it's not being edited.
         if not self.ui.set_value.hasFocus():
-            self.ui.set_value.setText(text)
+            if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+                self.ui.set_value.setCurrentText(text)
+            else:
+                self.ui.set_value.setText(text)
