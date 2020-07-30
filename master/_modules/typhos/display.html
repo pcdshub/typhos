@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.display &mdash; Typhos 1.0.2+32.gdf26dd6 documentation</title>
+  <title>typhos.display &mdash; Typhos 1.0.2+38.gaa5fb4b documentation</title>
   
 
   
@@ -30,6 +30,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/doctr-versions-menu.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -59,7 +60,7 @@
             
             
               <div class="version">
-                1.0.2+32.gdf26dd6
+                1.0.2+38.gaa5fb4b
               </div>
             
           
@@ -172,15 +173,14 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
-
 <span class="kn">import</span> <span class="nn">ophyd</span>
 <span class="kn">import</span> <span class="nn">pcdsutils</span>
 <span class="kn">import</span> <span class="nn">pydm.display</span>
 <span class="kn">import</span> <span class="nn">pydm.exception</span>
 <span class="kn">import</span> <span class="nn">pydm.utilities</span>
 <span class="kn">from</span> <span class="nn">pcdsutils.qt</span> <span class="kn">import</span> <span class="n">forward_property</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">cache</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">panel</span> <span class="k">as</span> <span class="n">typhos_panel</span>
@@ -1009,7 +1009,7 @@
                 <span class="c1"># If we have a previously defined template</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># Fallback to it so users have a choice</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_load_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span><span class="p">)</span>
+                    <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span><span class="p">)</span>
                     <span class="n">pydm</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">raise_to_operator</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
