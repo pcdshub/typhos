@@ -5,15 +5,14 @@ import logging
 import os
 import pathlib
 
-from qtpy import QtCore, QtGui, QtWidgets
-from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
-
 import ophyd
 import pcdsutils
 import pydm.display
 import pydm.exception
 import pydm.utilities
 from pcdsutils.qt import forward_property
+from qtpy import QtCore, QtGui, QtWidgets
+from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
 
 from . import cache
 from . import panel as typhos_panel
@@ -842,7 +841,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 # If we have a previously defined template
                 if self._current_template is not None:
                     # Fallback to it so users have a choice
-                    self._load_template(self._current_template)
+                    widget = self._load_template(self._current_template)
                     pydm.exception.raise_to_operator(ex)
                 else:
                     widget = QtWidgets.QWidget()
