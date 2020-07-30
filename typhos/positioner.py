@@ -147,7 +147,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             return
 
         try:
-            value = self.ui.set_value.text()
+            if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+                value = self.ui.set_value.currentText()
+            else:
+                value = self.ui.set_value.text()
             self._set(value)
         except Exception as exc:
             logger.exception("Error setting %r to %r", self.devices, value)
