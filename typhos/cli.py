@@ -130,7 +130,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
     devices = list()
 
     klass_regex = re.compile(
-        r'([a-zA-Z][a-zA-Z\.\_]*)\[(\{.+})*[\,]*\]'  # noqa
+        r'([a-zA-Z][a-zA-Z-0-9\.\_]*)\[(\{.+})*[\,]*\]'  # noqa
     )
 
     for device_name in device_names:
