@@ -122,7 +122,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         """Inner `set` routine - call device.set() and monitor the status."""
         self._clear_status_thread()
         self._last_move = None
-        set_position = float(value)
+        if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+            set_position = value
+        else:
+            set_position = float(value)
 
         try:
             timeout = self._get_timeout(set_position, 5)
