@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Utility Functions &mdash; Typhos 1.0.2+38.gaa5fb4b documentation</title>
+  <title>Utility Functions &mdash; Typhos 1.0.2+53.gddbf5b5 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.0.2+38.gaa5fb4b
+                1.0.2+53.gddbf5b5
               </div>
             
           
@@ -349,7 +349,7 @@ and replace it with a default timeout message.</p>
 
 <dl class="py function">
 <dt id="typhos.utils.channel_from_signal">
-<code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">channel_from_signal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#channel_from_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.channel_from_signal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">channel_from_signal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">read</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#channel_from_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.channel_from_signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a PyDM address from arbitrary signal type</p>
 </dd></dl>
 
@@ -585,10 +585,49 @@ introspection in the ophyd library. Until that day we need to check classes</p>
 <dl class="py function">
 <dt id="typhos.utils.is_standard_template">
 <code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">is_standard_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">template</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#is_standard_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.is_standard_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>Is the template one provided with typhos?</p>
+<dd><p>Is the template a core one provided with typhos?</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.8)"><em>pathlib.Path</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="typhos.utils.link_signal_to_widget">
+<code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">link_signal_to_widget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">widget</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#link_signal_to_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.link_signal_to_widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Registers the signal with PyDM, and sets the widget channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ophyd.OphydObj</em>) – The signal to use.</p></li>
+<li><p><strong>widget</strong> (<em>QtWidgets.QWidget</em>) – The widget with which to connect the signal.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="typhos.utils.linked_attribute">
+<code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">linked_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">property_attr</span></em>, <em class="sig-param"><span class="n">widget_attr</span></em>, <em class="sig-param"><span class="n">hide_unavailable</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#linked_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.utils.linked_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator which connects a device signal with a widget.</p>
+<p>Retrieves the signal from the device, registers it with PyDM, and sets the
+widget channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – This is one level of indirection, allowing for the component attribute
+to be configurable by way of designable properties.
+In short, this looks like:
+<code class="docutils literal notranslate"><span class="pre">getattr(self.device,</span> <span class="pre">getattr(self,</span> <span class="pre">property_attr))</span></code>
+The component attribute name may include multiple levels (e.g.,
+<code class="docutils literal notranslate"><span class="pre">'cpt1.cpt2.low_limit'</span></code>).</p></li>
+<li><p><strong>widget_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The attribute name of the widget, referenced from <code class="docutils literal notranslate"><span class="pre">self</span></code>.
+The component attribute name may include multiple levels (e.g.,
+<code class="docutils literal notranslate"><span class="pre">'ui.low_limit'</span></code>).</p></li>
+<li><p><strong>hide_unavailable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether or not to hide widgets for which the device signal is not
+available</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

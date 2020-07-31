@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.display &mdash; Typhos 1.0.2+38.gaa5fb4b documentation</title>
+  <title>typhos.display &mdash; Typhos 1.0.2+53.gddbf5b5 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                1.0.2+38.gaa5fb4b
+                1.0.2+53.gddbf5b5
               </div>
             
           
@@ -201,11 +201,11 @@
 <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">view</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">DisplayTypes</span><span class="p">]</span>
 
 <span class="n">DEFAULT_TEMPLATES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">name</span><span class="p">:</span> <span class="p">[(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.ui&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span>
+    <span class="n">name</span><span class="p">:</span> <span class="p">[(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.ui&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">names</span>
 <span class="p">}</span>
 
-<span class="n">DETAILED_TREE_TEMPLATE</span> <span class="o">=</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;detailed_tree.ui&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">DETAILED_TREE_TEMPLATE</span> <span class="o">=</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span> <span class="o">/</span> <span class="s1">&#39;detailed_tree.ui&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 <span class="n">DEFAULT_TEMPLATES</span><span class="p">[</span><span class="s1">&#39;detailed_screen&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DETAILED_TREE_TEMPLATE</span><span class="p">)</span>
 
 <span class="n">DEFAULT_TEMPLATES_FLATTEN</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">DEFAULT_TEMPLATES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
