@@ -7,10 +7,10 @@ import re
 import sys
 
 import coloredlogs
-import pcdsutils
-from ophyd.sim import clear_fake_device, make_fake_device
 
+import pcdsutils
 import typhos
+from ophyd.sim import clear_fake_device, make_fake_device
 from typhos.app import get_qapp, launch_suite
 from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
@@ -184,8 +184,6 @@ def create_devices(device_names, cfg=None, fake_devices=False):
 
 def typhos_run(device_names, cfg=None, fake_devices=False):
     """Run the central typhos part of typhos."""
-    typhos.utils.patch_connect_slots()
-
     with typhos.utils.no_device_lazy_load():
         suite = create_suite(device_names, cfg=cfg, fake_devices=fake_devices)
     if suite:
