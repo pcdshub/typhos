@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.utils &mdash; Typhos 1.0.2+55.g55a0ac2 documentation</title>
+  <title>typhos.utils &mdash; Typhos 1.0.2+60.g9700397 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                1.0.2+55.g55a0ac2
+                1.0.2+60.g9700397
               </div>
             
           
@@ -194,7 +194,6 @@
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
 <span class="kn">from</span> <span class="nn">pydm.exception</span> <span class="kn">import</span> <span class="n">raise_to_operator</span>  <span class="c1"># noqa</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets.base</span> <span class="kn">import</span> <span class="n">PyDMWritableWidget</span>
-
 <span class="kn">from</span> <span class="nn">typhos</span> <span class="kn">import</span> <span class="n">plugins</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -1289,6 +1288,37 @@
     <span class="n">widget</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
     <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">image</span></div>
+
+
+<span class="n">_connect_slots_unpatched</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="patch_connect_slots"><a class="viewcode-back" href="../../utils.html#typhos.utils.patch_connect_slots">[docs]</a><span class="k">def</span> <span class="nf">patch_connect_slots</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Patches QtCore.QMetaObject.connectSlotsByName to catch SystemErrors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_connect_slots_unpatched</span>
+
+    <span class="k">if</span> <span class="n">_connect_slots_unpatched</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># TODO there could be a version check here if we can isolate it</span>
+
+    <span class="n">_connect_slots_unpatched</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span>
+
+    <span class="k">def</span> <span class="nf">connect_slots_patch</span><span class="p">(</span><span class="n">top_level_widget</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_connect_slots_unpatched</span><span class="p">(</span><span class="n">top_level_widget</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">SystemError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Eating system error.  This may possibly be solved by either &quot;</span>
+                <span class="s2">&quot;downgrading Python or upgrading pyqt5 to &gt;= 5.13.1. &quot;</span>
+                <span class="s2">&quot;For further discussion, see &quot;</span>
+                <span class="s2">&quot;https://github.com/pcdshub/typhos/issues/354&quot;</span><span class="p">,</span>
+                <span class="n">exc_info</span><span class="o">=</span><span class="n">ex</span>
+            <span class="p">)</span>
+
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span> <span class="o">=</span> <span class="n">connect_slots_patch</span></div>
 
 
 <div class="viewcode-block" id="link_signal_to_widget"><a class="viewcode-back" href="../../utils.html#typhos.utils.link_signal_to_widget">[docs]</a><span class="k">def</span> <span class="nf">link_signal_to_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
