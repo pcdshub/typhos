@@ -1,87 +1,12 @@
-import functools
 import logging
-import math
-import operator
 import os.path
 
-from qtpy import QtCore, uic
+from qtpy import QtCore, uic, QtWidgets
 
-from . import plugins, utils, widgets
+from . import utils, widgets
 from .status import TyphosStatusThread
 
 logger = logging.getLogger(__name__)
-
-
-def _link_signal_to_widget(signal, widget):
-    """
-    Registers the signal with PyDM, and sets the widget channel.
-
-    Parameters
-    ----------
-    signal : ophyd.OphydObj
-        The signal to use.
-
-    widget : QtWidgets.QWidget
-        The widget with which to connect the signal.
-    """
-    if signal is not None:
-        plugins.register_signal(signal)
-        if widget is not None:
-            widget.channel = utils.channel_from_signal(signal)
-
-
-def _linked_attribute(property_attr, widget_attr):
-    """
-    Decorator which connects a device signal with a widget.
-
-    Retrieves the signal from the device, registers it with PyDM, and sets the
-    widget channel.
-
-    Parameters
-    ----------
-    property_attr : str
-        This is one level of indirection, allowing for the component attribute
-        to be configurable by way of designable properties.
-        In short, this looks like:
-            ``getattr(self.device, getattr(self, property_attr))``
-        The component attribute name may include multiple levels (e.g.,
-        ``'cpt1.cpt2.low_limit'``).
-
-    widget_attr : str
-        The attribute name of the widget, referenced from ``self``.
-        The component attribute name may include multiple levels (e.g.,
-        ``'ui.low_limit'``).
-    """
-    get_widget_attr = operator.attrgetter(widget_attr)
-
-    def wrapper(func):
-        @functools.wraps(func)
-        def wrapped(self):
-            widget = get_widget_attr(self)
-            device_attr = getattr(self, property_attr)
-            get_device_attr = operator.attrgetter(device_attr)
-
-            try:
-                signal = get_device_attr(self.device)
-            except AttributeError:
-                signal = None
-            else:
-                # Fall short of an `isinstance(signal, OphydObj) check here:
-                try:
-                    _link_signal_to_widget(signal, widget)
-                except Exception:
-                    logger.exception(
-                        'device.%s => self.%s (signal: %s widget: %s)',
-                        device_attr, widget_attr, signal, widget)
-                    signal = None
-                else:
-                    logger.debug('device.%s => self.%s (signal=%s widget=%s)',
-                                 device_attr, widget_attr, signal, widget)
-
-            return func(self, signal, widget)
-
-        return wrapped
-    return wrapper
 
 
 class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
@@ -127,7 +52,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     ============== ===========================================================
     """
 
-    ui_template = os.path.join(utils.ui_dir, 'positioner.ui')
+    ui_template = os.path.join(utils.ui_dir, 'widgets', 'positioner.ui')
     _readback_attr = 'user_readback'
     _setpoint_attr = 'user_setpoint'
     _low_limit_switch_attr = 'low_limit_switch'
@@ -148,7 +73,6 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         super().__init__(parent=parent)
 
         self.ui = uic.loadUi(self.ui_template, self)
-        self.ui.set_value.returnPressed.connect(self.set)
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
@@ -179,12 +103,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         acc_sig = getattr(self.device, self._acceleration_attr, None)
         # Not enough info == no timeout
         if pos_sig is None or vel_sig is None:
-            return math.inf
+            return None
         delta = pos_sig.get() - set_position
         speed = vel_sig.get()
         # Bad speed == no timeout
         if speed == 0:
-            return math.inf
+            return None
         # Bad acceleration == ignore acceleration
         if acc_sig is None:
             acc_time = 0
@@ -197,19 +121,26 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         """Inner `set` routine - call device.set() and monitor the status."""
         self._clear_status_thread()
         self._last_move = None
-        set_position = float(value)
+        if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+            set_position = value
+        else:
+            set_position = float(value)
 
         try:
             timeout = self._get_timeout(set_position, 5)
         except Exception:
             # Something went wrong, just run without a timeout.
             logger.exception('Unable to estimate motor timeout.')
-            timeout = math.inf
+            timeout = None
         logger.debug("Setting device %r to %r with timeout %r",
                      self.device, value, timeout)
         # Send timeout through thread because status timeout stops the move
         status = self.device.set(set_position)
         self._start_status_thread(status, timeout)
+
+    @QtCore.Slot(int)
+    def combo_set(self, index):
+        self.set()
 
     @QtCore.Slot()
     def set(self):
@@ -218,7 +149,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             return
 
         try:
-            value = self.ui.set_value.text()
+            if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+                value = self.ui.set_value.currentText()
+            else:
+                value = self.ui.set_value.text()
             self._set(value)
         except Exception as exc:
             logger.exception("Error setting %r to %r", self.devices, value)
@@ -264,12 +198,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             raise Exception("No Device configured for widget!")
         return self._readback.get()
 
-    @_linked_attribute('readback_attribute', 'ui.user_readback')
+    @utils.linked_attribute('readback_attribute', 'ui.user_readback', True)
     def _link_readback(self, signal, widget):
         """Link the positioner readback with the ui element."""
         self._readback = signal
 
-    @_linked_attribute('setpoint_attribute', 'ui.user_setpoint')
+    @utils.linked_attribute('setpoint_attribute', 'ui.user_setpoint', True)
     def _link_setpoint(self, signal, widget):
         """Link the positioner setpoint with the ui element."""
         self._setpoint = signal
@@ -278,24 +212,27 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             if hasattr(widget, 'textChanged'):
                 widget.textChanged.connect(self._user_setpoint_update)
 
-    @_linked_attribute('low_limit_switch_attribute', 'ui.low_limit_switch')
+    @utils.linked_attribute('low_limit_switch_attribute',
+                            'ui.low_limit_switch', True)
     def _link_low_limit_switch(self, signal, widget):
         """Link the positioner lower limit switch with the ui element."""
         if signal is None:
             widget.hide()
 
-    @_linked_attribute('high_limit_switch_attribute', 'ui.high_limit_switch')
+    @utils.linked_attribute('high_limit_switch_attribute',
+                            'ui.high_limit_switch', True)
     def _link_high_limit_switch(self, signal, widget):
         """Link the positioner high limit switch with the ui element."""
         if signal is None:
             widget.hide()
 
-    @_linked_attribute('low_limit_travel_attribute', 'ui.low_limit')
+    @utils.linked_attribute('low_limit_travel_attribute', 'ui.low_limit', True)
     def _link_low_travel(self, signal, widget):
         """Link the positioner lower travel limit with the ui element."""
         return signal is not None
 
-    @_linked_attribute('high_limit_travel_attribute', 'ui.high_limit')
+    @utils.linked_attribute('high_limit_travel_attribute', 'ui.high_limit',
+                            True)
     def _link_high_travel(self, signal, widget):
         """Link the positioner high travel limit with the ui element."""
         return signal is not None
@@ -317,6 +254,29 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.ui.low_limit.hide()
         self.ui.high_limit.hide()
 
+    def _define_setpoint_widget(self):
+        """
+        Leverage information at describe to define whether to use a
+        PyDMLineEdit or a PyDMEnumCombobox as setpoint widget.
+        """
+        try:
+            setpoint_signal = getattr(self.device, self.setpoint_attribute)
+            selection = setpoint_signal.enum_strs is not None
+        except Exception:
+            selection = False
+
+        if selection:
+            self.ui.set_value = QtWidgets.QComboBox()
+            self.ui.set_value.addItems(setpoint_signal.enum_strs)
+            self.ui.set_value.currentIndexChanged.connect(self.set)
+            self.ui.tweak_widget.setVisible(False)
+        else:
+            self.ui.set_value = QtWidgets.QLineEdit()
+            self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
+            self.ui.set_value.returnPressed.connect(self.set)
+
+        self.ui.setpoint_layout.addWidget(self.ui.set_value)
+
     @property
     def device(self):
         """The associated device."""
@@ -331,6 +291,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.devices.clear()  # only one device allowed
         super().add_device(device)
 
+        self._define_setpoint_widget()
         self._link_readback()
         self._link_setpoint()
         self._link_low_limit_switch()
@@ -478,4 +439,11 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
 
         # Update set_value if it's not being edited.
         if not self.ui.set_value.hasFocus():
-            self.ui.set_value.setText(text)
+            if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+                try:
+                    idx = int(text)
+                    self.ui.set_value.setCurrentIndex(idx)
+                except ValueError:
+                    logger.debug('Failed to convert value to int. %s', text)
+            else:
+                self.ui.set_value.setText(text)

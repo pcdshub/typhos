@@ -33,7 +33,7 @@ class TyphosTweakable(utils.TyphosBase):
     -----
     """
 
-    ui_template = utils.ui_dir / 'tweakable.ui'
+    ui_template = utils.ui_dir / 'widgets' / 'tweakable.ui'
     _readback_attr = 'readback'
     _setpoint_attr = 'setpoint'
 

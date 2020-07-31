@@ -3,25 +3,30 @@ Utility functions for typhos
 """
 import collections
 import contextlib
+import functools
 import importlib.util
 import inspect
 import io
 import logging
+import operator
 import os
 import pathlib
 import random
 import re
 import threading
 
+from qtpy import QtCore, QtGui, QtWidgets
+from qtpy.QtCore import QSize
+from qtpy.QtGui import QColor, QMovie, QPainter
+from qtpy.QtWidgets import QWidget
+
 import ophyd
 import ophyd.sim
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.exception import raise_to_operator  # noqa
-from qtpy import QtCore, QtGui, QtWidgets
-from qtpy.QtCore import QSize
-from qtpy.QtGui import QColor, QMovie, QPainter
-from qtpy.QtWidgets import QWidget
+from pydm.widgets.base import PyDMWritableWidget
+from typhos import plugins
 
 try:
     import happi
@@ -31,6 +36,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 MODULE_PATH = pathlib.Path(__file__).parent.resolve()
 ui_dir = MODULE_PATH / 'ui'
+ui_core_dir = ui_dir / 'core'
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
 DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
@@ -47,7 +53,8 @@ def _get_display_paths():
         path = pathlib.Path(path).expanduser().resolve()
         if path.exists() and path.is_dir():
             yield path
-    yield ui_dir
+    yield ui_dir / 'core'
+    yield ui_dir / 'devices'
 
 
 DISPLAY_PATHS = list(_get_display_paths())
@@ -66,13 +73,15 @@ class SignalRO(ophyd.sim.SynSignalRO):
         return self._value
 
 
-def channel_from_signal(signal):
+def channel_from_signal(signal, read=True):
     """
     Create a PyDM address from arbitrary signal type
     """
     # Add an item
     if isinstance(signal, EpicsSignalBase):
-        return channel_name(signal._read_pv.pvname)
+        if read:
+            return channel_name(signal._read_pv.pvname)
+        return channel_name(signal._write_pv.pvname)
     return channel_name(signal.name, protocol='sig')
 
 
@@ -424,14 +433,14 @@ def remove_duplicate_items(list_):
 
 def is_standard_template(template):
     """
-    Is the template one provided with typhos?
+    Is the template a core one provided with typhos?
 
     Parameters
     ----------
     template : str or pathlib.Path
     """
-    common_path = pathlib.Path(os.path.commonpath((template, MODULE_PATH)))
-    return common_path == MODULE_PATH
+    common_path = pathlib.Path(os.path.commonpath((template, ui_core_dir)))
+    return common_path == ui_core_dir
 
 
 def find_templates_for_class(cls, view_type, paths, *, extensions=None,
@@ -1142,3 +1151,83 @@ def patch_connect_slots():
             )
 
     QtCore.QMetaObject.connectSlotsByName = connect_slots_patch
+
+
+def link_signal_to_widget(signal, widget):
+    """
+    Registers the signal with PyDM, and sets the widget channel.
+
+    Parameters
+    ----------
+    signal : ophyd.OphydObj
+        The signal to use.
+
+    widget : QtWidgets.QWidget
+        The widget with which to connect the signal.
+    """
+    if signal is not None:
+        plugins.register_signal(signal)
+        if widget is not None:
+            read = not isinstance(widget, PyDMWritableWidget)
+            widget.channel = channel_from_signal(signal, read=read)
+
+
+def linked_attribute(property_attr, widget_attr, hide_unavailable=False):
+    """
+    Decorator which connects a device signal with a widget.
+
+    Retrieves the signal from the device, registers it with PyDM, and sets the
+    widget channel.
+
+    Parameters
+    ----------
+    property_attr : str
+        This is one level of indirection, allowing for the component attribute
+        to be configurable by way of designable properties.
+        In short, this looks like:
+        ``getattr(self.device, getattr(self, property_attr))``
+        The component attribute name may include multiple levels (e.g.,
+        ``'cpt1.cpt2.low_limit'``).
+
+    widget_attr : str
+        The attribute name of the widget, referenced from ``self``.
+        The component attribute name may include multiple levels (e.g.,
+        ``'ui.low_limit'``).
+
+    hide_unavailable : bool
+        Whether or not to hide widgets for which the device signal is not
+        available
+    """
+    get_widget_attr = operator.attrgetter(widget_attr)
+
+    def wrapper(func):
+        @functools.wraps(func)
+        def wrapped(self):
+            widget = get_widget_attr(self)
+            device_attr = getattr(self, property_attr)
+            get_device_attr = operator.attrgetter(device_attr)
+
+            try:
+                signal = get_device_attr(self.device)
+            except AttributeError:
+                signal = None
+            else:
+                # Fall short of an `isinstance(signal, OphydObj) check here:
+                try:
+                    link_signal_to_widget(signal, widget)
+                except Exception:
+                    logger.exception(
+                        'device.%s => self.%s (signal: %s widget: %s)',
+                        device_attr, widget_attr, signal, widget)
+                    signal = None
+                else:
+                    logger.debug('device.%s => self.%s (signal=%s widget=%s)',
+                                 device_attr, widget_attr, signal, widget)
+
+            if signal is None and hide_unavailable:
+                widget.setVisible(False)
+
+            return func(self, signal, widget)
+
+        return wrapped
+    return wrapper
