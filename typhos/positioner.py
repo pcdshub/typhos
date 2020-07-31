@@ -1,5 +1,4 @@
 import logging
-import math
 import os.path
 
 from qtpy import QtCore, uic, QtWidgets
@@ -104,12 +103,12 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         acc_sig = getattr(self.device, self._acceleration_attr, None)
         # Not enough info == no timeout
         if pos_sig is None or vel_sig is None:
-            return math.inf
+            return None
         delta = pos_sig.get() - set_position
         speed = vel_sig.get()
         # Bad speed == no timeout
         if speed == 0:
-            return math.inf
+            return None
         # Bad acceleration == ignore acceleration
         if acc_sig is None:
             acc_time = 0
@@ -132,7 +131,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         except Exception:
             # Something went wrong, just run without a timeout.
             logger.exception('Unable to estimate motor timeout.')
-            timeout = math.inf
+            timeout = None
         logger.debug("Setting device %r to %r with timeout %r",
                      self.device, value, timeout)
         # Send timeout through thread because status timeout stops the move
@@ -273,6 +272,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             self.ui.tweak_widget.setVisible(False)
         else:
             self.ui.set_value = QtWidgets.QLineEdit()
+            self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
             self.ui.set_value.returnPressed.connect(self.set)
 
         self.ui.setpoint_layout.addWidget(self.ui.set_value)
