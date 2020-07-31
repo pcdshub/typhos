@@ -26,7 +26,6 @@ from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.exception import raise_to_operator  # noqa
 from pydm.widgets.base import PyDMWritableWidget
-
 from typhos import plugins
 
 try:
@@ -1121,6 +1120,37 @@ def widget_to_image(widget, fill_color=QtCore.Qt.transparent):
     widget.render(image)
     painter.end()
     return image
+
+
+_connect_slots_unpatched = None
+
+
+def patch_connect_slots():
+    """
+    Patches QtCore.QMetaObject.connectSlotsByName to catch SystemErrors.
+    """
+    global _connect_slots_unpatched
+
+    if _connect_slots_unpatched is not None:
+        return
+
+    # TODO there could be a version check here if we can isolate it
+
+    _connect_slots_unpatched = QtCore.QMetaObject.connectSlotsByName
+
+    def connect_slots_patch(top_level_widget):
+        try:
+            return _connect_slots_unpatched(top_level_widget)
+        except SystemError as ex:
+            logger.debug(
+                "Eating system error.  This may possibly be solved by either "
+                "downgrading Python or upgrading pyqt5 to >= 5.13.1. "
+                "For further discussion, see "
+                "https://github.com/pcdshub/typhos/issues/354",
+                exc_info=ex
+            )
+
+    QtCore.QMetaObject.connectSlotsByName = connect_slots_patch
 
 
 def link_signal_to_widget(signal, widget):

@@ -112,7 +112,7 @@ def is_native(obj, module):
     """
     try:
         return module.__name__ in obj.__module__
-    except AttributeError:
+    except (AttributeError, TypeError):
         return None
 
 
