@@ -440,6 +440,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         # Update set_value if it's not being edited.
         if not self.ui.set_value.hasFocus():
             if isinstance(self.ui.set_value, QtWidgets.QComboBox):
-                self.ui.set_value.setCurrentText(text)
+                try:
+                    idx = int(text)
+                    self.ui.set_value.setCurrentIndex(idx)
+                except ValueError:
+                    logger.debug('Failed to convert value to int. %s', text)
             else:
                 self.ui.set_value.setText(text)
