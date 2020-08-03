@@ -69,6 +69,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._readback = None
         self._setpoint = None
         self._status_thread = None
+        self._initialized = False
 
         super().__init__(parent=parent)
 
@@ -442,8 +443,14 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             if isinstance(self.ui.set_value, QtWidgets.QComboBox):
                 try:
                     idx = int(text)
-                    self.ui.set_value.setCurrentIndex(idx)
+                    # HACK: the first put is always during startup
+                    # This must be skipped
+                    if self._initialized:
+                        self.ui.set_value.setCurrentIndex(idx)
+                    else:
+                        self._initialized = True
                 except ValueError:
                     logger.debug('Failed to convert value to int. %s', text)
             else:
+                self._initialized = True
                 self.ui.set_value.setText(text)
