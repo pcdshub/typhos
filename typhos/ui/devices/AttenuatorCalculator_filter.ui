@@ -51,7 +51,7 @@
       <string/>
      </property>
      <property name="channel" stdset="0">
-      <string>ca://${prefix}:MMS:${FILTER}:STATE:GET_RBV</string>
+      <string>ca://AT2L0:XTES:MMS:${FILTER}:STATE:GET_RBV</string>
      </property>
      <property name="orientation" stdset="0">
       <enum>Qt::Horizontal</enum>
