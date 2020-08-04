@@ -170,6 +170,7 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     -----
     """
     def __init__(self, *args, display_format=None, **kwargs):
+        self._channel = None
         self._setpoint_history_count = 5
         self._setpoint_history = collections.deque(
             [],  self._setpoint_history_count)
