@@ -15,17 +15,17 @@ import random
 import re
 import threading
 
-from qtpy import QtCore, QtGui, QtWidgets
-from qtpy.QtCore import QSize
-from qtpy.QtGui import QColor, QMovie, QPainter
-from qtpy.QtWidgets import QWidget
-
 import ophyd
 import ophyd.sim
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.exception import raise_to_operator  # noqa
 from pydm.widgets.base import PyDMWritableWidget
+from qtpy import QtCore, QtGui, QtWidgets
+from qtpy.QtCore import QSize
+from qtpy.QtGui import QColor, QMovie, QPainter
+from qtpy.QtWidgets import QWidget
+
 from typhos import plugins
 
 try:
@@ -189,9 +189,9 @@ class TyphosLoading(QtWidgets.QLabel):
     LOADING_TIMEOUT_MS = 10000
     loading_gif = None
 
-    def __init__(self, *args, **kwargs):
-
-        super().__init__(*args, **kwargs)
+    def __init__(self, timeout_message, *, parent=None, **kwargs):
+        self.timeout_message = timeout_message
+        super().__init__(parent=parent, **kwargs)
         self._icon_size = QSize(32, 32)
         if TyphosLoading.loading_gif is None:
             loading_path = os.path.join(ui_dir, 'loading.gif')
@@ -204,12 +204,33 @@ class TyphosLoading(QtWidgets.QLabel):
             QtCore.QTimer.singleShot(self.LOADING_TIMEOUT_MS,
                                      self._handle_timeout)
 
+        self.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
+
+    def contextMenuEvent(self, event):
+        menu = QtWidgets.QMenu(parent=self)
+
+        def copy_to_clipboard(*, text):
+            clipboard = QtWidgets.QApplication.instance().clipboard()
+            clipboard.setText(text)
+
+        menu.addSection('Copy to clipboard')
+        action = menu.addAction('&All')
+        action.triggered.connect(functools.partial(copy_to_clipboard,
+                                                   text=self.toolTip()))
+        menu.addSeparator()
+
+        for line in self.toolTip().splitlines():
+            action = menu.addAction(line)
+            action.triggered.connect(
+                functools.partial(copy_to_clipboard, text=line)
+            )
+
+        menu.exec_(self.mapToGlobal(event.pos()))
+
     def _handle_timeout(self):
         self._animation.stop()
         self.setMovie(None)
-        self.setText("Loading Timeout")
-        self.setToolTip("Could not complete operation after "
-                        f"{self.LOADING_TIMEOUT_MS/1000} seconds.")
+        self.setText(self.timeout_message)
 
     @property
     def iconSize(self):

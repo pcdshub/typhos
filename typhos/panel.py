@@ -14,12 +14,11 @@ import functools
 import logging
 from functools import partial
 
-from qtpy import QtCore, QtWidgets
-from qtpy.QtCore import Q_ENUMS, Property
-
 import ophyd
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalRO
+from qtpy import QtCore, QtWidgets
+from qtpy.QtCore import Q_ENUMS, Property
 
 from . import display, utils
 from .cache import get_global_widget_type_cache
@@ -275,7 +274,17 @@ class SignalPanel(QtWidgets.QGridLayout):
         logger.debug("Adding signal %s (%s)", signal.name, name)
 
         label = self._create_row_label(name, name, tooltip)
-        row = self.add_row(label, utils.TyphosLoading())
+        loading = utils.TyphosLoading(
+            timeout_message='Connection timed out.'
+        )
+
+        loading_tooltip = ['Connecting to:'] + list(set(
+            getattr(signal, attr)
+            for attr in ('setpoint_pvname', 'pvname') if hasattr(signal, attr)
+        ))
+        loading.setToolTip('\n'.join(loading_tooltip))
+
+        row = self.add_row(label, loading)
         self.signal_name_to_info[signal.name] = dict(
             row=row,
             signal=signal,
