@@ -275,7 +275,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         label = self._create_row_label(name, name, tooltip)
         loading = utils.TyphosLoading(
-            timeout_message=f'Connection timed out.'
+            timeout_message='Connection timed out.'
         )
 
         loading_tooltip = ['Connecting to:'] + list(set(
