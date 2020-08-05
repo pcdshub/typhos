@@ -14,7 +14,6 @@ import pydm.widgets.base
 import pydm.widgets.byte
 import pydm.widgets.enum_button
 import qtawesome as qta
-
 from ophyd.signal import EpicsSignalBase
 from pydm.widgets.display_format import DisplayFormat
 from pyqtgraph.parametertree import parameterTypes as ptypes
@@ -290,9 +289,7 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
 
 
 @use_for_variety_read('array-nd')
-@use_for_variety_read('command')
 @use_for_variety_read('command-enum')
-@use_for_variety_read('command-proc')
 @use_for_variety_read('command-setpoint-tracks-readback')
 @use_for_variety_read('enum')
 @use_for_variety_read('scalar')
@@ -581,6 +578,8 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
     -----
     """
 
+    default_label = 'Command'
+
     def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -612,6 +611,9 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
             self.showConfirmDialog = True
 
         variety._warn_unhandled_kwargs(self, kwargs)
+
+        if not self.text():
+            self.setText(self.default_label)
 
 
 @variety.uses_key_handlers
@@ -701,6 +703,19 @@ class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
         self.circles = (shape == 'circle')
 
         variety._warn_unhandled_kwargs(self, kwargs)
+
+
+@use_for_variety_read('command')
+@use_for_variety_read('command-proc')
+class TyphosCommandIndicator(pydm.widgets.PyDMByteIndicator):
+    """Displays command status as a read-only bit indicator."""
+
+    def __init__(self, *args, ophyd_signal=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ophyd_signal = ophyd_signal
+        self.numBits = 1
+        self.showLabels = False
+        self.circles = True
 
 
 class ClickableBitIndicator(pydm.widgets.byte.PyDMBitIndicator):
