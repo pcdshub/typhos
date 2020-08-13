@@ -1,10 +1,10 @@
 from unittest.mock import Mock
 
 import pytest
-
 from ophyd import Component as Cpt
 from ophyd import Signal
 from ophyd.sim import SynAxis
+
 from typhos.positioner import TyphosPositionerWidget
 from typhos.utils import SignalRO
 

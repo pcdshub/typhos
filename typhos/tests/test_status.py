@@ -1,14 +1,15 @@
 from unittest.mock import Mock
 
 import pytest
+from ophyd.status import Status
 from qtpy.QtWidgets import QWidget
 
-from ophyd.status import Status
 from typhos.status import TyphosStatusThread
 
 
 class Listener(QWidget):
     """Helper to catch signals"""
+
     def __init__(self):
         super().__init__()
         self.started = Mock()

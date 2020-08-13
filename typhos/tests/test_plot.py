@@ -2,8 +2,8 @@
 Tests for the plot tool.
 """
 import pytest
-
 from ophyd import EpicsSignal, Signal
+
 from typhos import register_signal
 from typhos.tools.plot import TyphosTimePlot
 from typhos.utils import channel_from_signal

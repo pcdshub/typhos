@@ -5,12 +5,9 @@ import time
 from functools import wraps
 
 import numpy as np
+import ophyd.sim
 import pytest
 import qtpy
-from qtpy import QtGui, QtWidgets
-
-import ophyd.sim
-import typhos
 from happi import Client
 from ophyd import Component as Cpt
 from ophyd import Device
@@ -18,6 +15,9 @@ from ophyd import FormattedComponent as FC
 from ophyd.sim import Signal, SynAxis, SynPeriodicSignal
 from pydm import PyDMApplication
 from pydm.widgets.logdisplay import GuiHandler
+from qtpy import QtGui, QtWidgets
+
+import typhos
 from typhos.plugins.happi import register_client
 from typhos.utils import SignalRO, TyphosBase
 
@@ -161,7 +161,8 @@ class RandomSignal(SynPeriodicSignal):
     """
     Signal that randomly updates a random integer
     """
-    def __init__(self,*args, **kwargs):
+
+    def __init__(self, *args, **kwargs):
         super().__init__(func=lambda: np.random.uniform(0, 100),
                          period=10, period_jitter=4, **kwargs)
 
@@ -191,12 +192,12 @@ class MockDevice(Device):
     y = FC(ConfiguredSynAxis, name='Y Axis')
     z = FC(ConfiguredSynAxis, name='Z Axis')
 
-    def insert(self, width: float=2.0, height: float=2.0,
-               fast_mode: bool=False):
+    def insert(self, width: float = 2.0, height: float = 2.0,
+               fast_mode: bool = False):
         """Fake insert function to display"""
         pass
 
-    def remove(self, height: float,  fast_mode: bool=False):
+    def remove(self, height: float,  fast_mode: bool = False):
         """Fake remove function to display"""
         pass
 

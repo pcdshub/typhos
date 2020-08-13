@@ -1,12 +1,15 @@
 from textwrap import dedent
 
 import caproto
-from caproto.server import PVGroup, ioc_arg_parser, pvproperty, run
-
 import ophyd
+import pytest
+from caproto.server import PVGroup, ioc_arg_parser, pvproperty, run
 from ophyd import Component as Cpt
 from ophyd import EpicsSignal
-from pcdsdevices.variety import set_metadata
+
+pytest.importorskip('pcdsdevices')
+
+from pcdsdevices.variety import set_metadata  # noqa: E402
 
 
 class Variants(ophyd.Device):

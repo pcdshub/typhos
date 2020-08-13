@@ -3,9 +3,9 @@ import time
 from unittest.mock import Mock
 
 import pytest
-
 from ophyd import Device
 from ophyd.status import Status
+
 from typhos.func import FunctionDisplay, FunctionPanel, TyphosMethodButton
 
 from .conftest import show_widget
@@ -16,7 +16,7 @@ kwargs = dict()
 @pytest.fixture(scope='function')
 def func_display(qtbot):
     # Create mock function
-    def foo(first, second: float=3.14, hide: bool=True, third=False):
+    def foo(first, second: float = 3.14, hide: bool = True, third=False):
         kwargs.update({"first": first, "second": second,
                        "hide": hide, "third": third})
     # Create display
@@ -98,10 +98,10 @@ def test_func_exceptions(func_display):
 @show_widget
 def test_func_panel(qtbot):
     # Mock functions
-    def foo(a: int, b: bool=False, c: bool=True):
+    def foo(a: int, b: bool = False, c: bool = True):
         pass
 
-    def foobar(a: float, b: str, c: float=3.14, d: bool=False):
+    def foobar(a: float, b: str, c: float = 3.14, d: bool = False):
         pass
     # Create Panel
     fp = FunctionPanel([foo, foobar])
@@ -121,17 +121,17 @@ def test_method_button_execute(method_button):
 
 def test_method_button_use_status(qtbot, method_button):
     method_button.use_status = True
-    assert method_button.use_status == True
+    assert method_button.use_status
     method_button.execute()
-    assert not method_button._status_thread is None
-    qtbot.waitUntil(lambda : not method_button.isEnabled(), timeout=5000)
+    assert method_button._status_thread is not None
+    qtbot.waitUntil(lambda: not method_button.isEnabled(), timeout=5000)
     qtbot.waitUntil(method_button.isEnabled, timeout=5000)
 
 
 @show_widget
 def test_func_docstrings(qtbot):
     # Mock functions
-    def foo(a: int, b: bool=False, c: bool=True):
+    def foo(a: int, b: bool = False, c: bool = True):
         '''
         The function foo
 
@@ -153,7 +153,7 @@ def test_func_docstrings(qtbot):
         '''
         pass
 
-    def foobar(a: float, b: str, c: float=3.14, d: bool=False):
+    def foobar(a: float, b: str, c: float = 3.14, d: bool = False):
         'docstring2'
         pass
 
