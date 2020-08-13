@@ -1,9 +1,7 @@
-
 import numpy as np
 import pydm.utilities
 from ophyd import Signal
 from pydm.widgets import PyDMLineEdit
-from qtpy.QtWidgets import QWidget
 
 from ..conftest import DeadSignal, RichSignal
 from typhos.plugins.core import (SignalPlugin, SignalConnection,
@@ -62,7 +60,7 @@ def test_metadata(qapp, qtbot):
     # Create a signal and attach our listener
     sig = RichSignal(name='md_signal', value=1)
     register_signal(sig)
-    sig_conn = SignalConnection(listener, 'md_signal')
+    _ = SignalConnection(listener, 'md_signal')
     qapp.processEvents()
     # Check that metadata the metadata got there
     assert widget.enum_strings == ('a', 'b', 'c')
@@ -86,7 +84,7 @@ def test_disconnection(qtbot):
     plugin.add_connection(listener)
     # This should fail on the get
     sig.subscribable = True
-    sig_conn = SignalConnection(listener, 'broken_signal')
+    _ = SignalConnection(listener, 'broken_signal')
 
 
 def test_array_signal_send_value(qapp, qtbot):

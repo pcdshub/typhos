@@ -161,7 +161,8 @@ class RandomSignal(SynPeriodicSignal):
     """
     Signal that randomly updates a random integer
     """
-    def __init__(self,*args, **kwargs):
+
+    def __init__(self, *args, **kwargs):
         super().__init__(func=lambda: np.random.uniform(0, 100),
                          period=10, period_jitter=4, **kwargs)
 
@@ -191,12 +192,12 @@ class MockDevice(Device):
     y = FC(ConfiguredSynAxis, name='Y Axis')
     z = FC(ConfiguredSynAxis, name='Z Axis')
 
-    def insert(self, width: float=2.0, height: float=2.0,
-               fast_mode: bool=False):
+    def insert(self, width: float = 2.0, height: float = 2.0,
+               fast_mode: bool = False):
         """Fake insert function to display"""
         pass
 
-    def remove(self, height: float,  fast_mode: bool=False):
+    def remove(self, height: float,  fast_mode: bool = False):
         """Fake remove function to display"""
         pass
 

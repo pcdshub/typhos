@@ -43,7 +43,7 @@ def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
             "TyphosDeviceDisplay {qproperty-force_template: 'test.ui'}")
     style = qapp.styleSheet()
     window = typhos_cli(['test_motor', '--stylesheet', 'test.qss',
-                        '--happi-cfg', happi_cfg])
+                         '--happi-cfg', happi_cfg])
     qtbot.addWidget(window)
     suite = window.centralWidget()
     dev_display = suite.get_subdisplay(suite.devices[0])

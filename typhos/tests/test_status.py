@@ -9,6 +9,7 @@ from typhos.status import TyphosStatusThread
 
 class Listener(QWidget):
     """Helper to catch signals"""
+
     def __init__(self):
         super().__init__()
         self.started = Mock()

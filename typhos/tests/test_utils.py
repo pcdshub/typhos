@@ -123,38 +123,38 @@ Class1.full_name = Class1.__module__ + '.' + Class1.__name__
         ['Class1.detailed.ui'],
         # Create these:
         ['foo.bar.ui', 'Class1.detailed.ui'],
-     ),
-     pytest.param(
-         Class1, 'detailed',
-         # Expected
-         [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui',
-          'Class1.ui'],
-         # Create these:
-         ['a.ui', Class1.full_name + '.detailed.ui', 'Class1.detailed.ui',
-          'Class1.ui'],
-     ),
-     pytest.param(
-         Class1, 'detailed',
-         # Expected
-         [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui'],
-         # Create these:
-         [Class1.full_name + '.detailed.ui', 'b.ui', 'Class1.detailed.ui'],
-     ),
-     pytest.param(
+    ),
+        pytest.param(
         Class1, 'detailed',
-         # Expected
-         ['Class1.ui'],
-         # Create these:
-         ['Class1.ui', 'c.ui', 'Class1.engineering.ui'],
-     ),
-     pytest.param(
+        # Expected
+        [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui',
+         'Class1.ui'],
+        # Create these:
+        ['a.ui', Class1.full_name + '.detailed.ui', 'Class1.detailed.ui',
+         'Class1.ui'],
+    ),
+        pytest.param(
         Class1, 'detailed',
-         # Expected
-         ['Class1.py', 'Class1.ui'],
-         # Create these:
-         ['Class1.ui', 'Class1.py', 'c.ui', 'Class1.engineering.ui'],
-     ),
-     ]
+        # Expected
+        [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui'],
+        # Create these:
+        [Class1.full_name + '.detailed.ui', 'b.ui', 'Class1.detailed.ui'],
+    ),
+        pytest.param(
+        Class1, 'detailed',
+        # Expected
+        ['Class1.ui'],
+        # Create these:
+        ['Class1.ui', 'c.ui', 'Class1.engineering.ui'],
+    ),
+        pytest.param(
+        Class1, 'detailed',
+        # Expected
+        ['Class1.py', 'Class1.ui'],
+        # Create these:
+        ['Class1.ui', 'Class1.py', 'c.ui', 'Class1.engineering.ui'],
+    ),
+    ]
 )
 def test_path_search(tmpdir, cls, view_type, create, expected):
     for to_create in create:
