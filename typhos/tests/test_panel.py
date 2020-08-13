@@ -1,14 +1,14 @@
 import random
 
 import numpy as np
-import pytest
-from qtpy.QtWidgets import QWidget
-
 import pydm.utilities
+import pytest
 from ophyd.signal import Signal
 from ophyd.sim import (FakeEpicsSignal, FakeEpicsSignalRO, SynSignal,
                        SynSignalRO)
 from pydm.widgets import PyDMEnumComboBox
+from qtpy.QtWidgets import QWidget
+
 from typhos import cache, utils
 from typhos.panel import SignalPanel, TyphosSignalPanel
 from typhos.widgets import (ImageDialogButton, WaveformDialogButton,

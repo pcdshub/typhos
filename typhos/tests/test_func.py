@@ -3,9 +3,9 @@ import time
 from unittest.mock import Mock
 
 import pytest
-
 from ophyd import Device
 from ophyd.status import Status
+
 from typhos.func import FunctionDisplay, FunctionPanel, TyphosMethodButton
 
 from .conftest import show_widget

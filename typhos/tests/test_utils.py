@@ -5,13 +5,13 @@ import tempfile
 
 import pytest
 import simplejson as json
+from ophyd import Component as Cpt
+from ophyd import Device
 from qtpy.QtCore import QRect
 from qtpy.QtGui import QPaintEvent
 from qtpy.QtWidgets import QWidget
 
 import typhos
-from ophyd import Component as Cpt
-from ophyd import Device
 from typhos.utils import (TyphosBase, clean_name, load_suite,
                           no_device_lazy_load, saved_template, use_stylesheet)
 

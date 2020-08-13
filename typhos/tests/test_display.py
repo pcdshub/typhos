@@ -1,8 +1,8 @@
-import pytest
-
 import ophyd
-import typhos.display
+import pytest
 from pydm import Display
+
+import typhos.display
 from typhos import utils
 
 from . import conftest

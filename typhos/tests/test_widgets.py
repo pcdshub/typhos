@@ -1,8 +1,8 @@
+import ophyd
+import pydm
 import pytest
 from qtpy.QtWidgets import QWidget
 
-import ophyd
-import pydm
 from typhos import widgets
 from typhos.suite import SidebarParameter
 from typhos.widgets import (ImageDialogButton, QDialog, SignalDialogButton,

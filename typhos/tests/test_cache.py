@@ -1,9 +1,9 @@
 import random
 
+import ophyd
 import pytest
 import pytestqt
 
-import ophyd
 import typhos.cache
 
 

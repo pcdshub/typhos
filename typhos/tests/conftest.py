@@ -5,12 +5,9 @@ import time
 from functools import wraps
 
 import numpy as np
+import ophyd.sim
 import pytest
 import qtpy
-from qtpy import QtGui, QtWidgets
-
-import ophyd.sim
-import typhos
 from happi import Client
 from ophyd import Component as Cpt
 from ophyd import Device
@@ -18,6 +15,9 @@ from ophyd import FormattedComponent as FC
 from ophyd.sim import Signal, SynAxis, SynPeriodicSignal
 from pydm import PyDMApplication
 from pydm.widgets.logdisplay import GuiHandler
+from qtpy import QtGui, QtWidgets
+
+import typhos
 from typhos.plugins.happi import register_client
 from typhos.utils import SignalRO, TyphosBase
 
