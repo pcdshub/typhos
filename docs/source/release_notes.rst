@@ -36,7 +36,7 @@ Compatibility / fixes
   from the main typhos package.
 
 Docs / Testing
-------------
+--------------
 - Add variety testing IOC.
 - Add doctr_versions_menu extension to properly render version menu.
 - Fix issues with failing benchmark tests
