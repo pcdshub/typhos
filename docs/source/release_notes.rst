@@ -2,6 +2,46 @@
  Release History
 =================
 
+
+v1.1.0 (2020-08-18)
+===================
+
+Description
+-----------
+This is a big release with many fixes and features.
+
+Enhancements / What's New
+-------------------------
+- Make Typhos aware of variety metadata and assign appropriate widgets based
+  on the variety metadata assigned in pcdsdevices.
+- Split templates into three categories: core, devices, and widgets.
+  Core templates are the main typhos display templates, e.g. detailed_tree.
+  Devices templates are templates tailored for specific device classes.
+  Widgets templates define special typhos widgets like tweakable, positioner,
+  etc.
+- Add attenuator calculator screens. These may be moved to another repo in a
+  future release.
+- Add information to loading widgets indicating timout details.
+
+Compatibility / fixes
+---------------------
+- Fix issue with comboboxes being set on mouse scroll.
+- Allow loading classes from cli with numbers in the name.
+- Fix issue with legacy codepath used in lightpath.
+- Fix issue with widget UnboundLocalError.
+- Hacky workaround for issue with newer versions of Python.
+- Hacky workaround for issue where positioner widget puts on startup.
+- Fix issue with unset _channel member.
+- Fix issue with typhos creating and installing a tests package separate
+  from the main typhos package.
+
+Docs / Testing
+------------
+- Add variety testing IOC.
+- Add doctr_versions_menu extension to properly render version menu.
+- Fix issues with failing benchmark tests
+
+
 v1.0.2 (2020-07-01)
 ===================
 
