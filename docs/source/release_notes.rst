@@ -21,7 +21,7 @@ Enhancements / What's New
   etc.
 - Add attenuator calculator screens. These may be moved to another repo in a
   future release.
-- Add information to loading widgets indicating timout details.
+- Add information to loading widgets indicating timeout details.
 
 Compatibility / fixes
 ---------------------
