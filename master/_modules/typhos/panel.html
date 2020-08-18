@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.panel &mdash; Typhos 1.0.2+60.g9700397 documentation</title>
+  <title>typhos.panel &mdash; Typhos 1.0.2+82.g02d41ce documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                1.0.2+60.g9700397
+                1.0.2+82.g02d41ce
               </div>
             
           
@@ -182,12 +182,11 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">Property</span>
-
 <span class="kn">import</span> <span class="nn">ophyd</span>
 <span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Kind</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">Property</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">.cache</span> <span class="kn">import</span> <span class="n">get_global_widget_type_cache</span>
@@ -443,7 +442,17 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding signal </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
         <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_row_label</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tooltip</span><span class="p">)</span>
-        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">TyphosLoading</span><span class="p">())</span>
+        <span class="n">loading</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">TyphosLoading</span><span class="p">(</span>
+            <span class="n">timeout_message</span><span class="o">=</span><span class="s1">&#39;Connection timed out.&#39;</span>
+        <span class="p">)</span>
+
+        <span class="n">loading_tooltip</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Connecting to:&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;setpoint_pvname&#39;</span><span class="p">,</span> <span class="s1">&#39;pvname&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="p">))</span>
+        <span class="n">loading</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">loading_tooltip</span><span class="p">))</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">loading</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">[</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span>
             <span class="n">signal</span><span class="o">=</span><span class="n">signal</span><span class="p">,</span>

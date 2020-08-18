@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Widgets &mdash; Typhos 1.0.2+60.g9700397 documentation</title>
+  <title>Widgets &mdash; Typhos 1.0.2+82.g02d41ce documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                1.0.2+60.g9700397
+                1.0.2+82.g02d41ce
               </div>
             
           
@@ -938,7 +938,9 @@ widgets arranged in a row. Each provided method has a
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>callable</em>) – Annotated callable function.</p></li>
-<li><p><strong>kwargs</strong> (<em>args</em><em>,</em>) – All additional parameters are passed directly to the
+<li><p><strong>args</strong> – All additional parameters are passed directly to the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionDisplay</span></code> constructor.</p></li>
+<li><p><strong>kwargs</strong> – All additional parameters are passed directly to the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionDisplay</span></code> constructor.</p></li>
 </ul>
 </dd>
@@ -1136,6 +1138,11 @@ the button will be disabled while the <code class="docutils literal notranslate"
 <li><p>Used for variety text-enum (setpoint)</p></li>
 <li><p>Used for variety enum (setpoint)</p></li>
 </ul>
+<dl class="py method">
+<dt id="typhos.widgets.TyphosComboBox.wheelEvent">
+<code class="sig-name descname">wheelEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QWheelEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox.wheelEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox.wheelEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1223,9 +1230,7 @@ new enum values to be broadcasted.</p>
 <li><p>Used for variety scalar (readback)</p></li>
 <li><p>Used for variety enum (readback)</p></li>
 <li><p>Used for variety command-setpoint-tracks-readback (readback)</p></li>
-<li><p>Used for variety command-proc (readback)</p></li>
 <li><p>Used for variety command-enum (readback)</p></li>
-<li><p>Used for variety command (readback)</p></li>
 <li><p>Used for variety array-nd (readback)</p></li>
 </ul>
 <dl class="py method">

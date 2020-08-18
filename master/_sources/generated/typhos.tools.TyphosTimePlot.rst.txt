@@ -1,4 +1,4 @@
-typhos.tools.TyphosTimePlot
+﻿typhos.tools.TyphosTimePlot
 ===========================
 
 .. currentmodule:: typhos.tools

@@ -1,4 +1,4 @@
-typhos.tools.TyphosConsole
+﻿typhos.tools.TyphosConsole
 ==========================
 
 .. currentmodule:: typhos.tools

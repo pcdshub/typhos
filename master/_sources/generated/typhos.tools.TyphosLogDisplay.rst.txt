@@ -1,4 +1,4 @@
-typhos.tools.TyphosLogDisplay
+﻿typhos.tools.TyphosLogDisplay
 =============================
 
 .. currentmodule:: typhos.tools

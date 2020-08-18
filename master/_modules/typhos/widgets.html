@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>typhos.widgets &mdash; Typhos 1.0.2+60.g9700397 documentation</title>
+  <title>typhos.widgets &mdash; Typhos 1.0.2+82.g02d41ce documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                1.0.2+60.g9700397
+                1.0.2+82.g02d41ce
               </div>
             
           
@@ -176,20 +176,19 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">qtawesome</span> <span class="k">as</span> <span class="nn">qta</span>
-<span class="kn">from</span> <span class="nn">pyqtgraph.parametertree</span> <span class="kn">import</span> <span class="n">parameterTypes</span> <span class="k">as</span> <span class="n">ptypes</span>
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QAction</span><span class="p">,</span> <span class="n">QDialog</span><span class="p">,</span> <span class="n">QDockWidget</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span>
-                            <span class="n">QToolBar</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">)</span>
-
 <span class="kn">import</span> <span class="nn">pydm</span>
 <span class="kn">import</span> <span class="nn">pydm.widgets</span>
 <span class="kn">import</span> <span class="nn">pydm.widgets.base</span>
 <span class="kn">import</span> <span class="nn">pydm.widgets.byte</span>
 <span class="kn">import</span> <span class="nn">pydm.widgets.enum_button</span>
+<span class="kn">import</span> <span class="nn">qtawesome</span> <span class="k">as</span> <span class="nn">qta</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignalBase</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets.display_format</span> <span class="kn">import</span> <span class="n">DisplayFormat</span>
+<span class="kn">from</span> <span class="nn">pyqtgraph.parametertree</span> <span class="kn">import</span> <span class="n">parameterTypes</span> <span class="k">as</span> <span class="n">ptypes</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QAction</span><span class="p">,</span> <span class="n">QDialog</span><span class="p">,</span> <span class="n">QDockWidget</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span>
+                            <span class="n">QToolBar</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">plugins</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">variety</span>
 <span class="kn">from</span> <span class="nn">.textedit</span> <span class="kn">import</span> <span class="n">TyphosTextEdit</span>  <span class="c1"># noqa: F401</span>
@@ -325,7 +324,9 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TyphosComboBox.wheelEvent"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosComboBox.wheelEvent">[docs]</a>    <span class="k">def</span> <span class="nf">wheelEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWheelEvent</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="TyphosLineEdit"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLineEdit">[docs]</a><span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;scalar&#39;</span><span class="p">)</span>
@@ -338,6 +339,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">display_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span> <span class="o">=</span> <span class="mi">5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span>
             <span class="p">[],</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span><span class="p">)</span>
@@ -455,9 +457,7 @@
 
 
 <div class="viewcode-block" id="TyphosLabel"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLabel">[docs]</a><span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;array-nd&#39;</span><span class="p">)</span>
-<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">)</span>
 <span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command-enum&#39;</span><span class="p">)</span>
-<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command-proc&#39;</span><span class="p">)</span>
 <span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command-setpoint-tracks-readback&#39;</span><span class="p">)</span>
 <span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;enum&#39;</span><span class="p">)</span>
 <span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;scalar&#39;</span><span class="p">)</span>
@@ -746,6 +746,8 @@
 <span class="sd">    -----</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">default_label</span> <span class="o">=</span> <span class="s1">&#39;Command&#39;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -776,7 +778,10 @@
         <span class="k">if</span> <span class="s1">&#39;confirm&#39;</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">showConfirmDialog</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_label</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TyphosCommandEnumButton"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosCommandEnumButton">[docs]</a><span class="nd">@variety</span><span class="o">.</span><span class="n">uses_key_handlers</span>
@@ -866,6 +871,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">circles</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span> <span class="o">==</span> <span class="s1">&#39;circle&#39;</span><span class="p">)</span>
 
         <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command-proc&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosCommandIndicator</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMByteIndicator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Displays command status as a read-only bit indicator.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numBits</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">showLabels</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circles</span> <span class="o">=</span> <span class="kc">True</span>
 
 
 <div class="viewcode-block" id="ClickableBitIndicator"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.ClickableBitIndicator">[docs]</a><span class="k">class</span> <span class="nc">ClickableBitIndicator</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">byte</span><span class="o">.</span><span class="n">PyDMBitIndicator</span><span class="p">):</span>
