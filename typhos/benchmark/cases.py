@@ -7,21 +7,20 @@ arbitrary profiling modules.
 from collections import namedtuple
 from functools import partial
 
-from ophyd.signal import Signal, EpicsSignal
+from ophyd.signal import EpicsSignal, Signal
 
-from .device import make_test_device_class as make_cls
-from .utils import caproto_context, random_prefix
 from ..app import launch_from_devices
 from ..suite import TyphosSuite
 from ..utils import nullcontext
-
+from .device import make_test_device_class as make_cls
+from .utils import caproto_context, random_prefix
 
 # Define matrix of testing parameters
 Shape = namedtuple('Shape', ['num_signals', 'subdevice_layers',
                              'subdevice_spread'])
 # total_signals == num_signals * (subdevice_spread ** subdevice_layers)
 SHAPES = dict(flat=Shape(100, 1, 1),
-              deep=Shape(100, 100, 1),
+              deep=Shape(100, 25, 1),
               wide=Shape(1, 1, 100),
               cube=Shape(4, 2, 5))
 
