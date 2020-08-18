@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>How it Works &mdash; Typhos 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/doctr-versions-menu.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Supported Tools" href="tools.html" />
+    <link rel="prev" title="Typhos" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Typhos
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">How it Works</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#interpreting-a-device">Interpreting a Device</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-happi">Using Happi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#display-signals">Display Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filling-templates">Filling Templates</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-typhossuite">The TyphosSuite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-stylesheet">Using the StyleSheet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Typhos</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>How it Works</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/basic_usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="how-it-works">
+<h1>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h1>
+<p>Typhos has three major building blocks that combine into the final display seen
+by the operator:</p>
+<ul class="simple">
+<li><p><strong>TyphosSuite</strong> : The overall view for a Typhos window. It allows the
+operator to view all of the loaded components and tools.</p></li>
+<li><p><strong>TyphosDeviceDisplay</strong> : This is the widget created for a standard
+<code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code>. Signals can be organized based on their <code class="docutils literal notranslate"><span class="pre">Kind</span></code> and
+description.</p></li>
+<li><p><strong>typhos.tools</strong> : These are widgets that interface with external
+applications. While you may have other GUIs for these systems,
+<code class="docutils literal notranslate"><span class="pre">typhos.tools</span></code> are built especially to handle the handshaking between all
+the information stored on your device and the tool you are interfacing with.
+This saves your operator clicks and ensures consistency in use.</p></li>
+</ul>
+<p>All three of the widgets listed above share a similar API for creation.
+Instantiating the object by itself handles loading the container widgets and
+placing them in the correct place, but these do not accept <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code>
+arguments. The reason for this is to ensure that we can use all of the
+<code class="docutils literal notranslate"><span class="pre">typhos</span></code> screens as templates, and regardless or not of whether you have an
+<code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> you can always populate the screens by hand. If you do in fact
+have an <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> every class has an <code class="docutils literal notranslate"><span class="pre">add_device</span></code> method and
+alternatively and be constructed using the <code class="docutils literal notranslate"><span class="pre">from_device</span></code> classmethod.</p>
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">typhos.utils.</code><code class="sig-name descname">TyphosBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Base widget for all Typhos widgets that interface with devices</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.add_device"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Add a new device to the widget</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> (<em>ophyd.Device</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.from_device"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Create a new instance of the widget for a Device</p>
+<p>Shortcut for:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphosBase</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
+<li><p><strong>parent</strong> (<em>QWidget</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">paintEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QPaintEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.paintEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<div class="section" id="interpreting-a-device">
+<h2>Interpreting a Device<a class="headerlink" href="#interpreting-a-device" title="Permalink to this headline">¶</a></h2>
+<p>Typhos interprets the internal structure of the <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> to create the
+<cite>PyDM</cite> user interface, so the most intuitive way to configure the created
+display is to include components on the device itself. This also has the advantage
+of keeping your Python API and display in sync, making the transition from
+using screens to using an IPython shell seamless.</p>
+<p>For the following applications we’ll use the <code class="docutils literal notranslate"><span class="pre">motor</span></code> simulation contained
+within <code class="docutils literal notranslate"><span class="pre">ophyd</span></code> itself. We also need to create a <code class="docutils literal notranslate"><span class="pre">QApplication</span></code> before we
+create any widgets:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span>
+
+<span class="gp">In [2]: </span><span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+</pre></div>
+</div>
+<div class="section" id="using-happi">
+<h3>Using Happi<a class="headerlink" href="#using-happi" title="Permalink to this headline">¶</a></h3>
+<p>While <code class="docutils literal notranslate"><span class="pre">happi</span></code> is not a requirement for using <code class="docutils literal notranslate"><span class="pre">typhos</span></code>, it is recommended.
+For more information, visit the <a class="reference external" href="https://github.com/pcdshub/happi/">GitHub</a>
+repository. The main purpose of the package is to store information on our
+Ophyd objects so that we can load them in a variety of contexts. If you do not
+use <code class="docutils literal notranslate"><span class="pre">happi</span></code> you will need to create your objects and displays in the same
+process.</p>
+<p>Here is a quick example if you wanted to get a feel for what <code class="docutils literal notranslate"><span class="pre">typhos</span></code> looks
+like with <cite>happi`</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">happi</span>
+<span class="kn">from</span> <span class="nn">typhos.plugins</span> <span class="kn">import</span> <span class="n">register_client</span>
+
+<span class="c1"># Initialize a new JSON based client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">happi</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;db.json&#39;</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Register this with typhos</span>
+<span class="n">register_client</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="c1"># Add a device to our new database</span>
+<span class="n">device</span> <span class="o">=</span> <span class="n">happi</span><span class="o">.</span><span class="n">Device</span><span class="p">(</span><span class="n">device_class</span><span class="o">=</span><span class="s1">&#39;ophyd.sim.SynAxis&#39;</span><span class="p">,</span>
+                      <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;Tst:Mtr&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="s1">&#39;{{name}}&#39;</span><span class="p">,</span>
+                      <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_motor&#39;</span><span class="p">,</span> <span class="n">beamline</span><span class="o">=</span><span class="s1">&#39;TST&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In practice, it is not necessary to call <a class="reference internal" href="plugins.html#typhos.plugins.register_client" title="typhos.plugins.register_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">register_client()</span></code></a> if you have
+configured the <code class="docutils literal notranslate"><span class="pre">$HAPPI_CFG</span></code> environment variable such that
+<code class="docutils literal notranslate"><span class="pre">happi.Client.from_config</span></code> yields the desired client.</p>
+<p>We can now check that we can load the complete <code class="docutils literal notranslate"><span class="pre">SynAxis</span></code> object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">motor</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">load_device</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_motor&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="display-signals">
+<h3>Display Signals<a class="headerlink" href="#display-signals" title="Permalink to this headline">¶</a></h3>
+<p>The first thing we’ll talk about is showing a group of signals associated with
+our <code class="docutils literal notranslate"><span class="pre">motor</span></code> object in a basic form called a
+<a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a>.  Simply inspecting the device reveals a few
+signals for us to display</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">motor</span><span class="o">.</span><span class="n">component_names</span>
+<span class="gh">Out[3]: </span><span class="go">(&#39;readback&#39;, &#39;setpoint&#39;, &#39;velocity&#39;, &#39;acceleration&#39;, &#39;unused&#39;)</span>
+</pre></div>
+</div>
+<p>It is crucial that we understand the importance of these signals to the
+operator. In order to glean this information from the object the <code class="docutils literal notranslate"><span class="pre">kind</span></code>
+attributes are inspected. For more information see the <a class="reference external" href="https://nsls-ii.github.io/ophyd/signals.html#kind/">ophyd documentation</a>. A quick inspection of
+the various attributes allows us to see how our signals are organized.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="go"># Most important signal(s)</span>
+<span class="gp">In [4]: </span><span class="n">motor</span><span class="o">.</span><span class="n">hints</span>
+<span class="gh">Out[4]: </span><span class="go">{&#39;fields&#39;: [&#39;motor&#39;]}</span>
+
+<span class="go"># Important signals, all hints will be found here as well</span>
+<span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gh">Out[5]: </span><span class="go"></span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1597788723.3277323}),</span>
+<span class="go">             (&#39;motor_setpoint&#39;,</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1597788723.3277314})])</span>
+
+<span class="go"># Configuration information</span>
+<span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
+<span class="gh">Out[6]: </span><span class="go"></span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1597788723.3284202}),</span>
+<span class="go">             (&#39;motor_acceleration&#39;,</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1597788723.3284702})])</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a
+subset of the signals to display based on their kind. Below both the
+<code class="docutils literal notranslate"><span class="pre">QtDesigner</span></code> using <code class="docutils literal notranslate"><span class="pre">happi</span></code> and the corresponding <code class="docutils literal notranslate"><span class="pre">Python</span></code> code is shown
+as well:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="kn">from</span> <span class="nn">typhos</span> <span class="kn">import</span> <span class="n">TyphosSignalPanel</span>
+
+<span class="gp">In [8]: </span><span class="n">panel</span> <span class="o">=</span> <span class="n">TyphosSignalPanel</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/kind_panel.gif"><img alt="_images/kind_panel.gif" src="_images/kind_panel.gif" style="width: 840.0px; height: 563.0px;" /></a>
+</div>
+<p>Now, at first glance it may not be obvious, but there is a lot of information
+here! We know which of these signals an operator will want to control and which
+ones are purely meant to be read back. We also have these signals grouped by
+their importance to operation, each with a terse human-readable description of
+what the <code class="docutils literal notranslate"><span class="pre">Signal</span></code> represents.</p>
+</div>
+<div class="section" id="filling-templates">
+<h3>Filling Templates<a class="headerlink" href="#filling-templates" title="Permalink to this headline">¶</a></h3>
+<p>Taking this concept further, instead of filling a single panel
+<a class="reference internal" href="display.html#typhos.TyphosDeviceDisplay" title="typhos.TyphosDeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosDeviceDisplay</span></code></a> allows a template to be created with a multitude
+of widgets and panels. <code class="docutils literal notranslate"><span class="pre">Typhos</span></code> will find widgets that accept devices, but do
+not have any devices already. Typhos comes with some default templates, and you
+can cycle between them by changing the <code class="docutils literal notranslate"><span class="pre">display_type</span></code></p>
+<p>Once again, both the <code class="docutils literal notranslate"><span class="pre">Python</span></code> code and the <code class="docutils literal notranslate"><span class="pre">QtDesigner</span></code> use cases are
+shown:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="kn">from</span> <span class="nn">typhos</span> <span class="kn">import</span> <span class="n">TyphosDeviceDisplay</span>
+
+<span class="gp">In [10]: </span><span class="n">display</span> <span class="o">=</span> <span class="n">TyphosDeviceDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/device_display.gif"><img alt="_images/device_display.gif" src="_images/device_display.gif" style="width: 842.0px; height: 565.0px;" /></a>
+</div>
+</div>
+</div>
+<div class="section" id="the-typhossuite">
+<h2>The TyphosSuite<a class="headerlink" href="#the-typhossuite" title="Permalink to this headline">¶</a></h2>
+<p>A complete application can be made by loading the <a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSuite</span></code></a>. Below
+is the complete code from start to finish required to create the suite. Look at
+the <code class="docutils literal notranslate"><span class="pre">TyphosSuited.default_tools</span></code> to control which <code class="docutils literal notranslate"><span class="pre">typhos.tools</span></code> are
+loaded.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ophyd.sim</span> <span class="kn">import</span> <span class="n">motor</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span>
+<span class="kn">import</span> <span class="nn">typhos</span>
+
+<span class="c1"># Create our application</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+<span class="n">typhos</span><span class="o">.</span><span class="n">use_stylesheet</span><span class="p">()</span>  <span class="c1"># Optional</span>
+<span class="n">suite</span> <span class="o">=</span> <span class="n">typhos</span><span class="o">.</span><span class="n">TyphosSuite</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
+
+<span class="c1"># Launch</span>
+<span class="n">suite</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-the-stylesheet">
+<h2>Using the StyleSheet<a class="headerlink" href="#using-the-stylesheet" title="Permalink to this headline">¶</a></h2>
+<p>While it is no means a requirement, Typhos ships with two stylesheets to
+improve the look of the widgets. By default this isn’t activated, but can be
+configured with <code class="xref py py-func docutils literal notranslate"><span class="pre">typhos.use_stylesheet()</span></code>. The operator can elect whether
+to use the “light” or “dark” stylesheets by using the optional <code class="docutils literal notranslate"><span class="pre">dark</span></code>
+keyword. This method also handles setting the “Fusion” <code class="docutils literal notranslate"><span class="pre">QStyle</span></code> which helps
+make the interface have an operating system independent look and feel.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tools.html" class="btn btn-neutral float-right" title="Supported Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Typhos" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SLAC National Accelerator Laboratory
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

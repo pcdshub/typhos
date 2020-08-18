@@ -1,0 +1,812 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>typhos.suite &mdash; Typhos 1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/doctr-versions-menu.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Typhos
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhos</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>typhos.suite</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for typhos.suite</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The high-level Typhos Suite, which bundles tools and panels.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">pyqtgraph.parametertree</span> <span class="kn">import</span> <span class="n">ParameterTree</span>
+<span class="kn">from</span> <span class="nn">pyqtgraph.parametertree</span> <span class="kn">import</span> <span class="n">parameterTypes</span> <span class="k">as</span> <span class="n">ptypes</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
+
+<span class="kn">import</span> <span class="nn">pcdsutils.qt</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">widgets</span>
+<span class="kn">from</span> <span class="nn">.display</span> <span class="kn">import</span> <span class="n">TyphosDeviceDisplay</span>
+<span class="kn">from</span> <span class="nn">.tools</span> <span class="kn">import</span> <span class="n">TyphosConsole</span><span class="p">,</span> <span class="n">TyphosLogDisplay</span><span class="p">,</span> <span class="n">TyphosTimePlot</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TyphosBase</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">flatten_tree</span><span class="p">,</span> <span class="n">save_suite</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="c1"># Use non-None sentinel value since None means no tools</span>
+<span class="n">DEFAULT_TOOLS</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">SidebarParameter</span><span class="p">(</span><span class="n">ptypes</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameter to hold information for the sidebar.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    itemClass : type</span>
+<span class="sd">        The class to be used for the parameter.</span>
+
+<span class="sd">    sigOpen : QtCore.Signal</span>
+<span class="sd">        A signal indicating an open request for the parameter.</span>
+
+<span class="sd">    sigHide : QtCore.Signal</span>
+<span class="sd">        A signal indicating an hide request for the parameter.</span>
+
+<span class="sd">    sigEmbed : QtCore.Signal</span>
+<span class="sd">        A signal indicating an embed request for the parameter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">itemClass</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">TyphosSidebarItem</span>
+    <span class="n">sigOpen</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">sigHide</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">sigEmbed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">embeddable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">opts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embeddable</span> <span class="o">=</span> <span class="n">embeddable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span> <span class="k">if</span> <span class="n">devices</span> <span class="k">else</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">has_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if this parameter contains the given device.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.OphydObj or str</span>
+<span class="sd">            The device or its name.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        has_device : bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">,</span>
+             <span class="n">device</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="s1">&#39;devices&#39;</span><span class="p">,</span> <span class="p">[]),</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="n">device</span>
+             <span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">DeviceParameter</span><span class="p">(</span><span class="n">SidebarParameter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameter to hold information on an Ophyd Device.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : ophyd.Device</span>
+<span class="sd">        The device instance.</span>
+
+<span class="sd">    subdevices : bool, optional</span>
+<span class="sd">        Include child parameters for sub devices of ``device``.</span>
+
+<span class="sd">    **opts</span>
+<span class="sd">        Passed to super().__init__.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">itemClass</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">TyphosSidebarItem</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">subdevices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
+        <span class="c1"># Set options for parameter</span>
+        <span class="n">opts</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="n">device</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="n">opts</span><span class="p">[</span><span class="s1">&#39;expanded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># Grab children from the given device</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">subdevices</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">_sub_devices</span><span class="p">:</span>
+                <span class="n">subdevice</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">subdevice</span><span class="o">.</span><span class="n">_sub_devices</span><span class="p">:</span>
+                    <span class="c1"># If that device has children, make sure they are also</span>
+                    <span class="c1"># displayed further in the tree</span>
+                    <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">DeviceParameter</span><span class="p">(</span><span class="n">subdevice</span><span class="p">,</span> <span class="n">subdevices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Otherwise just make a regular parameter out of it</span>
+                    <span class="n">child_name</span> <span class="o">=</span> <span class="n">clean_name</span><span class="p">(</span><span class="n">subdevice</span><span class="p">,</span>
+                                            <span class="n">strip_parent</span><span class="o">=</span><span class="n">subdevice</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="n">SidebarParameter</span><span class="p">(</span>
+                        <span class="n">value</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">TyphosDeviceDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">,</span>
+                                      <span class="n">subdevice</span><span class="p">),</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">child_name</span><span class="p">,</span>
+                        <span class="n">embeddable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">devices</span><span class="o">=</span><span class="p">[</span><span class="n">subdevice</span><span class="p">],</span>
+                    <span class="p">)</span>
+                    <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+        <span class="n">opts</span><span class="p">[</span><span class="s1">&#39;children&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">children</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">TyphosDeviceDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">,</span> <span class="n">device</span><span class="p">),</span>
+            <span class="n">embeddable</span><span class="o">=</span><span class="n">opts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;embeddable&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="n">devices</span><span class="o">=</span><span class="p">[</span><span class="n">device</span><span class="p">],</span>
+            <span class="o">**</span><span class="n">opts</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="TyphosSuite"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite">[docs]</a><span class="k">class</span> <span class="nc">TyphosSuite</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This suite combines tools and devices into a single widget.</span>
+
+<span class="sd">    A :class:`ParameterTree` is contained in a :class:`~pcdsutils.qt.QPopBar`</span>
+<span class="sd">    which shows tools and the hierarchy of a device along with options to</span>
+<span class="sd">    show or hide them.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : QWidget, optional</span>
+
+<span class="sd">    pin : bool, optional</span>
+<span class="sd">        Pin the parameter tree on startup.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    default_tools : dict</span>
+<span class="sd">        The default tools to use in the suite.  In the form of</span>
+<span class="sd">        ``{&#39;tool_name&#39;: ToolClass}``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DEFAULT_TITLE</span> <span class="o">=</span> <span class="s1">&#39;Typhos Suite&#39;</span>
+    <span class="n">DEFAULT_TITLE_DEVICE</span> <span class="o">=</span> <span class="s1">&#39;Typhos Suite - </span><span class="si">{device.name}</span><span class="s1">&#39;</span>
+
+    <span class="n">default_tools</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Log&#39;</span><span class="p">:</span> <span class="n">TyphosLogDisplay</span><span class="p">,</span>
+                     <span class="s1">&#39;StripTool&#39;</span><span class="p">:</span> <span class="n">TyphosTimePlot</span><span class="p">,</span>
+                     <span class="s1">&#39;Console&#39;</span><span class="p">:</span> <span class="n">TyphosConsole</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_title</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span> <span class="o">=</span> <span class="n">ParameterTree</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">showHeader</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">setAlternatingRowColors</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_action</span> <span class="o">=</span> <span class="n">ptypes</span><span class="o">.</span><span class="n">ActionParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;Save Suite&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">addParameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_save_action</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_action</span><span class="o">.</span><span class="n">sigActivated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bar</span> <span class="o">=</span> <span class="n">pcdsutils</span><span class="o">.</span><span class="n">qt</span><span class="o">.</span><span class="n">QPopBar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Suite&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                         <span class="n">widget</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="n">pin</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content_frame</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content_frame</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content_frame</span><span class="o">.</span><span class="n">setFrameShape</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">StyledPanel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content_frame</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">())</span>
+
+        <span class="c1"># Horizontal box layout: [PopBar] [Content Frame]</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bar</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_content_frame</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TyphosSuite.add_subdisplay"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.add_subdisplay">[docs]</a>    <span class="k">def</span> <span class="nf">add_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an arbitrary widget to the tree of available widgets and tools.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name to be displayed in the tree</span>
+
+<span class="sd">        display : QWidget</span>
+<span class="sd">            QWidget to show in the dock when expanded.</span>
+
+<span class="sd">        category : str</span>
+<span class="sd">            The top level group to place the controls under in the tree. If the</span>
+<span class="sd">            category does not exist, a new one will be made</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding widget </span><span class="si">%r</span><span class="s2"> with </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span>
+                     <span class="n">name</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="c1"># Create our parameter</span>
+        <span class="n">parameter</span> <span class="o">=</span> <span class="n">SidebarParameter</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">display</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_sidebar</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">top_level_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get top-level groups.</span>
+
+<span class="sd">        This is of the form:</span>
+
+<span class="sd">        .. code:: python</span>
+
+<span class="sd">            {&#39;name&#39;: QGroupParameterItem}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">invisibleRootItem</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">root</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span>
+                     <span class="n">root</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">param</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">childCount</span><span class="p">()))</span>
+
+<div class="viewcode-block" id="TyphosSuite.add_tool"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.add_tool">[docs]</a>    <span class="k">def</span> <span class="nf">add_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a widget to the toolbar.</span>
+
+<span class="sd">        Shortcut for:</span>
+
+<span class="sd">        .. code:: python</span>
+
+<span class="sd">           suite.add_subdisplay(name, tool, category=&#39;Tools&#39;)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name :str</span>
+<span class="sd">            Name of tool to be displayed in sidebar</span>
+
+<span class="sd">        tool: QWidget</span>
+<span class="sd">            Widget to be added to ``.ui.subdisplay``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_subdisplay</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="s1">&#39;Tools&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosSuite.get_subdisplay"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.get_subdisplay">[docs]</a>    <span class="k">def</span> <span class="nf">get_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a subdisplay by name or contained device.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        display :str or Device</span>
+<span class="sd">            Name of screen or device</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        widget : QWidget</span>
+<span class="sd">            Widget that is a member of the :attr:`.ui.subdisplay`</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        .. code:: python</span>
+
+<span class="sd">            suite.get_subdisplay(my_device.x)</span>
+<span class="sd">            suite.get_subdisplay(&#39;My Tool&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">SidebarParameter</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">tree</span> <span class="o">=</span> <span class="n">flatten_tree</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+                <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">param</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">tree</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="s1">&#39;has_device&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="n">param</span><span class="o">.</span><span class="n">has_device</span><span class="p">(</span><span class="n">display</span><span class="p">)</span>
+                <span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="n">display</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="n">SidebarParameter</span><span class="p">):</span>
+            <span class="c1"># If we got here we can&#39;t find the subdisplay</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to find subdisplay </span><span class="si">{</span><span class="n">display</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">subdisplay</span> <span class="o">=</span> <span class="n">display</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subdisplay</span><span class="p">,</span> <span class="n">partial</span><span class="p">):</span>
+            <span class="n">subdisplay</span> <span class="o">=</span> <span class="n">subdisplay</span><span class="p">()</span>
+            <span class="n">display</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">subdisplay</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">subdisplay</span></div>
+
+<div class="viewcode-block" id="TyphosSuite.show_subdisplay"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.show_subdisplay">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">show_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a display in the dock system.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        widget: QWidget, SidebarParameter or str</span>
+<span class="sd">            If given a ``SidebarParameter`` from the tree, the widget will be</span>
+<span class="sd">            shown and the sidebar item update. Otherwise, the information is</span>
+<span class="sd">            passed to :meth:`.get_subdisplay`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Grab true widget</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="c1"># Setup the dock</span>
+        <span class="n">dock</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">SubDisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># Set sidebar properly</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_sidebar</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">dock</span><span class="p">)</span>
+        <span class="c1"># Add the widget to the dock</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Showing widget </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s1">&#39;display_type&#39;</span><span class="p">):</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">display_type</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">detailed_screen</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="c1"># Add to layout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content_frame</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">dock</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosSuite.embed_subdisplay"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.embed_subdisplay">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">embed_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Embed a display in the dock system.&quot;&quot;&quot;</span>
+        <span class="c1"># Grab the relevant display</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">SubDisplay</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_content_frame</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="c1"># Set sidebar properly</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_sidebar</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="p">)</span>
+        <span class="c1"># Set our widget to be embedded</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">display_type</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">embedded_screen</span>
+        <span class="n">widget_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="n">widget_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                                                          <span class="n">widget</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosSuite.hide_subdisplay"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.hide_subdisplay">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">hide_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hide a visible subdisplay.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        widget: SidebarParameter or Subdisplay</span>
+<span class="sd">            If you give a SidebarParameter, we will find the corresponding</span>
+<span class="sd">            widget and hide it. If the widget provided to us is inside a</span>
+<span class="sd">            DockWidget we will close that, otherwise the widget is just hidden.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subdisplay</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="n">sidebar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sidebar</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sidebar</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sidebar</span><span class="o">.</span><span class="n">items</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">_mark_hidden</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to find sidebar item for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+        <span class="c1"># Make sure the actual widget is hidden</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Hiding widget </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">parent</span><span class="p">(),</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDockWidget</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Closing dock ...&quot;</span><span class="p">)</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># Hide the full dock if this is the last widget</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span>
+              <span class="ow">and</span> <span class="n">widget</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">widget</span><span class="p">()):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing </span><span class="si">%r</span><span class="s2"> from embedded widget layout ...&quot;</span><span class="p">,</span>
+                         <span class="n">widget</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">removeWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Closing embedded layout ...&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TyphosSuite.hide_subdisplays"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.hide_subdisplays">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">hide_subdisplays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Hide all open displays.&quot;&quot;&quot;</span>
+        <span class="c1"># Grab children from devices</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">flatten_tree</span><span class="p">(</span><span class="n">group</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hide_subdisplay</span><span class="p">(</span><span class="n">param</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tools loaded into the suite.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;Tools&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="p">[</span><span class="s1">&#39;Tools&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">childs</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_update_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the window title, optionally with a device.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.Device, optional</span>
+<span class="sd">            Device to indicate in the title.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">title_fmt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_TITLE</span> <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span>
+                     <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_TITLE_DEVICE</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">title_fmt</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">))</span>
+
+<div class="viewcode-block" id="TyphosSuite.add_device"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;Devices&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a device to the suite.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device: ophyd.Device</span>
+<span class="sd">            The device to add.</span>
+
+<span class="sd">        children: bool, optional</span>
+<span class="sd">            Also add any ``subdevices`` of this device to the suite as well.</span>
+
+<span class="sd">        category: str, optional</span>
+<span class="sd">            Category of device. By default, all devices will just be added to</span>
+<span class="sd">            the &quot;Devices&quot; group</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_title</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Create DeviceParameter and add to top level category</span>
+        <span class="n">dev_param</span> <span class="o">=</span> <span class="n">DeviceParameter</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">subdevices</span><span class="o">=</span><span class="n">children</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_sidebar</span><span class="p">(</span><span class="n">dev_param</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+        <span class="c1"># Grab children</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">flatten_tree</span><span class="p">(</span><span class="n">dev_param</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_sidebar</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="c1"># Add a device to all the tool displays</span>
+        <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%s</span><span class="s2"> to tool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                                 <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">tool</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TyphosSuite.from_device"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.from_device">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new :class:`TyphosSuite` from an :class:`ophyd.Device`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.Device</span>
+<span class="sd">            The device to use.</span>
+
+<span class="sd">        children : bool, optional</span>
+<span class="sd">            Choice to include child Device components</span>
+
+<span class="sd">        parent : QWidget</span>
+
+<span class="sd">        tools : dict, optional</span>
+<span class="sd">            Tools to load for the object. ``dict`` should be name, class pairs.</span>
+<span class="sd">            By default these will be ``.default_tools``, but ``None`` can be</span>
+<span class="sd">            passed to avoid tool loading completely.</span>
+
+<span class="sd">        **kwargs :</span>
+<span class="sd">            Passed to :meth:`TyphosSuite.add_device`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_devices</span><span class="p">([</span><span class="n">device</span><span class="p">],</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="n">pin</span><span class="p">,</span>
+                                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosSuite.from_devices"><a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.from_devices">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_devices</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">devices</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">DEFAULT_TOOLS</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new TyphosSuite from an iterator of :class:`ophyd.Device`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.Device</span>
+
+<span class="sd">        children : bool, optional</span>
+<span class="sd">            Choice to include child Device components</span>
+
+<span class="sd">        parent : QWidget</span>
+
+<span class="sd">        tools : dict, optional</span>
+<span class="sd">            Tools to load for the object. ``dict`` should be name, class pairs.</span>
+<span class="sd">            By default these will be ``.default_tools``, but ``None`` can be</span>
+<span class="sd">            passed to avoid tool loading completely.</span>
+
+<span class="sd">        **kwargs :</span>
+<span class="sd">            Passed to :meth:`TyphosSuite.add_device`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">suite</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">pin</span><span class="o">=</span><span class="n">pin</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tools</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading Tools ...&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tools</span> <span class="ow">is</span> <span class="n">DEFAULT_TOOLS</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using default TyphosSuite tools ...&quot;</span><span class="p">)</span>
+                <span class="n">tools</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_tools</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">suite</span><span class="o">.</span><span class="n">add_tool</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">())</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to load </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">tool</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding devices ...&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">suite</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">suite</span><span class="o">.</span><span class="n">show_subdisplay</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add </span><span class="si">%r</span><span class="s2"> to TyphosSuite&quot;</span><span class="p">,</span>
+                                 <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">suite</span></div>
+
+<div class="viewcode-block" id="TyphosSuite.save"><a class="viewcode-back" href="../../save.html#typhos.TyphosSuite.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save suite settings to a file using :meth:`typhos.utils.save_suite`.</span>
+
+<span class="sd">        A ``QFileDialog`` will be used to query the user for the desired</span>
+<span class="sd">        location of the created Python file</span>
+
+<span class="sd">        The template will be of the form:</span>
+
+<span class="sd">        .. code::</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Note: the above docstring is appended below</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Requesting file location for saved TyphosSuite&quot;</span><span class="p">)</span>
+        <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;Save TyphosSuite&#39;</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;Python (*.py)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+                    <span class="n">save_suite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to save TyphosSuite&quot;</span><span class="p">)</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">raise_to_operator</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No filename chosen&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># Add the template to the docstring</span>
+    <span class="n">save</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">saved_template</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">flatten_tree</span><span class="p">(</span><span class="n">group</span><span class="p">):</span>
+                <span class="n">items</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">value</span><span class="p">()]</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">return</span> <span class="n">items</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_show_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">dock</span><span class="p">):</span>
+        <span class="n">sidebar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sidebar</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sidebar</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sidebar</span><span class="o">.</span><span class="n">items</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">_mark_shown</span><span class="p">()</span>
+            <span class="c1"># Make sure we react if the dock is closed outside of our menu</span>
+            <span class="n">dock</span><span class="o">.</span><span class="n">closing</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_subdisplay</span><span class="p">,</span> <span class="n">sidebar</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to find sidebar item for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_to_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add an item to the sidebar, connecting necessary signals.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
+            <span class="c1"># Create or grab our category</span>
+            <span class="k">if</span> <span class="n">category</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="p">:</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="p">[</span><span class="n">category</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating new category </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="n">ptypes</span><span class="o">.</span><span class="n">GroupParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">addParameters</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tree</span><span class="o">.</span><span class="n">sortItems</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AscendingOrder</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%r</span><span class="s2"> to category </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span>
+                         <span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span> <span class="n">group</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">addChild</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
+
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+            <span class="c1"># Setup window to have a parent</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connecting parameter signals ...&quot;</span><span class="p">)</span>
+        <span class="n">parameter</span><span class="o">.</span><span class="n">sigOpen</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_subdisplay</span><span class="p">,</span> <span class="n">parameter</span><span class="p">),</span>
+                                  <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+        <span class="n">parameter</span><span class="o">.</span><span class="n">sigHide</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_subdisplay</span><span class="p">,</span> <span class="n">parameter</span><span class="p">),</span>
+                                  <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">embeddable</span><span class="p">:</span>
+            <span class="n">parameter</span><span class="o">.</span><span class="n">sigEmbed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embed_subdisplay</span><span class="p">,</span> <span class="n">parameter</span><span class="p">),</span>
+                <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">parameter</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, SLAC National Accelerator Laboratory
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
