@@ -3,9 +3,9 @@ Helpful functions that don't belong in a more specific submodule.
 """
 import importlib
 import logging
-import signal
 import os
 import pkgutil
+import signal
 import uuid
 from contextlib import contextmanager
 from inspect import isclass, isfunction
@@ -20,7 +20,7 @@ _optional_err = ('Optional dependency caproto missing from python '
                  'environment. Cannot test server.')
 
 try:
-    from caproto.server import pvproperty, PVGroup, run
+    from caproto.server import PVGroup, pvproperty, run
     has_caproto = True
 except ImportError:
     has_caproto = False
@@ -175,5 +175,15 @@ def get_submodule_names(module_name):
 
 
 def import_modules(modules):
-    """Utility function to import an iterator of module names as a list."""
-    return [importlib.import_module(mod) for mod in modules]
+    """
+    Utility function to import an iterator of module names as a list.
+
+    Skips over modules that are not importable.
+    """
+    module_objects = []
+    for module_name in modules:
+        try:
+            module_objects.append(importlib.import_module(module_name))
+        except ImportError:
+            pass
+    return module_objects
