@@ -3,6 +3,19 @@
 =================
 
 
+v1.1.1 (2020-08-19)
+===================
+
+Description
+-----------
+This is a bugfix release. Please use this instead of v1.1.0.
+
+Compatibility / Fixes
+---------------------
+- Fix issue with ui files not being included in the manifest
+- Fix issue with profiler failing on tests submodule
+
+
 v1.1.0 (2020-08-18)
 ===================
 
