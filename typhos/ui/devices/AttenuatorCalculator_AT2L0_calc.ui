@@ -517,12 +517,6 @@
            <property name="channel" stdset="0">
             <string>ca://${prefix}:SYS:ApplyConfiguration</string>
            </property>
-           <property name="showConfirmDialog" stdset="0">
-            <bool>true</bool>
-           </property>
-           <property name="confirmMessage" stdset="0">
-            <string>Move the filters?</string>
-           </property>
            <property name="pressValue" stdset="0">
             <string>1</string>
            </property>
