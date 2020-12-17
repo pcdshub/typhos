@@ -60,17 +60,22 @@ def _get_display_paths():
 DISPLAY_PATHS = list(_get_display_paths())
 
 
-class SignalRO(ophyd.sim.SynSignalRO):
-    def __init__(self, value=0, *args, **kwargs):
-        self._value = value
-        super().__init__(*args, **kwargs)
-        self._metadata.update(
-            connected=True,
-            write_access=False,
-        )
+if hasattr(ophyd.signal, 'SignalRO'):
+    SignalRO = ophyd.signal.SignalRO
+else:
+    # SignalRO was re-introduced to ophyd.signal in December 2019 (1f83a055).
+    # If unavailable, fall back to our previous definition:
+    class SignalRO(ophyd.sim.SynSignalRO):
+        def __init__(self, value=0, *args, **kwargs):
+            self._value = value
+            super().__init__(*args, **kwargs)
+            self._metadata.update(
+                connected=True,
+                write_access=False,
+            )
 
-    def get(self):
-        return self._value
+        def get(self):
+            return self._value
 
 
 def channel_from_signal(signal, read=True):
@@ -87,7 +92,7 @@ def channel_from_signal(signal, read=True):
 
 def is_signal_ro(signal):
     """
-    Return whether the signal is read-only
+    Return whether the signal is read-only, based on its class.
 
     In the future this may be easier to do through improvements to
     introspection in the ophyd library. Until that day we need to check classes
