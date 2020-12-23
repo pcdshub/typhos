@@ -2,6 +2,19 @@
  Release History
 =================
 
+v1.1.2 (2020-12-22)
+===================
+
+Description
+-----------
+This is a minor bugfix release.
+
+Compatibility / Fixes
+---------------------
+- Fix issue where ``SignalRO`` from ``ophyd`` was not showing as read-only.
+- Update the AT2L0 screen to not have a redundant calculation dialog as per
+  request.
+
 
 v1.1.1 (2020-08-19)
 ===================
