@@ -2,6 +2,19 @@
  Release History
 =================
 
+v1.1.3 (2020-02-10)
+===================
+
+Description
+-----------
+This is a minor screen inclusion release.
+
+Enhancements / What's New
+-------------------------
+- Add a screen for AT1K4. This, and similar screens, should be moved out of
+  typhos and into an LCLS-specific landing-zone, but this is not ready yet.
+
+
 v1.1.2 (2020-12-22)
 ===================
 
