@@ -153,7 +153,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         return {
             name: info['signal']
-            for name, info in self.signal_name_to_info.items()
+            for name, info in list(self.signal_name_to_info.items())
             if info['signal'] is not None
         }
 
@@ -169,7 +169,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         return {
             name: info['signal']
-            for name, info in self.signal_name_to_info.items()
+            for name, info in list(self.signal_name_to_info.items())
             if info['signal'] is not None and info['visible']
         }
 
@@ -227,9 +227,10 @@ class SignalPanel(QtWidgets.QGridLayout):
         for widget in widgets[1:]:
             widget.setVisible(visible)
 
+        signal_pairs = list(self.signal_name_to_info.items())
         if all(sig_info['widget_info'] is not None
-               for name, sig_info in self.signal_name_to_info.items()):
-            self.loading_complete.emit(list(self.signal_name_to_info))
+               for _, sig_info in signal_pairs):
+            self.loading_complete.emit([name for name, _ in signal_pairs])
 
     def _create_row_label(self, attr, dotted_name, tooltip):
         """Create a row label (i.e., the one used to display the name)."""
@@ -539,7 +540,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         name_filter : str, optional
             Additionally filter signals by name.
         """
-        for name, info in self.signal_name_to_info.items():
+        for name, info in list(self.signal_name_to_info.items()):
             item = info['signal'] or info['component']
             visible = self._should_show(item.kind, name,
                                         kinds=kinds, name_filter=name_filter)
