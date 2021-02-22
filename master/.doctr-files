@@ -73,7 +73,7 @@ master/_static/minus.png
 master/_static/plus.png
 master/_static/pygments.css
 master/_static/searchtools.js
-master/_static/underscore-1.3.1.js
+master/_static/underscore-1.12.0.js
 master/_static/underscore.js
 master/basic_usage.html
 master/cli.html

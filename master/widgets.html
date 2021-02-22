@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Widgets &mdash; Typhos 1.1.3 documentation</title>
+  <title>Widgets &mdash; Typhos 1.1.3+2.g003cf48 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.1.3
+                1.1.3+2.g003cf48
               </div>
             
           
@@ -197,7 +197,7 @@ generating one.</p>
 is a function available:</p>
 <dl class="py function">
 <dt id="typhos.widgets.create_signal_widget">
-<code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">create_signal_widget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">read_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tooltip</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#create_signal_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.create_signal_widget" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">create_signal_widget</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tooltip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#create_signal_widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.create_signal_widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Factory for creating a PyDMWidget from a signal</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -220,7 +220,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 
 <dl class="py class">
 <dt id="typhos.widgets.SignalWidgetInfo">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">SignalWidgetInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">read_cls</span></em>, <em class="sig-param"><span class="n">read_kwargs</span></em>, <em class="sig-param"><span class="n">write_cls</span></em>, <em class="sig-param"><span class="n">write_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">SignalWidgetInfo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides information on how to create signal widgets: class and kwargs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -234,7 +234,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 </dl>
 <dl class="py method">
 <dt id="typhos.widgets.SignalWidgetInfo.from_signal">
-<em class="property">classmethod </em><code class="sig-name descname">from_signal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo.from_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo.from_signal" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">from_signal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo.from_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo.from_signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a <cite>SignalWidgetInfo</cite> given an object and its description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -250,7 +250,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 
 <dl class="py function">
 <dt id="typhos.widgets.widget_type_from_description">
-<code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">widget_type_from_description</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">desc</span></em>, <em class="sig-param"><span class="n">read_only</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#widget_type_from_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.widget_type_from_description" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">widget_type_from_description</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#widget_type_from_description"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.widget_type_from_description" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine which widget class should be used for the given signal</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -272,7 +272,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 
 <dl class="py function">
 <dt id="typhos.widgets.determine_widget_type">
-<code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">determine_widget_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">read_only</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#determine_widget_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.determine_widget_type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">determine_widget_type</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#determine_widget_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.determine_widget_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine which widget class should be used for the given signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -302,7 +302,7 @@ hides and shows the contents. Each variation in Typhos is documented below.</p>
 <h3>Basic Signal Panels<a class="headerlink" href="#basic-signal-panels" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="typhos.panel.SignalPanel">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.panel.</code><code class="sig-name descname">SignalPanel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signals</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.SignalPanel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.panel.</span></code><code class="sig-name descname"><span class="pre">SignalPanel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Basic panel layout for <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> and other ophyd objects.</p>
 <p>This panel does not support hierarchical display of signals; rather, it
 flattens a device hierarchy showing all signals in the same area.</p>
@@ -314,7 +314,7 @@ Parent of panel.</p>
 </dl>
 <dl class="py attribute">
 <dt id="typhos.panel.SignalPanel.loading_complete">
-<code class="sig-name descname">loading_complete</code><a class="headerlink" href="#typhos.panel.SignalPanel.loading_complete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">loading_complete</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.loading_complete" title="Permalink to this definition">¶</a></dt>
 <dd><p>A signal indicating that loading of the panel has completed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -325,7 +325,7 @@ Parent of panel.</p>
 
 <dl class="py attribute">
 <dt id="typhos.panel.SignalPanel.NUM_COLS">
-<code class="sig-name descname">NUM_COLS</code><a class="headerlink" href="#typhos.panel.SignalPanel.NUM_COLS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">NUM_COLS</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.NUM_COLS" title="Permalink to this definition">¶</a></dt>
 <dd><p>The number of columns in the layout.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -336,7 +336,7 @@ Parent of panel.</p>
 
 <dl class="py attribute">
 <dt id="typhos.panel.SignalPanel.COL_LABEL">
-<code class="sig-name descname">COL_LABEL</code><a class="headerlink" href="#typhos.panel.SignalPanel.COL_LABEL" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">COL_LABEL</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.COL_LABEL" title="Permalink to this definition">¶</a></dt>
 <dd><p>The column number for the row label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -347,7 +347,7 @@ Parent of panel.</p>
 
 <dl class="py attribute">
 <dt id="typhos.panel.SignalPanel.COL_READBACK">
-<code class="sig-name descname">COL_READBACK</code><a class="headerlink" href="#typhos.panel.SignalPanel.COL_READBACK" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">COL_READBACK</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.COL_READBACK" title="Permalink to this definition">¶</a></dt>
 <dd><p>The column number for the readback widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -358,7 +358,7 @@ Parent of panel.</p>
 
 <dl class="py attribute">
 <dt id="typhos.panel.SignalPanel.COL_SETPOINT">
-<code class="sig-name descname">COL_SETPOINT</code><a class="headerlink" href="#typhos.panel.SignalPanel.COL_SETPOINT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">COL_SETPOINT</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.COL_SETPOINT" title="Permalink to this definition">¶</a></dt>
 <dd><p>The column number for the setpoint widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -373,13 +373,13 @@ Parent of panel.</p>
 </div>
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.add_device">
-<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.SignalPanel.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.add_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Typhos hook for adding a new device.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.add_pv">
-<code class="sig-name descname">add_pv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">read_pv</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">write_pv</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.add_pv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.SignalPanel.add_pv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_pv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_pv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_pv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.add_pv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel.add_pv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a row, given PV names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -401,7 +401,7 @@ Parent of panel.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.add_row">
-<code class="sig-name descname">add_row</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">widgets</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.add_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.SignalPanel.add_row" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_row</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">widgets</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.add_row"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel.add_row" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add <code class="docutils literal notranslate"><span class="pre">widgets</span></code> to the next row.</p>
 <p>If fewer than <code class="docutils literal notranslate"><span class="pre">NUM_COLS</span></code> widgets are given, the last widget will be
 adjusted automatically to span the remaining columns.</p>
@@ -420,7 +420,7 @@ adjusted automatically to span the remaining columns.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.add_signal">
-<code class="sig-name descname">add_signal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">tooltip</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.add_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.SignalPanel.add_signal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_signal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tooltip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.add_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel.add_signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a signal to the panel.</p>
 <p>The type of widget control that is drawn is dependent on
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">_read_pv</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">_write_pv</span></code>. attributes.</p>
@@ -448,13 +448,13 @@ description callback.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.clear">
-<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.SignalPanel.clear" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear the SignalPanel.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.filter_signals">
-<code class="sig-name descname">filter_signals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kinds</span></em>, <em class="sig-param"><span class="n">name_filter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.filter_signals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.SignalPanel.filter_signals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">filter_signals</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kinds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.filter_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel.filter_signals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Filter signals based on the given kinds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -468,7 +468,7 @@ description callback.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.label_text_from_attribute">
-<code class="sig-name descname">label_text_from_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">dotted_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.label_text_from_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.SignalPanel.label_text_from_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">label_text_from_attribute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dotted_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel.label_text_from_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel.label_text_from_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get label text for a given attribute.</p>
 <p>For a basic signal panel, use the full dotted name.  This is because
 this panel flattens the device hierarchy, and using only the last
@@ -477,13 +477,13 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.row_count">
-<em class="property">property </em><code class="sig-name descname">row_count</code><a class="headerlink" href="#typhos.panel.SignalPanel.row_count" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">row_count</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.row_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of filled-in rows.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.signals">
-<em class="property">property </em><code class="sig-name descname">signals</code><a class="headerlink" href="#typhos.panel.SignalPanel.signals" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">signals</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.signals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all instantiated signals, omitting components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -497,7 +497,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.visible_elements">
-<em class="property">property </em><code class="sig-name descname">visible_elements</code><a class="headerlink" href="#typhos.panel.SignalPanel.visible_elements" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">visible_elements</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.visible_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all signals visible according to filters, omitting components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -511,7 +511,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.SignalPanel.visible_signals">
-<em class="property">property </em><code class="sig-name descname">visible_signals</code><a class="headerlink" href="#typhos.panel.SignalPanel.visible_signals" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">visible_signals</span></code><a class="headerlink" href="#typhos.panel.SignalPanel.visible_signals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all signals visible according to filters, omitting components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -527,7 +527,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py class">
 <dt id="typhos.TyphosSignalPanel">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.</code><code class="sig-name descname">TyphosSignalPanel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">init_channel</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosSignalPanel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.</span></code><code class="sig-name descname"><span class="pre">TyphosSignalPanel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSignalPanel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Panel of Signals for a given device, using <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -539,7 +539,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 </dl>
 <dl class="py class">
 <dt id="typhos.TyphosSignalPanel.SignalOrder">
-<em class="property">class </em><code class="sig-name descname">SignalOrder</code><a class="headerlink" href="#typhos.TyphosSignalPanel.SignalOrder" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-name descname"><span class="pre">SignalOrder</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.SignalOrder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Options for sorting signals.</p>
 <p>This can be used as a base class for subclasses of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QWidget</span></code>, allowing this to be used in
@@ -548,31 +548,31 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py method">
 <dt id="typhos.TyphosSignalPanel.add_device">
-<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosSignalPanel.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel.add_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSignalPanel.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Typhos hook for adding a new device.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosSignalPanel.filter_settings">
-<em class="property">property </em><code class="sig-name descname">filter_settings</code><a class="headerlink" href="#typhos.TyphosSignalPanel.filter_settings" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">filter_settings</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.filter_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the filter settings dictionary.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosSignalPanel.generate_context_menu">
-<code class="sig-name descname">generate_context_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel.generate_context_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosSignalPanel.generate_context_menu" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">generate_context_menu</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel.generate_context_menu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSignalPanel.generate_context_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a context menu for this TyphosSignalPanel.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosSignalPanel.nameFilter">
-<code class="sig-name descname">nameFilter</code><a class="headerlink" href="#typhos.TyphosSignalPanel.nameFilter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">nameFilter</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.nameFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or set the current name filter.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosSignalPanel.open_context_menu">
-<code class="sig-name descname">open_context_menu</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ev</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel.open_context_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosSignalPanel.open_context_menu" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">open_context_menu</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel.open_context_menu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSignalPanel.open_context_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open a context menu when the Default Context Menu is requested.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -583,43 +583,43 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py method">
 <dt id="typhos.TyphosSignalPanel.set_device_display">
-<code class="sig-name descname">set_device_display</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">display</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel.set_device_display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosSignalPanel.set_device_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_device_display</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">display</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel.set_device_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSignalPanel.set_device_display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Typhos hook for when the TyphosDeviceDisplay is associated.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosSignalPanel.showConfig">
-<code class="sig-name descname">showConfig</code><a class="headerlink" href="#typhos.TyphosSignalPanel.showConfig" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">showConfig</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.showConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show ophyd.Kind.config signals</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosSignalPanel.showHints">
-<code class="sig-name descname">showHints</code><a class="headerlink" href="#typhos.TyphosSignalPanel.showHints" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">showHints</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.showHints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show ophyd.Kind.hinted signals</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosSignalPanel.showNormal">
-<code class="sig-name descname">showNormal</code><a class="headerlink" href="#typhos.TyphosSignalPanel.showNormal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">showNormal</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.showNormal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show ophyd.Kind.normal signals</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosSignalPanel.showOmitted">
-<code class="sig-name descname">showOmitted</code><a class="headerlink" href="#typhos.TyphosSignalPanel.showOmitted" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">showOmitted</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.showOmitted" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show ophyd.Kind.omitted signals</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosSignalPanel.show_kinds">
-<em class="property">property </em><code class="sig-name descname">show_kinds</code><a class="headerlink" href="#typhos.TyphosSignalPanel.show_kinds" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">show_kinds</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.show_kinds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Kind</span></code> that should be shown.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosSignalPanel.sortBy">
-<code class="sig-name descname">sortBy</code><a class="headerlink" href="#typhos.TyphosSignalPanel.sortBy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">sortBy</span></code><a class="headerlink" href="#typhos.TyphosSignalPanel.sortBy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or set the order that the signals will be placed in layout.</p>
 </dd></dl>
 
@@ -630,14 +630,14 @@ attribute name may lead to ambiguity or name clashes.</p>
 <h3>Composite Signal Panels<a class="headerlink" href="#composite-signal-panels" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="typhos.panel.CompositeSignalPanel">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.panel.</code><code class="sig-name descname">CompositeSignalPanel</code><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.panel.</span></code><code class="sig-name descname"><span class="pre">CompositeSignalPanel</span></code><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Composite panel layout for <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> and other ophyd objects.</p>
 <p>Contrasted to <a class="reference internal" href="#typhos.panel.SignalPanel" title="typhos.panel.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, this class retains the hierarchy built
 into an <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Device</span></code> hierarchy.  Individual signals mix in with
 sub-device displays, which may or may not have custom screens.</p>
 <dl class="py attribute">
 <dt id="typhos.panel.CompositeSignalPanel.loading_complete">
-<code class="sig-name descname">loading_complete</code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.loading_complete" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">loading_complete</span></code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.loading_complete" title="Permalink to this definition">¶</a></dt>
 <dd><p>A signal indicating that loading of the panel has completed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -648,7 +648,7 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py attribute">
 <dt id="typhos.panel.CompositeSignalPanel.NUM_COLS">
-<code class="sig-name descname">NUM_COLS</code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.NUM_COLS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">NUM_COLS</span></code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.NUM_COLS" title="Permalink to this definition">¶</a></dt>
 <dd><p>The number of columns in the layout.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -659,7 +659,7 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py attribute">
 <dt id="typhos.panel.CompositeSignalPanel.COL_LABEL">
-<code class="sig-name descname">COL_LABEL</code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.COL_LABEL" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">COL_LABEL</span></code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.COL_LABEL" title="Permalink to this definition">¶</a></dt>
 <dd><p>The column number for the row label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -670,7 +670,7 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py attribute">
 <dt id="typhos.panel.CompositeSignalPanel.COL_READBACK">
-<code class="sig-name descname">COL_READBACK</code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.COL_READBACK" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">COL_READBACK</span></code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.COL_READBACK" title="Permalink to this definition">¶</a></dt>
 <dd><p>The column number for the readback widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -681,7 +681,7 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py attribute">
 <dt id="typhos.panel.CompositeSignalPanel.COL_SETPOINT">
-<code class="sig-name descname">COL_SETPOINT</code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.COL_SETPOINT" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">COL_SETPOINT</span></code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.COL_SETPOINT" title="Permalink to this definition">¶</a></dt>
 <dd><p>The column number for the setpoint widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -692,13 +692,13 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.CompositeSignalPanel.add_device">
-<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel.add_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Typhos hook for adding a new device.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.panel.CompositeSignalPanel.add_sub_device">
-<code class="sig-name descname">add_sub_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel.add_sub_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.add_sub_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_sub_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel.add_sub_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.add_sub_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a sub-device to the next row.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -712,13 +712,13 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py method">
 <dt id="typhos.panel.CompositeSignalPanel.label_text_from_attribute">
-<code class="sig-name descname">label_text_from_attribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em>, <em class="sig-param"><span class="n">dotted_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel.label_text_from_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.label_text_from_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">label_text_from_attribute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dotted_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel.label_text_from_attribute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.label_text_from_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get label text for a given attribute.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.panel.CompositeSignalPanel.visible_elements">
-<em class="property">property </em><code class="sig-name descname">visible_elements</code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.visible_elements" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">visible_elements</span></code><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.visible_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return all visible signals and components.</p>
 </dd></dl>
 
@@ -726,7 +726,7 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py class">
 <dt id="typhos.TyphosCompositeSignalPanel">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.</code><code class="sig-name descname">TyphosCompositeSignalPanel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">init_channel</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosCompositeSignalPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosCompositeSignalPanel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.</span></code><code class="sig-name descname"><span class="pre">TyphosCompositeSignalPanel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosCompositeSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosCompositeSignalPanel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hierarchical panel for a device, using <code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeSignalPanel</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -744,7 +744,7 @@ sub-device displays, which may or may not have custom screens.</p>
 <h2>TyphosPositionerWidget<a class="headerlink" href="#typhospositionerwidget" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="typhos.TyphosPositionerWidget">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.</code><code class="sig-name descname">TyphosPositionerWidget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.</span></code><code class="sig-name descname"><span class="pre">TyphosPositionerWidget</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Widget to interact with a <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Positioner</span></code>.</p>
 <p>Standard positioner motion requires a large amount of context for
 operators. For most motors, it may not be enough to simply have a text
@@ -800,61 +800,61 @@ that indicates the motion completeness. Must be implemented.</p></td>
 </table>
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.acceleration_attribute">
-<code class="sig-name descname">acceleration_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.acceleration_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">acceleration_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.acceleration_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attribute name for the acceleration time signal.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.add_device">
-<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.add_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a device to the widget</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.device">
-<em class="property">property </em><code class="sig-name descname">device</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.device" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">device</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.device" title="Permalink to this definition">¶</a></dt>
 <dd><p>The associated device.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.failed_move">
-<code class="sig-name descname">failed_move</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.failed_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">failed_move</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.failed_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>The last requested move failed</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.high_limit_switch_attribute">
-<code class="sig-name descname">high_limit_switch_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.high_limit_switch_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">high_limit_switch_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.high_limit_switch_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attribute name for the high limit switch signal.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.high_limit_travel_attribute">
-<code class="sig-name descname">high_limit_travel_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.high_limit_travel_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">high_limit_travel_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.high_limit_travel_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attribute name for the high (soft) limit travel signal.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.low_limit_switch_attribute">
-<code class="sig-name descname">low_limit_switch_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.low_limit_switch_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">low_limit_switch_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.low_limit_switch_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attribute name for the low limit switch signal.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.low_limit_travel_attribute">
-<code class="sig-name descname">low_limit_travel_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.low_limit_travel_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">low_limit_travel_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.low_limit_travel_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attribute name for the low limit signal.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.move_changed">
-<code class="sig-name descname">move_changed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.move_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.move_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">move_changed</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.move_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.move_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a move is begun</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.moving">
-<code class="sig-name descname">moving</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.moving" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">moving</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.moving" title="Permalink to this definition">¶</a></dt>
 <dd><p>Current state of widget</p>
 <p>This will lag behind the actual state of the positioner in order to
 prevent unnecessary rapid movements</p>
@@ -862,55 +862,55 @@ prevent unnecessary rapid movements</p>
 
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.negative_tweak">
-<code class="sig-name descname">negative_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.negative_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.negative_tweak" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">negative_tweak</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.negative_tweak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.negative_tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak negative by the amount listed in <code class="docutils literal notranslate"><span class="pre">ui.tweak_value</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.positive_tweak">
-<code class="sig-name descname">positive_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.positive_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.positive_tweak" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">positive_tweak</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.positive_tweak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.positive_tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak positive by the amount listed in <code class="docutils literal notranslate"><span class="pre">ui.tweak_value</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.readback_attribute">
-<code class="sig-name descname">readback_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.readback_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">readback_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.readback_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attribute name for the readback signal.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.set">
-<code class="sig-name descname">set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the device to the value configured by <code class="docutils literal notranslate"><span class="pre">ui.set_value</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.setpoint_attribute">
-<code class="sig-name descname">setpoint_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.setpoint_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">setpoint_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.setpoint_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attribute name for the setpoint signal.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.stop">
-<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.stop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">stop</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop device</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.successful_move">
-<code class="sig-name descname">successful_move</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.successful_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">successful_move</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.successful_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>The last requested move was successful</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.tweak">
-<code class="sig-name descname">tweak</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">offset</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.tweak" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">tweak</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.tweak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak by the given <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosPositionerWidget.velocity_attribute">
-<code class="sig-name descname">velocity_attribute</code><a class="headerlink" href="#typhos.TyphosPositionerWidget.velocity_attribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">velocity_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.velocity_attribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The attribute name for the velocity signal.</p>
 </dd></dl>
 
@@ -921,7 +921,7 @@ prevent unnecessary rapid movements</p>
 <h2>Functions and Methods<a class="headerlink" href="#functions-and-methods" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="typhos.func.FunctionPanel">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.func.</code><code class="sig-name descname">FunctionPanel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">methods</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#FunctionPanel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.func.FunctionPanel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.func.</span></code><code class="sig-name descname"><span class="pre">FunctionPanel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#FunctionPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.func.FunctionPanel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function Panel.</p>
 <p>Similar to <a class="reference internal" href="#typhos.panel.SignalPanel" title="typhos.panel.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a> but instead displays a set of function
 widgets arranged in a row. Each provided method has a
@@ -936,7 +936,7 @@ widgets arranged in a row. Each provided method has a
 </dl>
 <dl class="py method">
 <dt id="typhos.func.FunctionPanel.add_method">
-<code class="sig-name descname">add_method</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#FunctionPanel.add_method"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.func.FunctionPanel.add_method" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_method</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#FunctionPanel.add_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.func.FunctionPanel.add_method" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionDisplay</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -955,14 +955,14 @@ widgets arranged in a row. Each provided method has a
 
 <dl class="py class">
 <dt id="typhos.TyphosMethodButton">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.</code><code class="sig-name descname">TyphosMethodButton</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosMethodButton" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.</span></code><code class="sig-name descname"><span class="pre">TyphosMethodButton</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosMethodButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>QPushButton to access a method of a Device.</p>
 <p>The function provided by the loaded device and the <a class="reference internal" href="#typhos.TyphosMethodButton.method_name" title="typhos.TyphosMethodButton.method_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">method_name</span></code></a>
 will be run when the button is clicked. If <code class="docutils literal notranslate"><span class="pre">use_status</span></code> is set to True,
 the button will be disabled while the <code class="docutils literal notranslate"><span class="pre">Status</span></code> object is active.</p>
 <dl class="py method">
 <dt id="typhos.TyphosMethodButton.add_device">
-<code class="sig-name descname">add_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.add_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosMethodButton.add_device" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.add_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosMethodButton.add_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new device to the widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -973,25 +973,25 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py method">
 <dt id="typhos.TyphosMethodButton.execute">
-<code class="sig-name descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosMethodButton.execute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosMethodButton.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute the method given by <code class="docutils literal notranslate"><span class="pre">method_name</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.TyphosMethodButton.from_device">
-<em class="property">classmethod </em><code class="sig-name descname">from_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.from_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.TyphosMethodButton.from_device" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">from_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.from_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosMethodButton.from_device" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a TyphosMethodButton from a device.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosMethodButton.method_name">
-<code class="sig-name descname">method_name</code><a class="headerlink" href="#typhos.TyphosMethodButton.method_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">method_name</span></code><a class="headerlink" href="#typhos.TyphosMethodButton.method_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of method on provided Device to execute.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.TyphosMethodButton.use_status">
-<code class="sig-name descname">use_status</code><a class="headerlink" href="#typhos.TyphosMethodButton.use_status" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">use_status</span></code><a class="headerlink" href="#typhos.TyphosMethodButton.use_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the status to enable and disable the button.</p>
 </dd></dl>
 
@@ -1002,18 +1002,18 @@ the button will be disabled while the <code class="docutils literal notranslate"
 <h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="typhos.widgets.ClickableBitIndicator">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">ClickableBitIndicator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">circle</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ClickableBitIndicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.ClickableBitIndicator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">ClickableBitIndicator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ClickableBitIndicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.ClickableBitIndicator" title="Permalink to this definition">¶</a></dt>
 <dd><p>A bit indicator that emits <cite>clicked</cite> when clicked.</p>
 <dl class="py method">
 <dt id="typhos.widgets.ClickableBitIndicator.mousePressEvent">
-<code class="sig-name descname">mousePressEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QMouseEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ClickableBitIndicator.mousePressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.ClickableBitIndicator.mousePressEvent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">mousePressEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QMouseEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ClickableBitIndicator.mousePressEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.ClickableBitIndicator.mousePressEvent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="typhos.widgets.ImageDialogButton">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">ImageDialogButton</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init_channel</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">icon</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ImageDialogButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.ImageDialogButton" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">ImageDialogButton</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ImageDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.ImageDialogButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>QPushButton to show a 2-d array.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1021,13 +1021,13 @@ the button will be disabled while the <code class="docutils literal notranslate"
 </ul>
 <dl class="py attribute">
 <dt id="typhos.widgets.ImageDialogButton.parent_widget_class">
-<code class="sig-name descname">parent_widget_class</code><a class="headerlink" href="#typhos.widgets.ImageDialogButton.parent_widget_class" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">parent_widget_class</span></code><a class="headerlink" href="#typhos.widgets.ImageDialogButton.parent_widget_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.ImageDialogButton.widget">
-<code class="sig-name descname">widget</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ImageDialogButton.widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.ImageDialogButton.widget" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">widget</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ImageDialogButton.widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.ImageDialogButton.widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create PyDMImageView</p>
 </dd></dl>
 
@@ -1035,23 +1035,23 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt id="typhos.widgets.SignalDialogButton">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">SignalDialogButton</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init_channel</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">icon</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalDialogButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SignalDialogButton" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">SignalDialogButton</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalDialogButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>QPushButton to launch a QDialog with a PyDMWidget</p>
 <dl class="py attribute">
 <dt id="typhos.widgets.SignalDialogButton.parent_widget_class">
-<code class="sig-name descname">parent_widget_class</code><a class="headerlink" href="#typhos.widgets.SignalDialogButton.parent_widget_class" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">parent_widget_class</span></code><a class="headerlink" href="#typhos.widgets.SignalDialogButton.parent_widget_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.SignalDialogButton.show_dialog">
-<code class="sig-name descname">show_dialog</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalDialogButton.show_dialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SignalDialogButton.show_dialog" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">show_dialog</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalDialogButton.show_dialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalDialogButton.show_dialog" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show the channel in a QDialog</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.SignalDialogButton.widget">
-<code class="sig-name descname">widget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalDialogButton.widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SignalDialogButton.widget" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">widget</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalDialogButton.widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalDialogButton.widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a widget created with channel</p>
 </dd></dl>
 
@@ -1059,18 +1059,18 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt id="typhos.widgets.SubDisplay">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">SubDisplay</code><a class="reference internal" href="_modules/typhos/widgets.html#SubDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SubDisplay" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">SubDisplay</span></code><a class="reference internal" href="_modules/typhos/widgets.html#SubDisplay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SubDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>QDockWidget modified to emit a signal when closed</p>
 <dl class="py method">
 <dt id="typhos.widgets.SubDisplay.closeEvent">
-<code class="sig-name descname">closeEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QCloseEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SubDisplay.closeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.SubDisplay.closeEvent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">closeEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QCloseEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SubDisplay.closeEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SubDisplay.closeEvent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosArrayTable">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosArrayTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">variety_metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ophyd_signal</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosArrayTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosArrayTable" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosArrayTable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosArrayTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosArrayTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>A table widget which reshapes and displays a given waveform value.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1078,7 +1078,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 </ul>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosArrayTable.value_changed">
-<code class="sig-name descname">value_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosArrayTable.value_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosArrayTable.value_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">value_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosArrayTable.value_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosArrayTable.value_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback invoked when the Channel value is changed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1089,7 +1089,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosArrayTable.variety_metadata">
-<em class="property">property </em><code class="sig-name descname">variety_metadata</code><a class="headerlink" href="#typhos.widgets.TyphosArrayTable.variety_metadata" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">variety_metadata</span></code><a class="headerlink" href="#typhos.widgets.TyphosArrayTable.variety_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1097,7 +1097,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosByteIndicator">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosByteIndicator</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">variety_metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ophyd_signal</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteIndicator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosByteIndicator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosByteIndicator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteIndicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosByteIndicator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays an integer value as individual, read-only bit indicators.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1105,7 +1105,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 </ul>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosByteIndicator.variety_metadata">
-<em class="property">property </em><code class="sig-name descname">variety_metadata</code><a class="headerlink" href="#typhos.widgets.TyphosByteIndicator.variety_metadata" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">variety_metadata</span></code><a class="headerlink" href="#typhos.widgets.TyphosByteIndicator.variety_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1113,7 +1113,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosByteSetpoint">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosByteSetpoint</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">variety_metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ophyd_signal</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteSetpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosByteSetpoint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosByteSetpoint</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteSetpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosByteSetpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays an integer value as individual, toggleable bit indicators.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1121,14 +1121,14 @@ the button will be disabled while the <code class="docutils literal notranslate"
 </ul>
 <dl class="py attribute">
 <dt id="typhos.widgets.TyphosByteSetpoint.numBits">
-<code class="sig-name descname">numBits</code><a class="headerlink" href="#typhos.widgets.TyphosByteSetpoint.numBits" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">numBits</span></code><a class="headerlink" href="#typhos.widgets.TyphosByteSetpoint.numBits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of bits to interpret.</p>
 <p>Re-implemented from PyDM to support changing of bit indicators.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosByteSetpoint.value_changed">
-<code class="sig-name descname">value_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteSetpoint.value_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosByteSetpoint.value_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">value_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteSetpoint.value_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosByteSetpoint.value_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive and update the TyphosTextEdit for a new channel value.</p>
 </dd></dl>
 
@@ -1136,7 +1136,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosComboBox">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosComboBox</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">init_channel</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosComboBox</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox" title="Permalink to this definition">¶</a></dt>
 <dd><p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>Used for variety text-enum (setpoint)</p></li>
@@ -1144,14 +1144,14 @@ the button will be disabled while the <code class="docutils literal notranslate"
 </ul>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosComboBox.wheelEvent">
-<code class="sig-name descname">wheelEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QWheelEvent</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox.wheelEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox.wheelEvent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">wheelEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QWheelEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox.wheelEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox.wheelEvent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosCommandButton">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosCommandButton</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">variety_metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ophyd_signal</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandButton" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosCommandButton</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>A pushbutton widget which executes a command by sending a specific value.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -1165,7 +1165,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 </ul>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosCommandButton.enum_strings_changed">
-<code class="sig-name descname">enum_strings_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_enum_strings</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandButton.enum_strings_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandButton.enum_strings_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">enum_strings_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_enum_strings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandButton.enum_strings_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandButton.enum_strings_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback invoked when the Channel has new enum values.
 This callback also triggers a value_changed call so the
 new enum values to be broadcasted</p>
@@ -1178,7 +1178,7 @@ new enum values to be broadcasted</p>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosCommandButton.variety_metadata">
-<em class="property">property </em><code class="sig-name descname">variety_metadata</code><a class="headerlink" href="#typhos.widgets.TyphosCommandButton.variety_metadata" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">variety_metadata</span></code><a class="headerlink" href="#typhos.widgets.TyphosCommandButton.variety_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1186,7 +1186,7 @@ new enum values to be broadcasted</p>
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosCommandEnumButton">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosCommandEnumButton</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">variety_metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ophyd_signal</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandEnumButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosCommandEnumButton</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandEnumButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>A group of buttons which represent several command options.</p>
 <p>These options can come from directly from the control layer or can be
 overridden with variety metadata.</p>
@@ -1200,7 +1200,7 @@ overridden with variety metadata.</p>
 </ul>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosCommandEnumButton.enum_strings_changed">
-<code class="sig-name descname">enum_strings_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_enum_strings</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandEnumButton.enum_strings_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton.enum_strings_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">enum_strings_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_enum_strings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandEnumButton.enum_strings_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton.enum_strings_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback invoked when the Channel has new enum values.
 This callback also triggers a value_changed call so the
 new enum values to be broadcasted.</p>
@@ -1213,7 +1213,7 @@ new enum values to be broadcasted.</p>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosCommandEnumButton.variety_metadata">
-<em class="property">property </em><code class="sig-name descname">variety_metadata</code><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton.variety_metadata" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">variety_metadata</span></code><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton.variety_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1221,7 +1221,7 @@ new enum values to be broadcasted.</p>
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosLabel">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosLabel</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">display_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosLabel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reimplementation of PyDMLabel to set some custom defaults</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1239,7 +1239,7 @@ new enum values to be broadcasted.</p>
 </ul>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosLabel.unit_changed">
-<code class="sig-name descname">unit_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_unit</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel.unit_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel.unit_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">unit_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel.unit_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel.unit_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback invoked when the Channel has new unit value.
 This callback also triggers an update_format_string call so the
 new unit value is considered if <code class="docutils literal notranslate"><span class="pre">`showUnits`</span></code> is set.</p>
@@ -1254,7 +1254,7 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosLineEdit">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosLineEdit</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">display_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosLineEdit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reimplementation of PyDMLineEdit to set some custom defaults</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1263,19 +1263,19 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 </ul>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosLineEdit.send_value">
-<code class="sig-name descname">send_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit.send_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.send_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">send_value</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit.send_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.send_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update channel value while recording setpoint history</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.widgets.TyphosLineEdit.setpointHistoryCount">
-<code class="sig-name descname">setpointHistoryCount</code><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.setpointHistoryCount" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">setpointHistoryCount</span></code><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.setpointHistoryCount" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of items to show in the context menu “setpoint history”</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosLineEdit.setpoint_history">
-<em class="property">property </em><code class="sig-name descname">setpoint_history</code><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.setpoint_history" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">setpoint_history</span></code><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.setpoint_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>timestamp}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1286,7 +1286,7 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosLineEdit.unit_changed">
-<code class="sig-name descname">unit_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_unit</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit.unit_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.unit_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">unit_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit.unit_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.unit_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback invoked when the Channel has new unit value.
 This callback also triggers an update_format_string call so the
 new unit value is considered if <code class="docutils literal notranslate"><span class="pre">`showUnits`</span></code> is set.</p>
@@ -1299,7 +1299,7 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosLineEdit.widget_ctx_menu">
-<code class="sig-name descname">widget_ctx_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit.widget_ctx_menu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.widget_ctx_menu" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">widget_ctx_menu</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit.widget_ctx_menu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.widget_ctx_menu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch the Widget specific context menu which will be populated with additional tools by <cite>assemble_tools_menu</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1315,7 +1315,7 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosScalarRange">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosScalarRange</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">variety_metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ophyd_signal</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosScalarRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosScalarRange" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosScalarRange</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosScalarRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosScalarRange" title="Permalink to this definition">¶</a></dt>
 <dd><p>A slider widget which displays a scalar value with an explicit range.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1323,7 +1323,7 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 </ul>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosScalarRange.connection_changed">
-<code class="sig-name descname">connection_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">connected</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosScalarRange.connection_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.connection_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">connection_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connected</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosScalarRange.connection_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.connection_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback invoked when the connection state of the Channel is changed.
 This callback acts on the connection state to enable/disable the widget
 and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
@@ -1336,13 +1336,13 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosScalarRange.delta_signal">
-<em class="property">property </em><code class="sig-name descname">delta_signal</code><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.delta_signal" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">delta_signal</span></code><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.delta_signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delta signal, used as the source for “delta_value”.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="typhos.widgets.TyphosScalarRange.delta_value">
-<code class="sig-name descname">delta_value</code><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.delta_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">delta_value</span></code><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.delta_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delta value, an alternative to “num_points” provided by PyDMSlider.</p>
 <p>num_points is calculated using the current min/max and the delta value,
 if set.</p>
@@ -1350,7 +1350,7 @@ if set.</p>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosScalarRange.variety_metadata">
-<em class="property">property </em><code class="sig-name descname">variety_metadata</code><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.variety_metadata" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">variety_metadata</span></code><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.variety_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1358,30 +1358,30 @@ if set.</p>
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosSidebarItem">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosSidebarItem</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">param</span></em>, <em class="sig-param"><span class="n">depth</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosSidebarItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to display a Device or Tool in the sidebar</p>
 <p class="rubric">Notes</p>
 <dl class="py method">
 <dt id="typhos.widgets.TyphosSidebarItem.embed_requested">
-<code class="sig-name descname">embed_requested</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">triggered</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem.embed_requested"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem.embed_requested" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">embed_requested</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">triggered</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem.embed_requested"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem.embed_requested" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request to open embedded display for sidebar item</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosSidebarItem.hide_requested">
-<code class="sig-name descname">hide_requested</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">triggered</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem.hide_requested"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem.hide_requested" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">hide_requested</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">triggered</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem.hide_requested"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem.hide_requested" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request to hide display for sidebar item</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosSidebarItem.open_requested">
-<code class="sig-name descname">open_requested</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">triggered</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem.open_requested"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem.open_requested" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">open_requested</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">triggered</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem.open_requested"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem.open_requested" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request to open display for sidebar item</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.TyphosSidebarItem.treeWidgetChanged">
-<code class="sig-name descname">treeWidgetChanged</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem.treeWidgetChanged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem.treeWidgetChanged" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">treeWidgetChanged</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem.treeWidgetChanged"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem.treeWidgetChanged" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the widget when add to a QTreeWidget</p>
 </dd></dl>
 
@@ -1389,7 +1389,7 @@ if set.</p>
 
 <dl class="py class">
 <dt id="typhos.tweakable.TyphosTweakable">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.tweakable.</code><code class="sig-name descname">TyphosTweakable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">init_channel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">variety_metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ophyd_signal</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.tweakable.</span></code><code class="sig-name descname"><span class="pre">TyphosTweakable</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Widget for a tweakable scalar.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1405,25 +1405,25 @@ if set.</p>
 </ul>
 <dl class="py method">
 <dt id="typhos.tweakable.TyphosTweakable.negative_tweak">
-<code class="sig-name descname">negative_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable.negative_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.negative_tweak" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">negative_tweak</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable.negative_tweak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.negative_tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak negative by the amount listed in <code class="docutils literal notranslate"><span class="pre">ui.tweak_value</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.tweakable.TyphosTweakable.positive_tweak">
-<code class="sig-name descname">positive_tweak</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable.positive_tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.positive_tweak" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">positive_tweak</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable.positive_tweak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.positive_tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak positive by the amount listed in <code class="docutils literal notranslate"><span class="pre">ui.tweak_value</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.tweakable.TyphosTweakable.tweak">
-<code class="sig-name descname">tweak</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">offset</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable.tweak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.tweak" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">tweak</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable.tweak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak by the given <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.tweakable.TyphosTweakable.variety_metadata">
-<em class="property">property </em><code class="sig-name descname">variety_metadata</code><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.variety_metadata" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">variety_metadata</span></code><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.variety_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1431,7 +1431,7 @@ if set.</p>
 
 <dl class="py class">
 <dt id="typhos.textedit.TyphosTextEdit">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.textedit.</code><code class="sig-name descname">TyphosTextEdit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">init_channel</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">variety_metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ophyd_signal</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.textedit.</span></code><code class="sig-name descname"><span class="pre">TyphosTextEdit</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit" title="Permalink to this definition">¶</a></dt>
 <dd><p>A writable, multiline text editor with support for PyDM Channels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1444,31 +1444,31 @@ if set.</p>
 </dl>
 <dl class="py method">
 <dt id="typhos.textedit.TyphosTextEdit.send_value">
-<code class="sig-name descname">send_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit.send_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.send_value" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">send_value</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit.send_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.send_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emit a <code class="xref py py-attr docutils literal notranslate"><span class="pre">send_value_signal</span></code> to update channel value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.textedit.TyphosTextEdit.set_display">
-<code class="sig-name descname">set_display</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit.set_display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.set_display" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">set_display</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit.set_display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.set_display" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the text display of the TyphosTextEdit.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.textedit.TyphosTextEdit.value_changed">
-<code class="sig-name descname">value_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit.value_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.value_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">value_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit.value_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.value_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive and update the TyphosTextEdit for a new channel value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.textedit.TyphosTextEdit.variety_metadata">
-<em class="property">property </em><code class="sig-name descname">variety_metadata</code><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.variety_metadata" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">variety_metadata</span></code><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.variety_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.textedit.TyphosTextEdit.write_access_changed">
-<code class="sig-name descname">write_access_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_write_access</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit.write_access_changed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.write_access_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">write_access_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_write_access</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit.write_access_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.write_access_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the TyphosTextEdit to read only if write access is denied</p>
 </dd></dl>
 
@@ -1476,7 +1476,7 @@ if set.</p>
 
 <dl class="py class">
 <dt id="typhos.widgets.WaveformDialogButton">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">WaveformDialogButton</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init_channel</span></em>, <em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">icon</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#WaveformDialogButton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.WaveformDialogButton" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">WaveformDialogButton</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#WaveformDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.WaveformDialogButton" title="Permalink to this definition">¶</a></dt>
 <dd><p>QPushButton to show a 1-d array.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1485,13 +1485,13 @@ if set.</p>
 </ul>
 <dl class="py attribute">
 <dt id="typhos.widgets.WaveformDialogButton.parent_widget_class">
-<code class="sig-name descname">parent_widget_class</code><a class="headerlink" href="#typhos.widgets.WaveformDialogButton.parent_widget_class" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">parent_widget_class</span></code><a class="headerlink" href="#typhos.widgets.WaveformDialogButton.parent_widget_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="typhos.widgets.WaveformDialogButton.widget">
-<code class="sig-name descname">widget</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#WaveformDialogButton.widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.WaveformDialogButton.widget" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">widget</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#WaveformDialogButton.widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.WaveformDialogButton.widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create PyDMWaveformPlot</p>
 </dd></dl>
 
@@ -1502,11 +1502,11 @@ if set.</p>
 <h2>Designer<a class="headerlink" href="#designer" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="typhos.widgets.TyphosDesignerMixin">
-<em class="property">class </em><code class="sig-prename descclassname">typhos.widgets.</code><code class="sig-name descname">TyphosDesignerMixin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">init_channel</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosDesignerMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#typhos.widgets.TyphosDesignerMixin" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosDesignerMixin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosDesignerMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosDesignerMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>A mixin class used to display Typhos widgets in the Qt designer.</p>
 <dl class="py attribute">
 <dt id="typhos.widgets.TyphosDesignerMixin.channel">
-<code class="sig-name descname">channel</code><a class="headerlink" href="#typhos.widgets.TyphosDesignerMixin.channel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">channel</span></code><a class="headerlink" href="#typhos.widgets.TyphosDesignerMixin.channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>The channel address to use for this widget</p>
 </dd></dl>
 
