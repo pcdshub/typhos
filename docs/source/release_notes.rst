@@ -2,6 +2,20 @@
  Release History
 =================
 
+v1.1.4 (2020-02-25)
+===================
+
+Description
+-----------
+This is a bugfix release
+
+Compatibility / Fixes
+---------------------
+- Fix returning issue where certain devices could fail to load with a
+  "dictionary changed during iteration" error.
+- Fix issue where the documentaiton was not building properly.
+
+
 v1.1.3 (2020-02-10)
 ===================
 
