@@ -903,6 +903,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     def _load_template(self, filename):
         """Load template from file and return the widget."""
+        filename = pathlib.Path(filename)
         loader = (pydm.display.load_py_file if filename.suffix == '.py'
                   else pydm.display.load_ui_file)
 
