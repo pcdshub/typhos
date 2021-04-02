@@ -834,6 +834,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             widget = QtWidgets.QWidget()
             template = None
         else:
+            template = pathlib.Path(template)
             try:
                 widget = self._load_template(template)
             except Exception as ex:
