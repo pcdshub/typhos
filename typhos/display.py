@@ -842,7 +842,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 # If we have a previously defined template
                 if self._current_template is not None:
                     # Fallback to it so users have a choice
-                    widget = self._load_template(self._current_template)
+                    try:
+                        widget = self._load_template(self._current_template)
+                    except Exception:
+                        logger.exception(
+                            "Failed to fall back to previous template",
+                            self._current_template
+                        )
+                        template = None
+                        widget = None
+
                     pydm.exception.raise_to_operator(ex)
                 else:
                     widget = QtWidgets.QWidget()
