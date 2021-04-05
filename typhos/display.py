@@ -846,7 +846,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                         widget = self._load_template(self._current_template)
                     except Exception:
                         logger.exception(
-                            "Failed to fall back to previous template",
+                            "Failed to fall back to previous template: %s",
                             self._current_template
                         )
                         template = None
