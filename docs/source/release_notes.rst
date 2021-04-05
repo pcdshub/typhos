@@ -2,6 +2,21 @@
  Release History
 =================
 
+v1.1.6 (2021-04-05)
+===================
+
+Description
+-----------
+This is maintenance/compatibility release for pydm v1.11.0.
+
+Compatibility / Fixes
+---------------------
+- Internal fixes regarding error handling and input sanitization.
+  Some subtle issues cropped up here in the update to pydm v1.11.0.
+- Fix issue where the test suite would freeze when pydm displays
+  an exception to the user.
+
+
 v1.1.5 (2020-04-02)
 ===================
 

@@ -1,5 +1,6 @@
 import os
 
+import pydm
 import pytest
 
 import typhos
@@ -38,6 +39,9 @@ def test_cli_no_entry(monkeypatch, qtbot, happi_cfg):
 
 def test_cli_stylesheet(monkeypatch, qapp, qtbot, happi_cfg):
     monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
+    monkeypatch.setattr(
+        pydm.exception, 'raise_to_operator', lambda *_, **__: None
+    )
     with open('test.qss', 'w+') as handle:
         handle.write(
             "TyphosDeviceDisplay {qproperty-force_template: 'test.ui'}")

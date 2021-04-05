@@ -834,6 +834,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             widget = QtWidgets.QWidget()
             template = None
         else:
+            template = pathlib.Path(template)
             try:
                 widget = self._load_template(template)
             except Exception as ex:
@@ -841,7 +842,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 # If we have a previously defined template
                 if self._current_template is not None:
                     # Fallback to it so users have a choice
-                    widget = self._load_template(self._current_template)
+                    try:
+                        widget = self._load_template(self._current_template)
+                    except Exception:
+                        logger.exception(
+                            "Failed to fall back to previous template: %s",
+                            self._current_template
+                        )
+                        template = None
+                        widget = None
+
                     pydm.exception.raise_to_operator(ex)
                 else:
                     widget = QtWidgets.QWidget()
@@ -903,6 +913,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     def _load_template(self, filename):
         """Load template from file and return the widget."""
+        filename = pathlib.Path(filename)
         loader = (pydm.display.load_py_file if filename.suffix == '.py'
                   else pydm.display.load_ui_file)
 
