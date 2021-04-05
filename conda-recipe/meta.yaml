@@ -30,7 +30,7 @@ requirements:
     - qdarkstyle
     - qtawesome
     - qtconsole
-    - timechart
+    - timechart >=1.2.4
 
 about:
   home: https://github.com/pcdshub/typhos
