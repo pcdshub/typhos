@@ -2,6 +2,19 @@
  Release History
 =================
 
+v1.1.5 (2020-04-02)
+===================
+
+Description
+-----------
+This is a maintenance release
+
+Compatibility / Fixes
+---------------------
+- Fix an issue where certain data files were not included in the package
+  build.
+
+
 v1.1.4 (2020-02-26)
 ===================
 
