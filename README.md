@@ -4,7 +4,6 @@
 </p>
 
 [![Build Status](https://travis-ci.org/pcdshub/typhos.svg?branch=master)](https://travis-ci.org/pcdshub/typhos)
-[![codecov.io](https://codecov.io/github/pcdshub/typhos/coverage.svg?branch=master)](https://codecov.io/github/pcdshub/typhos?branch=master)
 
 > **WARNING**: This package was renamed.
 >
