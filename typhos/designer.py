@@ -8,6 +8,7 @@ from .positioner import TyphosPositionerWidget
 from .alarm import (TyphosAlarmCircle, TyphosAlarmRectangle,
                     TyphosAlarmTriangle, TyphosAlarmEllipse,
                     TyphosAlarmPolygon)
+from .widgets_aux import TyphosRelatedSuiteButton
 
 group_name = 'Typhos Widgets'
 TyphosSignalPanelPlugin = qtplugin_factory(TyphosSignalPanel,
@@ -34,3 +35,5 @@ TyphosAlarmEllipsePlugin = qtplugin_factory(TyphosAlarmEllipse,
                                             group=group_name)
 TyphosAlarmPolygonPlugin = qtplugin_factory(TyphosAlarmPolygon,
                                             group=group_name)
+TyphosRelatedSuiteButtonPlugin = qtplugin_factory(TyphosRelatedSuiteButton,
+                                                  group=group_name)
