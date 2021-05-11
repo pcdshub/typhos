@@ -8,6 +8,6 @@ pytest
 pytest-benchmark
 pytest-qt
 pytest-timeout
-sphinx
+sphinx<4.0.0
 sphinx_rtd_theme
 simplejson
