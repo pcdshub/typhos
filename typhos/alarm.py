@@ -5,8 +5,9 @@ from functools import partial
 
 from ophyd.device import Kind
 from pydm.widgets.channel import PyDMChannel
-from pydm.widgets.drawing import PyDMDrawing, PyDMDrawingCircle
-from qtpy import QtCore
+from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
+                                  PyDMDrawingRectangle)
+from qtpy import QtCore, QtGui, QtWidgets
 
 from .utils import channel_from_signal, get_all_signals_from_device, TyphosBase
 
@@ -44,9 +45,6 @@ class TyphosAlarmBase(TyphosBase):
 
         super().__init__(*args, **kwargs)
 
-        self.alarm_changed.connect(self.update_alarm_color)
-        self.alarm_changed.emit(self.alarm_summary)
-
     # Settings handling
     @QtCore.Property(KindLevel)
     def kindLevel(self):
@@ -65,8 +63,10 @@ class TyphosAlarmBase(TyphosBase):
         self._kind_level = kind_level
         self.update_alarm_config()
 
-    # Other properties
-    @property
+    # Signals
+    alarm_changed = QtCore.Signal(AlarmLevel)
+
+    # Methods
     def channels(self):
         """
         Let pydm know about our pydm channels
@@ -76,18 +76,6 @@ class TyphosAlarmBase(TyphosBase):
             ch.extend(lst)
         return ch
 
-    # Signals
-    alarm_changed = QtCore.Signal(AlarmLevel)
-
-    # Slots
-    def update_alarm_color(self, alarm):
-        for cls in self.__class__.mro():
-            if issubclass(cls, PyDMDrawing):
-                style = indicator_stylesheet(cls.__name__, alarm=alarm)
-                self.setStyleSheet(style)
-                break
-
-    # Methods
     def add_device(self, device):
         super().add_device(device)
         self.setup_alarm_config(device)
@@ -111,8 +99,8 @@ class TyphosAlarmBase(TyphosBase):
         channels = [
             PyDMChannel(
                 address=addr,
-                connection_slot=partial(self.update_connection, addr=addr)
-                severity_slot=partial(self.update_severity, addr=addr)
+                connection_slot=partial(self.update_connection, addr=addr),
+                severity_slot=partial(self.update_severity, addr=addr),
                 )
             for addr in channel_addrs]
 
@@ -150,18 +138,51 @@ class TyphosAlarmBase(TyphosBase):
         self.alarm_summary = new_alarm
 
 
-class TyphosAlarmCircleIndicator(TyphosAlarmBase, PyDMDrawingCircle):
-    """
-    Circle indicator for device alarm state.
-    """
-    pass
+class TyphosAlarmShape(TyphosAlarmBase):
+    def __init__(self, *args, **kwargs):
+        self._pen = QtGui.QPen(QtCore.Qt.NoPen)
+        self._alarm_color = 'rgba(255,255,255,255)'
+        super().__init__(self, *args, **kwargs)
+        self.alarm_changed.connect(self.update_alarm_color)
+
+    def update_alarm_color(self, alarm):
+        if alarm in (None, AlarmLevel.disconnected):
+            self._alarm_color = 'rgba(255,255,255,255)'
+        elif alarm is AlarmLevel.no_alarm:
+            self._alarm_color = 'rgba(0,255,0,255)'
+        elif alarm is AlarmLevel.minor:
+            self._alarm_color = 'rgba(255,255,0,255)'
+        elif alarm is AlarmLevel.major:
+            self._alarm_color = 'rgba(255,0,0,255)'
+        elif alarm is AlarmLevel.invalid:
+            self._alarm_color = 'rgba(255,0,255,255)'
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        opt = QtWidgets.QStyleOption()
+        opt.initFrom(self)
+        self.style().drawPrimitive(QtWidgets.QStyle.PE_Widget,
+                                   opt, painter, self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+
+        painter.setBrush(self._alarm_color)
+        painter.setPen(self._pen)
+
+        self.draw_item(painter)
+
+    def draw_item(painter):
+        painter.translate(self.width()/2, self.height()/2)
 
 
-class TyphosAlarmRectangleIndicator(TyphosAlarmBase, PyDMDrawingRectangle):
-    """
-    Rectangle indicator for device alarm state.
-    """
-    pass
+class TyphosAlarmCircle(TyphosAlarmShape):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def draw_item(painter):
+        super().draw_item(painter)
+        radius = min(self.width(), self.height())/2
+        painter.drawEllipse(QtCore.QPoint(0, 0), radius, radius)
 
 
 kind_filters = {
@@ -174,26 +195,3 @@ kind_filters = {
     KindLevel.omitted:
         (lambda walk: True),
     }
-
-
-def indicator_stylesheet(cls, alarm=None)
-    base = (
-        f'{cls} '
-        '{border: none; '
-        ' background: transparent;'
-        ' qproperty-penColor: black;'
-        ' qproperty-penWidth: 2;'
-        ' qproperty-penStyle: SolidLine;'
-        ' qproperty-brush: rgba'
-        )
-
-    if alarm in (None, AlarmLevel.disconnected):
-        return base + '(255,255,255,255);}'
-    elif alarm is AlarmLevel.no_alarm:
-        return base + '(0,255,0,255);}'
-    elif alarm is AlarmLevel.minor:
-        return base + '(255,255,0,255);}'
-    elif alarm is AlarmLevel.major:
-        return base + '(255,0,0,255);}'
-    elif alarm is AlarmLevel.invalid:
-        return base + '(255,0,255,255);}'
