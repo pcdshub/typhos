@@ -9,7 +9,8 @@ from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
                                   PyDMDrawingRectangle)
 from qtpy import QtCore, QtGui, QtWidgets
 
-from .utils import channel_from_signal, get_all_signals_from_device, TyphosBase
+from .utils import (channel_from_signal, get_all_signals_from_device,
+                    TyphosObject)
 
 
 class KindLevel:
@@ -27,14 +28,12 @@ class AlarmLevel:
     disconnected = 4
 
 
-class TyphosAlarmBase(TyphosBase):
-    # Qt macros for enum handling
-    QtCore.Q_ENUMS(KindLevel)
-    QtCore.Q_ENUMS(AlarmLevel)
+# Qt macros for enum handling
+QtCore.Q_ENUMS(KindLevel)
+QtCore.Q_ENUMS(AlarmLevel)
 
-    # Constants
-    pydm_shape = None
 
+class TyphosAlarmBase(TyphosObject):
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.hinted
         self.addr_connected = {}
@@ -42,31 +41,9 @@ class TyphosAlarmBase(TyphosBase):
         self.addr_channels = {}
         self.device_channels = {}
         self.alarm_summary = AlarmLevel.disconnected
-
         super().__init__(*args, **kwargs)
+        self.alarm_changed.connect(self.set_alarm_color)
 
-    # Settings handling
-    @QtCore.Property(KindLevel)
-    def kindLevel(self):
-        """
-        Determines which signals to include in the alarm summary.
-
-        If this is "hinted", only include hinted signals.
-        If this is "normal", include normal and hinted signals.
-        If this is "config", include everything except for omitted signals
-        If this is "omitted", include all signals
-        """
-        return self._kind_level
-
-    @kindLevel.setter
-    def kindLevel(self, kind_level):
-        self._kind_level = kind_level
-        self.update_alarm_config()
-
-    # Signals
-    alarm_changed = QtCore.Signal(AlarmLevel)
-
-    # Methods
     def channels(self):
         """
         Let pydm know about our pydm channels
@@ -89,7 +66,6 @@ class TyphosAlarmBase(TyphosBase):
         self.addr_severity = {}
         self.device_channels = {}
 
-
     def setup_alarm_config(self, device):
         sigs = get_all_signals_from_device(
             device,
@@ -111,22 +87,18 @@ class TyphosAlarmBase(TyphosBase):
             self.addr_severity[ch.address] = AlarmLevel.invalid
             ch.connect()
 
-
     def update_alarm_config(self):
         self.clear_all_alarm_configs()
         for dev in self.devices:
             self.setup_alarms(device)
 
-
     def update_connection(self, connected, addr):
         self.addr_connected[addr] = connected
         self.update_current_alarm()
 
-
     def update_severity(self, severity, addr):
         self.addr_severity[addr] = severity
         self.update_current_alarm()
-
 
     def update_current_alarm(self):
         if not all(self.addr_connected.values()):
@@ -137,52 +109,79 @@ class TyphosAlarmBase(TyphosBase):
             self.alarm_changed.emit(new_alarm)
         self.alarm_summary = new_alarm
 
-
-class TyphosAlarmShape(TyphosAlarmBase):
-    def __init__(self, *args, **kwargs):
-        self._pen = QtGui.QPen(QtCore.Qt.NoPen)
-        self._alarm_color = 'rgba(255,255,255,255)'
-        super().__init__(self, *args, **kwargs)
-        self.alarm_changed.connect(self.update_alarm_color)
-
-    def update_alarm_color(self, alarm):
-        if alarm in (None, AlarmLevel.disconnected):
-            self._alarm_color = 'rgba(255,255,255,255)'
-        elif alarm is AlarmLevel.no_alarm:
-            self._alarm_color = 'rgba(0,255,0,255)'
-        elif alarm is AlarmLevel.minor:
-            self._alarm_color = 'rgba(255,255,0,255)'
-        elif alarm is AlarmLevel.major:
-            self._alarm_color = 'rgba(255,0,0,255)'
-        elif alarm is AlarmLevel.invalid:
-            self._alarm_color = 'rgba(255,0,255,255)'
-        self.update()
-
-    def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
-        opt = QtWidgets.QStyleOption()
-        opt.initFrom(self)
-        self.style().drawPrimitive(QtWidgets.QStyle.PE_Widget,
-                                   opt, painter, self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-
-        painter.setBrush(self._alarm_color)
-        painter.setPen(self._pen)
-
-        self.draw_item(painter)
-
-    def draw_item(painter):
-        painter.translate(self.width()/2, self.height()/2)
+    def set_alarm_color(self, alarm_level):
+        self.setStyleSheet(indicator_stylesheet(self.shape_cls, alarm_level))
 
 
-class TyphosAlarmCircle(TyphosAlarmShape):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+def indicator_stylesheet(shape_cls, alarm):
+    base = (
+        f'{shape_cls} '
+        '{border: none; '
+        ' background: transparent;'
+        ' qproperty-penColor: black;'
+        ' qproperty-penWidth: 2;'
+        ' qproperty-penStyle: SolidLine;'
+        ' qproperty-brush: rgba'
+        )
 
-    def draw_item(painter):
-        super().draw_item(painter)
-        radius = min(self.width(), self.height())/2
-        painter.drawEllipse(QtCore.QPoint(0, 0), radius, radius)
+    if alarm is AlarmLevel.disconnected:
+        return base + '(255,255,255,255);}'
+    elif alarm is AlarmLevel.no_alarm:
+        return base + '(0,255,0,255);}'
+    elif alarm is AlarmLevel.minor:
+        return base + '(255,255,0,255);}'
+    elif alarm is AlarmLevel.major:
+        return base + '(255,0,0,255);}'
+    elif alarm is AlarmLevel.invalid:
+        return base + '(255,0,255,255);}'
+    else:
+        raise ValueError(f'Recieved invalid alarm level {alarm}')
+
+
+class TyphosAlarmCircle(TyphosAlarmBase, PyDMDrawingCircle):
+    shape_cls = 'PyDMDrawingCircle'
+
+    @QtCore.Property(KindLevel)
+    def kindLevel(self):
+        """
+        Determines which signals to include in the alarm summary.
+
+        If this is "hinted", only include hinted signals.
+        If this is "normal", include normal and hinted signals.
+        If this is "config", include everything except for omitted signals
+        If this is "omitted", include all signals
+        """
+        return self._kind_level
+
+    @kindLevel.setter
+    def kindLevel(self, kind_level):
+        self._kind_level = kind_level
+        self.update_alarm_config()
+
+    alarm_changed = QtCore.Signal(AlarmLevel)
+
+
+class TyphosAlarmRectangle(TyphosAlarmBase, PyDMDrawingRectangle):
+    shape_cls = 'PyDMDrawingRectangle'
+
+    @QtCore.Property(KindLevel)
+    def kindLevel(self):
+        """
+        Determines which signals to include in the alarm summary.
+
+        If this is "hinted", only include hinted signals.
+        If this is "normal", include normal and hinted signals.
+        If this is "config", include everything except for omitted signals
+        If this is "omitted", include all signals
+        """
+        return self._kind_level
+
+    @kindLevel.setter
+    def kindLevel(self, kind_level):
+        self._kind_level = kind_level
+        self.update_alarm_config()
+
+    alarm_changed = QtCore.Signal(AlarmLevel)
 
 
 kind_filters = {
