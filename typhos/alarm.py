@@ -33,6 +33,14 @@ class AlarmLevel:
 QtCore.Q_ENUMS(KindLevel)
 QtCore.Q_ENUMS(AlarmLevel)
 
+SHAPES = (
+    PyDMDrawingCircle,
+    PyDMDrawingRectangle,
+    PyDMDrawingTriangle,
+    PyDMDrawingEllipse,
+    PyDMDrawingPolygon,
+    )
+
 
 class TyphosAlarmBase(TyphosObject):
     def __init__(self, *args, **kwargs):
@@ -154,6 +162,7 @@ def create_alarm_widget_cls(pydm_drawing_widget_cls):
             )
         )
 
+
 @QtCore.Property(KindLevel)
 def kindLevel(self):
     """
@@ -166,28 +175,20 @@ def kindLevel(self):
     """
     return self._kind_level
 
+
 @kindLevel.setter
 def kindLevel(self, kind_level):
     self._kind_level = kind_level
     self.update_alarm_config()
 
 
-shapes = (
-    PyDMDrawingCircle,
-    PyDMDrawingRectangle,
-    PyDMDrawingTriangle,
-    PyDMDrawingEllipse,
-    PyDMDrawingPolygon,
-    )
-
 def init_shape_classes():
-    for shape in shapes:
+    for shape in SHAPES:
         cls = create_alarm_widget_cls(shape)
         globals()[cls.__name__] = cls
 
 # This creates classes named e.g. "TyphosAlarmCircle"
 init_shape_classes()
-
 
 kind_filters = {
     KindLevel.hinted:
