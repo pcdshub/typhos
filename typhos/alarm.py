@@ -6,7 +6,8 @@ from functools import partial
 from ophyd.device import Kind
 from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
-                                  PyDMDrawingRectangle)
+                                  PyDMDrawingRectangle, PyDMDrawingTriangle,
+                                  PyDMDrawingEllipse, PyDMDrawingPolygon)
 from qtpy import QtCore, QtGui, QtWidgets
 
 from .utils import (channel_from_signal, get_all_signals_from_device,
@@ -174,6 +175,9 @@ def kindLevel(self, kind_level):
 shapes = (
     PyDMDrawingCircle,
     PyDMDrawingRectangle,
+    PyDMDrawingTriangle,
+    PyDMDrawingEllipse,
+    PyDMDrawingPolygon,
     )
 
 def init_shape_classes():
