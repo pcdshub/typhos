@@ -138,50 +138,51 @@ def indicator_stylesheet(shape_cls, alarm):
         raise ValueError(f'Recieved invalid alarm level {alarm}')
 
 
-class TyphosAlarmCircle(TyphosAlarmBase, PyDMDrawingCircle):
-    shape_cls = 'PyDMDrawingCircle'
+def create_alarm_widget_cls(pydm_drawing_widget_cls):
+    """Create a working alarm widget class based on a PyDM drawing widget."""
+    drawing_widget_cls_name = pydm_drawing_widget_cls.__name__
+    shape = drawing_widget_cls_name.split('PyDMDrawing')[1]
+    alarm_widget_name = 'TyphosAlarm' + shape
+    return type(
+        alarm_widget_name,
+        (TyphosAlarmBase, pydm_drawing_widget_cls),
+        dict(
+            shape_cls=drawing_widget_cls_name,
+            alarm_changed=QtCore.Signal(AlarmLevel),
+            kindLevel=kindLevel,
+            )
+        )
 
-    @QtCore.Property(KindLevel)
-    def kindLevel(self):
-        """
-        Determines which signals to include in the alarm summary.
+@QtCore.Property(KindLevel)
+def kindLevel(self):
+    """
+    Determines which signals to include in the alarm summary.
 
-        If this is "hinted", only include hinted signals.
-        If this is "normal", include normal and hinted signals.
-        If this is "config", include everything except for omitted signals
-        If this is "omitted", include all signals
-        """
-        return self._kind_level
+    If this is "hinted", only include hinted signals.
+    If this is "normal", include normal and hinted signals.
+    If this is "config", include everything except for omitted signals
+    If this is "omitted", include all signals
+    """
+    return self._kind_level
 
-    @kindLevel.setter
-    def kindLevel(self, kind_level):
-        self._kind_level = kind_level
-        self.update_alarm_config()
-
-    alarm_changed = QtCore.Signal(AlarmLevel)
+@kindLevel.setter
+def kindLevel(self, kind_level):
+    self._kind_level = kind_level
+    self.update_alarm_config()
 
 
-class TyphosAlarmRectangle(TyphosAlarmBase, PyDMDrawingRectangle):
-    shape_cls = 'PyDMDrawingRectangle'
+shapes = (
+    PyDMDrawingCircle,
+    PyDMDrawingRectangle,
+    )
 
-    @QtCore.Property(KindLevel)
-    def kindLevel(self):
-        """
-        Determines which signals to include in the alarm summary.
+def init_shape_classes():
+    for shape in shapes:
+        cls = create_alarm_widget_cls(shape)
+        globals()[cls.__name__] = cls
 
-        If this is "hinted", only include hinted signals.
-        If this is "normal", include normal and hinted signals.
-        If this is "config", include everything except for omitted signals
-        If this is "omitted", include all signals
-        """
-        return self._kind_level
-
-    @kindLevel.setter
-    def kindLevel(self, kind_level):
-        self._kind_level = kind_level
-        self.update_alarm_config()
-
-    alarm_changed = QtCore.Signal(AlarmLevel)
+# This creates classes named e.g. "TyphosAlarmCircle"
+init_shape_classes()
 
 
 kind_filters = {
