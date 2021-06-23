@@ -6,7 +6,7 @@ from functools import partial
 from ophyd.device import Kind
 from ophyd.signal import EpicsSignalBase
 from pydm.widgets.channel import PyDMChannel
-from pydm.widgets.drawing import (PyDMDrawingCircle,
+from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
                                   PyDMDrawingRectangle, PyDMDrawingTriangle,
                                   PyDMDrawingEllipse, PyDMDrawingPolygon)
 from qtpy import QtCore
@@ -47,7 +47,7 @@ KIND_FILTERS = {
     }
 
 
-class TyphosAlarmBase(TyphosObject):
+class TyphosAlarm(TyphosObject, PyDMDrawing):
     """
     Class that holds logic and routines common to all Typhos Alarm widgets.
 
@@ -56,19 +56,64 @@ class TyphosAlarmBase(TyphosObject):
 
     We will consider a subset of the signals that is of KindLevel and above and
     summarize state based on the "worst" alarm we see as defined by AlarmLevel.
-
-    This cannot be a QWidget because pyqt does not support multiple
-    inheritance. In that sense, this is more of a mix-in/interface class than a
-    traditional base class, and it will not work if instantiated on its own.
-
-    Below, we generate a bunch of TyphosAlarmBase subclasses via
-    :func:`create_alarm_widget_cls`.
     """
+    QtCore.Q_ENUMS(KindLevel)
+    QtCore.Q_ENUMS(AlarmLevel)
+
+    alarm_changed = QtCore.Signal(AlarmLevel)
+
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.HINTED
         super().__init__(*args, **kwargs)
         self.init_alarm_state()
         self.alarm_changed.connect(self.set_alarm_color)
+
+    @QtCore.Property(KindLevel)
+    def kindLevel(self):
+        """
+        Determines which signals to include in the alarm summary.
+
+        If this is "hinted", only include hinted signals.
+        If this is "normal", include normal and hinted signals.
+        If this is "config", include everything except for omitted signals
+        If this is "omitted", include all signals
+        """
+        return self._kind_level
+
+    @kindLevel.setter
+    def kindLevel(self, kind_level):
+        # We must update the alarm config to add/remove PVs as appropriate.
+        self._kind_level = kind_level
+        self.update_alarm_config()
+
+    @QtCore.Property(str)
+    def channel(self):
+        """The channel address to use for this widget"""
+        if self._channel:
+            return str(self._channel)
+        return None
+
+    @channel.setter
+    def channel(self, value):
+        if self._channel != value:
+            # Remove old connection
+            if self._channels:
+                self._channels.clear()
+                for channel in self._channels:
+                    if hasattr(channel, 'disconnect'):
+                        channel.disconnect()
+            # Load new channel
+            self._channel = str(value)
+            channel = HappiChannel(address=self._channel,
+                                   tx_slot=self._tx)
+            self._channels = [channel]
+            # Connect the channel to the HappiPlugin
+            if hasattr(channel, 'connect'):
+                channel.connect()
+
+    def _tx(self, value):
+        """Receive information from happi channel"""
+        self.add_device(value['obj'])
 
     def init_alarm_state(self):
         self.addr_connected = {}
@@ -175,7 +220,27 @@ class TyphosAlarmBase(TyphosObject):
         """
         Change the alarm color to the shade defined by the current alarm level.
         """
-        self.setStyleSheet(indicator_stylesheet(self.shape_cls, alarm_level))
+        self.setStyleSheet(indicator_stylesheet(self.__class__, alarm_level))
+
+
+class TyphosAlarmCircle(TyphosAlarm, PyDMDrawingCircle):
+    pass
+
+
+class TyphosAlarmRectangle(TyphosAlarm, PyDMDrawingRectangle):
+    pass
+
+
+class TyphosAlarmTriangle(TyphosAlarm, PyDMDrawingTriangle):
+    pass
+
+
+class TyphosAlarmEllipse(TyphosAlarm, PyDMDrawingEllipse):
+    pass
+
+
+class TyphosAlarmPolygon(TyphosAlarm, PyDMDrawingPolygon):
+    pass
 
 
 def indicator_stylesheet(shape_cls, alarm):
@@ -184,8 +249,8 @@ def indicator_stylesheet(shape_cls, alarm):
 
     Parameters
     ----------
-    shape_cls : str
-        The name of the PyDMDrawing widget subclass.
+    shape_cls : type
+        The PyDMDrawing widget subclass.
 
     alarm : int
         The value from AlarmLevel
@@ -196,7 +261,7 @@ def indicator_stylesheet(shape_cls, alarm):
         The correctly colored stylesheet to apply to the widget.
     """
     base = (
-        f'{shape_cls} '
+        f'{shape_cls.__name__} '
         '{border: none; '
         ' background: transparent;'
         ' qproperty-penColor: black;'
@@ -217,95 +282,3 @@ def indicator_stylesheet(shape_cls, alarm):
         return base + '(255,0,255,255);}'
     else:
         raise ValueError(f'Recieved invalid alarm level {alarm}')
-
-
-def create_alarm_widget_cls(pydm_drawing_widget_cls):
-    """
-    Create a working alarm widget class based on a PyDM drawing widget.
-
-    This is used to semi-automatically create a bunch of alarm shape widgets
-    based on stock widgets from pydm.
-
-    There are a few boilerplate definitions we need to add specifically inside
-    of a QWidget subclass, and a shape_cls paramter to set so we can choose the
-    correct class inside of our indicator stylesheet.
-
-    Parameters
-    ----------
-    pydm_drawing_widget_cls : type
-        The class we want to use as a base
-
-    Returns
-    -------
-    alarm_widget_cls : type
-        The class that will work as a Typhos alarm widget. This will be named
-        f"TyphosAlarm{shape}", where shape is pulled from the PyDM class name.
-    """
-    drawing_widget_cls_name = pydm_drawing_widget_cls.__name__
-    shape = drawing_widget_cls_name.split('PyDMDrawing')[1]
-    alarm_widget_name = 'TyphosAlarm' + shape
-
-    class TyphosAlarm(TyphosAlarmBase, pydm_drawing_widget_cls):
-        QtCore.Q_ENUMS(KindLevel)
-        QtCore.Q_ENUMS(AlarmLevel)
-
-        alarm_changed = QtCore.Signal(AlarmLevel)
-        shape_cls = drawing_widget_cls_name
-
-        @QtCore.Property(KindLevel)
-        def kindLevel(self):
-            """
-            Determines which signals to include in the alarm summary.
-
-            If this is "hinted", only include hinted signals.
-            If this is "normal", include normal and hinted signals.
-            If this is "config", include everything except for omitted signals
-            If this is "omitted", include all signals
-            """
-            return self._kind_level
-
-        @kindLevel.setter
-        def kindLevel(self, kind_level):
-            # We must update the alarm config to add/remove PVs as appropriate.
-            self._kind_level = kind_level
-            self.update_alarm_config()
-
-        @QtCore.Property(str)
-        def channel(self):
-            """The channel address to use for this widget"""
-            if self._channel:
-                return str(self._channel)
-            return None
-
-        @channel.setter
-        def channel(self, value):
-            if self._channel != value:
-                # Remove old connection
-                if self._channels:
-                    self._channels.clear()
-                    for channel in self._channels:
-                        if hasattr(channel, 'disconnect'):
-                            channel.disconnect()
-                # Load new channel
-                self._channel = str(value)
-                channel = HappiChannel(address=self._channel,
-                                       tx_slot=self._tx)
-                self._channels = [channel]
-                # Connect the channel to the HappiPlugin
-                if hasattr(channel, 'connect'):
-                    channel.connect()
-
-        def _tx(self, value):
-            """Receive information from happi channel"""
-            self.add_device(value['obj'])
-
-
-    return type(alarm_widget_name, (TyphosAlarm,), {})
-
-
-# Explicitly create the classes one by one for clarity and readability
-TyphosAlarmCircle = create_alarm_widget_cls(PyDMDrawingCircle)
-TyphosAlarmRectangle = create_alarm_widget_cls(PyDMDrawingRectangle)
-TyphosAlarmTriangle = create_alarm_widget_cls(PyDMDrawingTriangle)
-TyphosAlarmEllipse = create_alarm_widget_cls(PyDMDrawingEllipse)
-TyphosAlarmPolygon = create_alarm_widget_cls(PyDMDrawingPolygon)
