@@ -5,10 +5,10 @@ from functools import partial
 
 from ophyd.device import Kind
 from pydm.widgets.channel import PyDMChannel
-from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
+from pydm.widgets.drawing import (PyDMDrawingCircle,
                                   PyDMDrawingRectangle, PyDMDrawingTriangle,
                                   PyDMDrawingEllipse, PyDMDrawingPolygon)
-from qtpy import QtCore, QtGui, QtWidgets
+from qtpy import QtCore
 
 from .utils import (channel_from_signal, get_all_signals_from_device,
                     TyphosObject)
@@ -110,7 +110,7 @@ class TyphosAlarmBase(TyphosObject):
     def update_alarm_config(self):
         self.clear_all_alarm_configs()
         for dev in self.devices:
-            self.setup_alarms(device)
+            self.setup_alarms(dev)
 
     def update_connection(self, connected, addr):
         self.addr_connected[addr] = connected
@@ -197,6 +197,7 @@ def init_shape_classes():
     for shape in SHAPES:
         cls = create_alarm_widget_cls(shape)
         globals()[cls.__name__] = cls
+
 
 # This creates classes named e.g. "TyphosAlarmCircle"
 init_shape_classes()
