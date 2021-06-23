@@ -15,18 +15,18 @@ from .utils import (channel_from_signal, get_all_signals_from_device,
 
 
 class KindLevel:
-    hinted = 0
-    normal = 1
-    config = 2
-    omitted = 3
+    HINTED = 0
+    NORMAL = 1
+    CONFIG = 2
+    OMITTED = 3
 
 
 class AlarmLevel:
-    no_alarm = 0
-    minor = 1
-    major = 2
-    invalid = 3
-    disconnected = 4
+    NO_ALARM = 0
+    MINOR = 1
+    MAJOR = 2
+    INVALID = 3
+    DISCONNECTED = 4
 
 
 # Qt macros for enum handling
@@ -42,25 +42,25 @@ SHAPES = (
     )
 
 KIND_FILTERS = {
-    KindLevel.hinted:
+    KindLevel.HINTED:
         (lambda walk: walk.item.kind == Kind.hinted),
-    KindLevel.normal:
+    KindLevel.NORMAL:
         (lambda walk: walk.item.kind in (Kind.hinted, Kind.normal)),
-    KindLevel.config:
+    KindLevel.CONFIG:
         (lambda walk: walk.item.kind != Kind.omitted),
-    KindLevel.omitted:
+    KindLevel.OMITTED:
         (lambda walk: True),
     }
 
 
 class TyphosAlarmBase(TyphosObject):
     def __init__(self, *args, **kwargs):
-        self._kind_level = KindLevel.hinted
+        self._kind_level = KindLevel.HINTED
         self.addr_connected = {}
         self.addr_severity = {}
         self.addr_channels = {}
         self.device_channels = {}
-        self.alarm_summary = AlarmLevel.disconnected
+        self.alarm_summary = AlarmLevel.DISCONNECTED
         super().__init__(*args, **kwargs)
         self.alarm_changed.connect(self.set_alarm_color)
 
@@ -104,7 +104,7 @@ class TyphosAlarmBase(TyphosObject):
         for ch in channels:
             self.addr_channels[ch.address] = ch
             self.addr_connected[ch.address] = False
-            self.addr_severity[ch.address] = AlarmLevel.invalid
+            self.addr_severity[ch.address] = AlarmLevel.INVALID
             ch.connect()
 
     def update_alarm_config(self):
@@ -122,7 +122,7 @@ class TyphosAlarmBase(TyphosObject):
 
     def update_current_alarm(self):
         if not all(self.addr_connected.values()):
-            new_alarm = AlarmLevel.disconnected
+            new_alarm = AlarmLevel.DISCONNECTED
         else:
             new_alarm = max(self.addr_severity.values())
         if new_alarm != self.alarm_summary:
@@ -144,15 +144,15 @@ def indicator_stylesheet(shape_cls, alarm):
         ' qproperty-brush: rgba'
         )
 
-    if alarm is AlarmLevel.disconnected:
+    if alarm is AlarmLevel.DISCONNECTED:
         return base + '(255,255,255,255);}'
-    elif alarm is AlarmLevel.no_alarm:
+    elif alarm is AlarmLevel.NO_ALARM:
         return base + '(0,255,0,255);}'
-    elif alarm is AlarmLevel.minor:
+    elif alarm is AlarmLevel.MINOR:
         return base + '(255,255,0,255);}'
-    elif alarm is AlarmLevel.major:
+    elif alarm is AlarmLevel.MAJOR:
         return base + '(255,0,0,255);}'
-    elif alarm is AlarmLevel.invalid:
+    elif alarm is AlarmLevel.INVALID:
         return base + '(255,0,255,255);}'
     else:
         raise ValueError(f'Recieved invalid alarm level {alarm}')
@@ -200,5 +200,3 @@ def init_shape_classes():
 
 # This creates classes named e.g. "TyphosAlarmCircle"
 init_shape_classes()
-
-
