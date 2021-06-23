@@ -67,13 +67,17 @@ class TyphosAlarmBase(TyphosObject):
     """
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.HINTED
+        super().__init__(*args, **kwargs)
+        self.init_alarm_state()
+        self.alarm_changed.connect(self.set_alarm_color)
+
+    def init_alarm_state(self):
         self.addr_connected = {}
         self.addr_severity = {}
         self.addr_channels = {}
         self.device_channels = {}
         self.alarm_summary = AlarmLevel.DISCONNECTED
-        super().__init__(*args, **kwargs)
-        self.alarm_changed.connect(self.set_alarm_color)
+        self.set_alarm_color(AlarmLevel.DISCONNECTED)
 
     def channels(self):
         """
@@ -98,11 +102,7 @@ class TyphosAlarmBase(TyphosObject):
         channels = self.addr_channels.values()
         for ch in channels:
             ch.disconnect()
-        self.addr_channels = {}
-        self.addr_connected = {}
-        self.addr_severity = {}
-        self.device_channels = {}
-        self.set_alarm_color(AlarmLevel.DISCONNECTED)
+        self.init_alarm_state()
 
     def setup_alarm_config(self, device):
         """
