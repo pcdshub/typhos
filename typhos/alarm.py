@@ -15,6 +15,7 @@ from .utils import (channel_from_signal, get_all_signals_from_device,
 
 
 class KindLevel:
+    """QT Enum for Ophyd Kind properties."""
     HINTED = 0
     NORMAL = 1
     CONFIG = 2
@@ -22,6 +23,7 @@ class KindLevel:
 
 
 class AlarmLevel:
+    """QT Enum for Typhos Alarm levels."""
     NO_ALARM = 0
     MINOR = 1
     MAJOR = 2
@@ -29,10 +31,11 @@ class AlarmLevel:
     DISCONNECTED = 4
 
 
-# Qt macros for enum handling
+# Qt macros for enum handling: just need to declare them as enums
 QtCore.Q_ENUMS(KindLevel)
 QtCore.Q_ENUMS(AlarmLevel)
 
+# List of shapes to support for our alarm widgets.
 SHAPES = (
     PyDMDrawingCircle,
     PyDMDrawingRectangle,
@@ -41,6 +44,7 @@ SHAPES = (
     PyDMDrawingPolygon,
     )
 
+# Define behavior for the user's Kind selection.
 KIND_FILTERS = {
     KindLevel.HINTED:
         (lambda walk: walk.item.kind == Kind.hinted),
@@ -54,6 +58,22 @@ KIND_FILTERS = {
 
 
 class TyphosAlarmBase(TyphosObject):
+    """
+    Class that holds logic and routines common to all Typhos Alarm widgets.
+
+    Overall, these classes exist to summarize alarm states from Ophyd Devices
+    and change the colors on indicator widgets appropriately.
+
+    We will consider a subset of the signals that is of KindLevel and above and
+    summarize state based on the "worst" alarm we see as defined by AlarmLevel.
+
+    This cannot be a QWidget because pyqt does not support multiple
+    inheritance. In that sense, this is more of a mix-in/interface class than a
+    traditional base class, and it will not work if instantiated on its own.
+
+    Below, we generate a bunch of TyphosAlarmBase subclasses via
+    :func:`init_shape_classes`.
+    """
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.HINTED
         self.addr_connected = {}
@@ -66,7 +86,7 @@ class TyphosAlarmBase(TyphosObject):
 
     def channels(self):
         """
-        Let pydm know about our pydm channels
+        Let pydm know about our pydm channels.
         """
         ch = []
         for lst in self.device_channels.values():
@@ -74,10 +94,16 @@ class TyphosAlarmBase(TyphosObject):
         return ch
 
     def add_device(self, device):
+        """
+        Initialize our alarm handling when adding a device.
+        """
         super().add_device(device)
         self.setup_alarm_config(device)
 
     def clear_all_alarm_configs(self):
+        """
+        Reset this widget down to the "no alarm handling" state.
+        """
         channels = self.addr_channels.values()
         for ch in channels:
             ch.disconnect()
@@ -85,8 +111,16 @@ class TyphosAlarmBase(TyphosObject):
         self.addr_connected = {}
         self.addr_severity = {}
         self.device_channels = {}
+        self.set_alarm_color(AlarmLevel.DISCONNECTED)
 
     def setup_alarm_config(self, device):
+        """
+        Add a device to the alarm summary.
+
+        This will pick PVs based on the device kind and the configured kind
+        level, configuring the PyDMChannels to update our alarm state and
+        color when we get updates from our PVs.
+        """
         sigs = get_all_signals_from_device(
             device,
             filter_by=KIND_FILTERS[self._kind_level]
@@ -108,19 +142,34 @@ class TyphosAlarmBase(TyphosObject):
             ch.connect()
 
     def update_alarm_config(self):
+        """
+        Clean up the existing alarm config and create a new one.
+
+        This must be called when settings like KindLevel are changed so we can
+        re-evaluate them.
+        """
         self.clear_all_alarm_configs()
         for dev in self.devices:
             self.setup_alarms(dev)
 
     def update_connection(self, connected, addr):
+        """Slot that will be called when a PV connects or disconnects."""
         self.addr_connected[addr] = connected
         self.update_current_alarm()
 
     def update_severity(self, severity, addr):
+        """Slot that will be called when a PV's alarm severity changes."""
         self.addr_severity[addr] = severity
         self.update_current_alarm()
 
     def update_current_alarm(self):
+        """
+        Check what the current worst available alarm state is.
+
+        If the alarm state is different than the last time we checked,
+        emit the "alarm_changed" signal. This signal is configured at
+        init to change the color of this widget.
+        """
         if not all(self.addr_connected.values()):
             new_alarm = AlarmLevel.DISCONNECTED
         else:
@@ -130,10 +179,29 @@ class TyphosAlarmBase(TyphosObject):
         self.alarm_summary = new_alarm
 
     def set_alarm_color(self, alarm_level):
+        """
+        Change the alarm color to the shade defined by the current alarm level.
+        """
         self.setStyleSheet(indicator_stylesheet(self.shape_cls, alarm_level))
 
 
 def indicator_stylesheet(shape_cls, alarm):
+    """
+    Create the indicator stylesheet that will modify a PyDMDrawing's color.
+
+    Parameters
+    ----------
+    shape_cls : str
+        The name of the PyDMDrawing widget subclass.
+
+    alarm : int
+        The value from AlarmLevel
+
+    Returns
+    -------
+    indicator_stylesheet : str
+        The correctly colored stylesheet to apply to the widget.
+    """
     base = (
         f'{shape_cls} '
         '{border: none; '
@@ -159,7 +227,27 @@ def indicator_stylesheet(shape_cls, alarm):
 
 
 def create_alarm_widget_cls(pydm_drawing_widget_cls):
-    """Create a working alarm widget class based on a PyDM drawing widget."""
+    """
+    Create a working alarm widget class based on a PyDM drawing widget.
+
+    This is used to semi-automatically create a bunch of alarm shape widgets
+    based on stock widgets from pydm.
+
+    There are a few boilerplate definitions we need to add specifically inside
+    of a QWidget subclass, and a shape_cls paramter to set so we can choose the
+    correct class inside of our indicator stylesheet.
+
+    Parameters
+    ----------
+    pydm_drawing_widget_cls : type
+        The class we want to use as a base
+
+    Returns
+    -------
+    alarm_widget_cls : type
+        The class that will work as a Typhos alarm widget. This will be named
+        f"TyphosAlarm{shape}", where shape is pulled from the PyDM class name.
+    """
     drawing_widget_cls_name = pydm_drawing_widget_cls.__name__
     shape = drawing_widget_cls_name.split('PyDMDrawing')[1]
     alarm_widget_name = 'TyphosAlarm' + shape
@@ -174,6 +262,7 @@ def create_alarm_widget_cls(pydm_drawing_widget_cls):
         )
 
 
+# Define kindLevel inside the module so we can use it in our factory above
 @QtCore.Property(KindLevel)
 def kindLevel(self):
     """
@@ -189,11 +278,17 @@ def kindLevel(self):
 
 @kindLevel.setter
 def kindLevel(self, kind_level):
+    # We must update the alarm config to add/remove PVs as appropriate.
     self._kind_level = kind_level
     self.update_alarm_config()
 
 
 def init_shape_classes():
+    """
+    Create alarm shape classes in the global scope.
+
+    This will use every PyDMDrawing subclass found in the SHAPES variable.
+    """
     for shape in SHAPES:
         cls = create_alarm_widget_cls(shape)
         globals()[cls.__name__] = cls
