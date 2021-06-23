@@ -59,6 +59,8 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
     """
     QtCore.Q_ENUMS(KindLevel)
     QtCore.Q_ENUMS(AlarmLevel)
+    KindLevel = KindLevel
+    AlarmLevel = AlarmLevel
 
     alarm_changed = QtCore.Signal(AlarmLevel)
 
