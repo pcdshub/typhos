@@ -14,6 +14,7 @@ from qtpy import QtCore
 from .plugins import register_signal
 from .utils import (channel_from_signal, get_all_signals_from_device,
                     TyphosObject)
+from .widgets import HappiChannel
 
 
 class KindLevel:
@@ -269,8 +270,37 @@ def create_alarm_widget_cls(pydm_drawing_widget_cls):
             self._kind_level = kind_level
             self.update_alarm_config()
 
-    TyphosAlarm.__name__ = alarm_widget_name
-    return TyphosAlarm
+        @QtCore.Property(str)
+        def channel(self):
+            """The channel address to use for this widget"""
+            if self._channel:
+                return str(self._channel)
+            return None
+
+        @channel.setter
+        def channel(self, value):
+            if self._channel != value:
+                # Remove old connection
+                if self._channels:
+                    self._channels.clear()
+                    for channel in self._channels:
+                        if hasattr(channel, 'disconnect'):
+                            channel.disconnect()
+                # Load new channel
+                self._channel = str(value)
+                channel = HappiChannel(address=self._channel,
+                                       tx_slot=self._tx)
+                self._channels = [channel]
+                # Connect the channel to the HappiPlugin
+                if hasattr(channel, 'connect'):
+                    channel.connect()
+
+        def _tx(self, value):
+            """Receive information from happi channel"""
+            self.add_device(value['obj'])
+
+
+    return type(alarm_widget_name, (TyphosAlarm,), {})
 
 
 # Explicitly create the classes one by one for clarity and readability
