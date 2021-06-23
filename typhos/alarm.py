@@ -1,6 +1,7 @@
 """
 Module to define alarm summary frameworks and widgets.
 """
+from copy import copy
 from functools import partial
 
 from ophyd.device import Kind
@@ -33,10 +34,6 @@ class AlarmLevel:
     DISCONNECTED = 4
 
 
-# Qt macros for enum handling: just need to declare them as enums
-QtCore.Q_ENUMS(KindLevel)
-QtCore.Q_ENUMS(AlarmLevel)
-
 # Define behavior for the user's Kind selection.
 KIND_FILTERS = {
     KindLevel.HINTED:
@@ -65,7 +62,7 @@ class TyphosAlarmBase(TyphosObject):
     traditional base class, and it will not work if instantiated on its own.
 
     Below, we generate a bunch of TyphosAlarmBase subclasses via
-    :func:`init_shape_classes`.
+    :func:`create_alarm_widget_cls`.
     """
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.HINTED
@@ -247,36 +244,35 @@ def create_alarm_widget_cls(pydm_drawing_widget_cls):
     drawing_widget_cls_name = pydm_drawing_widget_cls.__name__
     shape = drawing_widget_cls_name.split('PyDMDrawing')[1]
     alarm_widget_name = 'TyphosAlarm' + shape
-    return type(
-        alarm_widget_name,
-        (TyphosAlarmBase, pydm_drawing_widget_cls),
-        dict(
-            shape_cls=drawing_widget_cls_name,
-            alarm_changed=QtCore.Signal(AlarmLevel),
-            kindLevel=kindLevel,
-            )
-        )
 
+    class TyphosAlarm(TyphosAlarmBase, pydm_drawing_widget_cls):
+        QtCore.Q_ENUMS(KindLevel)
+        QtCore.Q_ENUMS(AlarmLevel)
 
-# Define kindLevel inside the module so we can use it in our factory above
-@QtCore.Property(KindLevel)
-def kindLevel(self):
-    """
-    Determines which signals to include in the alarm summary.
+        alarm_changed = QtCore.Signal(AlarmLevel)
+        shape_cls = drawing_widget_cls_name
 
-    If this is "hinted", only include hinted signals.
-    If this is "normal", include normal and hinted signals.
-    If this is "config", include everything except for omitted signals
-    If this is "omitted", include all signals
-    """
-    return self._kind_level
+        # Define kindLevel inside the module so we can use it in our factory above
+        @QtCore.Property(KindLevel)
+        def kindLevel(self):
+            """
+            Determines which signals to include in the alarm summary.
 
+            If this is "hinted", only include hinted signals.
+            If this is "normal", include normal and hinted signals.
+            If this is "config", include everything except for omitted signals
+            If this is "omitted", include all signals
+            """
+            return self._kind_level
 
-@kindLevel.setter
-def kindLevel(self, kind_level):
-    # We must update the alarm config to add/remove PVs as appropriate.
-    self._kind_level = kind_level
-    self.update_alarm_config()
+        @kindLevel.setter
+        def kindLevel(self, kind_level):
+            # We must update the alarm config to add/remove PVs as appropriate.
+            self._kind_level = kind_level
+            self.update_alarm_config()
+
+    TyphosAlarm.__name__ = alarm_widget_name
+    return TyphosAlarm
 
 
 # Explicitly create the classes one by one for clarity and readability
