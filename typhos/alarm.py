@@ -4,12 +4,14 @@ Module to define alarm summary frameworks and widgets.
 from functools import partial
 
 from ophyd.device import Kind
+from ophyd.signal import EpicsSignalBase
 from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.drawing import (PyDMDrawingCircle,
                                   PyDMDrawingRectangle, PyDMDrawingTriangle,
                                   PyDMDrawingEllipse, PyDMDrawingPolygon)
 from qtpy import QtCore
 
+from .plugins import register_signal
 from .utils import (channel_from_signal, get_all_signals_from_device,
                     TyphosObject)
 
@@ -117,6 +119,9 @@ class TyphosAlarmBase(TyphosObject):
             filter_by=KIND_FILTERS[self._kind_level]
             )
         channel_addrs = [channel_from_signal(sig) for sig in sigs]
+        for sig in sigs:
+            if not isinstance(sig, EpicsSignalBase):
+                register_signal(sig)
         channels = [
             PyDMChannel(
                 address=addr,
