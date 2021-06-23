@@ -35,15 +35,6 @@ class AlarmLevel:
 QtCore.Q_ENUMS(KindLevel)
 QtCore.Q_ENUMS(AlarmLevel)
 
-# List of shapes to support for our alarm widgets.
-SHAPES = (
-    PyDMDrawingCircle,
-    PyDMDrawingRectangle,
-    PyDMDrawingTriangle,
-    PyDMDrawingEllipse,
-    PyDMDrawingPolygon,
-    )
-
 # Define behavior for the user's Kind selection.
 KIND_FILTERS = {
     KindLevel.HINTED:
@@ -283,16 +274,9 @@ def kindLevel(self, kind_level):
     self.update_alarm_config()
 
 
-def init_shape_classes():
-    """
-    Create alarm shape classes in the global scope.
-
-    This will use every PyDMDrawing subclass found in the SHAPES variable.
-    """
-    for shape in SHAPES:
-        cls = create_alarm_widget_cls(shape)
-        globals()[cls.__name__] = cls
-
-
-# This creates classes named e.g. "TyphosAlarmCircle"
-init_shape_classes()
+# Explicitly create the classes one by one for clarity and readability
+TyphosAlarmCircle = create_alarm_widget_cls(PyDMDrawingCircle)
+TyphosAlarmRectangle = create_alarm_widget_cls(PyDMDrawingRectangle)
+TyphosAlarmTriangle = create_alarm_widget_cls(PyDMDrawingTriangle)
+TyphosAlarmEllipse = create_alarm_widget_cls(PyDMDrawingEllipse)
+TyphosAlarmPolygon = create_alarm_widget_cls(PyDMDrawingPolygon)
