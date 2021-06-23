@@ -41,6 +41,17 @@ SHAPES = (
     PyDMDrawingPolygon,
     )
 
+KIND_FILTERS = {
+    KindLevel.hinted:
+        (lambda walk: walk.item.kind == Kind.hinted),
+    KindLevel.normal:
+        (lambda walk: walk.item.kind in (Kind.hinted, Kind.normal)),
+    KindLevel.config:
+        (lambda walk: walk.item.kind != Kind.omitted),
+    KindLevel.omitted:
+        (lambda walk: True),
+    }
+
 
 class TyphosAlarmBase(TyphosObject):
     def __init__(self, *args, **kwargs):
@@ -78,7 +89,7 @@ class TyphosAlarmBase(TyphosObject):
     def setup_alarm_config(self, device):
         sigs = get_all_signals_from_device(
             device,
-            filter_by=kind_filters[self._kind_level]
+            filter_by=KIND_FILTERS[self._kind_level]
             )
         channel_addrs = [channel_from_signal(sig) for sig in sigs]
         channels = [
@@ -190,13 +201,4 @@ def init_shape_classes():
 # This creates classes named e.g. "TyphosAlarmCircle"
 init_shape_classes()
 
-kind_filters = {
-    KindLevel.hinted:
-        (lambda walk: walk.item.kind == Kind.hinted),
-    KindLevel.normal:
-        (lambda walk: walk.item.kind in (Kind.hinted, Kind.normal)),
-    KindLevel.config:
-        (lambda walk: walk.item.kind != Kind.omitted),
-    KindLevel.omitted:
-        (lambda walk: True),
-    }
+
