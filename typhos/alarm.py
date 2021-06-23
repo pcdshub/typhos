@@ -47,7 +47,7 @@ KIND_FILTERS = {
     }
 
 
-class TyphosAlarm(TyphosObject, PyDMDrawing):
+class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
     """
     Class that holds logic and routines common to all Typhos Alarm widgets.
 
@@ -240,7 +240,9 @@ class TyphosAlarmEllipse(TyphosAlarm, PyDMDrawingEllipse):
 
 
 class TyphosAlarmPolygon(TyphosAlarm, PyDMDrawingPolygon):
-    pass
+    # Because of the multiple inheritance here, Properties defined on
+    # PyDMDrawingPolygon are dropped and need to be reinstated.
+    numberOfPoints = PyDMDrawingPolygon.numberOfPoints
 
 
 def indicator_stylesheet(shape_cls, alarm):
