@@ -1,7 +1,6 @@
 """
 Module to define alarm summary frameworks and widgets.
 """
-from copy import copy
 from functools import partial
 
 from ophyd.device import Kind
@@ -252,7 +251,6 @@ def create_alarm_widget_cls(pydm_drawing_widget_cls):
         alarm_changed = QtCore.Signal(AlarmLevel)
         shape_cls = drawing_widget_cls_name
 
-        # Define kindLevel inside the module so we can use it in our factory above
         @QtCore.Property(KindLevel)
         def kindLevel(self):
             """
