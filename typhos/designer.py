@@ -5,6 +5,9 @@ from .display import (TyphosDeviceDisplay, TyphosDisplaySwitcher,
 from .func import TyphosMethodButton
 from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
 from .positioner import TyphosPositionerWidget
+from .alarm import (TyphosAlarmCircle, TyphosAlarmRectangle,
+                    TyphosAlarmTriangle, TyphosAlarmEllipse,
+                    TyphosAlarmPolygon)
 
 group_name = 'Typhos Widgets'
 TyphosSignalPanelPlugin = qtplugin_factory(TyphosSignalPanel,
@@ -21,3 +24,13 @@ TyphosDisplaySwitcherPlugin = qtplugin_factory(TyphosDisplaySwitcher,
                                                group=group_name)
 TyphosDisplayTitlePlugin = qtplugin_factory(TyphosDisplayTitle,
                                             group=group_name)
+TyphosAlarmCirclePlugin = qtplugin_factory(TyphosAlarmCircle,
+                                           group=group_name)
+TyphosAlarmRectanglePlugin = qtplugin_factory(TyphosAlarmRectangle,
+                                           group=group_name)
+TyphosAlarmTrianglePlugin = qtplugin_factory(TyphosAlarmTriangle,
+                                           group=group_name)
+TyphosAlarmEllipsePlugin = qtplugin_factory(TyphosAlarmEllipse,
+                                           group=group_name)
+TyphosAlarmPolygonPlugin = qtplugin_factory(TyphosAlarmPolygon,
+                                           group=group_name)
