@@ -6,7 +6,7 @@ import logging
 import numpy as np
 from qtpy.QtCore import Qt, Slot
 
-from ophyd.utils.epics_pvs import _type_map
+from ophyd.utils.epics_pvs import _type_map, AlarmSeverity
 from pydm.data_plugins.plugin import PyDMConnection, PyDMPlugin
 
 from ..utils import raise_to_operator
@@ -123,20 +123,37 @@ class SignalConnection(PyDMConnection):
                              self.signal.name, value)
 
     def send_new_meta(self,
-            connected, read_access, write_access, timestamp,
-            status, severity, precision,
+            connected=None,
+            write_access=None,
+            severity=AlarmSeverity.NO_ALARM,
+            precision=None,
+            units=None,
+            enum_strs=None,
             **kwargs):
         """
         Update the UI with new metadata from the Signal.
-        """
-        self.connection_state_signal.emit(connected)
-        # self.read_access_signal.emit(read_access) # not in PyDM
-        self.write_access_signal.emit(write_access)
-        # self.timestamp_signal.emit(timestamp) # not in PyDM
-        # self.status_signal.emit(status) # not in PyDM
-        self.new_severity_signal.emit(severity)
-        self.prec_signal.emit(precision)
 
+        Signal metadata updates always send all available metadata, so
+        default values to this function will not be sent ever if the signal
+        has valid data there.
+
+        We default missing metadata to None and skip emitting in general,
+        but for severity we default to NO_ALARM for UI purposes. We don't
+        want the UI to assume that anything is in an alarm state.
+        """
+        # Only emit the non-None values
+        if connected is not None:
+            self.connection_state_signal.emit(connected)
+        if write_access is not None:
+            self.write_access_signal.emit(write_access)
+        if severity is not None:
+            self.new_severity_signal.emit(severity)
+        if precision is not None:
+            self.prec_signal.emit(precision)
+        if units is not None:
+            self.unit_signal.emit(units)
+        if enum_strs is not None:
+            self.enum_strings_signal.emit(enum_strs)
 
     def add_listener(self, channel):
         """
