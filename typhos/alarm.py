@@ -98,6 +98,11 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
 
         If this is a ca:// channel, we'll connect to the PV and include its
         alarm information in the evaluation of this widget.
+
+        There is an assumption that you'll either be using this via one of the
+        channel options or by using "add_device" one or more times. There may
+        be some strange behavior if you try to set up this widget using both
+        approaches at the same time.
         """
         if self._channel:
             return str(self._channel)
