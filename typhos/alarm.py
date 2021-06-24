@@ -90,7 +90,15 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
 
     @QtCore.Property(str)
     def channel(self):
-        """The channel address to use for this widget"""
+        """
+        The channel address to use for this widget.
+
+        If this is a happi:// channel, we'll create the device and
+        add it to this widget.
+
+        If this is a ca:// channel, we'll connect to the PV and include its
+        alarm information in the evaluation of this widget.
+        """
         if self._channel:
             return str(self._channel)
         return None
