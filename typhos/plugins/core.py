@@ -57,10 +57,14 @@ class SignalConnection(PyDMConnection):
         # Collect our signal
         self.signal = signal_registry[address]
         # Subscribe to updates from Ophyd
-        self.value_cid = self.signal.subscribe(self.send_new_value,
-                                               event_type=self.signal.SUB_VALUE)
-        self.meta_cid = self.signal.subscribe(self.send_new_meta,
-                                              event_type=self.signal.SUB_META)
+        self.value_cid = self.signal.subscribe(
+            self.send_new_value,
+            event_type=self.signal.SUB_VALUE,
+            )
+        self.meta_cid = self.signal.subscribe(
+            self.send_new_meta,
+            event_type=self.signal.SUB_META,
+            )
         # Add listener
         self.add_listener(channel)
 
@@ -122,14 +126,16 @@ class SignalConnection(PyDMConnection):
             logger.exception("Unable to update %r with value %r.",
                              self.signal.name, value)
 
-    def send_new_meta(self,
+    def send_new_meta(
+            self,
             connected=None,
             write_access=None,
             severity=AlarmSeverity.NO_ALARM,
             precision=None,
             units=None,
             enum_strs=None,
-            **kwargs):
+            **kwargs
+            ):
         """
         Update the UI with new metadata from the Signal.
 
