@@ -6,6 +6,7 @@ import os
 
 from ophyd.device import Kind
 from ophyd.signal import EpicsSignalBase
+from pydm.widgets.base import PyDMPrimitiveWidget
 from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
                                   PyDMDrawingRectangle, PyDMDrawingTriangle,
@@ -257,11 +258,10 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
         default PyDM behavior of showing all the channels and copying them to
         clipboard.
         """
-        # TODO figure out why this breaks the default pydm event
-        default_pydm_event = super().eventFilter(obj, event)
+        # super() doesn't work here, some strange pyqt thing
+        default_pydm_event = PyDMPrimitiveWidget.eventFilter(self, obj, event)
         if default_pydm_event:
             return True
-        # TODO delay the tooltip by a moment so it doesn't appear at edge
         if event.type() == QtCore.QEvent.Enter:
             alarming = self.show_alarm_tooltip(event)
             return alarming
@@ -287,9 +287,11 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
 
         if tooltip_lines:
             tooltip = os.linesep.join(tooltip_lines)
-            # TODO define a rect matching the widget for when to remove tooltip
-            # showText(pos: QPoint, text: str, widget: QWidget, rect: QRect)
-            QtWidgets.QToolTip.showText(event.globalPos(), tooltip)
+            QtWidgets.QToolTip.showText(
+                self.mapToGlobal(QtCore.QPoint(0, 0)),
+                tooltip,
+                self,
+                )
 
         # Return True if we showed something
         return bool(tooltip_lines)

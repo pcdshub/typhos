@@ -130,7 +130,7 @@ class SignalConnection(PyDMConnection):
             self,
             connected=None,
             write_access=None,
-            severity=AlarmSeverity.NO_ALARM,
+            severity=None,
             precision=None,
             units=None,
             enum_strs=None,
@@ -152,14 +152,17 @@ class SignalConnection(PyDMConnection):
             self.connection_state_signal.emit(connected)
         if write_access is not None:
             self.write_access_signal.emit(write_access)
-        if severity is not None:
-            self.new_severity_signal.emit(severity)
         if precision is not None:
             self.prec_signal.emit(precision)
         if units is not None:
             self.unit_signal.emit(units)
         if enum_strs is not None:
             self.enum_strings_signal.emit(enum_strs)
+
+        # Special handling for severity
+        if severity is None:
+            severity = AlarmSeverity.NO_ALARM
+        self.new_severity_signal.emit(severity)
 
     def add_listener(self, channel):
         """
