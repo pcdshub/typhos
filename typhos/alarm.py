@@ -2,6 +2,7 @@
 Module to define alarm summary frameworks and widgets.
 """
 from functools import partial
+import os
 
 from ophyd.device import Kind
 from ophyd.signal import EpicsSignalBase
@@ -9,7 +10,7 @@ from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
                                   PyDMDrawingRectangle, PyDMDrawingTriangle,
                                   PyDMDrawingEllipse, PyDMDrawingPolygon)
-from qtpy import QtCore
+from qtpy import QtCore, QtWidgets
 
 from .plugins import register_signal
 from .utils import (channel_from_signal, get_all_signals_from_device,
@@ -122,8 +123,10 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
             channel = HappiChannel(
                 address=self._channel,
                 tx_slot=self._tx,
-                connection_slot=self.update_connection,
-                severity_slot=self.update_severity
+                connection_slot=partial(self.update_connection,
+                                        addr=self._channel),
+                severity_slot=partial(self.update_severity,
+                                      addr=self._channel),
                 )
             self._channels = [channel]
             # Connect the channel to the HappiPlugin
@@ -209,12 +212,12 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
         for dev in self.devices:
             self.setup_alarms(dev)
 
-    def update_connection(self, connected, addr='ch'):
+    def update_connection(self, connected, addr):
         """Slot that will be called when a PV connects or disconnects."""
         self.addr_connected[addr] = connected
         self.update_current_alarm()
 
-    def update_severity(self, severity, addr='ch'):
+    def update_severity(self, severity, addr):
         """Slot that will be called when a PV's alarm severity changes."""
         self.addr_severity[addr] = severity
         self.update_current_alarm()
@@ -244,6 +247,52 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
         Change the alarm color to the shade defined by the current alarm level.
         """
         self.setStyleSheet(indicator_stylesheet(self.__class__, alarm_level))
+
+    def eventFilter(self, obj, event):
+        """
+        Extra handling for showing the user which alarms are alarming.
+
+        We'll show this information on mouseover if anything is disconnected or
+        in an alarm state, unless the user middle-clicks, which will have the
+        default PyDM behavior of showing all the channels and copying them to
+        clipboard.
+        """
+        # TODO figure out why this breaks the default pydm event
+        default_pydm_event = super().eventFilter(obj, event)
+        if default_pydm_event:
+            return True
+        # TODO delay the tooltip by a moment so it doesn't appear at edge
+        if event.type() == QtCore.QEvent.Enter:
+            alarming = self.show_alarm_tooltip(event)
+            return alarming
+        return False
+
+    def show_alarm_tooltip(self, event):
+        """
+        Show a tooltip that reveals which channels are alarmed or disconnected.
+        """
+        tooltip_lines = []
+        channels = [ch.address for ch in self.channels()]
+        for ch_addr in channels:
+            connected = self.addr_connected.get(ch_addr, True)
+            severity = self.addr_severity.get(ch_addr, AlarmLevel.NO_ALARM)
+            if not connected:
+                tooltip_lines.append(f'{ch_addr} is DISCONNECTED')
+            elif severity == AlarmLevel.MINOR:
+                tooltip_lines.append(f'{ch_addr} has a MINOR alarm.')
+            elif severity == AlarmLevel.MAJOR:
+                tooltip_lines.append(f'{ch_addr} has a MAJOR alarm.')
+            elif severity == AlarmLevel.INVALID:
+                tooltip_lines.append(f'{ch_addr} is INVALID.')
+
+        if tooltip_lines:
+            tooltip = os.linesep.join(tooltip_lines)
+            # TODO define a rect matching the widget for when to remove tooltip
+            # showText(pos: QPoint, text: str, widget: QWidget, rect: QRect)
+            QtWidgets.QToolTip.showText(event.globalPos(), tooltip)
+
+        # Return True if we showed something
+        return bool(tooltip_lines)
 
 
 class TyphosAlarmCircle(TyphosAlarm, PyDMDrawingCircle):
