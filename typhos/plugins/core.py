@@ -57,8 +57,10 @@ class SignalConnection(PyDMConnection):
         # Collect our signal
         self.signal = signal_registry[address]
         # Subscribe to updates from Ophyd
-        self._cid = self.signal.subscribe(self.send_new_value,
-                                          event_type=self.signal.SUB_VALUE)
+        self.value_cid = self.signal.subscribe(self.send_new_value,
+                                               event_type=self.signal.SUB_VALUE)
+        self.meta_cid = self.signal.subscribe(self.send_new_meta,
+                                              event_type=self.signal.SUB_META)
         # Add listener
         self.add_listener(channel)
 
@@ -120,6 +122,22 @@ class SignalConnection(PyDMConnection):
             logger.exception("Unable to update %r with value %r.",
                              self.signal.name, value)
 
+    def send_new_meta(self,
+            connected, read_access, write_access, timestamp,
+            status, severity, precision,
+            **kwargs):
+        """
+        Update the UI with new metadata from the Signal.
+        """
+        self.connection_state_signal.emit(connected)
+        # self.read_access_signal.emit(read_access) # not in PyDM
+        self.write_access_signal.emit(write_access)
+        # self.timestamp_signal.emit(timestamp) # not in PyDM
+        # self.status_signal.emit(status) # not in PyDM
+        self.new_severity_signal.emit(severity)
+        self.prec_signal.emit(precision)
+
+
     def add_listener(self, channel):
         """
         Add a listener channel to this connection.
@@ -131,33 +149,19 @@ class SignalConnection(PyDMConnection):
         # Perform the default connection setup
         logger.debug("Adding %r ...", channel)
         super().add_listener(channel)
-        # Report as no-alarm state
-        self.new_severity_signal.emit(0)
         try:
             # Gather the current value
             signal_val = self.signal.get()
             # Gather metadata
-            signal_desc = self.signal.describe()[self.signal.name]
+            signal_meta = self.signal.metadata
         except Exception:
             logger.exception("Failed to gather proper information "
                              "from signal %r to initialize %r",
                              self.signal.name, channel)
             return
-        # Report as connected
-        self.write_access_signal.emit(True)
-        self.connection_state_signal.emit(True)
-        # Report metadata
-        for (field, signal) in (
-                    ('precision', self.prec_signal),
-                    ('enum_strs', self.enum_strings_signal),
-                    ('units', self.unit_signal)):
-            # Check if we have metadata to send for field
-            val = signal_desc.get(field)
-            # If so emit it to our listeners
-            if val:
-                signal.emit(val)
         # Report new value
         self.send_new_value(signal_val)
+        self.send_new_meta(**signal_meta)
         # If the channel is used for writing to PVs, hook it up to the
         # 'put' methods.
         if channel.value_signal is not None:
@@ -191,7 +195,8 @@ class SignalConnection(PyDMConnection):
 
     def close(self):
         """Unsubscribe from the Ophyd signal."""
-        self.signal.unsubscribe(self._cid)
+        self.signal.unsubscribe(self.value_cid)
+        self.signal.unsubscribe(self.meta_cid)
 
 
 class SignalPlugin(PyDMPlugin):
