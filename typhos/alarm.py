@@ -106,8 +106,12 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
                         channel.disconnect()
             # Load new channel
             self._channel = str(value)
-            channel = HappiChannel(address=self._channel,
-                                   tx_slot=self._tx)
+            channel = HappiChannel(
+                address=self._channel,
+                tx_slot=self._tx,
+                connection_slot=self.update_connection,
+                severity_slot=self.update_severity
+                )
             self._channels = [channel]
             # Connect the channel to the HappiPlugin
             if hasattr(channel, 'connect'):
@@ -129,7 +133,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
         """
         Let pydm know about our pydm channels.
         """
-        ch = []
+        ch = list(self._channels)
         for lst in self.device_channels.values():
             ch.extend(lst)
         return ch
@@ -192,12 +196,12 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
         for dev in self.devices:
             self.setup_alarms(dev)
 
-    def update_connection(self, connected, addr):
+    def update_connection(self, connected, addr='ch'):
         """Slot that will be called when a PV connects or disconnects."""
         self.addr_connected[addr] = connected
         self.update_current_alarm()
 
-    def update_severity(self, severity, addr):
+    def update_severity(self, severity, addr='ch'):
         """Slot that will be called when a PV's alarm severity changes."""
         self.addr_severity[addr] = severity
         self.update_current_alarm()
@@ -210,10 +214,14 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
         emit the "alarm_changed" signal. This signal is configured at
         init to change the color of this widget.
         """
-        if not all(self.addr_connected.values()):
+        connected_list = list(self.addr_connected.values())
+        severity_list = list(self.addr_severity.values())
+        if not connected_list or not all(connected_list):
             new_alarm = AlarmLevel.DISCONNECTED
+        elif not severity_list:
+            new_alarm = AlarmLevel.INVALID
         else:
-            new_alarm = max(self.addr_severity.values())
+            new_alarm = max(severity_list)
         if new_alarm != self.alarm_summary:
             self.alarm_changed.emit(new_alarm)
         self.alarm_summary = new_alarm
