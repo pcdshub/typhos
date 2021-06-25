@@ -211,7 +211,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
         """
         self.clear_all_alarm_configs()
         for dev in self.devices:
-            self.setup_alarms(dev)
+            self.setup_alarm_config(dev)
 
     def update_connection(self, connected, addr):
         """Slot that will be called when a PV connects or disconnects."""
