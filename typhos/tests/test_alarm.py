@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+from happi.item import HappiItem
+from happi.loader import from_container
 from ophyd import Device, Component as Cpt
 from ophyd.utils.epics_pvs import AlarmSeverity
 import pytest
@@ -83,7 +85,9 @@ def test_one_alarm_sig_ch(alarm, qtbot, metadata, response):
     name = 'one_sig_ch_' + str(uuid4())
     sig = RichSignal(name=name)
     register_signal(sig)
-    alarm.channel = 'sig://' + name
+
+    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+        alarm.channel = 'sig://' + name
 
     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
         sig.update_metadata(metadata)
@@ -96,25 +100,26 @@ def fake_client():
     old_client = HappiClientState.client
     client = FakeClient()
     register_client(client)
-    yield
+    yield client
     register_client(old_client)
 
 
 class FakeClient:
-    def __init__(self):
-        self.devices = {}
-
     def find_device(self, *args, name, **kwargs):
-        if name not in self.devices:
-            self.devices[name] = SimpleDevice(name=name)
-        return self.devices[name]
+        return HappiItem(
+            name=name,
+            device_class='typhos.tests.test_alarm.SimpleDevice',
+            kwargs={'name': '{{name}}'},
+            )
 
 
 @pytest.mark.parametrize("metadata,response", alarm_cases)
 def test_one_alarm_happi_ch(alarm, qtbot, metadata, response, fake_client):
-    name = 'happi_test_device_' + str(uuid4())
+    name = 'happi_test_device_' + str(uuid4()).replace('-', '_')
+    item = fake_client.find_device(name=name)
+    device = from_container(item)
+
     alarm.channel = 'happi://' + name
-    device = fake_client.find_device(name)
 
     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
         device.hint_sig.update_metadata(metadata)
