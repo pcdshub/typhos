@@ -2,6 +2,7 @@
 Module to define alarm summary frameworks and widgets.
 """
 from functools import partial
+import logging
 import os
 
 from ophyd.device import Kind
@@ -17,6 +18,9 @@ from .plugins import register_signal
 from .utils import (channel_from_signal, get_all_signals_from_device,
                     TyphosObject)
 from .widgets import HappiChannel
+
+
+logger = logging.getLogger(__name__)
 
 
 class KindLevel:
@@ -202,6 +206,18 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
             self.addr_severity[ch.address] = AlarmLevel.INVALID
             ch.connect()
 
+        all_channels = self.channels()
+        if all_channels:
+            logger.debug(
+                f'Finished setup of alarm config for device {device.name} on '
+                f'alarm widget with channel {all_channels[0]}.'
+                )
+        else:
+            logger.warning(
+                f'Tried to set up alarm config for device {device.name}, but '
+                'did not configure any channels! Check your kindLevel!'
+                )
+
     def update_alarm_config(self):
         """
         Clean up the existing alarm config and create a new one.
@@ -241,6 +257,10 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
             new_alarm = max(severity_list)
         if new_alarm != self.alarm_summary:
             self.alarm_changed.emit(new_alarm)
+            logger.debug(
+                f'Updated alarm from {self.alarm_summary} to {new_alarm} '
+                f'on alarm widget with channel {self.channels()[0]}'
+                )
         self.alarm_summary = new_alarm
 
     def set_alarm_color(self, alarm_level):

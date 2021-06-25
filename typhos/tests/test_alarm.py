@@ -119,7 +119,8 @@ def test_one_alarm_happi_ch(alarm, qtbot, metadata, response, fake_client):
     item = fake_client.find_device(name=name)
     device = from_container(item)
 
-    alarm.channel = 'happi://' + name
+    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+        alarm.channel = 'happi://' + name
 
     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
         device.hint_sig.update_metadata(metadata)
