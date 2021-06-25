@@ -141,6 +141,10 @@ class RichSignal(Signal):
         desc[self.name].update(self.metadata)
         return desc
 
+    def update_metadata(self, md):
+        self._metadata.update(md)
+        self._run_metadata_callbacks()
+
 
 class DeadSignal(Signal):
     subscribable = False
