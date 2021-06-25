@@ -60,7 +60,7 @@ def test_add_fake_device(qapp, qtbot):
     tc = TyphosConsole.from_device(device)
     qtbot.addWidget(tc)
 
-    with qtbot.waitSignal(tc.device_added, timeout=1000):
+    with qtbot.waitSignal(tc.device_added, timeout=5000):
         ...
 
     tc.execute('print("my name is", sim_mtr1.name)')
