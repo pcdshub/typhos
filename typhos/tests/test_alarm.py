@@ -144,7 +144,7 @@ def test_kinds_many_alarms_add_device(alarm_add_device, device, qtbot):
     assert alarm.alarm_summary == AlarmLevel.MAJOR
 
     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        alarm_add_device.kindLevel = alarm.KindLevel.HINTED
+        alarm_add_device.kindLevel = alarm.KindLevel.OMITTED
 
     assert alarm.alarm_summary == AlarmLevel.INVALID
 
