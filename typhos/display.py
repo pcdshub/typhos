@@ -15,8 +15,13 @@ import pydm.utilities
 from pcdsutils.qt import forward_property
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
-from qtpy.QtWebEngineCore import QWebEngineHttpRequest
 from qtpy.QtWebEngineWidgets import QWebEngineView
+
+try:
+    # Well, um, this is unavailable in qtpy...
+    from PyQt5.QtWebEngineCore import QWebEngineHttpRequest
+except ImportError:
+    QWebEngineHttpRequest = None
 
 from . import cache
 from . import panel as typhos_panel
@@ -573,23 +578,32 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             return QtCore.QUrl("about:blank")
 
         device, *_ = self.devices
-        return QtCore.QUrl(
-            utils.CONFLUENCE_URL.format(device=device.name)
-        )
+        try:
+            device_url = utils.CONFLUENCE_URL.format(device=device)
+        except Exception:
+            logger.exception("Failed to format confluence URL for device %s",
+                             device)
+            return QtCore.QUrl("about:blank")
+
+        return QtCore.QUrl(device_url)
 
     def show_help(self):
         if self.help_web_view:
             return
         self.help_web_view = QWebEngineView()
-        request = QWebEngineHttpRequest()
-        request.setUrl(self.help_url)
-        if utils.CONFLUENCE_TOKEN is not None:
-            request.setHeader(
-                "Authorization",
-                f"Bearer {utils.CONFLUENCE_TOKEN}"
-            )
-        print(request.headers())
-        self.help_web_view.load(request)
+        if QWebEngineHttpRequest is not None:
+            request = QWebEngineHttpRequest()
+            request.setUrl(self.help_url)
+            for header, value in utils.CONFLUENCE_HEADERS.items():
+                request.setHeader(
+                    header.encode("utf-8"),
+                    value.encode("utf-8"),
+                )
+
+            self.help_web_view.load(request)
+        else:
+            self.help_web_view.setUrl(self.help_url)
+
         self.help_web_view.setEnabled(True)
         self.help_web_view.setMinimumSize(QtCore.QSize(100, 400))
 

@@ -44,6 +44,12 @@ CONFLUENCE_TOKEN = os.environ.get('TYPHOS_CONFLUENCE_TOKEN', None)
 CONFLUENCE_URL = os.environ.get(
     'TYPHOS_CONFLUENCE_URL', "https://www.google.com/search?q={device.name}"
 )
+if CONFLUENCE_TOKEN:
+    CONFLUENCE_HEADERS = {
+        "Authorization": f"Bearer {CONFLUENCE_TOKEN}"
+    }
+else:
+    CONFLUENCE_HEADERS = {}
 
 
 if happi is None:
