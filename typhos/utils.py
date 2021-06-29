@@ -40,6 +40,10 @@ ui_core_dir = ui_dir / 'core'
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
 DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
+CONFLUENCE_TOKEN = os.environ.get('TYPHOS_CONFLUENCE_TOKEN', None)
+CONFLUENCE_URL = os.environ.get(
+    'TYPHOS_CONFLUENCE_URL', "https://www.google.com/search?q={device.name}"
+)
 
 
 if happi is None:

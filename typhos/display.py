@@ -15,6 +15,7 @@ import pydm.utilities
 from pcdsutils.qt import forward_property
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
+from qtpy.QtWebEngineCore import QWebEngineHttpRequest
 from qtpy.QtWebEngineWidgets import QWebEngineView
 
 from . import cache
@@ -572,13 +573,23 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             return QtCore.QUrl("about:blank")
 
         device, *_ = self.devices
-        return QtCore.QUrl(f"https://www.google.com/search?q={device.name}")
+        return QtCore.QUrl(
+            utils.CONFLUENCE_URL.format(device=device.name)
+        )
 
     def show_help(self):
         if self.help_web_view:
             return
         self.help_web_view = QWebEngineView()
-        self.help_web_view.setUrl(self.help_url)
+        request = QWebEngineHttpRequest()
+        request.setUrl(self.help_url)
+        if utils.CONFLUENCE_TOKEN is not None:
+            request.setHeader(
+                "Authorization",
+                f"Bearer {utils.CONFLUENCE_TOKEN}"
+            )
+        print(request.headers())
+        self.help_web_view.load(request)
         self.help_web_view.setEnabled(True)
         self.help_web_view.setMinimumSize(QtCore.QSize(100, 400))
 
