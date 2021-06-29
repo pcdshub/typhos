@@ -493,7 +493,10 @@ class TyphosHelpToggleButton(TyphosToolButton):
         # TODO: later versions of qt will support setMarkdown
         help_document.setPlainText(contents)
         self._help.setWindowTitle(first_line)
-        self._help.setFont(QtGui.QFontDatabase.FixedFont)
+        font = QtGui.QFont("Monospace")
+        font.setStyleHint(QtGui.QFont.TypeWriter)
+        # font.setStyleHint(QtGui.QFont.Monospace)
+        self._help.setFont(font)
         self._help.setDocument(help_document)
         self._help.show()
 
@@ -535,7 +538,12 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
     def _get_tooltip(self):
         tooltip = []
-        for device in self.devices:
+        # BUG: I'm seeing two devices in `self.devices` for
+        # $ typhos --fake-device 'ophyd.EpicsMotor[{"prefix":"b"}]'
+        for device in sorted(
+            set(self.devices),
+            key=lambda dev: self.devices.index(dev)
+        ):
             heading = device.name or type(device).__name__
             tooltip.extend([
                 heading,
@@ -548,7 +556,7 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
                 inspect.getdoc(type(device)) or
                 "No docstring"
             )
-            tooltip.extend([""] * 3)
+            tooltip.append("")
 
         return "\n".join(tooltip)
 
