@@ -1,9 +1,11 @@
 """Contains the main display widget used for representing an entire device."""
 
 import enum
+import inspect
 import logging
 import os
 import pathlib
+import webbrowser
 
 import ophyd
 import pcdsutils
@@ -13,6 +15,7 @@ import pydm.utilities
 from pcdsutils.qt import forward_property
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
+from qtpy.QtWebEngineWidgets import QWebEngineView
 
 from . import cache
 from . import panel as typhos_panel
@@ -401,7 +404,11 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     def _create_ui(self):
         layout = self.layout()
         self.buttons.clear()
+        self.help_button = None
         self.config_button = None
+
+        self.help_toggle_button = TyphosHelpToggleButton()
+        layout.addWidget(self.help_toggle_button, 0, Qt.AlignRight)
 
         for template_type in DisplayTypes.names:
             button = TyphosDisplaySwitcherButton(template_type)
@@ -457,6 +464,136 @@ class TyphosTitleLabel(QtWidgets.QLabel):
         super().mousePressEvent(event)
 
 
+class TyphosHelpToggleButton(TyphosToolButton):
+    open_in_browser = QtCore.Signal()
+    open_python_docs = QtCore.Signal()
+    toggle_help = QtCore.Signal(bool)
+
+    def __init__(self, icon="question", parent=None):
+        super().__init__(icon, parent=parent)
+        self.setCheckable(True)
+
+        self.open_python_docs.connect(
+            self._open_python_docs
+        )
+        self._help = None
+
+    def _clicked(self):
+        self.toggle_help.emit(self.isChecked())
+
+    def _open_python_docs(self):
+        if self._help is not None:
+            self._help.raise_()
+            return
+
+        self._help = QtWidgets.QTextBrowser()
+        help_document = QtGui.QTextDocument()
+        contents = self.toolTip() or "Unset"
+        first_line = contents.splitlines()[0]
+        # TODO: later versions of qt will support setMarkdown
+        help_document.setPlainText(contents)
+        self._help.setWindowTitle(first_line)
+        self._help.setFont(QtGui.QFontDatabase.FixedFont)
+        self._help.setDocument(help_document)
+        self._help.show()
+
+    def generate_context_menu(self):
+        menu = QtWidgets.QMenu(parent=self)
+        open_in_browser = menu.addAction("Open in &browser...")
+        open_in_browser.triggered.connect(self.open_in_browser.emit)
+
+        open_python_docs = menu.addAction("Open &Python docs...")
+        open_python_docs.triggered.connect(self.open_python_docs.emit)
+
+        def toggle():
+            self.setChecked(not self.isChecked())
+            self._clicked()
+
+        toggle_help = menu.addAction("Toggle &help")
+        toggle_help.triggered.connect(toggle)
+        return menu
+
+
+class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
+    tooltip_updated = QtCore.Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.help = None
+        self.help_web_view = None
+
+        self.setContentsMargins(0, 0, 0, 0)
+
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+        self.devices = []
+
+    def open_in_browser(self, new=0, autoraise=True):
+        return webbrowser.open(
+            self.help_url.toString(), new=new, autoraise=autoraise
+        )
+
+    def _get_tooltip(self):
+        tooltip = []
+        for device in self.devices:
+            heading = device.name or type(device).__name__
+            tooltip.extend([
+                heading,
+                "-" * len(heading),
+                ""
+            ])
+
+            tooltip.append(
+                inspect.getdoc(device) or
+                inspect.getdoc(type(device)) or
+                "No docstring"
+            )
+            tooltip.extend([""] * 3)
+
+        return "\n".join(tooltip)
+
+    def add_device(self, device):
+        self.devices.append(device)
+
+        self._tooltip = self._get_tooltip()
+        self.tooltip_updated.emit(self._tooltip)
+
+    @property
+    def help_url(self):
+        if not self.devices:
+            return QtCore.QUrl("about:blank")
+
+        device, *_ = self.devices
+        return QtCore.QUrl(f"https://www.google.com/search?q={device.name}")
+
+    def show_help(self):
+        if self.help_web_view:
+            return
+        self.help_web_view = QWebEngineView()
+        self.help_web_view.setUrl(self.help_url)
+        self.help_web_view.setEnabled(True)
+        self.help_web_view.setMinimumSize(QtCore.QSize(100, 400))
+
+        self.layout().addWidget(self.help_web_view)
+
+    def hide_help(self):
+        if not self.help_web_view:
+            return
+        self.layout().removeWidget(self.help_web_view)
+        self.help_web_view.deleteLater()
+        self.help_web_view = None
+
+    def toggle_help(self, show):
+        if not self.devices:
+            logger.warning("No devices added -> no help")
+            return
+
+        if show:
+            self.show_help()
+        else:
+            self.hide_help()
+
+
 class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     """
     Standardized Typhos Device Display title.
@@ -490,10 +627,22 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.underline.setFrameShadow(self.underline.Plain)
         self.underline.setLineWidth(10)
 
+        self.help = TyphosHelpFrame()
+        self.switcher.help_toggle_button.toggle_help.connect(
+            self.help.toggle_help
+        )
+        self.switcher.help_toggle_button.open_in_browser.connect(
+            self.help.open_in_browser
+        )
+        self.help.tooltip_updated.connect(
+            self.switcher.help_toggle_button.setToolTip
+        )
+
         self.grid_layout = QtWidgets.QGridLayout()
         self.grid_layout.addWidget(self.label, 0, 0)
         self.grid_layout.addWidget(self.switcher, 0, 1, Qt.AlignRight)
         self.grid_layout.addWidget(self.underline, 1, 0, 1, 2)
+        self.grid_layout.addWidget(self.help, 2, 0, 1, 2)
         self.grid_layout.setSizeConstraint(self.grid_layout.SetMinimumSize)
         self.setLayout(self.grid_layout)
 
@@ -515,6 +664,8 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         """Typhos hook for setting the associated device."""
         if not self.label.text():
             self.label.setText(device.name)
+
+        self.help.add_device(device)
 
     @QtCore.Property(bool)
     def show_underline(self):
