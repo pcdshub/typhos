@@ -2,6 +2,7 @@
 Module to define alarm summary frameworks and widgets.
 """
 from functools import partial
+import enum
 import logging
 import os
 
@@ -16,28 +17,32 @@ from qtpy import QtCore, QtWidgets
 
 from .plugins import register_signal
 from .utils import (channel_from_signal, get_all_signals_from_device,
-                    TyphosObject)
+                    pyqt_class_from_enum, TyphosObject)
 from .widgets import HappiChannel
 
 
 logger = logging.getLogger(__name__)
 
 
-class KindLevel:
-    """QT Enum for Ophyd Kind properties."""
+class KindLevel(enum.IntEnum):
+    """Options for TyphosAlarm.kindLevel."""
     HINTED = 0
     NORMAL = 1
     CONFIG = 2
     OMITTED = 3
 
 
-class AlarmLevel:
-    """QT Enum for Typhos Alarm levels."""
+class AlarmLevel(enum.IntEnum):
+    """Possible values emitted from TyphosAlarm.alarm_changed."""
     NO_ALARM = 0
     MINOR = 1
     MAJOR = 2
     INVALID = 3
     DISCONNECTED = 4
+
+
+_KindLevel = pyqt_class_from_enum(KindLevel)
+_AlarmLevel = pyqt_class_from_enum(AlarmLevel)
 
 
 # Define behavior for the user's Kind selection.
@@ -53,7 +58,7 @@ KIND_FILTERS = {
     }
 
 
-class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
+class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
     """
     Class that holds logic and routines common to all Typhos Alarm widgets.
 
@@ -63,12 +68,12 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
     We will consider a subset of the signals that is of KindLevel and above and
     summarize state based on the "worst" alarm we see as defined by AlarmLevel.
     """
-    QtCore.Q_ENUMS(KindLevel)
-    QtCore.Q_ENUMS(AlarmLevel)
+    QtCore.Q_ENUMS(_KindLevel)
+    QtCore.Q_ENUMS(_AlarmLevel)
     KindLevel = KindLevel
     AlarmLevel = AlarmLevel
 
-    alarm_changed = QtCore.Signal(AlarmLevel)
+    alarm_changed = QtCore.Signal(_AlarmLevel)
 
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.HINTED
@@ -76,7 +81,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, KindLevel, AlarmLevel):
         self.init_alarm_state()
         self.alarm_changed.connect(self.set_alarm_color)
 
-    @QtCore.Property(KindLevel)
+    @QtCore.Property(_KindLevel)
     def kindLevel(self):
         """
         Determines which signals to include in the alarm summary.
@@ -366,15 +371,15 @@ def indicator_stylesheet(shape_cls, alarm):
         ' qproperty-brush: rgba'
         )
 
-    if alarm is AlarmLevel.DISCONNECTED:
+    if alarm == AlarmLevel.DISCONNECTED:
         return base + '(255,255,255,255);}'
-    elif alarm is AlarmLevel.NO_ALARM:
+    elif alarm == AlarmLevel.NO_ALARM:
         return base + '(0,255,0,255);}'
-    elif alarm is AlarmLevel.MINOR:
+    elif alarm == AlarmLevel.MINOR:
         return base + '(255,255,0,255);}'
-    elif alarm is AlarmLevel.MAJOR:
+    elif alarm == AlarmLevel.MAJOR:
         return base + '(255,0,0,255);}'
-    elif alarm is AlarmLevel.INVALID:
+    elif alarm == AlarmLevel.INVALID:
         return base + '(255,0,255,255);}'
     else:
         raise ValueError(f'Recieved invalid alarm level {alarm}')
