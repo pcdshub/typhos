@@ -4,13 +4,14 @@ import ast
 import inspect
 import logging
 import re
+import signal
 import sys
 
 import coloredlogs
-
 import pcdsutils
-import typhos
 from ophyd.sim import clear_fake_device, make_fake_device
+
+import typhos
 from typhos.app import get_qapp, launch_suite
 from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
@@ -95,6 +96,7 @@ def typhos_cli_setup(args):
 def _create_happi_client(cfg):
     """Create a happi client based on configuration ``cfg``."""
     import happi
+
     import typhos.plugins.happi
 
     if typhos.plugins.happi.HappiClientState.client:
@@ -219,6 +221,12 @@ def typhos_cli(args):
         return suite
 
 
+def _sigint_handler(signal, frame):
+    logger.info("Caught Ctrl-C (SIGINT); exiting.")
+    sys.exit(1)
+
+
 def main():
     """Execute the ``typhos_cli`` with command line arguments."""
+    signal.signal(signal.SIGINT, _sigint_handler)
     typhos_cli(sys.argv[1:])
