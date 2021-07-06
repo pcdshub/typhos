@@ -78,7 +78,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.HINTED
         super().__init__(*args, **kwargs)
-        self.init_alarm_state()
+        self.reset_alarm_state()
         self.alarm_changed.connect(self.set_alarm_color)
 
     @QtCore.Property(_KindLevel)
@@ -147,7 +147,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         """Receive information from happi channel"""
         self.add_device(value['obj'])
 
-    def init_alarm_state(self):
+    def reset_alarm_state(self):
         self.addr_connected = {}
         self.addr_severity = {}
         self.addr_channels = {}
@@ -178,7 +178,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         channels = self.addr_channels.values()
         for ch in channels:
             ch.disconnect()
-        self.init_alarm_state()
+        self.reset_alarm_state()
 
     def setup_alarm_config(self, device):
         """
