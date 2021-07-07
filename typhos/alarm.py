@@ -9,13 +9,13 @@ import logging
 import os
 
 from ophyd.device import Kind
-from ophyd.signal import EpicsSignalBase, Signal
+from ophyd.signal import EpicsSignalBase
 from pydm.widgets.base import PyDMPrimitiveWidget
 from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
                                   PyDMDrawingRectangle, PyDMDrawingTriangle,
                                   PyDMDrawingEllipse, PyDMDrawingPolygon)
-from qtpy import QtCore, QtGui, QtWidgets
+from qtpy import QtCore, QtWidgets
 
 from .plugins import register_signal
 from .utils import (channel_from_signal, get_all_signals_from_device,
