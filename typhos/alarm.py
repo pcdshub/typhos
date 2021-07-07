@@ -1,6 +1,7 @@
 """
 Module to define alarm summary frameworks and widgets.
 """
+from collections import defaultdict
 from dataclasses import dataclass
 from functools import partial
 import enum
@@ -8,7 +9,8 @@ import logging
 import os
 
 from ophyd.device import Kind
-from ophyd.signal import EpicsSignalBase
+from ophyd.signal import EpicsSignalBase, Signal
+from prettytable import PrettyTable
 from pydm.widgets.base import PyDMPrimitiveWidget
 from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
@@ -34,7 +36,11 @@ class KindLevel(enum.IntEnum):
 
 
 class AlarmLevel(enum.IntEnum):
-    """Possible values emitted from TyphosAlarm.alarm_changed."""
+    """
+    Possible summary alarm states for a device.
+
+    These are also the valuess emitted from TyphosAlarm.alarm_changed.
+    """
     NO_ALARM = 0
     MINOR = 1
     MAJOR = 2
@@ -63,8 +69,29 @@ KIND_FILTERS = {
 class SignalInfo:
     address: str
     channel: PyDMChannel
+    signal_name: str
     connected: bool
     severity: int
+
+    @property
+    def alarm(self) -> AlarmLevel:
+        if not self.connected:
+            return AlarmLevel.DISCONNECTED
+        else:
+            return AlarmLevel(self.severity)
+
+    def describe(self) -> str:
+        alarm = self.alarm
+        if alarm == AlarmLevel.NO_ALARM:
+            desc = f'{self.address} has no alarm.'
+        elif alarm in (AlarmLevel.DISCONNECTED, AlarmLevel.INVALID):
+            desc = f'{self.address} is {alarm.name}.'
+        else:
+            desc = f'{self.address} has a {alarm.name} alarm.'
+        if self.signal_name:
+            return f'{desc} ({self.signal_name})'
+        else:
+            return desc
 
 
 class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
@@ -157,6 +184,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                 self.signal_info[self._channel] = SignalInfo(
                     address=self._channel,
                     channel=channel,
+                    signal_name='',
                     connected=False,
                     severity=AlarmLevel.INVALID,
                     )
@@ -171,6 +199,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
 
     def reset_alarm_state(self):
         self.signal_info = {}
+        self.device_info = defaultdict(list)
         self.alarm_summary = AlarmLevel.DISCONNECTED
         self.set_alarm_color(AlarmLevel.DISCONNECTED)
 
@@ -222,13 +251,16 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                 )
             for addr in channel_addrs]
 
-        for ch in channels:
-            self.signal_info[ch.address] = SignalInfo(
+        for ch, sig in zip(channels, sigs):
+            info = SignalInfo(
                 address=ch.address,
                 channel=ch,
+                signal_name=sig.dotted_name,
                 connected=False,
                 severity=AlarmLevel.INVALID,
                 )
+            self.signal_info[ch.address] = info
+            self.device_info[device.name].append(info)
             ch.connect()
 
         all_channels = self.channels()
@@ -272,14 +304,10 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         emit the "alarm_changed" signal. This signal is configured at
         init to change the color of this widget.
         """
-        connected_list = [info.connected for info in self.signal_info.values()]
-        severity_list = [info.severity for info in self.signal_info.values()]
-        if not connected_list or not all(connected_list):
-            new_alarm = AlarmLevel.DISCONNECTED
-        elif not severity_list:
+        if not self.signal_info:
             new_alarm = AlarmLevel.INVALID
         else:
-            new_alarm = max(severity_list)
+            new_alarm = max(info.alarm for info in self.signal_info.values())
         if new_alarm != self.alarm_summary:
             self.alarm_changed.emit(new_alarm)
             logger.debug(
@@ -317,15 +345,37 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         Show a tooltip that reveals which channels are alarmed or disconnected.
         """
         tooltip_lines = []
-        for info in self.signal_info.values():
-            if not info.connected:
-                tooltip_lines.append(f'{info.address} is DISCONNECTED')
-            elif info.severity == AlarmLevel.MINOR:
-                tooltip_lines.append(f'{info.address} has a MINOR alarm.')
-            elif info.severity == AlarmLevel.MAJOR:
-                tooltip_lines.append(f'{info.address} has a MAJOR alarm.')
-            elif info.severity == AlarmLevel.INVALID:
-                tooltip_lines.append(f'{info.address} is INVALID.')
+
+        # Start with the channel field, just show the status.
+        if self.channel in self.signal_info:
+            info = self.signal_info[self.channel]
+            tooltip_lines.append(f'Channel {info.describe()}')
+
+        # Handle each device
+        for name, device_info_list in self.device_info.items():
+            # At least show the device name
+            tooltip_lines.append(f'Device {name}')
+            has_alarm = False
+            pt = PrettyTable()
+            pt.field_names = ['Signal', 'Channel', 'Alarm']
+            alarm_count = 0
+            for info in device_info_list:
+                if info.alarm != AlarmLevel.NO_ALARM:
+                    alarm_count += 1
+                    pt.add_row([
+                        info.signal_name,
+                        info.address,
+                        info.alarm.name,
+                        ])
+                    if not has_alarm:
+                        has_alarm = True
+                        desc = info.describe()
+            # Show the channel error if just one
+            if alarm_count == 1:
+                tooltip_lines.append(desc)
+            # Show a table of errors if many
+            elif alarm_count > 1:
+                tooltip_lines.append(pt.get_string())
 
         if tooltip_lines:
             tooltip = os.linesep.join(tooltip_lines)
