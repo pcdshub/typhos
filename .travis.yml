@@ -13,7 +13,7 @@ env:
     - CONDA_EXTRAS="pip pyqt=5 happi"
     - CONDA_REQUIREMENTS="dev-requirements.txt"
 
-    - BENCHMARK_PYTHON="3.6"
+    - BENCHMARK_PYTHON="3.8"
     - BENCHMARK_COMMAND="--benchmark-only"
 
     - PIP_EXTRAS="PyQt5 happi"
@@ -21,6 +21,7 @@ env:
 jobs:
   allow_failures:
     - name: "Python 3.6 - PIP"
+    - name: "Python 3.6"
 
 after_failure:
   - cat logs/run_tests_log.txt
