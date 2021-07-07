@@ -105,6 +105,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
     """
     QtCore.Q_ENUMS(_KindLevel)
     QtCore.Q_ENUMS(_AlarmLevel)
+
     KindLevel = KindLevel
     AlarmLevel = AlarmLevel
 
@@ -375,25 +376,32 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         return bool(tooltip_lines)
 
 
+# Subclass an re-introduce properties as needed
+# Each of these must be included for these to work in designer
+
 class TyphosAlarmCircle(TyphosAlarm, PyDMDrawingCircle):
-    pass
+    QtCore.Q_ENUMS(_KindLevel)
+    kindLevel = TyphosAlarm.kindLevel
 
 
 class TyphosAlarmRectangle(TyphosAlarm, PyDMDrawingRectangle):
-    pass
+    QtCore.Q_ENUMS(_KindLevel)
+    kindLevel = TyphosAlarm.kindLevel
 
 
 class TyphosAlarmTriangle(TyphosAlarm, PyDMDrawingTriangle):
-    pass
+    QtCore.Q_ENUMS(_KindLevel)
+    kindLevel = TyphosAlarm.kindLevel
 
 
 class TyphosAlarmEllipse(TyphosAlarm, PyDMDrawingEllipse):
-    pass
+    QtCore.Q_ENUMS(_KindLevel)
+    kindLevel = TyphosAlarm.kindLevel
 
 
 class TyphosAlarmPolygon(TyphosAlarm, PyDMDrawingPolygon):
-    # Because of the multiple inheritance here, Properties defined on
-    # PyDMDrawingPolygon are dropped and need to be reinstated.
+    QtCore.Q_ENUMS(_KindLevel)
+    kindLevel = TyphosAlarm.kindLevel
     numberOfPoints = PyDMDrawingPolygon.numberOfPoints
 
 
