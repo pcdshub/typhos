@@ -10,13 +10,12 @@ import os
 
 from ophyd.device import Kind
 from ophyd.signal import EpicsSignalBase, Signal
-from prettytable import PrettyTable
 from pydm.widgets.base import PyDMPrimitiveWidget
 from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
                                   PyDMDrawingRectangle, PyDMDrawingTriangle,
                                   PyDMDrawingEllipse, PyDMDrawingPolygon)
-from qtpy import QtCore, QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 
 from .plugins import register_signal
 from .utils import (channel_from_signal, get_all_signals_from_device,
@@ -83,11 +82,11 @@ class SignalInfo:
     def describe(self) -> str:
         alarm = self.alarm
         if alarm == AlarmLevel.NO_ALARM:
-            desc = f'{self.address} has no alarm.'
+            desc = f'{self.address} has no alarm'
         elif alarm in (AlarmLevel.DISCONNECTED, AlarmLevel.INVALID):
-            desc = f'{self.address} is {alarm.name}.'
+            desc = f'{self.address} is {alarm.name}'
         else:
-            desc = f'{self.address} has a {alarm.name} alarm.'
+            desc = f'{self.address} has a {alarm.name} alarm'
         if self.signal_name:
             return f'{desc} ({self.signal_name})'
         else:
@@ -356,31 +355,18 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
             # At least show the device name
             tooltip_lines.append(f'Device {name}')
             has_alarm = False
-            pt = PrettyTable()
-            pt.field_names = ['Signal', 'Channel', 'Alarm']
-            alarm_count = 0
             for info in device_info_list:
                 if info.alarm != AlarmLevel.NO_ALARM:
-                    alarm_count += 1
-                    pt.add_row([
-                        info.signal_name,
-                        info.address,
-                        info.alarm.name,
-                        ])
                     if not has_alarm:
                         has_alarm = True
-                        desc = info.describe()
-            # Show the channel error if just one
-            if alarm_count == 1:
-                tooltip_lines.append(desc)
-            # Show a table of errors if many
-            elif alarm_count > 1:
-                tooltip_lines.append(pt.get_string())
+                        tooltip_lines.append('-' * 2 * len(tooltip_lines[-1]))
+                    tooltip_lines.append(info.describe())
 
         if tooltip_lines:
             tooltip = os.linesep.join(tooltip_lines)
             QtWidgets.QToolTip.showText(
-                self.mapToGlobal(QtCore.QPoint(0, 0)),
+                self.mapToGlobal(
+                    QtCore.QPoint(event.x() + 10, event.y())),
                 tooltip,
                 self,
                 )
