@@ -1,6 +1,7 @@
 """
 Module to define alarm summary frameworks and widgets.
 """
+from dataclasses import dataclass
 from functools import partial
 import enum
 import logging
@@ -56,6 +57,14 @@ KIND_FILTERS = {
     KindLevel.OMITTED:
         (lambda walk: True),
     }
+
+
+@dataclass
+class SignalInfo:
+    address: str
+    channel: PyDMChannel
+    connected: bool
+    severity: int
 
 
 class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
@@ -124,20 +133,33 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         if self._channel != value:
             # Remove old connection
             if self._channels:
-                self._channels.clear()
                 for channel in self._channels:
                     if hasattr(channel, 'disconnect'):
                         channel.disconnect()
+                    if channel in self.signal_info:
+                        del self.signal_info[channel]
+                self._channels.clear()
             # Load new channel
             self._channel = str(value)
-            channel = HappiChannel(
-                address=self._channel,
-                tx_slot=self._tx,
-                connection_slot=partial(self.update_connection,
-                                        addr=self._channel),
-                severity_slot=partial(self.update_severity,
-                                      addr=self._channel),
-                )
+            if 'happi://' in self._channel:
+                channel = HappiChannel(
+                    address=self._channel,
+                    tx_slot=self._tx,
+                    )
+            else:
+                channel = PyDMChannel(
+                    address=self._channel,
+                    connection_slot=partial(self.update_connection,
+                                            addr=self._channel),
+                    severity_slot=partial(self.update_severity,
+                                          addr=self._channel),
+                    )
+                self.signal_info[self._channel] = SignalInfo(
+                    address=self._channel,
+                    channel=channel,
+                    connected=False,
+                    severity=AlarmLevel.INVALID,
+                    )
             self._channels = [channel]
             # Connect the channel to the HappiPlugin
             if hasattr(channel, 'connect'):
@@ -148,10 +170,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         self.add_device(value['obj'])
 
     def reset_alarm_state(self):
-        self.addr_connected = {}
-        self.addr_severity = {}
-        self.addr_channels = {}
-        self.device_channels = {}
+        self.signal_info = {}
         self.alarm_summary = AlarmLevel.DISCONNECTED
         self.set_alarm_color(AlarmLevel.DISCONNECTED)
 
@@ -160,8 +179,8 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         Let pydm know about our pydm channels.
         """
         ch = list(self._channels)
-        for lst in self.device_channels.values():
-            ch.extend(lst)
+        for info in self.signal_info.values():
+            ch.append(info.channel)
         return ch
 
     def add_device(self, device):
@@ -175,8 +194,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         """
         Reset this widget down to the "no alarm handling" state.
         """
-        channels = self.addr_channels.values()
-        for ch in channels:
+        for ch in (info.channel for info in self.signal_info.values()):
             ch.disconnect()
         self.reset_alarm_state()
 
@@ -204,11 +222,13 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                 )
             for addr in channel_addrs]
 
-        self.device_channels[device.name] = channels
         for ch in channels:
-            self.addr_channels[ch.address] = ch
-            self.addr_connected[ch.address] = False
-            self.addr_severity[ch.address] = AlarmLevel.INVALID
+            self.signal_info[ch.address] = SignalInfo(
+                address=ch.address,
+                channel=ch,
+                connected=False,
+                severity=AlarmLevel.INVALID,
+                )
             ch.connect()
 
         all_channels = self.channels()
@@ -236,12 +256,12 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
 
     def update_connection(self, connected, addr):
         """Slot that will be called when a PV connects or disconnects."""
-        self.addr_connected[addr] = connected
+        self.signal_info[addr].connected = connected
         self.update_current_alarm()
 
     def update_severity(self, severity, addr):
         """Slot that will be called when a PV's alarm severity changes."""
-        self.addr_severity[addr] = severity
+        self.signal_info[addr].severity = severity
         self.update_current_alarm()
 
     def update_current_alarm(self):
@@ -252,8 +272,8 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         emit the "alarm_changed" signal. This signal is configured at
         init to change the color of this widget.
         """
-        connected_list = list(self.addr_connected.values())
-        severity_list = list(self.addr_severity.values())
+        connected_list = [info.connected for info in self.signal_info.values()]
+        severity_list = [info.severity for info in self.signal_info.values()]
         if not connected_list or not all(connected_list):
             new_alarm = AlarmLevel.DISCONNECTED
         elif not severity_list:
@@ -297,18 +317,15 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         Show a tooltip that reveals which channels are alarmed or disconnected.
         """
         tooltip_lines = []
-        channels = [ch.address for ch in self.channels()]
-        for ch_addr in channels:
-            connected = self.addr_connected.get(ch_addr, True)
-            severity = self.addr_severity.get(ch_addr, AlarmLevel.NO_ALARM)
-            if not connected:
-                tooltip_lines.append(f'{ch_addr} is DISCONNECTED')
-            elif severity == AlarmLevel.MINOR:
-                tooltip_lines.append(f'{ch_addr} has a MINOR alarm.')
-            elif severity == AlarmLevel.MAJOR:
-                tooltip_lines.append(f'{ch_addr} has a MAJOR alarm.')
-            elif severity == AlarmLevel.INVALID:
-                tooltip_lines.append(f'{ch_addr} is INVALID.')
+        for info in self.signal_info.values():
+            if not info.connected:
+                tooltip_lines.append(f'{info.address} is DISCONNECTED')
+            elif info.severity == AlarmLevel.MINOR:
+                tooltip_lines.append(f'{info.address} has a MINOR alarm.')
+            elif info.severity == AlarmLevel.MAJOR:
+                tooltip_lines.append(f'{info.address} has a MAJOR alarm.')
+            elif info.severity == AlarmLevel.INVALID:
+                tooltip_lines.append(f'{info.address} is INVALID.')
 
         if tooltip_lines:
             tooltip = os.linesep.join(tooltip_lines)
