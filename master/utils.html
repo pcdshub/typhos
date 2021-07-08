@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Utility Functions &mdash; Typhos 1.1.6+5.gb6fa0b3 documentation</title>
+  <title>Utility Functions &mdash; Typhos 1.1.6+57.g2d9f8e3 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.1.6+5.gb6fa0b3
+                1.1.6+57.g2d9f8e3
               </div>
             
           
@@ -216,21 +216,21 @@
 <dl class="py class">
 <dt id="typhos.utils.GrabKindItem">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.utils.</span></code><code class="sig-name descname"><span class="pre">GrabKindItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#typhos.utils.GrabKindItem" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<dd><dl class="py attribute">
 <dt id="typhos.utils.GrabKindItem.attr">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">attr</span></code><a class="headerlink" href="#typhos.utils.GrabKindItem.attr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">attr</span></code><a class="headerlink" href="#typhos.utils.GrabKindItem.attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt id="typhos.utils.GrabKindItem.component">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">component</span></code><a class="headerlink" href="#typhos.utils.GrabKindItem.component" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">component</span></code><a class="headerlink" href="#typhos.utils.GrabKindItem.component" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py attribute">
 <dt id="typhos.utils.GrabKindItem.signal">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">signal</span></code><a class="headerlink" href="#typhos.utils.GrabKindItem.signal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">signal</span></code><a class="headerlink" href="#typhos.utils.GrabKindItem.signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 2</p>
 </dd></dl>
 
@@ -285,41 +285,6 @@
 <dt id="typhos.utils.TyphosBase">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.utils.</span></code><code class="sig-name descname"><span class="pre">TyphosBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.TyphosBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base widget for all Typhos widgets that interface with devices</p>
-<dl class="py method">
-<dt id="typhos.utils.TyphosBase.add_device">
-<code class="sig-name descname"><span class="pre">add_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.add_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.TyphosBase.add_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new device to the widget</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>device</strong> (<em>ophyd.Device</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="typhos.utils.TyphosBase.from_device">
-<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">from_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.from_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.TyphosBase.from_device" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new instance of the widget for a Device</p>
-<p>Shortcut for:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphosBase</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
-<li><p><strong>parent</strong> (<em>QWidget</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="typhos.utils.TyphosBase.paintEvent">
-<code class="sig-name descname"><span class="pre">paintEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QPaintEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.paintEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.TyphosBase.paintEvent" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">

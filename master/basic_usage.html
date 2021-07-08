@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>How it Works &mdash; Typhos 1.1.6+5.gb6fa0b3 documentation</title>
+  <title>How it Works &mdash; Typhos 1.1.6+57.g2d9f8e3 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.1.6+5.gb6fa0b3
+                1.1.6+57.g2d9f8e3
               </div>
             
           
@@ -211,41 +211,6 @@ alternatively and be constructed using the <code class="docutils literal notrans
 <dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.utils.</span></code><code class="sig-name descname"><span class="pre">TyphosBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Base widget for all Typhos widgets that interface with devices</p>
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">add_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.add_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Add a new device to the widget</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>device</strong> (<em>ophyd.Device</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">from_device</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.from_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Create a new instance of the widget for a Device</p>
-<p>Shortcut for:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tool</span> <span class="o">=</span> <span class="n">TyphosBase</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
-<li><p><strong>parent</strong> (<em>QWidget</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">paintEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QPaintEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase.paintEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <div class="section" id="interpreting-a-device">
@@ -316,16 +281,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1620710672.1238444}),</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1625764564.2135687}),</span>
 <span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1620710672.1238434})])</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1625764564.2135675})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1620710672.1244512}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1625764564.2141016}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1620710672.1245015})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1625764564.2141511})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a

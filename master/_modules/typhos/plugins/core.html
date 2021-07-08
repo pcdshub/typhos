@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>typhos.plugins.core &mdash; Typhos 1.1.6+5.gb6fa0b3 documentation</title>
+  <title>typhos.plugins.core &mdash; Typhos 1.1.6+57.g2d9f8e3 documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                1.1.6+5.gb6fa0b3
+                1.1.6+57.g2d9f8e3
               </div>
             
           
@@ -178,7 +178,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
 
-<span class="kn">from</span> <span class="nn">ophyd.utils.epics_pvs</span> <span class="kn">import</span> <span class="n">_type_map</span>
+<span class="kn">from</span> <span class="nn">ophyd.utils.epics_pvs</span> <span class="kn">import</span> <span class="n">_type_map</span><span class="p">,</span> <span class="n">AlarmSeverity</span>
 <span class="kn">from</span> <span class="nn">pydm.data_plugins.plugin</span> <span class="kn">import</span> <span class="n">PyDMConnection</span><span class="p">,</span> <span class="n">PyDMPlugin</span>
 
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">raise_to_operator</span>
@@ -229,8 +229,14 @@
         <span class="c1"># Collect our signal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
         <span class="c1"># Subscribe to updates from Ophyd</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">,</span>
-                                          <span class="n">event_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">SUB_VALUE</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">,</span>
+            <span class="n">event_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">SUB_VALUE</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_new_meta</span><span class="p">,</span>
+            <span class="n">event_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">SUB_META</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="c1"># Add listener</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
 
@@ -292,6 +298,44 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to update </span><span class="si">%r</span><span class="s2"> with value </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span>
                              <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="SignalConnection.send_new_meta"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.send_new_meta">[docs]</a>    <span class="k">def</span> <span class="nf">send_new_meta</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">connected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">write_access</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">severity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">precision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">enum_strs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the UI with new metadata from the Signal.</span>
+
+<span class="sd">        Signal metadata updates always send all available metadata, so</span>
+<span class="sd">        default values to this function will not be sent ever if the signal</span>
+<span class="sd">        has valid data there.</span>
+
+<span class="sd">        We default missing metadata to None and skip emitting in general,</span>
+<span class="sd">        but for severity we default to NO_ALARM for UI purposes. We don&#39;t</span>
+<span class="sd">        want the UI to assume that anything is in an alarm state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Only emit the non-None values</span>
+        <span class="k">if</span> <span class="n">connected</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection_state_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">connected</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">write_access</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_access_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">write_access</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">precision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prec_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unit_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enum_strs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enum_strings_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">enum_strs</span><span class="p">)</span>
+
+        <span class="c1"># Special handling for severity</span>
+        <span class="k">if</span> <span class="n">severity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">severity</span> <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">NO_ALARM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_severity_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">severity</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="SignalConnection.add_listener"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.add_listener">[docs]</a>    <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a listener channel to this connection.</span>
@@ -303,33 +347,19 @@
         <span class="c1"># Perform the default connection setup</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-        <span class="c1"># Report as no-alarm state</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">new_severity_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Gather the current value</span>
             <span class="n">signal_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="c1"># Gather metadata</span>
-            <span class="n">signal_desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">signal_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">metadata</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to gather proper information &quot;</span>
                              <span class="s2">&quot;from signal </span><span class="si">%r</span><span class="s2"> to initialize </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
                              <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
             <span class="k">return</span>
-        <span class="c1"># Report as connected</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">write_access_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connection_state_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># Report metadata</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span>
-                    <span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prec_signal</span><span class="p">),</span>
-                    <span class="p">(</span><span class="s1">&#39;enum_strs&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">enum_strings_signal</span><span class="p">),</span>
-                    <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_signal</span><span class="p">)):</span>
-            <span class="c1"># Check if we have metadata to send for field</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="n">signal_desc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
-            <span class="c1"># If so emit it to our listeners</span>
-            <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
-                <span class="n">signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
         <span class="c1"># Report new value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">(</span><span class="n">signal_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_new_meta</span><span class="p">(</span><span class="o">**</span><span class="n">signal_meta</span><span class="p">)</span>
         <span class="c1"># If the channel is used for writing to PVs, hook it up to the</span>
         <span class="c1"># &#39;put&#39; methods.</span>
         <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -363,7 +393,8 @@
 
 <div class="viewcode-block" id="SignalConnection.close"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Unsubscribe from the Ophyd signal.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cid</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_cid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_cid</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="SignalPlugin"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalPlugin">[docs]</a><span class="k">class</span> <span class="nc">SignalPlugin</span><span class="p">(</span><span class="n">PyDMPlugin</span><span class="p">):</span>

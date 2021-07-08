@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Typhos Data Plugins for PyDM &mdash; Typhos 1.1.6+5.gb6fa0b3 documentation</title>
+  <title>Typhos Data Plugins for PyDM &mdash; Typhos 1.1.6+57.g2d9f8e3 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.1.6+5.gb6fa0b3
+                1.1.6+57.g2d9f8e3
               </div>
             
           
@@ -252,6 +252,18 @@ reported type of the signal unless it is of type <code class="docutils literal n
 <dd><p>Remove a listener channel from this connection.</p>
 <p>This removes the <cite>send_new_value</cite> connections from the channel in
 addition to the default disconnection performed in PyDMConnection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="typhos.plugins.SignalConnection.send_new_meta">
+<code class="sig-name descname"><span class="pre">send_new_meta</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_access</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enum_strs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.send_new_meta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.send_new_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the UI with new metadata from the Signal.</p>
+<p>Signal metadata updates always send all available metadata, so
+default values to this function will not be sent ever if the signal
+has valid data there.</p>
+<p>We default missing metadata to None and skip emitting in general,
+but for severity we default to NO_ALARM for UI purposes. We don’t
+want the UI to assume that anything is in an alarm state.</p>
 </dd></dl>
 
 <dl class="py method">
