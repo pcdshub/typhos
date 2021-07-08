@@ -127,12 +127,23 @@ def motor():
 
 class RichSignal(Signal):
 
+    def __init__(self, *args, metadata=None, **kwargs):
+        if metadata is None:
+            metadata = {
+                'enum_strs': ('a', 'b', 'c'),
+                'precision': 2,
+                'units': 'urad',
+                }
+        super().__init__(*args, metadata=metadata, **kwargs)
+
     def describe(self):
-        return {self.name: {'enum_strs': ('a', 'b', 'c'),
-                            'precision': 2,
-                            'units': 'urad',
-                            'dtype': 'number',
-                            'shape': []}}
+        desc = super().describe()
+        desc[self.name].update(self.metadata)
+        return desc
+
+    def update_metadata(self, md):
+        self._metadata.update(md)
+        self._run_metadata_callbacks()
 
 
 class DeadSignal(Signal):
