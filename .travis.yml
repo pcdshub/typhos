@@ -13,15 +13,14 @@ env:
     - CONDA_EXTRAS="pip pyqt=5 happi"
     - CONDA_REQUIREMENTS="dev-requirements.txt"
 
-    - PRIMARY_PYTHON="3.8"
+    - BENCHMARK_PYTHON="3.8"
     - BENCHMARK_COMMAND="--benchmark-only"
 
     - PIP_EXTRAS="PyQt5 happi"
 
 jobs:
   allow_failures:
-    - name: "Python - PIP"
-    - name: "Python 3.6"
+    - name: "Python 3.8 - PIP"
 
 after_failure:
   - cat logs/run_tests_log.txt
@@ -30,6 +29,6 @@ import:
 #  - pcdshub/pcds-ci-helpers:travis/shared_configs/setup-env-ui.yml
 #  - pcdshub/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml
 #  - pcdshub/pcds-ci-helpers:travis/shared_configs/python-benchmark.yml
-  - ZLLentz/pcds-ci-helpers:travis/shared_configs/setup-env-ui.yml@any-py
-  - ZLLentz/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml@any-py
-  - ZLLentz/pcds-ci-helpers:travis/shared_configs/python-benchmark.yml@any-py
+  - ZLLentz/pcds-ci-helpers:travis/shared_configs/setup-env-ui.yml@py38
+  - ZLLentz/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml@py38
+  - ZLLentz/pcds-ci-helpers:travis/shared_configs/python-benchmark.yml@py38
