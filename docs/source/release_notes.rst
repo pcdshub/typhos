@@ -12,7 +12,7 @@ elsewhere.
 
 Features
 --------
-Add a handlful of new widgets for indicating device alarm state. These will
+Add a handful of new widgets for indicating device alarm state. These will
 change color based on the most severe alarm found among the device's signals.
 Their shapes correlate with the available shapes of PyDMDrawingWidget:
 
@@ -24,9 +24,9 @@ Their shapes correlate with the available shapes of PyDMDrawingWidget:
 
 Compatibility / Fixes
 ---------------------
-- Add a sigint handler to avoid annoying behavior when closing with sigint on
+- Add a sigint handler to avoid annoying behavior when closing with Ctrl-C on
   macOS.
-- Increase some timeouts to improve unit test consisitency.
+- Increase some timeouts to improve unit test consistency.
 
 
 v1.1.6 (2021-04-05)
