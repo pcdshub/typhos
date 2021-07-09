@@ -2,6 +2,33 @@
  Release History
 =================
 
+v1.2.0 (2021-07-09)
+===================
+
+Description
+-----------
+This is a feature update intended for use in lucid, but it may also be useful
+elsewhere.
+
+Features
+--------
+Add a handlful of new widgets for indicating device alarm state. These will
+change color based on the most severe alarm found among the device's signals.
+Their shapes correlate with the available shapes of PyDMDrawingWidget:
+
+- TyphosAlarmCircle
+- TyphosAlarmRectangle
+- TyphosAlarmTriangle
+- TyphosAlarmEllipse
+- TyphosAlarmPolygon
+
+Compatibility / Fixes
+---------------------
+- Add a sigint handler to avoid annoying behavior when closing with sigint on
+  macOS.
+- Increase some timeouts to improve unit test consisitency.
+
+
 v1.1.6 (2021-04-05)
 ===================
 
