@@ -1,0 +1,1391 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>typhos.widgets &mdash; Typhos 1.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/doctr-versions-menu.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Typhos
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhos</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>typhos.widgets</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for typhos.widgets</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Typhos widgets and related utilities.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pydm</span>
+<span class="kn">import</span> <span class="nn">pydm.widgets</span>
+<span class="kn">import</span> <span class="nn">pydm.widgets.base</span>
+<span class="kn">import</span> <span class="nn">pydm.widgets.byte</span>
+<span class="kn">import</span> <span class="nn">pydm.widgets.enum_button</span>
+<span class="kn">import</span> <span class="nn">qtawesome</span> <span class="k">as</span> <span class="nn">qta</span>
+<span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignalBase</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.display_format</span> <span class="kn">import</span> <span class="n">DisplayFormat</span>
+<span class="kn">from</span> <span class="nn">pyqtgraph.parametertree</span> <span class="kn">import</span> <span class="n">parameterTypes</span> <span class="k">as</span> <span class="n">ptypes</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Property</span><span class="p">,</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">QSize</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">Slot</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="p">(</span><span class="n">QAction</span><span class="p">,</span> <span class="n">QDialog</span><span class="p">,</span> <span class="n">QDockWidget</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span>
+                            <span class="n">QToolBar</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">plugins</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">variety</span>
+<span class="kn">from</span> <span class="nn">.textedit</span> <span class="kn">import</span> <span class="n">TyphosTextEdit</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">.tweakable</span> <span class="kn">import</span> <span class="n">TyphosTweakable</span>  <span class="c1"># noqa: F401</span>
+<span class="kn">from</span> <span class="nn">.variety</span> <span class="kn">import</span> <span class="n">use_for_variety_read</span><span class="p">,</span> <span class="n">use_for_variety_write</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">EXPONENTIAL_UNITS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mtorr&#39;</span><span class="p">,</span> <span class="s1">&#39;torr&#39;</span><span class="p">,</span> <span class="s1">&#39;kpa&#39;</span><span class="p">,</span> <span class="s1">&#39;pa&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="SignalWidgetInfo"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.SignalWidgetInfo">[docs]</a><span class="k">class</span> <span class="nc">SignalWidgetInfo</span><span class="p">(</span>
+        <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span>
+            <span class="s1">&#39;SignalWidgetInfo&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;read_cls read_kwargs write_cls write_kwargs&#39;</span>
+        <span class="p">)):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides information on how to create signal widgets: class and kwargs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    read_cls : type</span>
+<span class="sd">        The readback widget class.</span>
+
+<span class="sd">    read_kwargs : dict</span>
+<span class="sd">        The readback widget initialization keyword arguments.</span>
+
+<span class="sd">    write_cls : type</span>
+<span class="sd">        The setpoint widget class.</span>
+
+<span class="sd">    write_kwargs : dict</span>
+<span class="sd">        The setpoint widget initialization keyword arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SignalWidgetInfo.from_signal"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.SignalWidgetInfo.from_signal">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_signal</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a `SignalWidgetInfo` given an object and its description.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        obj : :class:`ophyd.OphydObj`</span>
+<span class="sd">            The object</span>
+
+<span class="sd">        desc : dict, optional</span>
+<span class="sd">            The object description, if available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+        <span class="n">read_cls</span><span class="p">,</span> <span class="n">read_kwargs</span> <span class="o">=</span> <span class="n">widget_type_from_description</span><span class="p">(</span>
+            <span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">is_read_only</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_signal_ro</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">read_cls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">read_cls</span><span class="p">,</span> <span class="n">SignalDialogButton</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">is_read_only</span><span class="p">:</span>
+            <span class="n">write_cls</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">write_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">write_cls</span><span class="p">,</span> <span class="n">write_kwargs</span> <span class="o">=</span> <span class="n">widget_type_from_description</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">read_cls</span><span class="p">,</span> <span class="n">read_kwargs</span><span class="p">,</span> <span class="n">write_cls</span><span class="p">,</span> <span class="n">write_kwargs</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">TogglePanel</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic Panel Widget</span>
+
+<span class="sd">    Displays a widget below QPushButton that hides and shows the contents. It</span>
+<span class="sd">    is up to subclasses to re-point the attribute :attr:`.contents` to the</span>
+<span class="sd">    widget whose visibility you would like to toggle.</span>
+
+<span class="sd">    By default, it is assumed that the Panel is initialized with the</span>
+<span class="sd">    :attr:`.contents` widget as visible, however the contents will be hidden</span>
+<span class="sd">    and the button synced to the proper position if :meth:`.show_contents` is</span>
+<span class="sd">    called after instance creation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    title : str</span>
+<span class="sd">        Title of Panel. This will be the text on the QPushButton</span>
+
+<span class="sd">    parent : QWidget</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    contents : QWidget</span>
+<span class="sd">        Widget whose visibility is controlled via the QPushButton</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Create Widget Infrastructure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="c1"># Create button control</span>
+        <span class="c1"># Assuming widget is visible, set the button as checked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contents</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_contents</span><span class="p">)</span>
+
+    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">show_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show the contents of the Widget</span>
+
+<span class="sd">        Hides the :attr:`.contents` QWidget and sets the :attr:`.hide_button`</span>
+<span class="sd">        to the proper status to indicate whether the widget is hidden or not</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        show : bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Configure our button in case this slot was called elsewhere</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_button</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
+        <span class="c1"># Show or hide the widget if the contents exist</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="TyphosComboBox"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosComboBox">[docs]</a><span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;enum&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;text-enum&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosComboBox</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMEnumComboBox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TyphosComboBox.wheelEvent"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosComboBox.wheelEvent">[docs]</a>    <span class="k">def</span> <span class="nf">wheelEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWheelEvent</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TyphosLineEdit"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLineEdit">[docs]</a><span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;scalar&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosLineEdit</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMLineEdit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reimplementation of PyDMLineEdit to set some custom defaults</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">display_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span>
+            <span class="p">[],</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">showUnits</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">display_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">=</span> <span class="n">display_format</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">setpoint_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        History of setpoints, as a dictionary of {setpoint: timestamp}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span><span class="p">)</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">setpointHistoryCount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of items to show in the context menu &quot;setpoint history&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span>
+
+    <span class="nd">@setpointHistoryCount</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">setpointHistoryCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_remove_history_item_by_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remove_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove an item from the history buffer by value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_history</span> <span class="o">=</span> <span class="p">[(</span><span class="n">value</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span>
+                       <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="n">remove_value</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span>
+            <span class="n">new_history</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_history_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an item to the history buffer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span><span class="p">):</span>
+            <span class="c1"># Push this value to the end of the list as most-recently used</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_history_item_by_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">or</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="TyphosLineEdit.send_value"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLineEdit.send_value">[docs]</a>    <span class="k">def</span> <span class="nf">send_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update channel value while recording setpoint history</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">retval</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">send_value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_history_item</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">retval</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_history_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">history_menu</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="s2">&quot;&amp;History&quot;</span><span class="p">)</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFontDatabase</span><span class="o">.</span><span class="n">systemFont</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QFontDatabase</span><span class="o">.</span><span class="n">FixedFont</span><span class="p">)</span>
+        <span class="n">history_menu</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+
+        <span class="n">max_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span><span class="p">)</span>
+
+        <span class="c1"># Pad values such that timestamp lines up:</span>
+        <span class="c1"># (Value)     @ (Timestamp)</span>
+        <span class="n">action_format</span> <span class="o">=</span> <span class="s1">&#39;{value:&lt;</span><span class="si">%d</span><span class="s1">} @ </span><span class="si">{timestamp}</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">max_len</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history</span><span class="p">):</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamp</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">history_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span>
+                <span class="n">action_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">timestamp</span><span class="p">))</span>
+
+            <span class="k">def</span> <span class="nf">history_selected</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+            <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">history_selected</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">history_menu</span>
+
+<div class="viewcode-block" id="TyphosLineEdit.widget_ctx_menu"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLineEdit.widget_ctx_menu">[docs]</a>    <span class="k">def</span> <span class="nf">widget_ctx_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">widget_ctx_menu</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_history_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_history_menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_history_menu</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history_menu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+                <span class="n">menu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_history_menu</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">menu</span></div>
+
+<div class="viewcode-block" id="TyphosLineEdit.unit_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLineEdit.unit_changed">[docs]</a>    <span class="k">def</span> <span class="nf">unit_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_unit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback invoked when the Channel has new unit value.</span>
+<span class="sd">        This callback also triggers an update_format_string call so the</span>
+<span class="sd">        new unit value is considered if ```showUnits``` is set.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_unit : str</span>
+<span class="sd">            The new unit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">==</span> <span class="n">new_unit</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">unit_changed</span><span class="p">(</span><span class="n">new_unit</span><span class="p">)</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">==</span> <span class="n">DisplayFormat</span><span class="o">.</span><span class="n">Default</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">EXPONENTIAL_UNITS</span> <span class="ow">and</span> <span class="n">default</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">=</span> <span class="n">DisplayFormat</span><span class="o">.</span><span class="n">Exponential</span></div></div>
+
+
+<div class="viewcode-block" id="TyphosLabel"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLabel">[docs]</a><span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;array-nd&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command-enum&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command-setpoint-tracks-readback&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;enum&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;scalar&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;scalar-range&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;scalar-tweakable&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;text-enum&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;text-multiline&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;array-nd&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosLabel</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMLabel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reimplementation of PyDMLabel to set some custom defaults</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">display_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Preferred</span><span class="p">,</span>
+                           <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Maximum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">showUnits</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">display_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">=</span> <span class="n">display_format</span>
+
+<div class="viewcode-block" id="TyphosLabel.unit_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLabel.unit_changed">[docs]</a>    <span class="k">def</span> <span class="nf">unit_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_unit</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback invoked when the Channel has new unit value.</span>
+<span class="sd">        This callback also triggers an update_format_string call so the</span>
+<span class="sd">        new unit value is considered if ```showUnits``` is set.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_unit : str</span>
+<span class="sd">            The new unit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unit</span> <span class="o">==</span> <span class="n">new_unit</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">unit_changed</span><span class="p">(</span><span class="n">new_unit</span><span class="p">)</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">==</span> <span class="n">DisplayFormat</span><span class="o">.</span><span class="n">Default</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">EXPONENTIAL_UNITS</span> <span class="ow">and</span> <span class="n">default</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">=</span> <span class="n">DisplayFormat</span><span class="o">.</span><span class="n">Exponential</span></div></div>
+
+
+<div class="viewcode-block" id="TyphosSidebarItem"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosSidebarItem">[docs]</a><span class="k">class</span> <span class="nc">TyphosSidebarItem</span><span class="p">(</span><span class="n">ptypes</span><span class="o">.</span><span class="n">ParameterItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to display a Device or Tool in the sidebar</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
+        <span class="c1"># Configure a QToolbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span> <span class="o">=</span> <span class="n">QToolBar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">setToolButtonStyle</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ToolButtonIconOnly</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">setIconSize</span><span class="p">(</span><span class="n">QSize</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+        <span class="c1"># Setup the action to open the widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa.square&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">),</span> <span class="s1">&#39;Open&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_requested</span><span class="p">)</span>
+        <span class="c1"># Setup the action to embed the widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa.th-large&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">),</span> <span class="s1">&#39;Embed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embed_requested</span><span class="p">)</span>
+        <span class="c1"># Setup the action to hide the widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa.times-circle&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">),</span> <span class="s1">&#39;Close&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_requested</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Add actions to toolbars</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_action</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">embeddable</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">insertAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed_action</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TyphosSidebarItem.open_requested"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosSidebarItem.open_requested">[docs]</a>    <span class="k">def</span> <span class="nf">open_requested</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Request to open display for sidebar item&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">sigOpen</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mark_shown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TyphosSidebarItem.embed_requested"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosSidebarItem.embed_requested">[docs]</a>    <span class="k">def</span> <span class="nf">embed_requested</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Request to open embedded display for sidebar item&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">sigEmbed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mark_shown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TyphosSidebarItem.hide_requested"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosSidebarItem.hide_requested">[docs]</a>    <span class="k">def</span> <span class="nf">hide_requested</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">triggered</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Request to hide display for sidebar item&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">sigHide</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mark_hidden</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_mark_shown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_mark_hidden</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TyphosSidebarItem.treeWidgetChanged"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosSidebarItem.treeWidgetChanged">[docs]</a>    <span class="k">def</span> <span class="nf">treeWidgetChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update the widget when add to a QTreeWidget&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">treeWidgetChanged</span><span class="p">()</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">treeWidget</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">setItemWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SubDisplay"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.SubDisplay">[docs]</a><span class="k">class</span> <span class="nc">SubDisplay</span><span class="p">(</span><span class="n">QDockWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;QDockWidget modified to emit a signal when closed&quot;&quot;&quot;</span>
+    <span class="n">closing</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SubDisplay.closeEvent"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.SubDisplay.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">evt</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closing</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">HappiChannel</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">PyDMChannel</span><span class="p">,</span> <span class="n">QObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    PyDMChannel to transport Device Information</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tx_slot: callable</span>
+<span class="sd">        Slot on widget to accept a dictionary of both the device and metadata</span>
+<span class="sd">        information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tx_slot</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">QObject</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tx_slot</span> <span class="o">=</span> <span class="n">tx_slot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_md</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">tx_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transmission Slot&quot;&quot;&quot;</span>
+        <span class="c1"># Do not fire twice for the same device</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_md</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_md</span> <span class="o">!=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;md&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_md</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;md&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tx_slot</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;HappiChannel </span><span class="si">%r</span><span class="s2"> received same device. &quot;</span>
+                         <span class="s2">&quot;Ignoring for now ...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TyphosDesignerMixin"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosDesignerMixin">[docs]</a><span class="k">class</span> <span class="nc">TyphosDesignerMixin</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">PyDMWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A mixin class used to display Typhos widgets in the Qt designer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Unused properties that we don&#39;t want visible in designer</span>
+    <span class="n">alarmSensitiveBorder</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">alarmSensitiveContent</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">precisionFromPV</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">showUnits</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The channel address to use for this widget&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@channel</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
+            <span class="c1"># Remove old connection</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;disconnect&#39;</span><span class="p">):</span>
+                        <span class="n">channel</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="c1"># Load new channel</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">HappiChannel</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">,</span>
+                                   <span class="n">tx_slot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+            <span class="c1"># Connect the channel to the HappiPlugin</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">):</span>
+                <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Receive information from happi channel&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="SignalDialogButton"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.SignalDialogButton">[docs]</a><span class="k">class</span> <span class="nc">SignalDialogButton</span><span class="p">(</span><span class="n">QPushButton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;QPushButton to launch a QDialog with a PyDMWidget&quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="bp">NotImplemented</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="bp">NotImplemented</span>
+    <span class="n">parent_widget_class</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_channel</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">icon</span> <span class="o">=</span> <span class="n">icon</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">icon</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_dialog</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">init_channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setIconSize</span><span class="p">(</span><span class="n">QSize</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+
+<div class="viewcode-block" id="SignalDialogButton.widget"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.SignalDialogButton.widget">[docs]</a>    <span class="k">def</span> <span class="nf">widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a widget created with channel&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="SignalDialogButton.show_dialog"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.SignalDialogButton.show_dialog">[docs]</a>    <span class="k">def</span> <span class="nf">show_dialog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Show the channel in a QDialog&quot;&quot;&quot;</span>
+        <span class="c1"># Dialog Creation</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating QDialog for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+            <span class="c1"># Set up the QDialog</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_parent_with_class</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent_widget_class</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span> <span class="o">=</span> <span class="n">QDialog</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QVBoxLayout</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># Add the widget</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="c1"># Handle a lost dialog</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Redisplaying QDialog for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># Show the dialog</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Showing QDialog for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dialog</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ImageDialogButton"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.ImageDialogButton">[docs]</a><span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;array-image&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ImageDialogButton</span><span class="p">(</span><span class="n">SignalDialogButton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    QPushButton to show a 2-d array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Show Image&#39;</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s1">&#39;fa.camera&#39;</span>
+    <span class="n">parent_widget_class</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span>
+
+<div class="viewcode-block" id="ImageDialogButton.widget"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.ImageDialogButton.widget">[docs]</a>    <span class="k">def</span> <span class="nf">widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create PyDMImageView&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMImageView</span><span class="p">(</span>
+            <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="WaveformDialogButton"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.WaveformDialogButton">[docs]</a><span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;array-timeseries&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;array-histogram&#39;</span><span class="p">)</span>  <span class="c1"># TODO: histogram settings?</span>
+<span class="k">class</span> <span class="nc">WaveformDialogButton</span><span class="p">(</span><span class="n">SignalDialogButton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    QPushButton to show a 1-d array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Show Waveform&#39;</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s1">&#39;fa5s.chart-line&#39;</span>
+    <span class="n">parent_widget_class</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span>
+
+<div class="viewcode-block" id="WaveformDialogButton.widget"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.WaveformDialogButton.widget">[docs]</a>    <span class="k">def</span> <span class="nf">widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create PyDMWaveformPlot&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMWaveformPlot</span><span class="p">(</span>
+            <span class="n">init_y_channels</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">],</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># @variety.uses_key_handlers</span>
+<div class="viewcode-block" id="TyphosCommandButton"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosCommandButton">[docs]</a><span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;command-proc&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;command-setpoint-tracks-readback&#39;</span><span class="p">)</span>  <span class="c1"># TODO</span>
+<span class="k">class</span> <span class="nc">TyphosCommandButton</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMPushButton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A pushbutton widget which executes a command by sending a specific value.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`TyphosCommandEnumButton`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_label</span> <span class="o">=</span> <span class="s1">&#39;Command&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety_metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forced_enum_strings</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">create_variety_property</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TyphosCommandButton.enum_strings_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosCommandButton.enum_strings_changed">[docs]</a>    <span class="k">def</span> <span class="nf">enum_strings_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_enum_strings</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">enum_strings_changed</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_forced_enum_strings</span> <span class="ow">or</span> <span class="n">new_enum_strings</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_variety_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">enum_strings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                 <span class="n">enum_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressValue</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">enum_strings</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">get_enum_strings</span><span class="p">(</span><span class="n">enum_strings</span><span class="p">,</span> <span class="n">enum_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enum_strings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_forced_enum_strings</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">enum_strings</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enum_strings_changed</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># force an update</span>
+
+        <span class="n">tags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tags</span> <span class="ow">or</span> <span class="p">{})</span>
+
+        <span class="k">if</span> <span class="s1">&#39;protected&#39;</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">passwordProtected</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;typhos&#39;</span>  <span class="c1"># ... yeah (TODO)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;confirm&#39;</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">showConfirmDialog</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_label</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TyphosCommandEnumButton"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosCommandEnumButton">[docs]</a><span class="nd">@variety</span><span class="o">.</span><span class="n">uses_key_handlers</span>
+<span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;command-enum&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosCommandEnumButton</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">enum_button</span><span class="o">.</span><span class="n">PyDMEnumButton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A group of buttons which represent several command options.</span>
+
+<span class="sd">    These options can come from directly from the control layer or can be</span>
+<span class="sd">    overridden with variety metadata.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`TyphosCommandButton`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety_metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forced_enum_strings</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">create_variety_property</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TyphosCommandEnumButton.enum_strings_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosCommandEnumButton.enum_strings_changed">[docs]</a>    <span class="k">def</span> <span class="nf">enum_strings_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_enum_strings</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">enum_strings_changed</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_forced_enum_strings</span> <span class="ow">or</span> <span class="n">new_enum_strings</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_variety_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">enum_strings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                 <span class="n">enum_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">enum_strings</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">get_enum_strings</span><span class="p">(</span><span class="n">enum_strings</span><span class="p">,</span> <span class="n">enum_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enum_strings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_forced_enum_strings</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">enum_strings</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enum_strings_changed</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># force an update</span>
+
+        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TyphosByteIndicator"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosByteIndicator">[docs]</a><span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;bitmask&#39;</span><span class="p">)</span>
+<span class="nd">@variety</span><span class="o">.</span><span class="n">uses_key_handlers</span>
+<span class="k">class</span> <span class="nc">TyphosByteIndicator</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMByteIndicator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays an integer value as individual, read-only bit indicators.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety_metadata</span>
+
+    <span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">create_variety_property</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_update_variety_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bits</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">first_bit</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span>
+                                 <span class="n">meaning</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numBits</span> <span class="o">=</span> <span class="n">bits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;horizontal&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">,</span>
+            <span class="s1">&#39;vertical&#39;</span><span class="p">:</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Vertical</span><span class="p">,</span>
+        <span class="p">}[</span><span class="n">orientation</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bigEndian</span> <span class="o">=</span> <span class="p">(</span><span class="n">first_bit</span> <span class="o">==</span> <span class="s1">&#39;most-significant&#39;</span><span class="p">)</span>
+        <span class="c1"># TODO: labels do not display properly</span>
+        <span class="c1"># if meaning:</span>
+        <span class="c1">#     self.labels = meaning[:bits]</span>
+        <span class="c1">#     self.showLabels = True</span>
+        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s1">&#39;style&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_variety_key_handler_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">on_color</span><span class="p">,</span> <span class="n">off_color</span><span class="p">,</span>
+                                   <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Variety hook for the sub-dictionary &quot;style&quot;.&quot;&quot;&quot;</span>
+        <span class="n">on_color</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">on_color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">onColor</span> <span class="o">=</span> <span class="n">on_color</span>
+
+        <span class="n">off_color</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="n">off_color</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">off_color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offColor</span> <span class="o">=</span> <span class="n">off_color</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">circles</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span> <span class="o">==</span> <span class="s1">&#39;circle&#39;</span><span class="p">)</span>
+
+        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">)</span>
+<span class="nd">@use_for_variety_read</span><span class="p">(</span><span class="s1">&#39;command-proc&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosCommandIndicator</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMByteIndicator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Displays command status as a read-only bit indicator.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numBits</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">showLabels</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circles</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="ClickableBitIndicator"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.ClickableBitIndicator">[docs]</a><span class="k">class</span> <span class="nc">ClickableBitIndicator</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">byte</span><span class="o">.</span><span class="n">PyDMBitIndicator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A bit indicator that emits `clicked` when clicked.&quot;&quot;&quot;</span>
+    <span class="n">clicked</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ClickableBitIndicator.mousePressEvent"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.ClickableBitIndicator.mousePressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mousePressEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TyphosByteSetpoint"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosByteSetpoint">[docs]</a><span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;bitmask&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosByteSetpoint</span><span class="p">(</span><span class="n">TyphosByteIndicator</span><span class="p">,</span>
+                         <span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">PyDMWritableWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays an integer value as individual, toggleable bit indicators.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># NOTE: need to have these in the signature explicitly</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="n">variety_metadata</span><span class="p">,</span>
+                         <span class="n">ophyd_signal</span><span class="o">=</span><span class="n">ophyd_signal</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requests_pending</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_get_setpoint_from_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">setpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">for</span> <span class="n">bit</span><span class="p">,</span> <span class="n">request</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests_pending</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit</span>
+            <span class="k">if</span> <span class="n">request</span><span class="p">:</span>
+                <span class="n">setpoint</span> <span class="o">|=</span> <span class="n">mask</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">setpoint</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">mask</span>
+        <span class="k">return</span> <span class="n">setpoint</span>
+
+    <span class="k">def</span> <span class="nf">_bit_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bit</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">bit</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests_pending</span><span class="p">:</span>
+            <span class="n">old_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests_pending</span><span class="p">[</span><span class="n">bit</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">old_value</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requests_pending</span><span class="p">[</span><span class="n">bit</span><span class="p">]</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">old_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_value_signal</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_setpoint_from_requests</span><span class="p">())</span>
+
+<div class="viewcode-block" id="TyphosByteSetpoint.value_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosByteSetpoint.value_changed">[docs]</a>    <span class="k">def</span> <span class="nf">value_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Receive and update the TyphosTextEdit for a new channel value.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">bit</span><span class="p">,</span> <span class="n">request</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_requests_pending</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit</span>
+            <span class="n">is_set</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="n">mask</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_set</span> <span class="o">==</span> <span class="n">request</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_requests_pending</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">bit</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">value_changed</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">numBits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of bits to interpret.</span>
+
+<span class="sd">        Re-implemented from PyDM to support changing of bit indicators.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_bits</span>
+
+    <span class="nd">@numBits</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">numBits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_bits</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">num_bits</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_bits</span> <span class="o">=</span> <span class="n">num_bits</span>
+        <span class="k">for</span> <span class="n">indicator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indicators</span><span class="p">:</span>
+            <span class="n">indicator</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indicators</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ClickableBitIndicator</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">circle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">circles</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_num_bits</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">bit</span><span class="p">,</span> <span class="n">indicator</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_indicators</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">indicator_clicked</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bit</span><span class="o">=</span><span class="n">bit</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_bit_clicked</span><span class="p">(</span><span class="n">bit</span><span class="p">)</span>
+
+            <span class="n">indicator</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">indicator_clicked</span><span class="p">)</span>
+
+        <span class="n">new_labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Bit </span><span class="si">{</span><span class="n">bit</span><span class="si">}</span><span class="s2">&quot;</span>
+                      <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_bits</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">+</span> <span class="n">new_labels</span></div>
+
+
+<div class="viewcode-block" id="TyphosScalarRange"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosScalarRange">[docs]</a><span class="nd">@variety</span><span class="o">.</span><span class="n">uses_key_handlers</span>
+<span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;scalar-range&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosScalarRange</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMSlider</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A slider widget which displays a scalar value with an explicit range.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal_sub</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety_metadata</span>
+
+    <span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">create_variety_property</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__dtor__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;PyQt5 destructor hook&quot;&quot;&quot;</span>
+        <span class="c1"># Ensure our delta signal subscription is cleared:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta_signal</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s1">&#39;range&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_variety_key_handler_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Variety hook for the sub-dictionary &quot;range&quot;.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">userMinimum</span> <span class="o">=</span> <span class="n">low</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">userMaximum</span> <span class="o">=</span> <span class="n">high</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">userDefinedLimits</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># elif source == &#39;use_limits&#39;:</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;range.source&#39;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+
+        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s1">&#39;delta&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_variety_key_handler_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                   <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Variety hook for the sub-dictionary &quot;delta&quot;.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delta_value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="n">source</span> <span class="o">==</span> <span class="s1">&#39;signal&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delta_signal</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">get_referenced_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;delta.source&#39;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+
+        <span class="c1"># range_ = kwargs.pop(&#39;range&#39;)  # unhandled</span>
+        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s1">&#39;display_format&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_variety_key_handler_display_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Variety hook for the sub-dictionary &quot;delta&quot;.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">get_display_format</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">delta_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delta signal, used as the source for &quot;delta_value&quot;.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span>
+
+    <span class="nd">@delta_signal</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">delta_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal_sub</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">def</span> <span class="nf">update_delta</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_value</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal_sub</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">update_delta</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span> <span class="o">=</span> <span class="n">signal</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">delta_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delta value, an alternative to &quot;num_points&quot; provided by PyDMSlider.</span>
+
+<span class="sd">        num_points is calculated using the current min/max and the delta value,</span>
+<span class="sd">        if set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_value</span>
+
+    <span class="nd">@delta_value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">delta_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delta_value</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mute_internal_slider_changes</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">num_steps</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span> <span class="o">/</span> <span class="n">value</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to set number of steps with &#39;</span>
+                                 <span class="s1">&#39;min=</span><span class="si">%s</span><span class="s1">, max=</span><span class="si">%s</span><span class="s1">, delta=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mute_internal_slider_changes</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="TyphosScalarRange.connection_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosScalarRange.connection_changed">[docs]</a>    <span class="k">def</span> <span class="nf">connection_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connected</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">connection_changed</span><span class="p">(</span><span class="n">connected</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_value</span>
+        <span class="k">return</span> <span class="n">ret</span></div></div>
+
+
+<div class="viewcode-block" id="TyphosArrayTable"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosArrayTable">[docs]</a><span class="nd">@variety</span><span class="o">.</span><span class="n">uses_key_handlers</span>
+<span class="nd">@use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;array-tabular&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TyphosArrayTable</span><span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">widgets</span><span class="o">.</span><span class="n">PyDMWaveformTable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A table widget which reshapes and displays a given waveform value.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety_metadata</span>
+
+    <span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">create_variety_property</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TyphosArrayTable.value_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosArrayTable.value_changed">[docs]</a>    <span class="k">def</span> <span class="nf">value_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Non-waveform value? </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># shape = self.variety_metadata.get(&#39;shape&#39;)</span>
+        <span class="c1"># if shape is not None:</span>
+        <span class="c1">#     expected_length = np.multiply.reduce(shape)</span>
+        <span class="c1">#     if len(value) == expected_length:</span>
+        <span class="c1">#         value = np.array(value).reshape(shape)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">value_changed</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_calculate_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">verticalHeader</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">+</span> <span class="n">padding</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()):</span>
+            <span class="n">width</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columnWidth</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+        <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizontalHeader</span><span class="p">()</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">+</span> <span class="n">padding</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+            <span class="n">height</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowHeight</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_variety_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">shape</span><span class="p">:</span>
+            <span class="c1"># TODO</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setRowCount</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setColumnCount</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rowHeaderLabels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columnHeaderLabels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">columns</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="n">rows</span> <span class="o">&lt;=</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">columns</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">full_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_size</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="n">full_size</span><span class="p">)</span>
+
+        <span class="n">variety</span><span class="o">.</span><span class="n">_warn_unhandled_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_scalar_widget_class</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">variety_md</span><span class="p">,</span> <span class="n">read_only</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    From a given description, return the widget to use.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    desc : dict</span>
+<span class="sd">        The object description.</span>
+
+<span class="sd">    variety_md : dict</span>
+<span class="sd">        The variety metadata.  Currently unused.</span>
+
+<span class="sd">    read_only : bool</span>
+<span class="sd">        Set if used for the readback widget.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check for enum_strs, if so create a QCombobox</span>
+    <span class="k">if</span> <span class="n">read_only</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TyphosLabel</span>
+
+    <span class="k">if</span> <span class="s1">&#39;enum_strs&#39;</span> <span class="ow">in</span> <span class="n">desc</span><span class="p">:</span>
+        <span class="c1"># Create a QCombobox if the widget has enum_strs</span>
+        <span class="k">return</span> <span class="n">TyphosComboBox</span>
+
+    <span class="c1"># Otherwise a LineEdit will suffice</span>
+    <span class="k">return</span> <span class="n">TyphosLineEdit</span>
+
+
+<span class="k">def</span> <span class="nf">_get_ndimensional_widget_class</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">variety_md</span><span class="p">,</span> <span class="n">read_only</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    From a given description and dimensionality, return the widget to use.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dimensions : int</span>
+<span class="sd">        The number of dimensions (e.g., 0D or scalar, 1D array, ND array)</span>
+
+<span class="sd">    desc : dict</span>
+<span class="sd">        The object description.</span>
+
+<span class="sd">    variety_md : dict</span>
+<span class="sd">        The variety metadata.  Currently unused.</span>
+
+<span class="sd">    read_only : bool</span>
+<span class="sd">        Set if used for the readback widget.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dimensions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_scalar_widget_class</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span> <span class="n">variety_md</span><span class="p">,</span> <span class="n">read_only</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="n">WaveformDialogButton</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">:</span> <span class="n">ImageDialogButton</span>
+    <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">TyphosLabel</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="widget_type_from_description"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.widget_type_from_description">[docs]</a><span class="k">def</span> <span class="nf">widget_type_from_description</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine which widget class should be used for the given signal</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signal : ophyd.Signal</span>
+<span class="sd">        Signal object to determine widget class</span>
+
+<span class="sd">    desc : dict</span>
+<span class="sd">        Previously recorded description from the signal</span>
+
+<span class="sd">    read_only: bool, optional</span>
+<span class="sd">        Should the chosen widget class be read-only?</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    widget_class : class</span>
+<span class="sd">        The class to use for the widget</span>
+<span class="sd">    kwargs : dict</span>
+<span class="sd">        Keyword arguments for the class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">):</span>
+        <span class="c1"># Still re-route EpicsSignal through the ca:// plugin</span>
+        <span class="n">pv</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">_read_pv</span>
+              <span class="k">if</span> <span class="n">read_only</span> <span class="k">else</span> <span class="n">signal</span><span class="o">.</span><span class="n">_write_pv</span><span class="p">)</span>
+        <span class="n">init_channel</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Register signal with plugin</span>
+        <span class="n">plugins</span><span class="o">.</span><span class="n">register_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="n">init_channel</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">)</span>
+
+    <span class="n">variety_metadata</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_variety_metadata</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;init_channel&#39;</span><span class="p">:</span> <span class="n">init_channel</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">variety_metadata</span><span class="p">:</span>
+        <span class="n">widget_cls</span> <span class="o">=</span> <span class="n">variety</span><span class="o">.</span><span class="n">_get_widget_class_from_variety</span><span class="p">(</span>
+            <span class="n">desc</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="p">,</span> <span class="n">read_only</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dimensions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shape&#39;</span><span class="p">,</span> <span class="p">[]))</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">dimensions</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">widget_cls</span> <span class="o">=</span> <span class="n">_get_ndimensional_widget_class</span><span class="p">(</span>
+            <span class="n">dimensions</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="p">,</span> <span class="n">read_only</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">widget_cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">desc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dtype&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;string&#39;</span> <span class="ow">and</span> <span class="n">widget_cls</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TyphosLabel</span><span class="p">,</span>
+                                                        <span class="n">TyphosLineEdit</span><span class="p">):</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;display_format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DisplayFormat</span><span class="o">.</span><span class="n">String</span>
+
+    <span class="n">class_signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">widget_cls</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;variety_metadata&#39;</span> <span class="ow">in</span> <span class="n">class_signature</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;variety_metadata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">variety_metadata</span>
+
+    <span class="k">if</span> <span class="s1">&#39;ophyd_signal&#39;</span> <span class="ow">in</span> <span class="n">class_signature</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;ophyd_signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span>
+
+    <span class="k">return</span> <span class="n">widget_cls</span><span class="p">,</span> <span class="n">kwargs</span></div>
+
+
+<div class="viewcode-block" id="determine_widget_type"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.determine_widget_type">[docs]</a><span class="k">def</span> <span class="nf">determine_widget_type</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine which widget class should be used for the given signal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signal : ophyd.Signal</span>
+<span class="sd">        Signal object to determine widget class</span>
+
+<span class="sd">    read_only: bool, optional</span>
+<span class="sd">        Should the chosen widget class be read-only?</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    widget_class : class</span>
+<span class="sd">        The class to use for the widget</span>
+<span class="sd">    kwargs : dict</span>
+<span class="sd">        Keyword arguments for the class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span>
+                     <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">return</span> <span class="n">widget_type_from_description</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_signal_widget"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.create_signal_widget">[docs]</a><span class="k">def</span> <span class="nf">create_signal_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Factory for creating a PyDMWidget from a signal</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signal : ophyd.Signal</span>
+<span class="sd">        Signal object to create widget</span>
+
+<span class="sd">    read_only: bool, optional</span>
+<span class="sd">        Whether this widget should be able to write back to the signal you</span>
+<span class="sd">        provided</span>
+
+<span class="sd">    tooltip : str, optional</span>
+<span class="sd">        Tooltip to use for the widget</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    widget : PyDMWidget</span>
+<span class="sd">        PyDMLabel, PyDMLineEdit, or PyDMEnumComboBox based on whether we should</span>
+<span class="sd">        be able to write back to the widget and if the signal has ``enum_strs``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">widget_cls</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">determine_widget_type</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="n">read_only</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">widget_cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating </span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">widget_cls</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">widget</span> <span class="o">=</span> <span class="n">widget_cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">widget_cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">widget</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
