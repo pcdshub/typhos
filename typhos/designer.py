@@ -7,7 +7,7 @@ from .display import (TyphosDeviceDisplay, TyphosDisplaySwitcher,
 from .func import TyphosMethodButton
 from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
 from .positioner import TyphosPositionerWidget
-from .widgets_aux import TyphosRelatedSuiteButton
+from .related_display import TyphosRelatedSuiteButton
 
 group_name = 'Typhos Widgets'
 TyphosSignalPanelPlugin = qtplugin_factory(TyphosSignalPanel,
