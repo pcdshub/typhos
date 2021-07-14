@@ -3,14 +3,14 @@ Widgets intended to be used in other applications.
 """
 from happi.client import Client
 from happi.loader import load_devices
-from pydm.utilities import establish_widget_connections
+from pydm.utilities import establish_widget_connections, is_qt_designer
 from qtpy import QtCore, QtWidgets
 
 from .suite import TyphosSuite
-from .utils import no_device_lazy_load, use_stylesheet
+from .utils import TyphosObject, no_device_lazy_load, use_stylesheet
 
 
-class TyphosRelatedSuiteButton(QtWidgets.QPushButton):
+class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
     """
     Button to open a typhos suite related to an open pydm ui.
     """
@@ -18,9 +18,11 @@ class TyphosRelatedSuiteButton(QtWidgets.QPushButton):
         super().__init__(*args, **kwargs)
         self._devices = []
         self._happi_cfg = ''
-        self.clicked.connect(self.create_suite)
+        self._preload = False
+        self._suite = None
+        self.clicked.connect(self.show_suite)
 
-    @QtCore.Property('QStringList', designable=True)
+    @QtCore.Property('QStringList')
     def devices(self):
         """
         List of devices to include in the suite.
@@ -31,7 +33,7 @@ class TyphosRelatedSuiteButton(QtWidgets.QPushButton):
     def devices(self, devices):
         self._devices = devices
 
-    @QtCore.Property('QString', designable=True)
+    @QtCore.Property(str)
     def happi_cfg(self):
         """
         Happi config to use, or empty string to use environment variable.
@@ -42,10 +44,32 @@ class TyphosRelatedSuiteButton(QtWidgets.QPushButton):
     def happi_cfg(self, happi_cfg):
         self._happi_cfg = happi_cfg
 
-    @QtCore.Slot()
+    @QtCore.Property(bool)
+    def preload(self):
+        """
+        If True, we'll create the suite ahead of time.
+        """
+        return self._preload
+
+    @preload.setter
+    def preload(self, exec_preload):
+        self._preload = exec_preload
+        if self._preload and not is_qt_designer():
+            self.create_suite()
+
+    def show_suite(self):
+        """
+        Show the cached suite, creating it if necessary.
+
+        This opens the suite in a new window.
+        """
+        if self._suite is None:
+            self.create_suite()
+        self._suite.show()
+
     def create_suite(self):
         """
-        Open a new window and put the suite into it.
+        Create and cache the typhos suite.
         """
         device_names = list(map(str, self.devices))
         happi_cfg = str(self.happi_cfg)
@@ -63,9 +87,7 @@ class TyphosRelatedSuiteButton(QtWidgets.QPushButton):
             device_namespace = load_devices(*items, threaded=True)
 
         devices = [getattr(device_namespace, name) for name in device_names]
-        suite = TyphosSuite.from_devices(devices)
-        use_stylesheet(widget=suite)
-        establish_widget_connections(suite)
-        suite.show()
-
-        return suite
+        self._suite = TyphosSuite.from_devices(devices)
+        use_stylesheet(widget=self._suite)
+        establish_widget_connections(self._suite)
+        return self._suite
