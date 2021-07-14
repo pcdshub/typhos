@@ -61,11 +61,27 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         """
         Show the cached suite, creating it if necessary.
 
-        This opens the suite in a new window.
+        This opens the suite in a new window, if it is not already open.
+        If the suite is already open, this moves the open suite back to
+        the starting location, which is the location of this button.
+
+        This also unminimizes the window if needed, raises it to the front
+        of the window stack, and activates it.
         """
         if self._suite is None:
             self.create_suite()
+        global_pos = self.parent().mapToGlobal(self.pos())
+        # Different window managers respond differently to the various
+        # methods called here, the chosen sequence was intended for
+        # good behavior on as many systems as possible.
+        self._suite.hide()
+        self._suite.window().move(global_pos)
         self._suite.show()
+        if self._suite.isMinimized():
+            self._suite.showNormal()
+        self._suite.raise_()
+        self._suite.activateWindow()
+        self._suite.setFocus()
 
     def create_suite(self):
         """
