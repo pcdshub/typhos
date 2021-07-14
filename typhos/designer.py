@@ -1,8 +1,7 @@
 from pydm.widgets.qtplugin_base import qtplugin_factory
 
-from .alarm import (TyphosAlarmCircle, TyphosAlarmRectangle,
-                    TyphosAlarmTriangle, TyphosAlarmEllipse,
-                    TyphosAlarmPolygon)
+from .alarm import (TyphosAlarmCircle, TyphosAlarmEllipse, TyphosAlarmPolygon,
+                    TyphosAlarmRectangle, TyphosAlarmTriangle)
 from .display import (TyphosDeviceDisplay, TyphosDisplaySwitcher,
                       TyphosDisplayTitle)
 from .func import TyphosMethodButton
