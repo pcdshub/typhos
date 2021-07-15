@@ -471,6 +471,22 @@ class TyphosTitleLabel(QtWidgets.QLabel):
 
 
 class TyphosHelpToggleButton(TyphosToolButton):
+    """
+    A standard button used to toggle help information display.
+
+    Attributes
+    ----------
+    open_in_browser : QtCore.Signal
+        A Qt signal indicating a request to open the help in a browser.
+
+    open_python_docs : QtCore.Signal
+        A Qt signal indicating a request to open the Python docstring
+        information.
+
+    toggle_help : QtCore.Signal
+        A Qt signal indicating a request to toggle the related help display
+        frame.
+    """
     open_in_browser = QtCore.Signal()
     open_python_docs = QtCore.Signal()
     toggle_help = QtCore.Signal(bool)
@@ -479,32 +495,9 @@ class TyphosHelpToggleButton(TyphosToolButton):
         super().__init__(icon, parent=parent)
         self.setCheckable(True)
 
-        self.open_python_docs.connect(
-            self._open_python_docs
-        )
-        self._help = None
-
     def _clicked(self):
+        """Hook for QToolButton.clicked."""
         self.toggle_help.emit(self.isChecked())
-
-    def _open_python_docs(self):
-        if self._help is not None:
-            self._help.raise_()
-            return
-
-        self._help = QtWidgets.QTextBrowser()
-        help_document = QtGui.QTextDocument()
-        contents = self.toolTip() or "Unset"
-        first_line = contents.splitlines()[0]
-        # TODO: later versions of qt will support setMarkdown
-        help_document.setPlainText(contents)
-        self._help.setWindowTitle(first_line)
-        font = QtGui.QFont("Monospace")
-        font.setStyleHint(QtGui.QFont.TypeWriter)
-        # font.setStyleHint(QtGui.QFont.Monospace)
-        self._help.setFont(font)
-        self._help.setDocument(help_document)
-        self._help.show()
 
     def generate_context_menu(self):
         menu = QtWidgets.QMenu(parent=self)
@@ -524,12 +517,21 @@ class TyphosHelpToggleButton(TyphosToolButton):
 
 
 class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
+    """
+    A frame for help information display.
+
+    Attributes
+    ----------
+    tooltip_updated : QtCore.Signal
+        A signal indicating the help tooltip has changed.
+    """
     tooltip_updated = QtCore.Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.help = None
         self.help_web_view = None
+        self.python_docs_browser = None
 
         self.setContentsMargins(0, 0, 0, 0)
 
@@ -538,11 +540,46 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.devices = []
 
     def open_in_browser(self, new=0, autoraise=True):
+        """
+        Open the associated help documentation in the browser.
+
+        Parameters
+        ----------
+        new : int, optional
+            0: the same browser window (the default).
+            1: a new browser window.
+            2: a new browser page ("tab").
+
+        autoraise : bool, optional
+            If possible, autoraise raises the window (the default) or not.
+        """
         return webbrowser.open(
             self.help_url.toString(), new=new, autoraise=autoraise
         )
 
+    def open_python_docs(self):
+        """Open the Python docstring information in a new window."""
+        if self.python_docs_browser is not None:
+            self.python_docs_browser.raise_()
+            return
+
+        self.python_docs_browser = QtWidgets.QTextBrowser()
+        help_document = QtGui.QTextDocument()
+        contents = self._tooltip or "Unset"
+        first_line = contents.splitlines()[0]
+        # TODO: later versions of qt will support setMarkdown
+        help_document.setPlainText(contents)
+        self.python_docs_browser.setWindowTitle(first_line)
+        font = QtGui.QFont("Monospace")
+        font.setStyleHint(QtGui.QFont.TypeWriter)
+        # font.setStyleHint(QtGui.QFont.Monospace)
+        self.python_docs_browser.setFont(font)
+        self.python_docs_browser.setDocument(help_document)
+        self.python_docs_browser.show()
+        return self.python_docs_browser
+
     def _get_tooltip(self):
+        """Update the tooltip based on device information."""
         tooltip = []
         # BUG: I'm seeing two devices in `self.devices` for
         # $ typhos --fake-device 'ophyd.EpicsMotor[{"prefix":"b"}]'
@@ -574,12 +611,13 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
     @property
     def help_url(self):
+        """The full help URL, generated from ``TYPHOS_HELP_URL``."""
         if not self.devices:
             return QtCore.QUrl("about:blank")
 
         device, *_ = self.devices
         try:
-            device_url = utils.CONFLUENCE_URL.format(device=device)
+            device_url = utils.HELP_URL.format(device=device)
         except Exception:
             logger.exception("Failed to format confluence URL for device %s",
                              device)
@@ -588,13 +626,14 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         return QtCore.QUrl(device_url)
 
     def show_help(self):
+        """Show the help information in a QWebEngineView."""
         if self.help_web_view:
             return
         self.help_web_view = QWebEngineView()
         if QWebEngineHttpRequest is not None:
             request = QWebEngineHttpRequest()
             request.setUrl(self.help_url)
-            for header, value in utils.CONFLUENCE_HEADERS.items():
+            for header, value in utils.HELP_HEADERS.items():
                 request.setHeader(
                     header.encode("utf-8"),
                     value.encode("utf-8"),
@@ -610,6 +649,7 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.layout().addWidget(self.help_web_view)
 
     def hide_help(self):
+        """Hide the help information QWebEngineView."""
         if not self.help_web_view:
             return
         self.layout().removeWidget(self.help_web_view)
@@ -617,6 +657,14 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.help_web_view = None
 
     def toggle_help(self, show):
+        """
+        Toggle the visibility of the help information QWebEngineView.
+
+        Parameters
+        ----------
+        show : bool
+            Show the help (True) or hide it (False).
+        """
         if not self.devices:
             logger.warning("No devices added -> no help")
             return
@@ -666,6 +714,9 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         )
         self.switcher.help_toggle_button.open_in_browser.connect(
             self.help.open_in_browser
+        )
+        self.switcher.help_toggle_button.open_python_docs.connect(
+            self.help.open_python_docs
         )
         self.help.tooltip_updated.connect(
             self.switcher.help_toggle_button.setToolTip

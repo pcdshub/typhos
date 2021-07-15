@@ -7,6 +7,7 @@ import functools
 import importlib.util
 import inspect
 import io
+import json
 import logging
 import operator
 import os
@@ -40,17 +41,19 @@ ui_core_dir = ui_dir / 'core'
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
 DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
-CONFLUENCE_TOKEN = os.environ.get('TYPHOS_CONFLUENCE_TOKEN', None)
-CONFLUENCE_URL = os.environ.get(
-    'TYPHOS_CONFLUENCE_URL', "https://www.google.com/search?q={device.name}"
-)
-if CONFLUENCE_TOKEN:
-    CONFLUENCE_HEADERS = {
-        "Authorization": f"Bearer {CONFLUENCE_TOKEN}"
-    }
-else:
-    CONFLUENCE_HEADERS = {}
 
+# Help settings:
+# TYPHOS_HELP_URL (str): The help URL format string
+HELP_URL = os.environ.get(
+    'TYPHOS_HELP_URL', "https://www.google.com/search?q={device.name}"
+)
+# TYPHOS_HELP_HEADERS (json): headers to pass to HELP_URL
+HELP_HEADERS = json.loads(os.environ.get('TYPHOS_HELP_HEADERS', "") or "{}")
+# TYPHOS_HELP_TOKEN (str): An optional token for the bearer authentication
+# scheme - e.g., personal access tokens with Confluence
+HELP_TOKEN = os.environ.get('TYPHOS_HELP_TOKEN', None)
+if HELP_TOKEN:
+    HELP_HEADERS["Authorization"] = f"Bearer {HELP_TOKEN}"
 
 if happi is None:
     logger.info("happi is not installed; some features may be unavailable")
