@@ -708,25 +708,32 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.underline.setFrameShadow(self.underline.Plain)
         self.underline.setLineWidth(10)
 
-        self.help = TyphosHelpFrame()
-        self.switcher.help_toggle_button.toggle_help.connect(
-            self.help.toggle_help
-        )
-        self.switcher.help_toggle_button.open_in_browser.connect(
-            self.help.open_in_browser
-        )
-        self.switcher.help_toggle_button.open_python_docs.connect(
-            self.help.open_python_docs
-        )
-        self.help.tooltip_updated.connect(
-            self.switcher.help_toggle_button.setToolTip
-        )
-
         self.grid_layout = QtWidgets.QGridLayout()
         self.grid_layout.addWidget(self.label, 0, 0)
         self.grid_layout.addWidget(self.switcher, 0, 1, Qt.AlignRight)
         self.grid_layout.addWidget(self.underline, 1, 0, 1, 2)
-        self.grid_layout.addWidget(self.help, 2, 0, 1, 2)
+
+        if not utils.HELP_URL:
+            # The help widget is entirely optional, based on environment
+            # settings.
+            self.help = None
+        else:
+            self.help = TyphosHelpFrame()
+            self.switcher.help_toggle_button.toggle_help.connect(
+                self.help.toggle_help
+            )
+            self.switcher.help_toggle_button.open_in_browser.connect(
+                self.help.open_in_browser
+            )
+            self.switcher.help_toggle_button.open_python_docs.connect(
+                self.help.open_python_docs
+            )
+            self.help.tooltip_updated.connect(
+                self.switcher.help_toggle_button.setToolTip
+            )
+
+            self.grid_layout.addWidget(self.help, 2, 0, 1, 2)
+
         self.grid_layout.setSizeConstraint(self.grid_layout.SetMinimumSize)
         self.setLayout(self.grid_layout)
 
@@ -749,7 +756,8 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         if not self.label.text():
             self.label.setText(device.name)
 
-        self.help.add_device(device)
+        if self.help is not None:
+            self.help.add_device(device)
 
     @QtCore.Property(bool)
     def show_underline(self):
