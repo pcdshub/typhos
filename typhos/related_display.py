@@ -70,7 +70,11 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         """
         if self._suite is None:
             self.create_suite()
-        global_pos = self.parent().mapToGlobal(self.pos())
+        parent = self.parent()
+        if parent is None:
+            global_pos = self.pos()
+        else:
+            global_pos = self.parent().mapToGlobal(self.pos())
         # Different window managers respond differently to the various
         # methods called here, the chosen sequence was intended for
         # good behavior on as many systems as possible.
