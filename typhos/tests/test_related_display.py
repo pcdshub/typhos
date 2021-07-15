@@ -33,7 +33,7 @@ def test_create_suite_happi(qtbot, suite_button):
     qtbot.addWidget(suite)
     # Does the suite have the appropriate subdisplays?
     for name in device_names:
-        assert suite.get_subdisplay(name).device_name == name
+        assert suite.get_subdisplay(name.replace('_', ' ')).device_name == name
 
 
 def test_create_suite_add_devices(qtbot, suite_button):
