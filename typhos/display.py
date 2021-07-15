@@ -531,6 +531,7 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         super().__init__(parent=parent)
         self.help = None
         self.help_web_view = None
+        self._delete_timer = None
         self.python_docs_browser = None
 
         self.setContentsMargins(0, 0, 0, 0)
@@ -653,8 +654,22 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         if not self.help_web_view:
             return
         self.layout().removeWidget(self.help_web_view)
-        self.help_web_view.deleteLater()
-        self.help_web_view = None
+        if self._delete_timer is None:
+            self._delete_timer = QtCore.QTimer()
+            self._delete_timer.setInterval(20000)
+            self._delete_timer.setSingleShot(True)
+            self._delete_timer.connect(self._delete_help_if_hidden)
+            self._delete_timer.start()
+
+    def _delete_help_if_hidden(self):
+        """
+        Slowly react to the help display removal, as setting it back up
+        can be slow and painful.
+        """
+        self._delete_timer = None
+        if self.help_web_view and not self.help_web_view.isVisible():
+            self.help_web_view.deleteLater()
+            self.help_web_view = None
 
     def toggle_help(self, show):
         """
