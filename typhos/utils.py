@@ -258,8 +258,7 @@ class TyphosLoading(QtWidgets.QLabel):
         self._animation.setScaledSize(self._icon_size)
 
 
-class TyphosBase(QWidget):
-    """Base widget for all Typhos widgets that interface with devices"""
+class TyphosObject:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.devices = list()
@@ -307,6 +306,11 @@ class TyphosBase(QWidget):
         instance = cls(parent=parent, **kwargs)
         instance.add_device(device)
         return instance
+
+
+class TyphosBase(TyphosObject, QWidget):
+    """Base widget for all Typhos widgets that interface with devices"""
+    pass
 
 
 def make_identifier(name):

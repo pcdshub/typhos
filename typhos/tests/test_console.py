@@ -22,7 +22,7 @@ def test_add_happi_device(qapp, qtbot, happi_cfg, client):
     tc = TyphosConsole.from_device(device)
     qtbot.addWidget(tc)
 
-    with qtbot.waitSignal(tc.device_added, timeout=1000):
+    with qtbot.waitSignal(tc.device_added, timeout=5000):
         ...
 
     tc.execute('print(test_motor.md["creation"])')
@@ -39,7 +39,7 @@ def test_add_importable_device(qapp, qtbot):
     tc = TyphosConsole.from_device(device)
     qtbot.addWidget(tc)
 
-    with qtbot.waitSignal(tc.device_added, timeout=1000):
+    with qtbot.waitSignal(tc.device_added, timeout=5000):
         ...
 
     tc.execute('print("velocity value is", device.velocity.get())')
@@ -60,7 +60,7 @@ def test_add_fake_device(qapp, qtbot):
     tc = TyphosConsole.from_device(device)
     qtbot.addWidget(tc)
 
-    with qtbot.waitSignal(tc.device_added, timeout=1000):
+    with qtbot.waitSignal(tc.device_added, timeout=5000):
         ...
 
     tc.execute('print("my name is", sim_mtr1.name)')

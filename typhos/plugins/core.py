@@ -6,7 +6,7 @@ import logging
 import numpy as np
 from qtpy.QtCore import Qt, Slot
 
-from ophyd.utils.epics_pvs import _type_map
+from ophyd.utils.epics_pvs import _type_map, AlarmSeverity
 from pydm.data_plugins.plugin import PyDMConnection, PyDMPlugin
 
 from ..utils import raise_to_operator
@@ -57,8 +57,14 @@ class SignalConnection(PyDMConnection):
         # Collect our signal
         self.signal = signal_registry[address]
         # Subscribe to updates from Ophyd
-        self._cid = self.signal.subscribe(self.send_new_value,
-                                          event_type=self.signal.SUB_VALUE)
+        self.value_cid = self.signal.subscribe(
+            self.send_new_value,
+            event_type=self.signal.SUB_VALUE,
+            )
+        self.meta_cid = self.signal.subscribe(
+            self.send_new_meta,
+            event_type=self.signal.SUB_META,
+            )
         # Add listener
         self.add_listener(channel)
 
@@ -120,6 +126,44 @@ class SignalConnection(PyDMConnection):
             logger.exception("Unable to update %r with value %r.",
                              self.signal.name, value)
 
+    def send_new_meta(
+            self,
+            connected=None,
+            write_access=None,
+            severity=None,
+            precision=None,
+            units=None,
+            enum_strs=None,
+            **kwargs
+            ):
+        """
+        Update the UI with new metadata from the Signal.
+
+        Signal metadata updates always send all available metadata, so
+        default values to this function will not be sent ever if the signal
+        has valid data there.
+
+        We default missing metadata to None and skip emitting in general,
+        but for severity we default to NO_ALARM for UI purposes. We don't
+        want the UI to assume that anything is in an alarm state.
+        """
+        # Only emit the non-None values
+        if connected is not None:
+            self.connection_state_signal.emit(connected)
+        if write_access is not None:
+            self.write_access_signal.emit(write_access)
+        if precision is not None:
+            self.prec_signal.emit(precision)
+        if units is not None:
+            self.unit_signal.emit(units)
+        if enum_strs is not None:
+            self.enum_strings_signal.emit(enum_strs)
+
+        # Special handling for severity
+        if severity is None:
+            severity = AlarmSeverity.NO_ALARM
+        self.new_severity_signal.emit(severity)
+
     def add_listener(self, channel):
         """
         Add a listener channel to this connection.
@@ -131,33 +175,19 @@ class SignalConnection(PyDMConnection):
         # Perform the default connection setup
         logger.debug("Adding %r ...", channel)
         super().add_listener(channel)
-        # Report as no-alarm state
-        self.new_severity_signal.emit(0)
         try:
             # Gather the current value
             signal_val = self.signal.get()
             # Gather metadata
-            signal_desc = self.signal.describe()[self.signal.name]
+            signal_meta = self.signal.metadata
         except Exception:
             logger.exception("Failed to gather proper information "
                              "from signal %r to initialize %r",
                              self.signal.name, channel)
             return
-        # Report as connected
-        self.write_access_signal.emit(True)
-        self.connection_state_signal.emit(True)
-        # Report metadata
-        for (field, signal) in (
-                    ('precision', self.prec_signal),
-                    ('enum_strs', self.enum_strings_signal),
-                    ('units', self.unit_signal)):
-            # Check if we have metadata to send for field
-            val = signal_desc.get(field)
-            # If so emit it to our listeners
-            if val:
-                signal.emit(val)
         # Report new value
         self.send_new_value(signal_val)
+        self.send_new_meta(**signal_meta)
         # If the channel is used for writing to PVs, hook it up to the
         # 'put' methods.
         if channel.value_signal is not None:
@@ -191,7 +221,8 @@ class SignalConnection(PyDMConnection):
 
     def close(self):
         """Unsubscribe from the Ophyd signal."""
-        self.signal.unsubscribe(self._cid)
+        self.signal.unsubscribe(self.value_cid)
+        self.signal.unsubscribe(self.meta_cid)
 
 
 class SignalPlugin(PyDMPlugin):
