@@ -1,5 +1,5 @@
 """
-Widgets intended to be used in other applications.
+Widgets that open up typhos displays.
 """
 from happi.client import Client
 from happi.loader import load_devices
@@ -12,7 +12,7 @@ from .utils import TyphosObject, no_device_lazy_load, use_stylesheet
 
 class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
     """
-    Button to open a typhos suite related to an open pydm ui.
+    Button to open a typhos suite with happi-loaded devices.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
