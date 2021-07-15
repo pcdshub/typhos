@@ -16,22 +16,22 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._devices = []
+        self._happi_names = []
         self._happi_cfg = ''
         self._preload = False
         self._suite = None
         self.clicked.connect(self.show_suite)
 
     @QtCore.Property('QStringList')
-    def devices(self):
+    def happi_names(self):
         """
         List of devices to include in the suite.
         """
-        return self._devices
+        return self._happi_names
 
-    @devices.setter
-    def devices(self, devices):
-        self._devices = devices
+    @happi_names.setter
+    def happi_names(self, happi_names):
+        self._happi_names = happi_names
 
     @QtCore.Property(str)
     def happi_cfg(self):
@@ -87,22 +87,30 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         """
         Create and cache the typhos suite.
         """
-        device_names = list(map(str, self.devices))
-        happi_cfg = str(self.happi_cfg)
+        # Get the devices associated with our designer attributes
+        happi_names = list(map(str, self.happi_names))
+        if happi_names:
+            happi_cfg = str(self.happi_cfg)
 
-        if not happi_cfg:
-            happi_cfg = None
+            if not happi_cfg:
+                happi_cfg = None
 
-        happi_client = Client.from_config(cfg=happi_cfg)
-        items = []
-        for name in device_names:
-            search_result = happi_client.search(name=name)[0]
-            items.append(search_result.item)
+            happi_client = Client.from_config(cfg=happi_cfg)
+            items = []
+            for name in happi_names:
+                search_result = happi_client.search(name=name)[0]
+                items.append(search_result.item)
 
-        with no_device_lazy_load():
-            device_namespace = load_devices(*items, threaded=True)
+            with no_device_lazy_load():
+                device_namespace = load_devices(*items, threaded=True)
 
-        devices = [getattr(device_namespace, name) for name in device_names]
+            devices = [getattr(device_namespace, name) for name in happi_names]
+        else:
+            devices = []
+
+        # Extend with devices from calls to self.add_devices
+        devices.extend(self.devices)
+
         self._suite = TyphosSuite.from_devices(devices)
         use_stylesheet(widget=self._suite)
         establish_widget_connections(self._suite)

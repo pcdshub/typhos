@@ -27,12 +27,12 @@ class Dummy(Device):
 
 def test_create_suite_happi(qtbot, suite_button):
     logger.debug('Make sure we can load a suite using happi.')
-    device_names = ['test_motor', 'test_device']
-    suite_button.devices = device_names
+    happi_names = ['test_motor', 'test_device']
+    suite_button.happi_names = happi_names
     suite = suite_button.create_suite()
     qtbot.addWidget(suite)
     # Does the suite have the appropriate subdisplays?
-    for name in device_names:
+    for name in happi_names:
         assert suite.get_subdisplay(name.replace('_', ' ')).device_name == name
 
 
