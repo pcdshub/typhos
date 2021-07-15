@@ -629,6 +629,7 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     def show_help(self):
         """Show the help information in a QWebEngineView."""
         if self.help_web_view:
+            self.help_web_view.show()
             return
         self.help_web_view = QWebEngineView()
         if QWebEngineHttpRequest is not None:
@@ -653,21 +654,22 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         """Hide the help information QWebEngineView."""
         if not self.help_web_view:
             return
-        self.layout().removeWidget(self.help_web_view)
+        self.help_web_view.hide()
         if self._delete_timer is None:
             self._delete_timer = QtCore.QTimer()
             self._delete_timer.setInterval(20000)
             self._delete_timer.setSingleShot(True)
-            self._delete_timer.connect(self._delete_help_if_hidden)
+            self._delete_timer.timeout.connect(self._delete_help_if_hidden)
             self._delete_timer.start()
 
     def _delete_help_if_hidden(self):
         """
-        Slowly react to the help display removal, as setting it back up
-        can be slow and painful.
+        Slowly react to the help display removal, as setting it back up can be
+        slow and painful.
         """
         self._delete_timer = None
         if self.help_web_view and not self.help_web_view.isVisible():
+            self.layout().removeWidget(self.help_web_view)
             self.help_web_view.deleteLater()
             self.help_web_view = None
 
