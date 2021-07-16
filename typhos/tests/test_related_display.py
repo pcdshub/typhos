@@ -67,3 +67,16 @@ def test_show_suite(qtbot, suite_button):
     suite = suite_button.create_suite()
     qtbot.addWidget(suite)
     suite_button.show_suite()
+
+
+def test_suite_errors(suite_button):
+    logger.debug('Make sure we raise exceptions for bad inputs.')
+
+    # No devices configured
+    with pytest.raises(ValueError):
+        suite_button.create_suite()
+
+    # A device is misspelled
+    suite_button.happi_names = ['test_motor', 'asdfasefasdc', 'test_device']
+    with pytest.raises(ValueError):
+        suite_button.get_happi_devices()
