@@ -84,6 +84,8 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         Create and cache the typhos suite.
         """
         devices = self.devices + self.get_happi_devices()
+        if not devices:
+            raise ValueError('There are no devices assigned to this button.')
         self._suite = TyphosSuite.from_devices(devices)
         use_stylesheet(widget=self._suite)
         establish_widget_connections(self._suite)
@@ -105,7 +107,13 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
             happi_client = Client.from_config(cfg=happi_cfg)
             items = []
             for name in self.happi_names:
-                search_result = happi_client.search(name=name)[0]
+                try:
+                    search_result = happi_client.search(name=name)[0]
+                except IndexError:
+                    raise ValueError(
+                        f'Did not find device with name {name} in happi. '
+                        'Please check your spelling and your database.'
+                        ) from None
                 items.append(search_result.item)
 
             with no_device_lazy_load():
