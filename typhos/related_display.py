@@ -84,8 +84,7 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         Create and cache the typhos suite.
         """
         # Get the devices associated with our designer attributes
-        happi_names = list(map(str, self.happi_names))
-        if happi_names:
+        if self.happi_names:
             happi_cfg = str(self.happi_cfg)
 
             if not happi_cfg:
@@ -93,14 +92,15 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
 
             happi_client = Client.from_config(cfg=happi_cfg)
             items = []
-            for name in happi_names:
+            for name in self.happi_names:
                 search_result = happi_client.search(name=name)[0]
                 items.append(search_result.item)
 
             with no_device_lazy_load():
                 device_namespace = load_devices(*items, threaded=True)
 
-            devices = [getattr(device_namespace, name) for name in happi_names]
+            devices = [getattr(device_namespace, name)
+                       for name in self.happi_names]
         else:
             devices = []
 
