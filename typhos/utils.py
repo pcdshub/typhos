@@ -1261,3 +1261,23 @@ def linked_attribute(property_attr, widget_attr, hide_unavailable=False):
 
         return wrapped
     return wrapper
+
+
+def raise_window(widget):
+    """
+    Bring a widget's window into focus and on top of the window stack.
+
+    If the window is minimized, unminimize it.
+
+    Different window managers respond differently to the various
+    methods called here, the chosen sequence was intended for
+    good behavior on as many systems as possible.
+    """
+    window = widget.window()
+    window.hide()
+    window.show()
+    if window.isMinimized():
+        window.showNormal()
+    window.raise_()
+    window.activateWindow()
+    window.setFocus()
