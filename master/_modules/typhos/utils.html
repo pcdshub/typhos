@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>typhos.utils &mdash; Typhos 1.2.0 documentation</title>
+  <title>typhos.utils &mdash; Typhos 1.2.0+21.g0a48c0e documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                1.2.0
+                1.2.0+21.g0a48c0e
               </div>
             
           
@@ -1433,6 +1433,26 @@
 
         <span class="k">return</span> <span class="n">wrapped</span>
     <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="raise_window"><a class="viewcode-back" href="../../utils.html#typhos.utils.raise_window">[docs]</a><span class="k">def</span> <span class="nf">raise_window</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bring a widget&#39;s window into focus and on top of the window stack.</span>
+
+<span class="sd">    If the window is minimized, unminimize it.</span>
+
+<span class="sd">    Different window managers respond differently to the various</span>
+<span class="sd">    methods called here, the chosen sequence was intended for</span>
+<span class="sd">    good behavior on as many systems as possible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">window</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">window</span><span class="o">.</span><span class="n">isMinimized</span><span class="p">():</span>
+        <span class="n">window</span><span class="o">.</span><span class="n">showNormal</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">activateWindow</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">setFocus</span><span class="p">()</span></div>
 </pre></div>
 
            </div>

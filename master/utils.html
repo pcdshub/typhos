@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Utility Functions &mdash; Typhos 1.2.0 documentation</title>
+  <title>Utility Functions &mdash; Typhos 1.2.0+21.g0a48c0e documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                1.2.0
+                1.2.0+21.g0a48c0e
               </div>
             
           
@@ -648,6 +648,16 @@ entered the <code class="docutils literal notranslate"><span class="pre">$HAPPI_
 <code class="sig-prename descclassname"><span class="pre">typhos.utils.</span></code><code class="sig-name descname"><span class="pre">pyqt_class_from_enum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#pyqt_class_from_enum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.pyqt_class_from_enum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an inheritable base class from a Python Enum, which can also be used
 for Q_ENUMS.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="typhos.utils.raise_window">
+<code class="sig-prename descclassname"><span class="pre">typhos.utils.</span></code><code class="sig-name descname"><span class="pre">raise_window</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#raise_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.raise_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bring a widget’s window into focus and on top of the window stack.</p>
+<p>If the window is minimized, unminimize it.</p>
+<p>Different window managers respond differently to the various
+methods called here, the chosen sequence was intended for
+good behavior on as many systems as possible.</p>
 </dd></dl>
 
 <dl class="py function">
