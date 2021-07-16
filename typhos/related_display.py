@@ -54,7 +54,7 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
     @preload.setter
     def preload(self, exec_preload):
         self._preload = exec_preload
-        if self._preload and not is_qt_designer():
+        if self._preload and self._suite is None and not is_qt_designer():
             self.create_suite()
 
     def show_suite(self):
