@@ -99,12 +99,7 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         set appropriately.
         """
         if self.happi_names:
-            happi_cfg = str(self.happi_cfg)
-
-            if not happi_cfg:
-                happi_cfg = None
-
-            happi_client = Client.from_config(cfg=happi_cfg)
+            happi_client = Client.from_config(cfg=self.happi_cfg or None)
             items = []
             for name in self.happi_names:
                 try:
