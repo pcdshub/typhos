@@ -7,7 +7,8 @@ from pydm.utilities import establish_widget_connections, is_qt_designer
 from qtpy import QtCore, QtWidgets
 
 from .suite import TyphosSuite
-from .utils import TyphosObject, no_device_lazy_load, use_stylesheet
+from .utils import (TyphosObject, no_device_lazy_load, raise_window,
+                    use_stylesheet)
 
 
 class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
@@ -75,17 +76,8 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
             global_pos = self.pos()
         else:
             global_pos = self.parent().mapToGlobal(self.pos())
-        # Different window managers respond differently to the various
-        # methods called here, the chosen sequence was intended for
-        # good behavior on as many systems as possible.
-        self._suite.hide()
-        self._suite.window().move(global_pos)
-        self._suite.show()
-        if self._suite.isMinimized():
-            self._suite.showNormal()
-        self._suite.raise_()
-        self._suite.activateWindow()
-        self._suite.setFocus()
+        self._suite.move(global_pos)
+        raise_window(self._suite)
 
     def create_suite(self):
         """
