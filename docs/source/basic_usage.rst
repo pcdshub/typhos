@@ -191,3 +191,29 @@ configured with :func:`typhos.use_stylesheet`. The operator can elect whether
 to use the "light" or "dark" stylesheets by using the optional ``dark``
 keyword. This method also handles setting the "Fusion" ``QStyle`` which helps
 make the interface have an operating system independent look and feel.
+
+
+Using the Documentation Widget
+==============================
+
+Typhos has a built-in documentation helper, which allows for the in-line
+linking and display of a user-provided website.
+
+To inform Typhos how to load documentation specific to your facility, please
+customize the following environment variables.
+
+1. ``TYPHOS_HELP_URL`` (str): The help URL format string.  The help URL will
+   be formatted with the ophyd device pertinent to the display, such that you
+   may access its name, PV prefix, happi metadata (if available), and so on.
+   For example, if a Confluence server exists at
+   ``https://my-confluence-site.example.com/Controls/`` with document names
+   that match your devices, ``TYPHOS_HELP_URL`` should be set to
+   ``https://my-confluence-site.example.com/Controls/{device.name}``.
+   If, perhaps, only top-level devices are guaranteed to have documentation,
+   consider using: ``device.root.name`` instead in the format string.
+2. ``TYPHOS_HELP_HEADERS`` (json): headers to pass to HELP_URL.  This should be
+   in a JSON format, such as ``{"my_key":"my_value"}``.
+3. ``TYPHOS_HELP_TOKEN`` (str): An optional token for the bearer authentication
+   scheme - e.g., personal access tokens with Confluence.  This is a shortcut
+   to add a header ``"Authorization"`` with the value
+   ``"Bearer ${TYPHOS_HELP_TOKEN}"``.
