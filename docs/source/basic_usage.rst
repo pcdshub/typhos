@@ -217,3 +217,24 @@ customize the following environment variables.
    scheme - e.g., personal access tokens with Confluence.  This is a shortcut
    to add a header ``"Authorization"`` with the value
    ``"Bearer ${TYPHOS_HELP_TOKEN}"``.
+
+
+Using the Jira Bug Reporting Widget
+===================================
+
+Typhos has an optional built-in widget to generate Jira user stories/bug
+reports.
+
+A prerequisite to this support is, of course, a working Jira installation
+and a pre-configured issue collector.
+
+1. ``TYPHOS_JIRA_URL`` (str): The Jira issue collector URL.  This will resemble
+   ``https://jira.example.com/rest/collectors/1.0/template/custom/...``.
+2. ``TYPHOS_JIRA_HEADERS`` (json): headers to pass to the Jira request, if
+   needed.  This should be in a JSON format, such as ``{"my_key":"my_value"}``.
+3. ``TYPHOS_JIRA_TOKEN`` (str): An optional token for the bearer authentication
+   scheme - e.g., personal access tokens with Confluence.  This is a shortcut
+   to add a header ``"Authorization"`` with the value
+   ``"Bearer ${TYPHOS_JIRA_TOKEN}"``.
+4. ``TYPHOS_JIRA_EMAIL_SUFFIX`` (str): the default e-mail suffix to put on
+   usernames, such as ``"@example.com"``.

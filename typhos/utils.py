@@ -65,6 +65,8 @@ JIRA_HEADERS = json.loads(
 JIRA_TOKEN = os.environ.get('TYPHOS_JIRA_TOKEN', None)
 # TYPHOS_JIRA_EMAIL_SUFFIX (str): The default e-mail address suffix
 JIRA_EMAIL_SUFFIX = os.environ.get('TYPHOS_JIRA_EMAIL_SUFFIX', "").strip()
+if JIRA_TOKEN:
+    JIRA_HEADERS["Authorization"] = f"Bearer {JIRA_TOKEN}"
 
 if happi is None:
     logger.info("happi is not installed; some features may be unavailable")
