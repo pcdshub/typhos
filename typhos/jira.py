@@ -70,6 +70,9 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
             self.summary.setText(
                 f"Device {device.name} ({device.__class__.__name__})"
             )
+            self.setWindowTitle(f"Typhos issue reporting ({device.name})")
+        else:
+            self.setWindowTitle("Typhos issue reporting")
 
     @staticmethod
     def get_environment():
