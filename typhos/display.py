@@ -521,6 +521,7 @@ class TyphosHelpToggleButton(TyphosToolButton):
         toggle_help.triggered.connect(toggle)
 
         if utils.JIRA_URL:
+            menu.addSeparator()
             report_issue = menu.addAction("&Report Jira issue...")
             report_issue.triggered.connect(self.report_jira_issue.emit)
 

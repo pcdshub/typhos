@@ -78,14 +78,18 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
     @staticmethod
     def get_environment():
         """Get the default environment information."""
+        def monospace(text):
+            return "{{%s}}" % text
+
         env = dict(
             typhos=typhos.__version__,
             user=getpass.getuser(),
             hostname=_failsafe_call(socket.getfqdn),
-            python_env=sys.base_prefix,
+            python_env=monospace(sys.base_prefix),
+            python_path="\n ".join(monospace(path) for path in sys.path),
             **SYSTEM_UNAME_DICT,
         )
-        return "\n".join(f"{key}: {value}" for key, value in env.items())
+        return "\n".join(f"* *{key}*: {value}" for key, value in env.items())
 
     @property
     def anything_provided(self) -> bool:
