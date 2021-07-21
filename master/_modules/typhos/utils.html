@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>typhos.utils &mdash; Typhos 1.2.0+21.g0a48c0e documentation</title>
+  <title>typhos.utils &mdash; Typhos 1.2.0+33.gae003f5 documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                1.2.0+21.g0a48c0e
+                1.2.0+33.gae003f5
               </div>
             
           
@@ -179,6 +179,7 @@
 <span class="kn">import</span> <span class="nn">importlib.util</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -213,6 +214,16 @@
                                       <span class="p">(</span><span class="s1">&#39;attr&#39;</span><span class="p">,</span> <span class="s1">&#39;component&#39;</span><span class="p">,</span> <span class="s1">&#39;signal&#39;</span><span class="p">))</span>
 <span class="n">DEBUG_MODE</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_DEBUG&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
 
+<span class="c1"># Help settings:</span>
+<span class="c1"># TYPHOS_HELP_URL (str): The help URL format string</span>
+<span class="n">HELP_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_HELP_URL&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="c1"># TYPHOS_HELP_HEADERS (json): headers to pass to HELP_URL</span>
+<span class="n">HELP_HEADERS</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_HELP_HEADERS&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># TYPHOS_HELP_TOKEN (str): An optional token for the bearer authentication</span>
+<span class="c1"># scheme - e.g., personal access tokens with Confluence</span>
+<span class="n">HELP_TOKEN</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_HELP_TOKEN&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">HELP_TOKEN</span><span class="p">:</span>
+    <span class="n">HELP_HEADERS</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">HELP_TOKEN</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="k">if</span> <span class="n">happi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;happi is not installed; some features may be unavailable&quot;</span><span class="p">)</span>

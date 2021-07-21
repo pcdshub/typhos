@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>How it Works &mdash; Typhos 1.2.0+21.g0a48c0e documentation</title>
+  <title>How it Works &mdash; Typhos 1.2.0+33.gae003f5 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0+21.g0a48c0e
+                1.2.0+33.gae003f5
               </div>
             
           
@@ -100,6 +100,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#the-typhossuite">The TyphosSuite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-stylesheet">Using the StyleSheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-documentation-widget">Using the Documentation Widget</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
@@ -281,16 +282,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1626451899.151846}),</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1626887927.2891011}),</span>
 <span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1626451899.1518452})])</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1626887927.2891002})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1626451899.152348}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1626887927.2895763}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1626451899.1523948})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1626887927.2896218})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a
@@ -359,6 +360,30 @@ configured with <code class="xref py py-func docutils literal notranslate"><span
 to use the “light” or “dark” stylesheets by using the optional <code class="docutils literal notranslate"><span class="pre">dark</span></code>
 keyword. This method also handles setting the “Fusion” <code class="docutils literal notranslate"><span class="pre">QStyle</span></code> which helps
 make the interface have an operating system independent look and feel.</p>
+</div>
+<div class="section" id="using-the-documentation-widget">
+<h2>Using the Documentation Widget<a class="headerlink" href="#using-the-documentation-widget" title="Permalink to this headline">¶</a></h2>
+<p>Typhos has a built-in documentation helper, which allows for the in-line
+linking and display of a user-provided website.</p>
+<p>To inform Typhos how to load documentation specific to your facility, please
+customize the following environment variables.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TYPHOS_HELP_URL</span></code> (str): The help URL format string.  The help URL will
+be formatted with the ophyd device pertinent to the display, such that you
+may access its name, PV prefix, happi metadata (if available), and so on.
+For example, if a Confluence server exists at
+<code class="docutils literal notranslate"><span class="pre">https://my-confluence-site.example.com/Controls/</span></code> with document names
+that match your devices, <code class="docutils literal notranslate"><span class="pre">TYPHOS_HELP_URL</span></code> should be set to
+<code class="docutils literal notranslate"><span class="pre">https://my-confluence-site.example.com/Controls/{device.name}</span></code>.
+If, perhaps, only top-level devices are guaranteed to have documentation,
+consider using: <code class="docutils literal notranslate"><span class="pre">device.root.name</span></code> instead in the format string.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TYPHOS_HELP_HEADERS</span></code> (json): headers to pass to HELP_URL.  This should be
+in a JSON format, such as <code class="docutils literal notranslate"><span class="pre">{&quot;my_key&quot;:&quot;my_value&quot;}</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TYPHOS_HELP_TOKEN</span></code> (str): An optional token for the bearer authentication
+scheme - e.g., personal access tokens with Confluence.  This is a shortcut
+to add a header <code class="docutils literal notranslate"><span class="pre">&quot;Authorization&quot;</span></code> with the value
+<code class="docutils literal notranslate"><span class="pre">&quot;Bearer</span> <span class="pre">${TYPHOS_HELP_TOKEN}&quot;</span></code>.</p></li>
+</ol>
 </div>
 </div>
 
