@@ -2,6 +2,7 @@ import getpass
 import logging
 import platform
 import socket
+import sys
 import urllib
 import urllib.parse
 import urllib.request
@@ -81,6 +82,7 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
             typhos=typhos.__version__,
             user=getpass.getuser(),
             hostname=_failsafe_call(socket.getfqdn),
+            python_env=sys.base_prefix,
             **SYSTEM_UNAME_DICT,
         )
         return "\n".join(f"{key}: {value}" for key, value in env.items())

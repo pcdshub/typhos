@@ -484,7 +484,7 @@ class TyphosHelpToggleButton(TyphosToolButton):
         A Qt signal indicating a request to open the Python docstring
         information.
 
-    open_python_docs : QtCore.Signal
+    report_jira_issue : QtCore.Signal
         A Qt signal indicating a request to open the Jira issue reporting
         widget.
 
