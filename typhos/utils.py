@@ -7,6 +7,7 @@ import functools
 import importlib.util
 import inspect
 import io
+import json
 import logging
 import operator
 import os
@@ -41,6 +42,16 @@ GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
 DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
 
+# Help settings:
+# TYPHOS_HELP_URL (str): The help URL format string
+HELP_URL = os.environ.get('TYPHOS_HELP_URL', "").strip()
+# TYPHOS_HELP_HEADERS (json): headers to pass to HELP_URL
+HELP_HEADERS = json.loads(os.environ.get('TYPHOS_HELP_HEADERS', "") or "{}")
+# TYPHOS_HELP_TOKEN (str): An optional token for the bearer authentication
+# scheme - e.g., personal access tokens with Confluence
+HELP_TOKEN = os.environ.get('TYPHOS_HELP_TOKEN', None)
+if HELP_TOKEN:
+    HELP_HEADERS["Authorization"] = f"Bearer {HELP_TOKEN}"
 
 if happi is None:
     logger.info("happi is not installed; some features may be unavailable")
