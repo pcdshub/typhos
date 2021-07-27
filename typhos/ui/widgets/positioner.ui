@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>333</width>
-    <height>210</height>
+    <width>332</width>
+    <height>212</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -51,7 +51,7 @@
        <number>5</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="low_limit_layout" stretch="0,0,1">
+       <layout class="QVBoxLayout" name="low_limit_layout" stretch="0,0,0,0,0,1">
         <property name="spacing">
          <number>5</number>
         </property>
@@ -140,6 +140,105 @@
           </property>
          </widget>
         </item>
+        <item alignment="Qt::AlignHCenter">
+         <widget class="PyDMByteIndicator" name="moving_indicator">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>25</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>25</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="whatsThis">
+           <string>
+    Widget for graphical representation of bits from an integer number
+    with support for Channels and more from PyDM
+
+    Parameters
+    ----------
+    parent : QWidget
+        The parent widget for the Label
+    init_channel : str, optional
+        The channel to be used by the widget.
+    </string>
+          </property>
+          <property name="alarmSensitiveContent" stdset="0">
+           <bool>false</bool>
+          </property>
+          <property name="onColor" stdset="0">
+           <color>
+            <red>20</red>
+            <green>239</green>
+            <blue>20</blue>
+           </color>
+          </property>
+          <property name="offColor" stdset="0">
+           <color>
+            <red>60</red>
+            <green>60</green>
+            <blue>60</blue>
+           </color>
+          </property>
+          <property name="showLabels" stdset="0">
+           <bool>false</bool>
+          </property>
+          <property name="circles" stdset="0">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="moving_indicator_label">
+          <property name="text">
+           <string>Moving</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="TyphosRelatedSuiteButton" name="expert_button">
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Expert</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
@@ -156,7 +255,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,0,0,0,0,0">
+       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,0,0,0,0,0,0">
         <property name="spacing">
          <number>10</number>
         </property>
@@ -306,6 +405,16 @@
          </widget>
         </item>
         <item>
+         <widget class="PyDMLabel" name="error_label">
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="text">
+           <string>error_label</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="status_label">
           <property name="text">
            <string/>
@@ -331,7 +440,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="high_limit_layout" stretch="0,0,1">
+       <layout class="QVBoxLayout" name="high_limit_layout" stretch="0,0,0,0,1">
         <property name="spacing">
          <number>5</number>
         </property>
@@ -414,6 +523,60 @@
           </property>
          </widget>
         </item>
+        <item alignment="Qt::AlignHCenter">
+         <widget class="TyphosAlarmCircle" name="alarm_circle">
+          <property name="minimumSize">
+           <size>
+            <width>25</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>25</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="penWidth" stdset="0">
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item alignment="Qt::AlignHCenter">
+         <widget class="PyDMPushButton" name="clear_error">
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>45</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Clear
+Error</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <spacer name="verticalSpacer_4">
           <property name="orientation">
@@ -436,6 +599,16 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>TyphosAlarmCircle</class>
+   <extends>QWidget</extends>
+   <header>typhos.alarm</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosRelatedSuiteButton</class>
+   <extends>QPushButton</extends>
+   <header>typhos.related_display</header>
+  </customwidget>
+  <customwidget>
    <class>PyDMLabel</class>
    <extends>QLabel</extends>
    <header>pydm.widgets.label</header>
@@ -449,6 +622,11 @@
    <class>PyDMLineEdit</class>
    <extends>QLineEdit</extends>
    <header>pydm.widgets.line_edit</header>
+  </customwidget>
+  <customwidget>
+   <class>PyDMPushButton</class>
+   <extends>QPushButton</extends>
+   <header>pydm.widgets.pushbutton</header>
   </customwidget>
  </customwidgets>
  <resources/>

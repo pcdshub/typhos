@@ -1,7 +1,7 @@
 import logging
 import os.path
 
-from qtpy import QtCore, uic, QtWidgets
+from qtpy import QtCore, QtWidgets, uic
 
 from . import utils, widgets
 from .status import TyphosStatusThread
@@ -49,6 +49,18 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
                    that indicates the motion completeness. Must be implemented.
 
     Stop           Device.stop()
+
+    Move Indicator The ``moving_attribute`` property is used, which defaults
+                   to ``motor_is_moving``. Linked to UI element
+                   ``moving_indicator``.
+
+    Error Message  The ``error_message_attribute`` property is used, which
+                   defaults to ``error_message``. Linked to UI element
+                   ``error_label``.
+
+    Clear Error    Device.clear_error()
+
+
     ============== ===========================================================
     """
 
@@ -77,6 +89,8 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
+
+        self.show_expert_button = False
 
     def _clear_status_thread(self):
         """Clear a previous status thread."""
@@ -301,6 +315,13 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         if not (self._link_low_travel() and self._link_high_travel()):
             self._link_limits_by_limits_attr()
 
+        if self.show_expert_button:
+            self.ui.expert_button.devices.clear()
+            self.ui.expert_button.add_device(device)
+
+        self.ui.alarm_circle.clear_all_alarm_configs()
+        self.ui.alarm_circle.add_device(device)
+
     @QtCore.Property(bool, designable=False)
     def moving(self):
         """
@@ -398,6 +419,27 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     @acceleration_attribute.setter
     def acceleration_attribute(self, value):
         self._acceleration_attr = value
+
+    @QtCore.Property(bool, designable=True)
+    def show_expert_button(self):
+        """
+        If True, show the expert button.
+
+        The expert button opens a full suite for the device.
+        You typically want this False when you're already inside the
+        suite that the button would open.
+        You typically want this True when you're using the positioner widget
+        inside of an unrelated screen.
+        """
+        return self._show_expert_button
+
+    @show_expert_button.setter
+    def show_expert_button(self, show):
+        self._show_expert_button = show
+        if show:
+            self.ui.expert_button.show()
+        else:
+            self.ui.expert_button.hide()
 
     def move_changed(self):
         """Called when a move is begun"""
