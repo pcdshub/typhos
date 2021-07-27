@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>332</width>
+    <width>339</width>
     <height>212</height>
    </rect>
   </property>
@@ -40,6 +40,12 @@
    </property>
    <item>
     <widget class="QFrame" name="motion_frame">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::Box</enum>
      </property>
@@ -182,8 +188,8 @@
           <property name="onColor" stdset="0">
            <color>
             <red>20</red>
-            <green>239</green>
-            <blue>20</blue>
+            <green>100</green>
+            <blue>239</blue>
            </color>
           </property>
           <property name="offColor" stdset="0">
@@ -204,7 +210,7 @@
         <item>
          <widget class="QLabel" name="moving_indicator_label">
           <property name="text">
-           <string>Moving</string>
+           <string>motion</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -214,12 +220,18 @@
           </property>
          </widget>
         </item>
-        <item>
+        <item alignment="Qt::AlignHCenter">
          <widget class="TyphosRelatedSuiteButton" name="expert_button">
           <property name="minimumSize">
            <size>
-            <width>50</width>
-            <height>20</height>
+            <width>60</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>60</width>
+            <height>40</height>
            </size>
           </property>
           <property name="font">
@@ -235,7 +247,8 @@
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>Expert</string>
+           <string>Expert
+Screen</string>
           </property>
          </widget>
         </item>
@@ -412,6 +425,9 @@
           <property name="text">
            <string>error_label</string>
           </property>
+          <property name="displayFormat" stdset="0">
+           <enum>PyDMLabel::String</enum>
+          </property>
          </widget>
         </item>
         <item>
@@ -440,7 +456,7 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="high_limit_layout" stretch="0,0,0,0,1">
+       <layout class="QVBoxLayout" name="high_limit_layout" stretch="0,0,0,0,0,1">
         <property name="spacing">
          <number>5</number>
         </property>
@@ -545,18 +561,31 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QLabel" name="alarm_label">
+          <property name="text">
+           <string>alarm</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item alignment="Qt::AlignHCenter">
-         <widget class="PyDMPushButton" name="clear_error">
+         <widget class="QPushButton" name="clear_error_button">
           <property name="minimumSize">
            <size>
-            <width>50</width>
-            <height>45</height>
+            <width>60</width>
+            <height>40</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>16777215</width>
-            <height>16777215</height>
+            <width>60</width>
+            <height>40</height>
            </size>
           </property>
           <property name="font">
@@ -622,11 +651,6 @@ Error</string>
    <class>PyDMLineEdit</class>
    <extends>QLineEdit</extends>
    <header>pydm.widgets.line_edit</header>
-  </customwidget>
-  <customwidget>
-   <class>PyDMPushButton</class>
-   <extends>QPushButton</extends>
-   <header>pydm.widgets.pushbutton</header>
   </customwidget>
  </customwidgets>
  <resources/>
