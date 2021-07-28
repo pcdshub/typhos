@@ -16,6 +16,7 @@ import random
 import re
 import threading
 
+import entrypoints
 import ophyd
 import ophyd.sim
 from ophyd import Device
@@ -35,9 +36,12 @@ except ImportError:
     happi = None
 
 logger = logging.getLogger(__name__)
+
+TYPHOS_ENTRY_POINT_KEY = 'typhos.ui'
 MODULE_PATH = pathlib.Path(__file__).parent.resolve()
 ui_dir = MODULE_PATH / 'ui'
 ui_core_dir = ui_dir / 'core'
+
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
 DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
@@ -58,12 +62,40 @@ if happi is None:
 
 
 def _get_display_paths():
-    """Get all display paths based on PYDM_DISPLAYS_PATH + typhos built-ins."""
+    """
+    Get all display paths.
+
+    This includes, in order:
+
+    - The $PYDM_DISPLAYS_PATH environment variable
+    - The typhos.ui entry point
+    - typhos built-ins
+    """
     paths = os.environ.get('PYDM_DISPLAYS_PATH', '')
     for path in paths.split(os.pathsep):
         path = pathlib.Path(path).expanduser().resolve()
         if path.exists() and path.is_dir():
             yield path
+
+    _entries = entrypoints.get_group_all(TYPHOS_ENTRY_POINT_KEY)
+
+    for entry in _entries:
+        try:
+            obj = entry.load()
+        except Exception:
+            msg = (f'Failed to load {TYPHOS_ENTRY_POINT_KEY} '
+                   f'entry: {entry.name}.')
+            logger.error(msg)
+            logger.debug(msg, exc_info=True)
+            continue
+        try:
+            yield pathlib.Path(obj)
+        except Exception:
+            msg = (f'{TYPHOS_ENTRY_POINT_KEY} entry point '
+                   f'{entry.name}: {obj} is not a valid path!')
+            logger.error(msg)
+            logger.debug(msg, exc_info=True)
+
     yield ui_dir / 'core'
     yield ui_dir / 'devices'
 
