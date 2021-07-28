@@ -327,6 +327,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             self.ui.set_value = QtWidgets.QComboBox()
             self.ui.set_value.addItems(setpoint_signal.enum_strs)
             self.ui.set_value.activated.connect(self.set)
+            self.ui.set_value.setSizePolicy(
+                QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Fixed,
+                )
             self.ui.tweak_widget.setVisible(False)
         else:
             self.ui.set_value = QtWidgets.QLineEdit()

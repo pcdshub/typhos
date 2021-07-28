@@ -10,6 +10,12 @@
     <height>212</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="minimumSize">
    <size>
     <width>0</width>
@@ -38,12 +44,18 @@
    <property name="bottomMargin">
     <number>5</number>
    </property>
-   <item>
+   <item alignment="Qt::AlignHCenter">
     <widget class="QFrame" name="motion_frame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>16777215</width>
-       <height>16777215</height>
+       <width>400</width>
+       <height>250</height>
       </size>
      </property>
      <property name="frameShape">
@@ -127,6 +139,12 @@
         </item>
         <item>
          <widget class="PyDMLabel" name="low_limit">
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <pointsize>8</pointsize>
@@ -209,6 +227,12 @@
         </item>
         <item>
          <widget class="QLabel" name="moving_indicator_label">
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>motion</string>
           </property>
@@ -520,6 +544,12 @@ Screen</string>
         </item>
         <item>
          <widget class="PyDMLabel" name="high_limit">
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <pointsize>8</pointsize>
@@ -563,6 +593,12 @@ Screen</string>
         </item>
         <item>
          <widget class="QLabel" name="alarm_label">
+          <property name="minimumSize">
+           <size>
+            <width>60</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>alarm</string>
           </property>
