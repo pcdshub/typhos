@@ -69,7 +69,7 @@
        <number>5</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="low_limit_layout" stretch="0,0,0,0,0,1">
+       <layout class="QVBoxLayout" name="left_side_layout" stretch="0,0,0,1">
         <property name="spacing">
          <number>5</number>
         </property>
@@ -79,31 +79,36 @@
         <property name="rightMargin">
          <number>0</number>
         </property>
-        <item alignment="Qt::AlignHCenter">
-         <widget class="PyDMByteIndicator" name="low_limit_switch">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+        <item>
+         <layout class="QVBoxLayout" name="low_limit_layout">
+          <property name="topMargin">
+           <number>0</number>
           </property>
-          <property name="minimumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="whatsThis">
-           <string>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="PyDMByteIndicator" name="low_limit_switch">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>
     Widget for graphical representation of bits from an integer number
     with support for Channels and more from PyDM
 
@@ -114,81 +119,88 @@
     init_channel : str, optional
         The channel to be used by the widget.
     </string>
-          </property>
-          <property name="onColor" stdset="0">
-           <color>
-            <red>239</red>
-            <green>246</green>
-            <blue>20</blue>
-           </color>
-          </property>
-          <property name="offColor" stdset="0">
-           <color>
-            <red>178</red>
-            <green>188</green>
-            <blue>17</blue>
-           </color>
-          </property>
-          <property name="showLabels" stdset="0">
-           <bool>false</bool>
-          </property>
-          <property name="circles" stdset="0">
-           <bool>true</bool>
-          </property>
-         </widget>
+            </property>
+            <property name="onColor" stdset="0">
+             <color>
+              <red>239</red>
+              <green>246</green>
+              <blue>20</blue>
+             </color>
+            </property>
+            <property name="offColor" stdset="0">
+             <color>
+              <red>178</red>
+              <green>188</green>
+              <blue>17</blue>
+             </color>
+            </property>
+            <property name="showLabels" stdset="0">
+             <bool>false</bool>
+            </property>
+            <property name="circles" stdset="0">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="PyDMLabel" name="low_limit">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
+            </property>
+            <property name="text">
+             <string>low_limit</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
-         <widget class="PyDMLabel" name="low_limit">
-          <property name="minimumSize">
-           <size>
-            <width>60</width>
-            <height>0</height>
-           </size>
+         <layout class="QVBoxLayout" name="moving_indicator_layout">
+          <property name="topMargin">
+           <number>0</number>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>8</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
-          </property>
-          <property name="text">
-           <string>low_limit</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item alignment="Qt::AlignHCenter">
-         <widget class="PyDMByteIndicator" name="moving_indicator">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="whatsThis">
-           <string>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="PyDMByteIndicator" name="moving_indicator">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>
     Widget for graphical representation of bits from an integer number
     with support for Channels and more from PyDM
 
@@ -199,50 +211,52 @@
     init_channel : str, optional
         The channel to be used by the widget.
     </string>
-          </property>
-          <property name="alarmSensitiveContent" stdset="0">
-           <bool>false</bool>
-          </property>
-          <property name="onColor" stdset="0">
-           <color>
-            <red>20</red>
-            <green>100</green>
-            <blue>239</blue>
-           </color>
-          </property>
-          <property name="offColor" stdset="0">
-           <color>
-            <red>60</red>
-            <green>60</green>
-            <blue>60</blue>
-           </color>
-          </property>
-          <property name="showLabels" stdset="0">
-           <bool>false</bool>
-          </property>
-          <property name="circles" stdset="0">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="moving_indicator_label">
-          <property name="minimumSize">
-           <size>
-            <width>60</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>motion</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
+            </property>
+            <property name="alarmSensitiveContent" stdset="0">
+             <bool>false</bool>
+            </property>
+            <property name="onColor" stdset="0">
+             <color>
+              <red>20</red>
+              <green>100</green>
+              <blue>239</blue>
+             </color>
+            </property>
+            <property name="offColor" stdset="0">
+             <color>
+              <red>60</red>
+              <green>60</green>
+              <blue>60</blue>
+             </color>
+            </property>
+            <property name="showLabels" stdset="0">
+             <bool>false</bool>
+            </property>
+            <property name="circles" stdset="0">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="moving_indicator_label">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>motion</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item alignment="Qt::AlignHCenter">
          <widget class="TyphosRelatedSuiteButton" name="expert_button">
@@ -480,26 +494,37 @@ Screen</string>
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="high_limit_layout" stretch="0,0,0,0,0,1">
+       <layout class="QVBoxLayout" name="right_side_layout" stretch="0,0,0,1">
         <property name="spacing">
          <number>5</number>
         </property>
         <property name="rightMargin">
          <number>0</number>
         </property>
-        <item alignment="Qt::AlignHCenter">
-         <widget class="PyDMByteIndicator" name="high_limit_switch">
-          <property name="minimumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
+        <item>
+         <layout class="QVBoxLayout" name="high_limit_layout">
+          <property name="topMargin">
+           <number>0</number>
           </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="whatsThis">
-           <string>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="PyDMByteIndicator" name="high_limit_switch">
+            <property name="minimumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>
     Widget for graphical representation of bits from an integer number
     with support for Channels and more from PyDM
 
@@ -510,105 +535,114 @@ Screen</string>
     init_channel : str, optional
         The channel to be used by the widget.
     </string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">margin: 0px;</string>
-          </property>
-          <property name="onColor" stdset="0">
-           <color>
-            <red>239</red>
-            <green>246</green>
-            <blue>20</blue>
-           </color>
-          </property>
-          <property name="offColor" stdset="0">
-           <color>
-            <red>178</red>
-            <green>188</green>
-            <blue>17</blue>
-           </color>
-          </property>
-          <property name="orientation" stdset="0">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="showLabels" stdset="0">
-           <bool>false</bool>
-          </property>
-          <property name="circles" stdset="0">
-           <bool>true</bool>
-          </property>
-          <property name="shift" stdset="0">
+            </property>
+            <property name="styleSheet">
+             <string notr="true">margin: 0px;</string>
+            </property>
+            <property name="onColor" stdset="0">
+             <color>
+              <red>239</red>
+              <green>246</green>
+              <blue>20</blue>
+             </color>
+            </property>
+            <property name="offColor" stdset="0">
+             <color>
+              <red>178</red>
+              <green>188</green>
+              <blue>17</blue>
+             </color>
+            </property>
+            <property name="orientation" stdset="0">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="showLabels" stdset="0">
+             <bool>false</bool>
+            </property>
+            <property name="circles" stdset="0">
+             <bool>true</bool>
+            </property>
+            <property name="shift" stdset="0">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="PyDMLabel" name="high_limit">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
+            </property>
+            <property name="text">
+             <string>high_limit</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="alarm_layout">
+          <property name="topMargin">
            <number>0</number>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="PyDMLabel" name="high_limit">
-          <property name="minimumSize">
-           <size>
-            <width>60</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>8</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
-          </property>
-          <property name="text">
-           <string>high_limit</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item alignment="Qt::AlignHCenter">
-         <widget class="TyphosAlarmCircle" name="alarm_circle">
-          <property name="minimumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>25</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="penWidth" stdset="0">
-           <double>1.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="alarm_label">
-          <property name="minimumSize">
-           <size>
-            <width>60</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>alarm</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="TyphosAlarmCircle" name="alarm_circle">
+            <property name="minimumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="penWidth" stdset="0">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="alarm_label">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>alarm</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item alignment="Qt::AlignHCenter">
          <widget class="QPushButton" name="clear_error_button">
