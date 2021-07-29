@@ -37,6 +37,11 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+# Entry point for directories of custom widgets
+# Must be one of:
+# - str
+# - pathlib.Path
+# - list of such objects
 TYPHOS_ENTRY_POINT_KEY = 'typhos.ui'
 MODULE_PATH = pathlib.Path(__file__).parent.resolve()
 ui_dir = MODULE_PATH / 'ui'
@@ -78,6 +83,7 @@ def _get_display_paths():
             yield path
 
     _entries = entrypoints.get_group_all(TYPHOS_ENTRY_POINT_KEY)
+    entry_objs = []
 
     for entry in _entries:
         try:
@@ -88,6 +94,12 @@ def _get_display_paths():
             logger.error(msg)
             logger.debug(msg, exc_info=True)
             continue
+        if isinstance(obj, list):
+            entry_objs.extend(obj)
+        else:
+            entry_objs.append(obj)
+
+    for obj in entry_objs:
         try:
             yield pathlib.Path(obj)
         except Exception:
