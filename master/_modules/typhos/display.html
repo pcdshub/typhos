@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>typhos.display &mdash; Typhos 1.2.0+33.gae003f5 documentation</title>
+  <title>typhos.display &mdash; Typhos 1.2.0+39.gfcea204 documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                1.2.0+33.gae003f5
+                1.2.0+39.gfcea204
               </div>
             
           
@@ -198,6 +198,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">cache</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">panel</span> <span class="k">as</span> <span class="n">typhos_panel</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">widgets</span>
+<span class="kn">from</span> <span class="nn">.jira</span> <span class="kn">import</span> <span class="n">TyphosJiraIssueWidget</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -655,12 +656,17 @@
 <span class="sd">        A Qt signal indicating a request to open the Python docstring</span>
 <span class="sd">        information.</span>
 
+<span class="sd">    report_jira_issue : QtCore.Signal</span>
+<span class="sd">        A Qt signal indicating a request to open the Jira issue reporting</span>
+<span class="sd">        widget.</span>
+
 <span class="sd">    toggle_help : QtCore.Signal</span>
 <span class="sd">        A Qt signal indicating a request to toggle the related help display</span>
 <span class="sd">        frame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">open_in_browser</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
     <span class="n">open_python_docs</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+    <span class="n">report_jira_issue</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
     <span class="n">toggle_help</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="s2">&quot;question&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -685,6 +691,12 @@
 
         <span class="n">toggle_help</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Toggle &amp;help&quot;</span><span class="p">)</span>
         <span class="n">toggle_help</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">toggle</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">JIRA_URL</span><span class="p">:</span>
+            <span class="n">menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+            <span class="n">report_issue</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;&amp;Report Jira issue...&quot;</span><span class="p">)</span>
+            <span class="n">report_issue</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_jira_issue</span><span class="o">.</span><span class="n">emit</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">menu</span>
 
 
@@ -711,6 +723,13 @@
         <span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jira_widget</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">new_jira_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open a new Jira issue reporting widget.&quot;&quot;&quot;</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jira_widget</span> <span class="o">=</span> <span class="n">TyphosJiraIssueWidget</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jira_widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">open_in_browser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">autoraise</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -916,6 +935,9 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_python_docs</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_python_docs</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">report_jira_issue</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">new_jira_widget</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">tooltip_updated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">setToolTip</span>

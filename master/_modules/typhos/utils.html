@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>typhos.utils &mdash; Typhos 1.2.0+33.gae003f5 documentation</title>
+  <title>typhos.utils &mdash; Typhos 1.2.0+39.gfcea204 documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                1.2.0+33.gae003f5
+                1.2.0+39.gfcea204
               </div>
             
           
@@ -224,6 +224,21 @@
 <span class="n">HELP_TOKEN</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_HELP_TOKEN&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">HELP_TOKEN</span><span class="p">:</span>
     <span class="n">HELP_HEADERS</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">HELP_TOKEN</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># TYPHOS_JIRA_URL (str): The jira REST API collector URL</span>
+<span class="n">JIRA_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_JIRA_URL&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="c1"># TYPHOS_JIRA_HEADERS (json): headers to pass to JIRA_URL</span>
+<span class="n">JIRA_HEADERS</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_JIRA_HEADERS&#39;</span><span class="p">,</span> <span class="s1">&#39;{&quot;X-Atlassian-Token&quot;: &quot;no-check&quot;}&#39;</span><span class="p">)</span>
+    <span class="ow">or</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="c1"># TYPHOS_JIRA_TOKEN (str): An optional token for the bearer authentication</span>
+<span class="c1"># scheme - e.g., personal access tokens with Confluence</span>
+<span class="n">JIRA_TOKEN</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_JIRA_TOKEN&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="c1"># TYPHOS_JIRA_EMAIL_SUFFIX (str): The default e-mail address suffix</span>
+<span class="n">JIRA_EMAIL_SUFFIX</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_JIRA_EMAIL_SUFFIX&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">JIRA_TOKEN</span><span class="p">:</span>
+    <span class="n">JIRA_HEADERS</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">JIRA_TOKEN</span><span class="si">}</span><span class="s2">&quot;</span>
 
 <span class="k">if</span> <span class="n">happi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;happi is not installed; some features may be unavailable&quot;</span><span class="p">)</span>

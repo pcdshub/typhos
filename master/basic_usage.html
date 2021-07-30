@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>How it Works &mdash; Typhos 1.2.0+33.gae003f5 documentation</title>
+  <title>How it Works &mdash; Typhos 1.2.0+39.gfcea204 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0+33.gae003f5
+                1.2.0+39.gfcea204
               </div>
             
           
@@ -101,6 +101,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#the-typhossuite">The TyphosSuite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-stylesheet">Using the StyleSheet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-documentation-widget">Using the Documentation Widget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-jira-bug-reporting-widget">Using the Jira Bug Reporting Widget</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
@@ -282,16 +283,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1626887927.2891011}),</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1627665303.3622513}),</span>
 <span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1626887927.2891002})])</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1627665303.3622503})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1626887927.2895763}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1627665303.3627326}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1626887927.2896218})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1627665303.3627777})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a
@@ -383,6 +384,25 @@ in a JSON format, such as <code class="docutils literal notranslate"><span class
 scheme - e.g., personal access tokens with Confluence.  This is a shortcut
 to add a header <code class="docutils literal notranslate"><span class="pre">&quot;Authorization&quot;</span></code> with the value
 <code class="docutils literal notranslate"><span class="pre">&quot;Bearer</span> <span class="pre">${TYPHOS_HELP_TOKEN}&quot;</span></code>.</p></li>
+</ol>
+</div>
+<div class="section" id="using-the-jira-bug-reporting-widget">
+<h2>Using the Jira Bug Reporting Widget<a class="headerlink" href="#using-the-jira-bug-reporting-widget" title="Permalink to this headline">¶</a></h2>
+<p>Typhos has an optional built-in widget to generate Jira user stories/bug
+reports.</p>
+<p>A prerequisite to this support is, of course, a working Jira installation
+and a pre-configured issue collector.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TYPHOS_JIRA_URL</span></code> (str): The Jira issue collector URL.  This will resemble
+<code class="docutils literal notranslate"><span class="pre">https://jira.example.com/rest/collectors/1.0/template/custom/...</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TYPHOS_JIRA_HEADERS</span></code> (json): headers to pass to the Jira request, if
+needed.  This should be in a JSON format, such as <code class="docutils literal notranslate"><span class="pre">{&quot;my_key&quot;:&quot;my_value&quot;}</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TYPHOS_JIRA_TOKEN</span></code> (str): An optional token for the bearer authentication
+scheme - e.g., personal access tokens with Confluence.  This is a shortcut
+to add a header <code class="docutils literal notranslate"><span class="pre">&quot;Authorization&quot;</span></code> with the value
+<code class="docutils literal notranslate"><span class="pre">&quot;Bearer</span> <span class="pre">${TYPHOS_JIRA_TOKEN}&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TYPHOS_JIRA_EMAIL_SUFFIX</span></code> (str): the default e-mail suffix to put on
+usernames, such as <code class="docutils literal notranslate"><span class="pre">&quot;&#64;example.com&quot;</span></code>.</p></li>
 </ol>
 </div>
 </div>
