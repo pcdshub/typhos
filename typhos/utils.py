@@ -53,6 +53,21 @@ HELP_TOKEN = os.environ.get('TYPHOS_HELP_TOKEN', None)
 if HELP_TOKEN:
     HELP_HEADERS["Authorization"] = f"Bearer {HELP_TOKEN}"
 
+# TYPHOS_JIRA_URL (str): The jira REST API collector URL
+JIRA_URL = os.environ.get('TYPHOS_JIRA_URL', "").strip()
+# TYPHOS_JIRA_HEADERS (json): headers to pass to JIRA_URL
+JIRA_HEADERS = json.loads(
+    os.environ.get('TYPHOS_JIRA_HEADERS', '{"X-Atlassian-Token": "no-check"}')
+    or "{}"
+)
+# TYPHOS_JIRA_TOKEN (str): An optional token for the bearer authentication
+# scheme - e.g., personal access tokens with Confluence
+JIRA_TOKEN = os.environ.get('TYPHOS_JIRA_TOKEN', None)
+# TYPHOS_JIRA_EMAIL_SUFFIX (str): The default e-mail address suffix
+JIRA_EMAIL_SUFFIX = os.environ.get('TYPHOS_JIRA_EMAIL_SUFFIX', "").strip()
+if JIRA_TOKEN:
+    JIRA_HEADERS["Authorization"] = f"Bearer {JIRA_TOKEN}"
+
 if happi is None:
     logger.info("happi is not installed; some features may be unavailable")
 

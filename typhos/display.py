@@ -26,6 +26,7 @@ except ImportError:
 from . import cache
 from . import panel as typhos_panel
 from . import utils, widgets
+from .jira import TyphosJiraIssueWidget
 
 logger = logging.getLogger(__name__)
 
@@ -483,12 +484,17 @@ class TyphosHelpToggleButton(TyphosToolButton):
         A Qt signal indicating a request to open the Python docstring
         information.
 
+    report_jira_issue : QtCore.Signal
+        A Qt signal indicating a request to open the Jira issue reporting
+        widget.
+
     toggle_help : QtCore.Signal
         A Qt signal indicating a request to toggle the related help display
         frame.
     """
     open_in_browser = QtCore.Signal()
     open_python_docs = QtCore.Signal()
+    report_jira_issue = QtCore.Signal()
     toggle_help = QtCore.Signal(bool)
 
     def __init__(self, icon="question", parent=None):
@@ -513,6 +519,12 @@ class TyphosHelpToggleButton(TyphosToolButton):
 
         toggle_help = menu.addAction("Toggle &help")
         toggle_help.triggered.connect(toggle)
+
+        if utils.JIRA_URL:
+            menu.addSeparator()
+            report_issue = menu.addAction("&Report Jira issue...")
+            report_issue.triggered.connect(self.report_jira_issue.emit)
+
         return menu
 
 
@@ -539,6 +551,13 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
         self.devices = []
+        self._jira_widget = None
+
+    def new_jira_widget(self):
+        """Open a new Jira issue reporting widget."""
+        device = self.devices[0] if self.devices else None
+        self._jira_widget = TyphosJiraIssueWidget(device=device)
+        self._jira_widget.show()
 
     def open_in_browser(self, new=0, autoraise=True):
         """
@@ -744,6 +763,9 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             )
             self.switcher.help_toggle_button.open_python_docs.connect(
                 self.help.open_python_docs
+            )
+            self.switcher.help_toggle_button.report_jira_issue.connect(
+                self.help.new_jira_widget
             )
             self.help.tooltip_updated.connect(
                 self.switcher.help_toggle_button.setToolTip
