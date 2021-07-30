@@ -331,6 +331,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
                 QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Fixed,
                 )
+            self.ui.set_value.setMinimumContentsLength(20)
             self.ui.tweak_widget.setVisible(False)
         else:
             self.ui.set_value = QtWidgets.QLineEdit()
