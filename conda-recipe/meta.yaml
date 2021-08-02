@@ -21,6 +21,7 @@ requirements:
     - pyqt >=5
     - qtpy
     - coloredlogs
+    - entrypoints
     - numpy
     - numpydoc
     - ophyd >=1.5.0
