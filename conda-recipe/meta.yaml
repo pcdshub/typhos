@@ -18,8 +18,6 @@ requirements:
     - pip
   run:
     - python >=3.7
-    - pyqt >=5
-    - qtpy
     - coloredlogs
     - entrypoints
     - numpy
@@ -27,10 +25,12 @@ requirements:
     - ophyd >=1.5.0
     - pcdsutils
     - pydm
+    - pyqt >=5
     - pyqtgraph
     - qdarkstyle
     - qtawesome
     - qtconsole
+    - qtpy
     - timechart >=1.2.4
 
 about:
