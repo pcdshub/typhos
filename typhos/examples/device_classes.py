@@ -5,21 +5,6 @@ import time
 from ophyd import Component as Cpt
 from ophyd import Device, Signal, StatusBase
 
-from .app import get_qapp, launch_suite
-from .suite import TyphosSuite
-from .utils import use_stylesheet
-
-
-def example_positioner_suite():
-    get_qapp()
-    devices = [
-        ExamplePositioner(name='example_motor'),
-        ExampleComboPositioner(name='example_combo'),
-        ]
-    suite = TyphosSuite.from_devices(devices)
-    use_stylesheet()
-    launch_suite(suite)
-
 
 class PositionerBase:
     """
