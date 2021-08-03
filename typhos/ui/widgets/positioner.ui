@@ -469,6 +469,9 @@ Screen</string>
           <property name="text">
            <string>error_label</string>
           </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
           <property name="displayFormat" stdset="0">
            <enum>PyDMLabel::String</enum>
           </property>
