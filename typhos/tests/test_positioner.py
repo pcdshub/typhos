@@ -156,16 +156,23 @@ def test_positioner_widget_alarm_text_changes(motor_widget, qtbot):
     def get_alarm_text():
         return widget.ui.alarm_label.text()
 
-    def update_alarm(level):
+    def update_alarm(level, connected=True):
         with qtbot.waitSignal(
                 widget.ui.alarm_circle.alarm_changed,
                 timeout=500,
                 ):
-            motor.motor_is_moving.update_metadata({'severity': level})
+            motor.motor_is_moving.update_metadata(
+                {
+                    'severity': level,
+                    'connected': connected,
+                }
+            )
 
     def check_alarm_text_at_level(level):
         update_alarm(level)
         alarm_texts.append(get_alarm_text())
+
+    update_alarm(0, connected=False)
 
     for num in range(4):
         check_alarm_text_at_level(num)
