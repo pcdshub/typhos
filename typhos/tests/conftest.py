@@ -14,10 +14,12 @@ from ophyd import Device
 from ophyd import FormattedComponent as FC
 from ophyd.sim import Signal, SynAxis, SynPeriodicSignal
 from pydm import PyDMApplication
+from pydm.data_plugins import plugin_for_address
 from pydm.widgets.logdisplay import GuiHandler
 from qtpy import QtGui, QtWidgets
 
 import typhos
+from typhos.plugins.core import signal_registry
 from typhos.plugins.happi import register_client
 from typhos.utils import SignalRO, TyphosBase
 
@@ -248,3 +250,10 @@ def happi_cfg():
     path = str(MODULE_PATH / 'happi.cfg')
     os.environ['HAPPI_CFG'] = path
     return path
+
+
+def reset_signal_plugin():
+    signal_registry.clear()
+    plugin = plugin_for_address('sig://test')
+    for channel in list(plugin.channels):
+        plugin.remove_connection(channel)

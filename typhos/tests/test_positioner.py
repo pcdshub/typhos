@@ -8,7 +8,7 @@ from ophyd.sim import SynAxis
 from typhos.positioner import TyphosPositionerWidget
 from typhos.utils import SignalRO
 
-from .conftest import show_widget
+from .conftest import RichSignal, reset_signal_plugin, show_widget
 
 
 class SimMotor(SynAxis):
@@ -16,10 +16,17 @@ class SimMotor(SynAxis):
     high_limit_switch = Cpt(SignalRO, value=0)
     low_limit = Cpt(Signal, value=-10)
     high_limit = Cpt(Signal, value=10)
+    motor_is_moving = Cpt(RichSignal,
+                          value=0,
+                          metadata={
+                            'enum_strs': ('not moving', 'moving')
+                          })
     stop = Mock()
+    clear_error = Mock()
 
     # TODO: fix upstream - Mock interferes with @required_for_connection
     stop._required_for_connection = False
+    clear_error._required_for_connection = False
 
     # PositionerBase has a timeout arg, SynAxis does not
     def set(self, value, timeout=None):
@@ -28,6 +35,7 @@ class SimMotor(SynAxis):
 
 @pytest.fixture(scope='function')
 def motor_widget(qtbot):
+    reset_signal_plugin()
     motor = SimMotor(name='test')
     widget = TyphosPositionerWidget()
     widget.readback_attribute = 'readback'
@@ -111,7 +119,7 @@ def test_positioner_widget_moving_property(motor_widget, qtbot):
     qtbot.waitUntil(lambda: not widget.moving, timeout=1000)
 
 
-def test_positioner_widget_last_move(motor_widget, qtbot):
+def test_positioner_widget_last_move(motor_widget):
     motor, widget = motor_widget
     assert not widget.successful_move
     assert not widget.failed_move
@@ -121,3 +129,52 @@ def test_positioner_widget_last_move(motor_widget, qtbot):
     widget._status_finished(Exception())
     assert not widget.successful_move
     assert widget.failed_move
+
+
+def test_positioner_widget_moving_text_changes(motor_widget, qtbot):
+    motor, widget = motor_widget
+
+    def get_moving_text():
+        return widget.ui.moving_indicator_label.text()
+
+    start_text = get_moving_text()
+    motor.motor_is_moving.put(1)
+    qtbot.waitUntil(lambda: widget.moving, timeout=500)
+    move_text = get_moving_text()
+    motor.motor_is_moving.put(0)
+    qtbot.waitUntil(lambda: not widget.moving, timeout=500)
+    end_text = get_moving_text()
+    assert start_text != move_text
+    assert move_text != end_text
+    assert end_text == start_text
+
+
+def test_positioner_widget_alarm_text_changes(motor_widget, qtbot):
+    motor, widget = motor_widget
+    alarm_texts = []
+
+    def get_alarm_text():
+        return widget.ui.alarm_label.text()
+
+    def update_alarm(level):
+        with qtbot.waitSignal(
+                widget.ui.alarm_circle.alarm_changed,
+                timeout=500,
+                ):
+            motor.motor_is_moving.update_metadata({'severity': level})
+
+    def check_alarm_text_at_level(level):
+        update_alarm(level)
+        alarm_texts.append(get_alarm_text())
+
+    for num in range(4):
+        check_alarm_text_at_level(num)
+
+    for text in alarm_texts:
+        assert alarm_texts.count(text) == 1
+
+
+def test_positioner_widget_clear_error(motor_widget, qtbot):
+    motor, widget = motor_widget
+    widget.clear_error()
+    assert motor.clear_error.called
