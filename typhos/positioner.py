@@ -221,9 +221,26 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
 
     @QtCore.Slot()
     def clear_error(self):
-        """Clear error on device"""
+        """
+        Clear the error messages from the device and screen.
+
+        The device may have errors in the IOC. These will be cleared by calling
+        the clear_error method.
+
+        The screen may have errors from the status of the last move. These will
+        be cleared from view.
+        """
         for device in self.devices:
-            device.clear_error()
+            try:
+                device.clear_error()
+            except AttributeError:
+                pass
+        self._set_status_text('')
+        # This variable holds True if last move was good, False otherwise
+        # It also controls whether or not we have a red box on the widget
+        # False = Red, True = Green, None = no box (in motion is yellow)
+        if not self._last_move:
+            self._last_move = None
         utils.reload_widget_stylesheet(self, cascade=True)
 
     def _get_position(self):
@@ -384,11 +401,6 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
 
         self.ui.alarm_circle.clear_all_alarm_configs()
         self.ui.alarm_circle.add_device(device)
-
-        if hasattr(self.devices[0], 'clear_error'):
-            self.ui.clear_error_button.show()
-        else:
-            self.ui.clear_error_button.hide()
 
     @QtCore.Property(bool, designable=False)
     def moving(self):
