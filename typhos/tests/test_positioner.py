@@ -184,4 +184,4 @@ def test_positioner_widget_alarm_text_changes(motor_widget, qtbot):
 def test_positioner_widget_clear_error(motor_widget, qtbot):
     motor, widget = motor_widget
     widget.clear_error()
-    assert motor.clear_error.called
+    qtbot.waitUntil(lambda: motor.clear_error.called, timeout=500)

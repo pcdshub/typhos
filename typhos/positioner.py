@@ -1,5 +1,6 @@
 import logging
 import os.path
+import threading
 
 from pydm.widgets.channel import PyDMChannel
 from qtpy import QtCore, QtWidgets, uic
@@ -231,10 +232,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         be cleared from view.
         """
         for device in self.devices:
-            try:
-                device.clear_error()
-            except AttributeError:
-                pass
+            clear_error_in_background(device)
         self._set_status_text('')
         # This variable holds True if last move was good, False otherwise
         # It also controls whether or not we have a red box on the widget
@@ -632,3 +630,18 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         else:
             text = 'invalid'
         self.ui.alarm_label.setText(text)
+
+
+def clear_error_in_background(device):
+    def inner():
+        try:
+            device.clear_error()
+        except AttributeError:
+            pass
+        except Exception:
+            msg = 'Count not clear error!'
+            logger.error(msg)
+            logger.debug(msg, exc_info=True)
+
+    td = threading.Thread(target=inner)
+    td.start()
