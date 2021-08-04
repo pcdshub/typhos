@@ -419,6 +419,13 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             self._after_set_moving(value)
 
     def _after_set_moving(self, value):
+        """
+        Common updates needed after a change the moving state.
+
+        This is pulled out as a separate method because we need
+        to initialize the label here during __init__ without
+        modifying self.moving.
+        """
         utils.reload_widget_stylesheet(self, cascade=True)
         if value:
             self.ui.moving_indicator_label.setText('moving')
@@ -426,6 +433,13 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             self.ui.moving_indicator_label.setText('done')
 
     def _set_moving(self, value):
+        """
+        Slot for updating the self.moving property.
+
+        This is used e.g. in updating the moving state when the
+        motor starts moving in EPICS but not by the request of
+        this widget.
+        """
         self.moving = bool(value)
 
     @QtCore.Property(bool, designable=False)

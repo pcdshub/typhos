@@ -1,3 +1,11 @@
+"""
+Module that contains fake hardware for use in the examples.
+
+For typhos suites to load properly, the class definitions need to be defined
+in a module, not in the __main__ script entry point.
+
+That's why this module exists.
+"""
 import random
 import threading
 import time
@@ -14,6 +22,11 @@ class PositionerBase:
 
 
 class ExamplePositioner(Device, PositionerBase):
+    """
+    An example in-software positioner that works with the positioner widget.
+
+    This behaves more or less like you'd expect a real motor to behave.
+    """
     user_readback = Cpt(Signal, value=0.0, kind='hinted',
                         metadata={'precision': 3})
     user_setpoint = Cpt(Signal, value=0.0)
@@ -100,6 +113,13 @@ class ExamplePositioner(Device, PositionerBase):
 
 
 class ExampleComboPositioner(Device, PositionerBase):
+    """
+    A rewrite of ExamplePositioner that shows off the combobox.
+
+    LCLS uses a few "positioner" objects that move to named strings
+    instead of floating point positions, and this facilitates that
+    behavior.
+    """
     user_readback = Cpt(Signal, value='OUT', kind='hinted')
     user_setpoint = Cpt(Signal, value='Unknown')
     motor_is_moving = Cpt(Signal, value=False)

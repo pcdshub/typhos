@@ -253,6 +253,17 @@ def happi_cfg():
 
 
 def reset_signal_plugin():
+    """
+    Completely restart the sig:// plugin.
+
+    After the restart, there will be no open SignalConnection objects
+    and nothing in the signal registry.
+
+    Some tests are easier to express by repeating signal names, which
+    will cause the signal plugin to ignore the new devices in favor of
+    the previously saved devices, which are no longer available to be
+    manipulated or tested.
+    """
     signal_registry.clear()
     plugin = plugin_for_address('sig://test')
     for channel in list(plugin.channels):
