@@ -217,3 +217,10 @@ customize the following environment variables.
    scheme - e.g., personal access tokens with Confluence.  This is a shortcut
    to add a header ``"Authorization"`` with the value
    ``"Bearer ${TYPHOS_HELP_TOKEN}"``.
+
+
+Launching the Examples
+======================
+There are example screens in the ``typhos.examples`` submodule. After
+installing ``typhos``, you can launch them using e.g.
+``python -m typhos.examples.positioner``.
