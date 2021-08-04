@@ -30,6 +30,7 @@ master/_sources/plugins.rst.txt
 master/_sources/python_methods.rst.txt
 master/_sources/release_notes.rst.txt
 master/_sources/save.rst.txt
+master/_sources/templates.rst.txt
 master/_sources/tools.rst.txt
 master/_sources/utils.rst.txt
 master/_sources/widgets.rst.txt
@@ -129,6 +130,7 @@ master/release_notes.html
 master/save.html
 master/search.html
 master/searchindex.js
+master/templates.html
 master/tools.html
 master/utils.html
 master/widgets.html

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Widgets &mdash; Typhos 1.2.0+39.gfcea204 documentation</title>
+  <title>Widgets &mdash; Typhos 1.2.0+75.gb8d12ea documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0+39.gfcea204
+                1.2.0+75.gb8d12ea
               </div>
             
           
@@ -96,6 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Documentation</span></p>
@@ -796,6 +797,24 @@ that indicates the motion completeness. Must be implemented.</p></td>
 <tr class="row-odd"><td><p>Stop</p></td>
 <td><p>Device.stop()</p></td>
 </tr>
+<tr class="row-even"><td><p>Move Indicator</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">moving_attribute</span></code> property is used, which defaults
+to <code class="docutils literal notranslate"><span class="pre">motor_is_moving</span></code>. Linked to UI element
+<code class="docutils literal notranslate"><span class="pre">moving_indicator</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Error Message</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">error_message_attribute</span></code> property is used, which
+defaults to <code class="docutils literal notranslate"><span class="pre">error_message</span></code>. Linked to UI element
+<code class="docutils literal notranslate"><span class="pre">error_label</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>Clear Error</p></td>
+<td><p>Device.clear_error()</p></td>
+</tr>
+<tr class="row-odd"><td><p>Alarm Circle</p></td>
+<td><p>Uses the TyphosAlarmCircle widget to summarize the alarm
+state of all of the device’s <code class="docutils literal notranslate"><span class="pre">normal</span></code> and <code class="docutils literal notranslate"><span class="pre">hinted</span></code>
+signals.</p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py attribute">
@@ -811,9 +830,25 @@ that indicates the motion completeness. Must be implemented.</p></td>
 </dd></dl>
 
 <dl class="py method">
+<dt id="typhos.TyphosPositionerWidget.clear_error">
+<code class="sig-name descname"><span class="pre">clear_error</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.clear_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.clear_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the error messages from the device and screen.</p>
+<p>The device may have errors in the IOC. These will be cleared by calling
+the clear_error method.</p>
+<p>The screen may have errors from the status of the last move. These will
+be cleared from view.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.device">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">device</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.device" title="Permalink to this definition">¶</a></dt>
 <dd><p>The associated device.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="typhos.TyphosPositionerWidget.error_message_attribute">
+<code class="sig-name descname"><span class="pre">error_message_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.error_message_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>The attribute name for the IOC error message label.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -860,6 +895,12 @@ that indicates the motion completeness. Must be implemented.</p></td>
 prevent unnecessary rapid movements</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="typhos.TyphosPositionerWidget.moving_attribute">
+<code class="sig-name descname"><span class="pre">moving_attribute</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.moving_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>The attribute name for the motor moving indicator.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.negative_tweak">
 <code class="sig-name descname"><span class="pre">negative_tweak</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.negative_tweak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.negative_tweak" title="Permalink to this definition">¶</a></dt>
@@ -890,6 +931,18 @@ prevent unnecessary rapid movements</p>
 <dd><p>The attribute name for the setpoint signal.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt id="typhos.TyphosPositionerWidget.show_expert_button">
+<code class="sig-name descname"><span class="pre">show_expert_button</span></code><a class="headerlink" href="#typhos.TyphosPositionerWidget.show_expert_button" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, show the expert button.</p>
+<p>The expert button opens a full suite for the device.
+You typically want this False when you’re already inside the
+suite that the button would open.
+You typically want this True when you’re using the positioner widget
+inside of an unrelated screen.
+This will default to False.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="typhos.TyphosPositionerWidget.stop">
 <code class="sig-name descname"><span class="pre">stop</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.stop" title="Permalink to this definition">¶</a></dt>
@@ -906,6 +959,12 @@ prevent unnecessary rapid movements</p>
 <dt id="typhos.TyphosPositionerWidget.tweak">
 <code class="sig-name descname"><span class="pre">tweak</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.tweak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.tweak" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tweak by the given <code class="docutils literal notranslate"><span class="pre">offset</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="typhos.TyphosPositionerWidget.update_alarm_text">
+<code class="sig-name descname"><span class="pre">update_alarm_text</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alarm_level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget.update_alarm_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget.update_alarm_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Label the alarm circle with a short text bit.</p>
 </dd></dl>
 
 <dl class="py attribute">

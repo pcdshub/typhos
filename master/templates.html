@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Custom Templates &mdash; Typhos 1.2.0+75.gb8d12ea documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/doctr-versions-menu.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release History" href="release_notes.html" />
+    <link rel="prev" title="Including Python Code" href="python_methods.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Typhos
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.2.0+75.gb8d12ea
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Custom Templates</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#template-creation">Template Creation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#template-substitutions">Template Substitutions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#template-filenames">Template Filenames</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#template-discovery">Template Discovery</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Typhos</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Custom Templates</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/templates.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="custom-templates">
+<h1>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this headline">¶</a></h1>
+<p>Typhos ships with a handful of built-in templates. You can see these when you
+browse the <code class="docutils literal notranslate"><span class="pre">typhos/ui/core</span></code> and <code class="docutils literal notranslate"><span class="pre">typhos/ui/devices</span></code> directories.</p>
+<p>You can define your own templates outside of typhos to customize the behavior
+of the module when launching screens. These can be done generically, to
+replace the default templates, or per-class, to replace the templates in
+specific cases.</p>
+<div class="section" id="template-creation">
+<h2>Template Creation<a class="headerlink" href="#template-creation" title="Permalink to this headline">¶</a></h2>
+<p>Templates are <code class="docutils literal notranslate"><span class="pre">.ui</span></code> files created in qt designer. These are largely just
+normal pydm displays, with extra macro substitutions. See the
+<a class="reference external" href="https://slaclab.github.io/pydm-tutorial/action/intro_designer.html#designer" title="(in PyDM Tutorial v0.0.1)"><span class="xref std std-ref">pydm tutorial</span></a>
+for more guidance on using the designer.</p>
+<div class="section" id="template-substitutions">
+<h3>Template Substitutions<a class="headerlink" href="#template-substitutions" title="Permalink to this headline">¶</a></h3>
+<p>All the information found in <code class="docutils literal notranslate"><span class="pre">happi</span></code> will be loaded as a pydm macro into the
+template. It does this by checking for attributes on the <code class="docutils literal notranslate"><span class="pre">device.md</span></code>
+namespace object.</p>
+<p>If no <code class="docutils literal notranslate"><span class="pre">device.md</span></code> object is found, we will still include <code class="docutils literal notranslate"><span class="pre">device.name</span></code>
+as the <code class="docutils literal notranslate"><span class="pre">name</span></code> macro and <code class="docutils literal notranslate"><span class="pre">device.prefix</span></code> as the <code class="docutils literal notranslate"><span class="pre">prefix</span></code> macro.</p>
+<p>The upshot of this is that you can include <code class="docutils literal notranslate"><span class="pre">${name}</span></code>, <code class="docutils literal notranslate"><span class="pre">${prefix}</span></code>, and
+other keys from the happi database in your template and they will be
+filled in from the device database on load.</p>
+</div>
+<div class="section" id="template-filenames">
+<h3>Template Filenames<a class="headerlink" href="#template-filenames" title="Permalink to this headline">¶</a></h3>
+<p>To replace a default template, create a template with exactly the same name.</p>
+<p>To create a template for a class, name it based on the class name
+and the template type, e.g.:</p>
+<ul class="simple">
+<li><p>PositionerBase.embedded.ui</p></li>
+<li><p>PositionerBase.detailed.ui</p></li>
+<li><p>PositionerBase.engineering.ui</p></li>
+</ul>
+<p>Note that we’ll check an object class’s mro() when deciding which template to
+use- this is why all PositionerBase subclasses use the built-in
+PositionerBase.detailed.ui template by default.</p>
+<p>In this way you can create one template for a set of related classes.</p>
+</div>
+<div class="section" id="template-discovery">
+<h3>Template Discovery<a class="headerlink" href="#template-discovery" title="Permalink to this headline">¶</a></h3>
+<p>There are currently three places that typhos checks for templates.
+In order of priority:</p>
+<ol class="arabic simple">
+<li><p>Check the paths defined by the <code class="docutils literal notranslate"><span class="pre">PYDM_DISPLAYS_PATH</span></code> environment variable.</p></li>
+<li><p>Check any paths defined by the <code class="docutils literal notranslate"><span class="pre">typhos.ui</span></code> package entry point.</p></li>
+<li><p>Check the built-in paths (core and devices)</p></li>
+</ol>
+<p>With that in mind, there are two recommended workflows for running typhos with
+custom templates:</p>
+<ol class="arabic simple">
+<li><p>Create a repository to store your screens, and set <code class="docutils literal notranslate"><span class="pre">PYDM_DISPLAYS_PATH</span></code>
+to point to your repository clone’s screens directory. This path works
+exactly like any other <code class="docutils literal notranslate"><span class="pre">PATH</span></code> variable in linux.</p></li>
+<li><p>Create a module that defines the <code class="docutils literal notranslate"><span class="pre">typhos.ui</span></code> entry point. This entry
+point is expecting to find a <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, or <code class="docutils literal notranslate"><span class="pre">list</span></code> of
+such objects at your entry point. One such example of how to do this can
+be found <a class="reference external" href="https://github.com/pcdshub/pcdsdevices/blob/cab3fe158ebc0d032fe07f03ec52ca79cda90c6e/setup.py#L21">here</a></p></li>
+</ol>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="release_notes.html" class="btn btn-neutral float-right" title="Release History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="python_methods.html" class="btn btn-neutral float-left" title="Including Python Code" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, SLAC National Accelerator Laboratory.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

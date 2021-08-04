@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>typhos.utils &mdash; Typhos 1.2.0+39.gfcea204 documentation</title>
+  <title>typhos.utils &mdash; Typhos 1.2.0+75.gb8d12ea documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                1.2.0+39.gfcea204
+                1.2.0+75.gb8d12ea
               </div>
             
           
@@ -94,6 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Documentation</span></p>
@@ -188,6 +189,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 
+<span class="kn">import</span> <span class="nn">entrypoints</span>
 <span class="kn">import</span> <span class="nn">ophyd</span>
 <span class="kn">import</span> <span class="nn">ophyd.sim</span>
 <span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Device</span>
@@ -207,9 +209,17 @@
     <span class="n">happi</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Entry point for directories of custom widgets</span>
+<span class="c1"># Must be one of:</span>
+<span class="c1"># - str</span>
+<span class="c1"># - pathlib.Path</span>
+<span class="c1"># - list of such objects</span>
+<span class="n">TYPHOS_ENTRY_POINT_KEY</span> <span class="o">=</span> <span class="s1">&#39;typhos.ui&#39;</span>
 <span class="n">MODULE_PATH</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 <span class="n">ui_dir</span> <span class="o">=</span> <span class="n">MODULE_PATH</span> <span class="o">/</span> <span class="s1">&#39;ui&#39;</span>
 <span class="n">ui_core_dir</span> <span class="o">=</span> <span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span>
+
 <span class="n">GrabKindItem</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;GrabKindItem&#39;</span><span class="p">,</span>
                                       <span class="p">(</span><span class="s1">&#39;attr&#39;</span><span class="p">,</span> <span class="s1">&#39;component&#39;</span><span class="p">,</span> <span class="s1">&#39;signal&#39;</span><span class="p">))</span>
 <span class="n">DEBUG_MODE</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_DEBUG&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
@@ -245,12 +255,47 @@
 
 
 <span class="k">def</span> <span class="nf">_get_display_paths</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Get all display paths based on PYDM_DISPLAYS_PATH + typhos built-ins.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get all display paths.</span>
+
+<span class="sd">    This includes, in order:</span>
+
+<span class="sd">    - The $PYDM_DISPLAYS_PATH environment variable</span>
+<span class="sd">    - The typhos.ui entry point</span>
+<span class="sd">    - typhos built-ins</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">paths</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PYDM_DISPLAYS_PATH&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
             <span class="k">yield</span> <span class="n">path</span>
+
+    <span class="n">_entries</span> <span class="o">=</span> <span class="n">entrypoints</span><span class="o">.</span><span class="n">get_group_all</span><span class="p">(</span><span class="n">TYPHOS_ENTRY_POINT_KEY</span><span class="p">)</span>
+    <span class="n">entry_objs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">_entries</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed to load </span><span class="si">{</span><span class="n">TYPHOS_ENTRY_POINT_KEY</span><span class="si">}</span><span class="s1"> &#39;</span>
+                   <span class="sa">f</span><span class="s1">&#39;entry: </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">entry_objs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">entry_objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">entry_objs</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">TYPHOS_ENTRY_POINT_KEY</span><span class="si">}</span><span class="s1"> entry point &#39;</span>
+                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s1"> is not a valid path!&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="k">yield</span> <span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span>
     <span class="k">yield</span> <span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;devices&#39;</span>
 

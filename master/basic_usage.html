@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>How it Works &mdash; Typhos 1.2.0+39.gfcea204 documentation</title>
+  <title>How it Works &mdash; Typhos 1.2.0+75.gb8d12ea documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0+39.gfcea204
+                1.2.0+75.gb8d12ea
               </div>
             
           
@@ -102,12 +102,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#using-the-stylesheet">Using the StyleSheet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-documentation-widget">Using the Documentation Widget</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#using-the-jira-bug-reporting-widget">Using the Jira Bug Reporting Widget</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launching-the-examples">Launching the Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
 <li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Documentation</span></p>
@@ -283,16 +285,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1627665303.3622513}),</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1628116888.5537484}),</span>
 <span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1627665303.3622503})])</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1628116888.5537477})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1627665303.3627326}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1628116888.5542011}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1627665303.3627777})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1628116888.554247})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a
@@ -404,6 +406,15 @@ to add a header <code class="docutils literal notranslate"><span class="pre">&qu
 <li><p><code class="docutils literal notranslate"><span class="pre">TYPHOS_JIRA_EMAIL_SUFFIX</span></code> (str): the default e-mail suffix to put on
 usernames, such as <code class="docutils literal notranslate"><span class="pre">&quot;&#64;example.com&quot;</span></code>.</p></li>
 </ol>
+</div>
+<div class="section" id="launching-the-examples">
+<h2>Launching the Examples<a class="headerlink" href="#launching-the-examples" title="Permalink to this headline">¶</a></h2>
+<p>There are example screens in the <code class="docutils literal notranslate"><span class="pre">typhos.examples</span></code> submodule. After
+installing <code class="docutils literal notranslate"><span class="pre">typhos</span></code>, you can launch them as follows:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">typhos.examples.panel</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">typhos.examples.positioner</span></code></p></li>
+</ul>
 </div>
 </div>
 
