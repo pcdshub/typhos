@@ -15,7 +15,15 @@ import pydm.utilities
 from pcdsutils.qt import forward_property
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
-from qtpy.QtWebEngineWidgets import QWebEngineView
+
+# Unfortunately, this is not importable in qt designer.
+# Qt mandates that this is imported before a QCoreApplication is created,
+# but qt designer is itself a Qt application!
+# Skip if this fails, will not impact use of qt designer.
+try:
+    from qtpy.QtWebEngineWidgets import QWebEngineView
+except ImportError:
+    QWebEngineView = None
 
 try:
     # Well, um, this is unavailable in qtpy...
@@ -649,6 +657,12 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         """Show the help information in a QWebEngineView."""
         if self.help_web_view:
             self.help_web_view.show()
+            return
+        if QWebEngineView is None:
+            logger.error(
+                "Failed to import QWebEngineView; "
+                "help view is unavailable."
+                )
             return
         self.help_web_view = QWebEngineView()
         if QWebEngineHttpRequest is not None:

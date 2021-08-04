@@ -238,3 +238,12 @@ and a pre-configured issue collector.
    ``"Bearer ${TYPHOS_JIRA_TOKEN}"``.
 4. ``TYPHOS_JIRA_EMAIL_SUFFIX`` (str): the default e-mail suffix to put on
    usernames, such as ``"@example.com"``.
+
+
+Launching the Examples
+======================
+There are example screens in the ``typhos.examples`` submodule. After
+installing ``typhos``, you can launch them as follows:
+
+- ``python -m typhos.examples.panel``
+- ``python -m typhos.examples.positioner``

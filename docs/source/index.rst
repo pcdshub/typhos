@@ -42,6 +42,7 @@ Related Projects
     save.rst
     connections.rst
     python_methods.rst
+    templates.rst
     release_notes.rst
 
 .. toctree::

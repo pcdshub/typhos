@@ -2,11 +2,11 @@
 import sys
 
 import numpy as np
+from ophyd import Component as Cpt
+from ophyd import Device, Signal
 from qtpy.QtWidgets import QApplication
 
 import typhos
-from ophyd import Component as Cpt
-from ophyd import Device, Signal
 from typhos.utils import SignalRO
 
 

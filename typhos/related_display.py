@@ -1,14 +1,33 @@
 """
 Widgets that open up typhos displays.
 """
-from happi.client import Client
-from happi.loader import load_devices
+import logging
+
 from pydm.utilities import establish_widget_connections, is_qt_designer
 from qtpy import QtCore, QtWidgets
 
 from .suite import TyphosSuite
 from .utils import (TyphosObject, no_device_lazy_load, raise_window,
                     use_stylesheet)
+
+try:
+    from happi.client import Client
+    from happi.loader import load_devices
+    happi_loaded = True
+except ImportError:
+    happi_loaded = False
+
+
+logger = logging.getLogger(__name__)
+
+
+def happi_check():
+    if not happi_loaded:
+        logger.warning(
+            'The happi module is not in your Python environment, '
+            'happi TyphosRelatedSuiteButton features will not work.'
+            )
+    return happi_loaded
 
 
 class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
@@ -32,6 +51,7 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
 
     @happi_names.setter
     def happi_names(self, happi_names):
+        happi_check()
         self._happi_names = happi_names
 
     @QtCore.Property(str)
@@ -43,6 +63,7 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
 
     @happi_cfg.setter
     def happi_cfg(self, happi_cfg):
+        happi_check()
         self._happi_cfg = happi_cfg
 
     @QtCore.Property(bool)
@@ -98,7 +119,7 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         This relied on the happi_cfg and happi_names properties being
         set appropriately.
         """
-        if self.happi_names:
+        if self.happi_names and happi_check():
             happi_client = Client.from_config(cfg=self.happi_cfg or None)
             items = []
             for name in self.happi_names:
