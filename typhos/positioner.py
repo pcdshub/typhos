@@ -342,6 +342,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         if selection:
             self.ui.set_value = QtWidgets.QComboBox()
             self.ui.set_value.addItems(setpoint_signal.enum_strs)
+            # Activated signal triggers only when the user selects an option
             self.ui.set_value.activated.connect(self.set)
             self.ui.set_value.setSizePolicy(
                 QtWidgets.QSizePolicy.Expanding,
