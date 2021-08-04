@@ -310,18 +310,17 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         if signal is None:
             widget.hide()
             return False
-        else:
-            widget.show()
-            # Additional handling for updating self.moving
-            if self._moving_channel is not None:
-                self._moving_channel.disconnect()
-            chname = utils.channel_from_signal(signal)
-            self._moving_channel = PyDMChannel(
-                address=chname,
-                value_slot=self._set_moving,
-                )
-            self._moving_channel.connect()
-            return True
+        widget.show()
+        # Additional handling for updating self.moving
+        if self._moving_channel is not None:
+            self._moving_channel.disconnect()
+        chname = utils.channel_from_signal(signal)
+        self._moving_channel = PyDMChannel(
+            address=chname,
+            value_slot=self._set_moving,
+            )
+        self._moving_channel.connect()
+        return True
 
     @utils.linked_attribute('error_message_attribute', 'ui.error_label', True)
     def _link_error_message(self, signal, widget):
