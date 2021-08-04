@@ -420,7 +420,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
 
     def _after_set_moving(self, value):
         """
-        Common updates needed after a change the moving state.
+        Common updates needed after a change to the moving state.
 
         This is pulled out as a separate method because we need
         to initialize the label here during __init__ without
