@@ -4,6 +4,12 @@ Custom Templates
 Typhos ships with a handful of built-in templates. You can see these when you
 browse the ``typhos/ui/core`` and ``typhos/ui/devices`` directories.
 
+.. note::
+
+   This repo originally had a large number of LCLS-specific device templates.
+   These have been moved to :ref:`pcdsdevices.ui <pcdsdevices:ui>`.
+
+
 You can define your own templates outside of typhos to customize the behavior
 of the module when launching screens. These can be done generically, to
 replace the default templates, or per-class, to replace the templates in
