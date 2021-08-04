@@ -16,6 +16,7 @@ import random
 import re
 import threading
 
+import entrypoints
 import ophyd
 import ophyd.sim
 from ophyd import Device
@@ -35,9 +36,17 @@ except ImportError:
     happi = None
 
 logger = logging.getLogger(__name__)
+
+# Entry point for directories of custom widgets
+# Must be one of:
+# - str
+# - pathlib.Path
+# - list of such objects
+TYPHOS_ENTRY_POINT_KEY = 'typhos.ui'
 MODULE_PATH = pathlib.Path(__file__).parent.resolve()
 ui_dir = MODULE_PATH / 'ui'
 ui_core_dir = ui_dir / 'core'
+
 GrabKindItem = collections.namedtuple('GrabKindItem',
                                       ('attr', 'component', 'signal'))
 DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
@@ -53,17 +62,67 @@ HELP_TOKEN = os.environ.get('TYPHOS_HELP_TOKEN', None)
 if HELP_TOKEN:
     HELP_HEADERS["Authorization"] = f"Bearer {HELP_TOKEN}"
 
+# TYPHOS_JIRA_URL (str): The jira REST API collector URL
+JIRA_URL = os.environ.get('TYPHOS_JIRA_URL', "").strip()
+# TYPHOS_JIRA_HEADERS (json): headers to pass to JIRA_URL
+JIRA_HEADERS = json.loads(
+    os.environ.get('TYPHOS_JIRA_HEADERS', '{"X-Atlassian-Token": "no-check"}')
+    or "{}"
+)
+# TYPHOS_JIRA_TOKEN (str): An optional token for the bearer authentication
+# scheme - e.g., personal access tokens with Confluence
+JIRA_TOKEN = os.environ.get('TYPHOS_JIRA_TOKEN', None)
+# TYPHOS_JIRA_EMAIL_SUFFIX (str): The default e-mail address suffix
+JIRA_EMAIL_SUFFIX = os.environ.get('TYPHOS_JIRA_EMAIL_SUFFIX', "").strip()
+if JIRA_TOKEN:
+    JIRA_HEADERS["Authorization"] = f"Bearer {JIRA_TOKEN}"
+
 if happi is None:
     logger.info("happi is not installed; some features may be unavailable")
 
 
 def _get_display_paths():
-    """Get all display paths based on PYDM_DISPLAYS_PATH + typhos built-ins."""
+    """
+    Get all display paths.
+
+    This includes, in order:
+
+    - The $PYDM_DISPLAYS_PATH environment variable
+    - The typhos.ui entry point
+    - typhos built-ins
+    """
     paths = os.environ.get('PYDM_DISPLAYS_PATH', '')
     for path in paths.split(os.pathsep):
         path = pathlib.Path(path).expanduser().resolve()
         if path.exists() and path.is_dir():
             yield path
+
+    _entries = entrypoints.get_group_all(TYPHOS_ENTRY_POINT_KEY)
+    entry_objs = []
+
+    for entry in _entries:
+        try:
+            obj = entry.load()
+        except Exception:
+            msg = (f'Failed to load {TYPHOS_ENTRY_POINT_KEY} '
+                   f'entry: {entry.name}.')
+            logger.error(msg)
+            logger.debug(msg, exc_info=True)
+            continue
+        if isinstance(obj, list):
+            entry_objs.extend(obj)
+        else:
+            entry_objs.append(obj)
+
+    for obj in entry_objs:
+        try:
+            yield pathlib.Path(obj)
+        except Exception:
+            msg = (f'{TYPHOS_ENTRY_POINT_KEY} entry point '
+                   f'{entry.name}: {obj} is not a valid path!')
+            logger.error(msg)
+            logger.debug(msg, exc_info=True)
+
     yield ui_dir / 'core'
     yield ui_dir / 'devices'
 

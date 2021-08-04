@@ -19,12 +19,12 @@
 #
 import os
 import sys
-
 from datetime import datetime
 
-import sphinx_rtd_theme
+import sphinx_rtd_theme  # NOQA
 
-module_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),'../../')
+module_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           '../../')
 sys.path.insert(0, module_path)
 
 
@@ -37,7 +37,8 @@ sys.path.insert(0, module_path)
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
+extensions = [
+    'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
@@ -46,7 +47,8 @@ extensions = ['sphinx.ext.autodoc',
     'IPython.sphinxext.ipython_directive',
     'IPython.sphinxext.ipython_console_highlighting',
     'doctr_versions_menu',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.githubpages',
+    ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -71,7 +73,8 @@ author = 'SLAC National Accelerator Laboratory'
 # built documents.
 #
 # The short X.Y version.
-import typhos
+import typhos  # NOQA
+
 version = typhos.__version__
 # The full version, including alpha/beta/rc tags.
 release = typhos.__version__
@@ -186,7 +189,8 @@ texinfo_documents = [
 ]
 
 
-
-
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'pydm': ('https://slaclab.github.io/pydm-tutorial/', None),
+    'python': ('https://docs.python.org/', None),
+    }

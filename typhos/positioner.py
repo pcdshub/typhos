@@ -1,7 +1,9 @@
 import logging
 import os.path
+import threading
 
-from qtpy import QtCore, uic, QtWidgets
+from pydm.widgets.channel import PyDMChannel
+from qtpy import QtCore, QtWidgets, uic
 
 from . import utils, widgets
 from .status import TyphosStatusThread
@@ -49,6 +51,20 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
                    that indicates the motion completeness. Must be implemented.
 
     Stop           Device.stop()
+
+    Move Indicator The ``moving_attribute`` property is used, which defaults
+                   to ``motor_is_moving``. Linked to UI element
+                   ``moving_indicator``.
+
+    Error Message  The ``error_message_attribute`` property is used, which
+                   defaults to ``error_message``. Linked to UI element
+                   ``error_label``.
+
+    Clear Error    Device.clear_error()
+
+    Alarm Circle   Uses the TyphosAlarmCircle widget to summarize the alarm
+                   state of all of the device's ``normal`` and ``hinted``
+                   signals.
     ============== ===========================================================
     """
 
@@ -61,6 +77,8 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     _high_limit_travel_attr = 'high_limit_travel'
     _velocity_attr = 'velocity'
     _acceleration_attr = 'acceleration'
+    _moving_attr = 'motor_is_moving'
+    _error_message_attr = 'error_message'
     _min_visible_operation = 0.1
 
     def __init__(self, parent=None):
@@ -70,6 +88,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._setpoint = None
         self._status_thread = None
         self._initialized = False
+        self._moving_channel = None
 
         super().__init__(parent=parent)
 
@@ -77,6 +96,13 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
+        self.ui.clear_error_button.clicked.connect(self.clear_error)
+
+        self.ui.alarm_circle.kindLevel = self.ui.alarm_circle.NORMAL
+        self.ui.alarm_circle.alarm_changed.connect(self.update_alarm_text)
+
+        self.show_expert_button = False
+        self._after_set_moving(False)
 
     def _clear_status_thread(self):
         """Clear a previous status thread."""
@@ -194,6 +220,27 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         for device in self.devices:
             device.stop()
 
+    @QtCore.Slot()
+    def clear_error(self):
+        """
+        Clear the error messages from the device and screen.
+
+        The device may have errors in the IOC. These will be cleared by calling
+        the clear_error method.
+
+        The screen may have errors from the status of the last move. These will
+        be cleared from view.
+        """
+        for device in self.devices:
+            clear_error_in_background(device)
+        self._set_status_text('')
+        # This variable holds True if last move was good, False otherwise
+        # It also controls whether or not we have a red box on the widget
+        # False = Red, True = Green, None = no box (in motion is yellow)
+        if not self._last_move:
+            self._last_move = None
+        utils.reload_widget_stylesheet(self, cascade=True)
+
     def _get_position(self):
         if not self._readback:
             raise Exception("No Device configured for widget!")
@@ -255,6 +302,30 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self.ui.low_limit.hide()
         self.ui.high_limit.hide()
 
+    @utils.linked_attribute('moving_attribute', 'ui.moving_indicator', True)
+    def _link_moving(self, signal, widget):
+        """Link the positioner moving indicator with the ui element."""
+        if signal is None:
+            widget.hide()
+            return False
+        widget.show()
+        # Additional handling for updating self.moving
+        if self._moving_channel is not None:
+            self._moving_channel.disconnect()
+        chname = utils.channel_from_signal(signal)
+        self._moving_channel = PyDMChannel(
+            address=chname,
+            value_slot=self._set_moving,
+            )
+        self._moving_channel.connect()
+        return True
+
+    @utils.linked_attribute('error_message_attribute', 'ui.error_label', True)
+    def _link_error_message(self, signal, widget):
+        """Link the IOC error message with the ui element."""
+        if signal is None:
+            widget.hide()
+
     def _define_setpoint_widget(self):
         """
         Leverage information at describe to define whether to use a
@@ -269,7 +340,13 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         if selection:
             self.ui.set_value = QtWidgets.QComboBox()
             self.ui.set_value.addItems(setpoint_signal.enum_strs)
-            self.ui.set_value.currentIndexChanged.connect(self.set)
+            # Activated signal triggers only when the user selects an option
+            self.ui.set_value.activated.connect(self.set)
+            self.ui.set_value.setSizePolicy(
+                QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Fixed,
+                )
+            self.ui.set_value.setMinimumContentsLength(20)
             self.ui.tweak_widget.setVisible(False)
         else:
             self.ui.set_value = QtWidgets.QLineEdit()
@@ -298,8 +375,30 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._link_low_limit_switch()
         self._link_high_limit_switch()
 
+        try:
+            if device.stop is None:
+                self.ui.stop_button.hide()
+            else:
+                self.ui.stop_button.show()
+        except AttributeError:
+            self.ui.stop_button.hide()
+
         if not (self._link_low_travel() and self._link_high_travel()):
             self._link_limits_by_limits_attr()
+
+        if self._link_moving():
+            self.ui.moving_indicator_label.show()
+        else:
+            self.ui.moving_indicator_label.hide()
+
+        self._link_error_message()
+
+        if self.show_expert_button:
+            self.ui.expert_button.devices.clear()
+            self.ui.expert_button.add_device(device)
+
+        self.ui.alarm_circle.clear_all_alarm_configs()
+        self.ui.alarm_circle.add_device(device)
 
     @QtCore.Property(bool, designable=False)
     def moving(self):
@@ -315,7 +414,31 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def moving(self, value):
         if value != self._moving:
             self._moving = value
-            utils.reload_widget_stylesheet(self, cascade=True)
+            self._after_set_moving(value)
+
+    def _after_set_moving(self, value):
+        """
+        Common updates needed after a change to the moving state.
+
+        This is pulled out as a separate method because we need
+        to initialize the label here during __init__ without
+        modifying self.moving.
+        """
+        utils.reload_widget_stylesheet(self, cascade=True)
+        if value:
+            self.ui.moving_indicator_label.setText('moving')
+        else:
+            self.ui.moving_indicator_label.setText('done')
+
+    def _set_moving(self, value):
+        """
+        Slot for updating the self.moving property.
+
+        This is used e.g. in updating the moving state when the
+        motor starts moving in EPICS but not by the request of
+        this widget.
+        """
+        self.moving = bool(value)
 
     @QtCore.Property(bool, designable=False)
     def successful_move(self):
@@ -399,6 +522,46 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def acceleration_attribute(self, value):
         self._acceleration_attr = value
 
+    @QtCore.Property(str, designable=True)
+    def moving_attribute(self):
+        """The attribute name for the motor moving indicator."""
+        return self._moving_attr
+
+    @moving_attribute.setter
+    def moving_attribute(self, value):
+        self._moving_attr = value
+
+    @QtCore.Property(str, designable=True)
+    def error_message_attribute(self):
+        """The attribute name for the IOC error message label."""
+        return self._error_message_attr
+
+    @error_message_attribute.setter
+    def error_message_attribute(self, value):
+        self._error_message_attr = value
+
+    @QtCore.Property(bool, designable=True)
+    def show_expert_button(self):
+        """
+        If True, show the expert button.
+
+        The expert button opens a full suite for the device.
+        You typically want this False when you're already inside the
+        suite that the button would open.
+        You typically want this True when you're using the positioner widget
+        inside of an unrelated screen.
+        This will default to False.
+        """
+        return self._show_expert_button
+
+    @show_expert_button.setter
+    def show_expert_button(self, show):
+        self._show_expert_button = show
+        if show:
+            self.ui.expert_button.show()
+        else:
+            self.ui.expert_button.hide()
+
     def move_changed(self):
         """Called when a move is begun"""
         logger.debug("Begin showing move in TyphosPositionerWidget")
@@ -443,14 +606,42 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             if isinstance(self.ui.set_value, QtWidgets.QComboBox):
                 try:
                     idx = int(text)
-                    # HACK: the first put is always during startup
-                    # This must be skipped
-                    if self._initialized:
-                        self.ui.set_value.setCurrentIndex(idx)
-                    else:
-                        self._initialized = True
+                    self.ui.set_value.setCurrentIndex(idx)
+                    self._initialized = True
                 except ValueError:
                     logger.debug('Failed to convert value to int. %s', text)
             else:
                 self._initialized = True
                 self.ui.set_value.setText(text)
+
+    def update_alarm_text(self, alarm_level):
+        """
+        Label the alarm circle with a short text bit.
+        """
+        alarms = self.ui.alarm_circle.AlarmLevel
+        if alarm_level == alarms.NO_ALARM:
+            text = 'no alarm'
+        elif alarm_level == alarms.MINOR:
+            text = 'minor'
+        elif alarm_level == alarms.MAJOR:
+            text = 'major'
+        elif alarm_level == alarms.DISCONNECTED:
+            text = 'no conn'
+        else:
+            text = 'invalid'
+        self.ui.alarm_label.setText(text)
+
+
+def clear_error_in_background(device):
+    def inner():
+        try:
+            device.clear_error()
+        except AttributeError:
+            pass
+        except Exception:
+            msg = 'Count not clear error!'
+            logger.error(msg)
+            logger.debug(msg, exc_info=True)
+
+    td = threading.Thread(target=inner)
+    td.start()

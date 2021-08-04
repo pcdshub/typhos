@@ -1,27 +1,27 @@
 """
 Module to define alarm summary frameworks and widgets.
 """
-from collections import defaultdict
-from dataclasses import dataclass
-from functools import partial
 import enum
 import logging
 import os
+from collections import defaultdict
+from dataclasses import dataclass
+from functools import partial
 
 from ophyd.device import Kind
 from ophyd.signal import EpicsSignalBase
 from pydm.widgets.base import PyDMPrimitiveWidget
 from pydm.widgets.channel import PyDMChannel
 from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
-                                  PyDMDrawingRectangle, PyDMDrawingTriangle,
-                                  PyDMDrawingEllipse, PyDMDrawingPolygon)
-from qtpy import QtCore, QtWidgets
+                                  PyDMDrawingEllipse, PyDMDrawingPolygon,
+                                  PyDMDrawingRectangle, PyDMDrawingTriangle)
+from qtpy import QtCore, QtGui, QtWidgets
+from qtpy.QtCore import Qt
 
 from .plugins import register_signal
-from .utils import (channel_from_signal, get_all_signals_from_device,
-                    pyqt_class_from_enum, TyphosObject)
+from .utils import (TyphosObject, channel_from_signal,
+                    get_all_signals_from_device, pyqt_class_from_enum)
 from .widgets import HappiChannel
-
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +114,10 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.HINTED
         super().__init__(*args, **kwargs)
+        # Default drawing properties, can override if needed
+        self.penWidth = 2
+        self.penColor = QtGui.QColor('black')
+        self.penStyle = Qt.SolidLine
         self.reset_alarm_state()
         self.alarm_changed.connect(self.set_alarm_color)
 
@@ -426,9 +430,6 @@ def indicator_stylesheet(shape_cls, alarm):
         f'{shape_cls.__name__} '
         '{border: none; '
         ' background: transparent;'
-        ' qproperty-penColor: black;'
-        ' qproperty-penWidth: 2;'
-        ' qproperty-penStyle: SolidLine;'
         ' qproperty-brush: rgba'
         )
 
