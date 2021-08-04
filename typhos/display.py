@@ -659,7 +659,10 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             self.help_web_view.show()
             return
         if QWebEngineView is None:
-            logger.error("Failed to import QWebEngineView; help view is unavailable.")
+            logger.error(
+                "Failed to import QWebEngineView; "
+                "help view is unavailable."
+                )
             return
         self.help_web_view = QWebEngineView()
         if QWebEngineHttpRequest is not None:
