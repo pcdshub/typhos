@@ -13,7 +13,7 @@ specific cases.
 Template Creation
 =================
 Templates are ``.ui`` files created in qt designer. These are largely just
-normal pydm templates, with extra substitutions. See the
+normal pydm displays, with extra macro substitutions. See the
 :ref:`pydm tutorial <pydm:designer>`
 for more guidance on using the designer.
 
