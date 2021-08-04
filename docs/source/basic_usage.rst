@@ -245,5 +245,5 @@ Launching the Examples
 There are example screens in the ``typhos.examples`` submodule. After
 installing ``typhos``, you can launch them as follows:
 
-- ``python -m typhos.examples.panel``.
-- ``python -m typhos.examples.positioner``.
+- ``python -m typhos.examples.panel``
+- ``python -m typhos.examples.positioner``
