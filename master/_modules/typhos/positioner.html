@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>typhos.positioner &mdash; Typhos 1.2.0+75.gb8d12ea documentation</title>
+  <title>typhos.positioner &mdash; Typhos 1.2.0+83.g0ff0a65 documentation</title>
   
 
   
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                1.2.0+75.gb8d12ea
+                1.2.0+83.g0ff0a65
               </div>
             
           
@@ -223,7 +223,11 @@
 <span class="sd">                   expected to take a ``float`` and return a ``status`` object</span>
 <span class="sd">                   that indicates the motion completeness. Must be implemented.</span>
 
-<span class="sd">    Stop           Device.stop()</span>
+<span class="sd">    Stop           ``Device.stop()``, if available, otherwise hide the button.</span>
+<span class="sd">                   If you have a non-functional ``stop`` method inherited from</span>
+<span class="sd">                   a parent device, you can hide it from ``typhos`` by</span>
+<span class="sd">                   overriding it with a property that raises</span>
+<span class="sd">                   ``AttributeError`` on access.</span>
 
 <span class="sd">    Move Indicator The ``moving_attribute`` property is used, which defaults</span>
 <span class="sd">                   to ``motor_is_moving``. Linked to UI element</span>
@@ -233,11 +237,13 @@
 <span class="sd">                   defaults to ``error_message``. Linked to UI element</span>
 <span class="sd">                   ``error_label``.</span>
 
-<span class="sd">    Clear Error    Device.clear_error()</span>
+<span class="sd">    Clear Error    ``Device.clear_error()``, if applicable. This also clears</span>
+<span class="sd">                   any visible error messages from the status returned by</span>
+<span class="sd">                   ``Device.set``.</span>
 
-<span class="sd">    Alarm Circle   Uses the TyphosAlarmCircle widget to summarize the alarm</span>
-<span class="sd">                   state of all of the device&#39;s ``normal`` and ``hinted``</span>
-<span class="sd">                   signals.</span>
+<span class="sd">    Alarm Circle   Uses the ``TyphosAlarmCircle`` widget to summarize the</span>
+<span class="sd">                   alarm state of all of the device&#39;s ``normal`` and</span>
+<span class="sd">                   ``hinted`` signals.</span>
 <span class="sd">    ============== ===========================================================</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -548,11 +554,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_link_low_limit_switch</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_link_high_limit_switch</span><span class="p">()</span>
 
+        <span class="c1"># If the stop method is missing, hide the button</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">stop</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
 

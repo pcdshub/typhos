@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Widgets &mdash; Typhos 1.2.0+75.gb8d12ea documentation</title>
+  <title>Widgets &mdash; Typhos 1.2.0+83.g0ff0a65 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                1.2.0+75.gb8d12ea
+                1.2.0+83.g0ff0a65
               </div>
             
           
@@ -795,7 +795,11 @@ expected to take a <code class="docutils literal notranslate"><span class="pre">
 that indicates the motion completeness. Must be implemented.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Stop</p></td>
-<td><p>Device.stop()</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Device.stop()</span></code>, if available, otherwise hide the button.
+If you have a non-functional <code class="docutils literal notranslate"><span class="pre">stop</span></code> method inherited from
+a parent device, you can hide it from <code class="docutils literal notranslate"><span class="pre">typhos</span></code> by
+overriding it with a property that raises
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> on access.</p></td>
 </tr>
 <tr class="row-even"><td><p>Move Indicator</p></td>
 <td><p>The <code class="docutils literal notranslate"><span class="pre">moving_attribute</span></code> property is used, which defaults
@@ -808,12 +812,14 @@ defaults to <code class="docutils literal notranslate"><span class="pre">error_m
 <code class="docutils literal notranslate"><span class="pre">error_label</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p>Clear Error</p></td>
-<td><p>Device.clear_error()</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Device.clear_error()</span></code>, if applicable. This also clears
+any visible error messages from the status returned by
+<code class="docutils literal notranslate"><span class="pre">Device.set</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p>Alarm Circle</p></td>
-<td><p>Uses the TyphosAlarmCircle widget to summarize the alarm
-state of all of the device’s <code class="docutils literal notranslate"><span class="pre">normal</span></code> and <code class="docutils literal notranslate"><span class="pre">hinted</span></code>
-signals.</p></td>
+<td><p>Uses the <code class="docutils literal notranslate"><span class="pre">TyphosAlarmCircle</span></code> widget to summarize the
+alarm state of all of the device’s <code class="docutils literal notranslate"><span class="pre">normal</span></code> and
+<code class="docutils literal notranslate"><span class="pre">hinted</span></code> signals.</p></td>
 </tr>
 </tbody>
 </table>
