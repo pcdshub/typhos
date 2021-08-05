@@ -375,11 +375,10 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         self._link_low_limit_switch()
         self._link_high_limit_switch()
 
+        # If the stop method is missing, hide the button
         try:
-            if device.stop is None:
-                self.ui.stop_button.hide()
-            else:
-                self.ui.stop_button.show()
+            device.stop
+            self.ui.stop_button.show()
         except AttributeError:
             self.ui.stop_button.hide()
 
