@@ -41,8 +41,8 @@ Enhancements / What's New
     set routine from the display.
   - Add a moving/done_moving indicator (for ``EpicsMotor``, uses the ``.MOVN`` field)
   - Add an optional ``TyphosRelatedSuite`` button
-  - Allow the ``stop`` button to be removed if it is missing or otherwise
-    raises an ``AttributeError``
+  - Allow the ``stop`` button to be removed if the ``stop`` method is missing or
+    otherwise raises an ``AttributeError`` on access
   - Add an alarm indicator
 
 - Add the ``typhos.ui`` entry point. This allows a module to notify typhos that
