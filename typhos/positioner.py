@@ -50,7 +50,11 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
                    expected to take a ``float`` and return a ``status`` object
                    that indicates the motion completeness. Must be implemented.
 
-    Stop           Device.stop()
+    Stop           ``Device.stop()``, if available, otherwise hide the button.
+                   If you have a non-functional ``stop`` method inherited from
+                   a parent device, you can hide it from ``typhos`` by
+                   overriding it with a property that raises
+                   ``AttributeError`` on access.
 
     Move Indicator The ``moving_attribute`` property is used, which defaults
                    to ``motor_is_moving``. Linked to UI element
@@ -60,11 +64,13 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
                    defaults to ``error_message``. Linked to UI element
                    ``error_label``.
 
-    Clear Error    Device.clear_error()
+    Clear Error    ``Device.clear_error()``, if applicable. This also clears
+                   any visible error messages from the status returned by
+                   ``Device.set``.
 
-    Alarm Circle   Uses the TyphosAlarmCircle widget to summarize the alarm
-                   state of all of the device's ``normal`` and ``hinted``
-                   signals.
+    Alarm Circle   Uses the ``TyphosAlarmCircle`` widget to summarize the
+                   alarm state of all of the device's ``normal`` and
+                   ``hinted`` signals.
     ============== ===========================================================
     """
 
