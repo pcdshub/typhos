@@ -7,7 +7,7 @@ browse the ``typhos/ui/core`` and ``typhos/ui/devices`` directories.
 .. note::
 
    This repo originally had a large number of LCLS-specific device templates.
-   These have been moved to :ref:`pcdsdevices.ui <pcdsdevices:ui>`.
+   These have been moved to pcdsdevices.ui.
 
 
 You can define your own templates outside of typhos to customize the behavior
