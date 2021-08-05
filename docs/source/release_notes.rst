@@ -2,6 +2,75 @@
  Release History
 =================
 
+v2.0.0 (2021-08-05)
+===================
+
+Description
+-----------
+This is a feature update with backwards-incompatible changes, namely the
+removal and relocation of the LCLS typhos templates.
+
+API Breaks
+----------
+All device templates except for the ``PositionerBase`` template have been
+moved from typhos to pcdsdevices, which is where their device classes
+are defined. This will break LCLS environments that update typhos without
+also updating pcdsdevices, but will not affect environments outside of LCLS.
+
+Enhancements / What's New
+-------------------------
+- Add the ``TyphosRelatedSuiteButton``, a ``QPushButton`` that will open a device's
+  typhos screen. This can be included in embedded widgets or placed on
+  traditional hand-crafted pydm screens as a quick way to open the typhos
+  expert screen.
+- Add the typhos help widget, which is a new addition to the display switcher
+  that is found in all built-in typhos templates. Check out the ``?`` button!
+  See the docs for information on how to configure this.
+  The main features implemented here are:
+
+  - View the class docstring from inside the typhos window
+  - Open site-specific web documentation in a browser
+  - Report bugs directly from the typhos screen
+
+- Expand the ``PositionerWidget`` with aesthetic updates and more features:
+
+  - Show driver-specific error messages from the IOC
+  - Add a "clear error" button that can be linked to IOC-specific error
+    reset routines by adding a ``clear_error`` method to your positioner
+    class. This will also clear status errors returned from the positioner's
+    set routine from the display.
+  - Add a moving/done_moving indicator (for ``EpicsMotor``, uses the ``.MOVN`` field)
+  - Add an optional ``TyphosRelatedSuite`` button
+  - Allow the ``stop`` button to be removed if the ``stop`` method is missing or
+    otherwise raises an ``AttributeError`` on access
+  - Add an alarm indicator
+
+- Add the ``typhos.ui`` entry point. This allows a module to notify typhos that
+  it should check specified directories for custom typhos templates. To be
+  used by typhos, the entry point should load a ``str``, ``pathlib.Path``, or ``list``
+  of such objects.
+- Move the examples submodule into the ``typhos.examples`` submodule, so we can
+  launch the examples by way of e.g. ``typhos -m typhos.examples.positioner``.
+- For the alarm indicator widgets, allow the pen width, pen color, and
+  pen style to be customized.
+
+Compatibility / Fixes
+---------------------
+- Find a better fix for the issue where the positioner combobox widget would
+  put to the PV on startup and on IOC reboot
+  (see ``v1.1.0`` note about a hacky workaround).
+- Fix the issue where the positioner combobox widget could not be used to
+  move to the last position selected.
+- Fix an issue where a positioner status that was marked as failed immediately
+  would show as an unknown error, even if it had an associated exception
+  with useful error text.
+
+Docs / Testing
+--------------
+- Add documentation for all features included in this update
+- Add documentation for how to create custom ``typhos`` templates
+
+
 v1.2.0 (2021-07-09)
 ===================
 
@@ -10,8 +79,8 @@ Description
 This is a feature update intended for use in lucid, but it may also be useful
 elsewhere.
 
-Features
---------
+Enhancements / What's New
+-------------------------
 Add a handful of new widgets for indicating device alarm state. These will
 change color based on the most severe alarm found among the device's signals.
 Their shapes correlate with the available shapes of PyDMDrawingWidget:
