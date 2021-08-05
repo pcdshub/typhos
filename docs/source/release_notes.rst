@@ -35,9 +35,13 @@ Enhancements / What's New
 - Expand the ``PositionerWidget`` with aesthetic updates and more features:
 
   - Show driver-specific error messages from the IOC
+  - Add a "clear error" button that can be linked to IOC-specific error
+    reset routines by adding a ``clear_error`` method to your positioner
+    class. This will also clear status errors returned from the positioner's
+    set routine from the display.
   - Add a moving/done_moving indicator (for ``EpicsMotor``, uses the ``.MOVN`` field)
   - Add an optional ``TyphosRelatedSuite`` button
-  - Allow the stop button to be removed via overriding it with None in the
+  - Allow the ``stop`` button to be removed via overriding it with None in the
     class definition. Note that there otherwise isn't a great way for typhos
     to notice that the stop method will not work without trying it.
   - Add an alarm indicator
