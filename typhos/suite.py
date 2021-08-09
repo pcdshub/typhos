@@ -14,7 +14,7 @@ from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtCore, QtWidgets
 
 from . import utils, widgets
-from .display import TyphosDeviceDisplay
+from .display import DisplayTypes, TyphosDeviceDisplay
 from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
 from .utils import TyphosBase, clean_name, flatten_tree, save_suite
 
@@ -187,6 +187,8 @@ class TyphosSuite(TyphosBase):
 
         self.embedded_dock = None
 
+        self.default_display_type = DisplayTypes.detailed_screen
+
     def add_subdisplay(self, name, display, category):
         """
         Add an arbitrary widget to the tree of available widgets and tools.
@@ -312,7 +314,7 @@ class TyphosSuite(TyphosBase):
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
         if hasattr(widget, 'display_type'):
-            widget.display_type = widget.detailed_screen
+            widget.display_type = self.default_display_type
         widget.setVisible(True)
         dock.setWidget(widget)
         # Add to layout
@@ -464,6 +466,14 @@ class TyphosSuite(TyphosBase):
             By default these will be ``.default_tools``, but ``None`` can be
             passed to avoid tool loading completely.
 
+        pin : bool, optional
+            Pin the parameter tree on startup.
+
+        embedded : bool, optional
+            If True, open the embedded version of the displays.
+            If False, open the detailed version. It is useful to switch
+            this to True when you have many devices.
+
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
@@ -472,7 +482,7 @@ class TyphosSuite(TyphosBase):
 
     @classmethod
     def from_devices(cls, devices, parent=None, tools=DEFAULT_TOOLS, pin=False,
-                     **kwargs):
+                     embedded=False, **kwargs):
         """
         Create a new TyphosSuite from an iterator of :class:`ophyd.Device`
 
@@ -490,6 +500,14 @@ class TyphosSuite(TyphosBase):
             By default these will be ``.default_tools``, but ``None`` can be
             passed to avoid tool loading completely.
 
+        pin : bool, optional
+            Pin the parameter tree on startup.
+
+        embedded : bool, optional
+            If True, open the embedded version of the displays.
+            If False, open the detailed version. It is useful to switch
+            this to True when you have many devices.
+
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
@@ -504,6 +522,14 @@ class TyphosSuite(TyphosBase):
                     suite.add_tool(name, tool())
                 except Exception:
                     logger.exception("Unable to load %s", type(tool))
+
+        if embedded:
+            logger.info("Setting display type to embedded ...")
+            suite.default_display_type = DisplayTypes.embedded_screen
+        else:
+            logger.info("Setting display type to detailed ...")
+            suite.default_display_type = DisplayTypes.detailed_screen
+
         logger.info("Adding devices ...")
         for device in devices:
             try:

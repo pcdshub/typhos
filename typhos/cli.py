@@ -28,6 +28,10 @@ parser.add_argument('devices', nargs='*',
                     help='Device names to load in the TyphosSuite or '
                          'class name with parameters on the format: '
                          'package.ClassName[{"param1":"val1",...}]')
+parser.add_argument('--embed', action='store_true',
+                    help='Load the embedded templates instead of the '
+                         'detailed templates. Good for suites with many '
+                         'devices.')
 parser.add_argument('--happi-cfg',
                     help='Location of happi configuration file '
                          'if not specified by $HAPPI_CFG environment variable')
@@ -107,7 +111,7 @@ def _create_happi_client(cfg):
     return happi.Client.from_config(cfg=cfg)
 
 
-def create_suite(device_names, cfg=None, fake_devices=False):
+def create_suite(device_names, cfg=None, fake_devices=False, embedded=False):
     """Create a TyphosSuite from a list of device names."""
     if device_names:
         devices = create_devices(device_names, cfg=cfg,
@@ -115,7 +119,7 @@ def create_suite(device_names, cfg=None, fake_devices=False):
     else:
         devices = []
     if devices or not device_names:
-        return typhos.TyphosSuite.from_devices(devices)
+        return typhos.TyphosSuite.from_devices(devices, embedded=embedded)
 
 
 def create_devices(device_names, cfg=None, fake_devices=False):
@@ -184,10 +188,15 @@ def create_devices(device_names, cfg=None, fake_devices=False):
     return devices
 
 
-def typhos_run(device_names, cfg=None, fake_devices=False):
+def typhos_run(device_names, cfg=None, fake_devices=False, embedded=False):
     """Run the central typhos part of typhos."""
     with typhos.utils.no_device_lazy_load():
-        suite = create_suite(device_names, cfg=cfg, fake_devices=fake_devices)
+        suite = create_suite(
+            device_names,
+            cfg=cfg,
+            fake_devices=fake_devices,
+            embedded=embedded,
+            )
     if suite:
         return launch_suite(suite)
 
@@ -216,8 +225,11 @@ def typhos_cli(args):
             # Note: actually a list of suites
             suite = run_benchmarks(args.benchmark)
         else:
-            suite = typhos_run(args.devices, cfg=args.happi_cfg,
-                               fake_devices=args.fake_device)
+            suite = typhos_run(args.devices,
+                               cfg=args.happi_cfg,
+                               fake_devices=args.fake_device,
+                               embedded=args.embed,
+                               )
         return suite
 
 
