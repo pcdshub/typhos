@@ -7,11 +7,11 @@ import os
 import textwrap
 from functools import partial
 
+import pcdsutils.qt
+from pydm.widgets.template_repeater import FlowLayout
 from pyqtgraph.parametertree import ParameterTree
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtCore, QtWidgets
-
-import pcdsutils.qt
 
 from . import utils, widgets
 from .display import TyphosDeviceDisplay
@@ -175,7 +175,7 @@ class TyphosSuite(TyphosBase):
         self._content_frame = QtWidgets.QFrame(self)
         self._content_frame.setObjectName("content")
         self._content_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self._content_frame.setLayout(QtWidgets.QHBoxLayout())
+        self._content_frame.setLayout(FlowLayout())
 
         # Horizontal box layout: [PopBar] [Content Frame]
         layout = QtWidgets.QHBoxLayout()
