@@ -8,7 +8,6 @@ import textwrap
 from functools import partial
 
 import pcdsutils.qt
-from pydm.widgets.template_repeater import FlowLayout
 from pyqtgraph.parametertree import ParameterTree
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtCore, QtWidgets
@@ -144,6 +143,15 @@ class TyphosSuite(TyphosBase):
     pin : bool, optional
         Pin the parameter tree on startup.
 
+    layout : QLayout, optional
+        Sets the layout for when we have multiple subdisplays
+        open in the suite. This will have a horizontal layout by
+        default but can be changed as needed for the use case.
+
+    default_display_type : DisplayType, optional
+        DisplayType enum that determines the type of display to open when we
+        add a device to the suite. Defaults to DisplayType.detailed_screen.
+
     Attributes
     ----------
     default_tools : dict
@@ -158,7 +166,8 @@ class TyphosSuite(TyphosBase):
                      'StripTool': TyphosTimePlot,
                      'Console': TyphosConsole}
 
-    def __init__(self, parent=None, *, pin=False):
+    def __init__(self, parent=None, *, pin=False, content_layout=None,
+                 default_display_type=DisplayTypes.detailed_screen):
         super().__init__(parent=parent)
 
         self._update_title()
@@ -175,7 +184,12 @@ class TyphosSuite(TyphosBase):
         self._content_frame = QtWidgets.QFrame(self)
         self._content_frame.setObjectName("content")
         self._content_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self._content_frame.setLayout(FlowLayout())
+
+        # Content frame layout: configurable
+        # Defaults to [content] [content] [content] ... in one line
+        if content_layout is None:
+            content_layout = QtWidgets.QHBoxLayout()
+        self._content_frame.setLayout(content_layout)
 
         # Horizontal box layout: [PopBar] [Content Frame]
         layout = QtWidgets.QHBoxLayout()
@@ -186,8 +200,7 @@ class TyphosSuite(TyphosBase):
         layout.addWidget(self._content_frame)
 
         self.embedded_dock = None
-
-        self.default_display_type = DisplayTypes.detailed_screen
+        self.default_display_type = default_display_type
 
     def add_subdisplay(self, name, display, category):
         """
@@ -447,6 +460,8 @@ class TyphosSuite(TyphosBase):
 
     @classmethod
     def from_device(cls, device, parent=None, tools=DEFAULT_TOOLS, pin=False,
+                    content_layout=None,
+                    default_display_type=DisplayTypes.detailed_screen,
                     **kwargs):
         """
         Create a new :class:`TyphosSuite` from an :class:`ophyd.Device`.
@@ -469,20 +484,29 @@ class TyphosSuite(TyphosBase):
         pin : bool, optional
             Pin the parameter tree on startup.
 
-        embedded : bool, optional
-            If True, open the embedded version of the displays.
-            If False, open the detailed version. It is useful to switch
-            this to True when you have many devices.
+        content_layout : QLayout, optional
+            Sets the layout for when we have multiple subdisplays
+            open in the suite. This will have a horizontal layout by
+            default but can be changed as needed for the use case.
+
+        default_display_type : DisplayTypes, optional
+            DisplayTypes enum that determines the type of display to open when
+            we add a device to the suite. Defaults to
+            DisplayTypes.detailed_screen.
 
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
         return cls.from_devices([device], parent=parent, tools=tools, pin=pin,
+                                content_layout=content_layout,
+                                default_display_type=default_display_type,
                                 **kwargs)
 
     @classmethod
     def from_devices(cls, devices, parent=None, tools=DEFAULT_TOOLS, pin=False,
-                     embedded=False, **kwargs):
+                     content_layout=None,
+                     default_display_type=DisplayTypes.detailed_screen,
+                     **kwargs):
         """
         Create a new TyphosSuite from an iterator of :class:`ophyd.Device`
 
@@ -503,15 +527,25 @@ class TyphosSuite(TyphosBase):
         pin : bool, optional
             Pin the parameter tree on startup.
 
-        embedded : bool, optional
-            If True, open the embedded version of the displays.
-            If False, open the detailed version. It is useful to switch
-            this to True when you have many devices.
+        content_layout : QLayout, optional
+            Sets the layout for when we have multiple subdisplays
+            open in the suite. This will have a horizontal layout by
+            default but can be changed as needed for the use case.
+
+        default_display_type : DisplayTypes, optional
+            DisplayTypes enum that determines the type of display to open when
+            we add a device to the suite. Defaults to
+            DisplayTypes.detailed_screen.
 
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
-        suite = cls(parent=parent, pin=pin)
+        suite = cls(
+            parent=parent,
+            pin=pin,
+            content_layout=content_layout,
+            default_display_type=default_display_type,
+            )
         if tools is not None:
             logger.info("Loading Tools ...")
             if tools is DEFAULT_TOOLS:
@@ -522,13 +556,6 @@ class TyphosSuite(TyphosBase):
                     suite.add_tool(name, tool())
                 except Exception:
                     logger.exception("Unable to load %s", type(tool))
-
-        if embedded:
-            logger.info("Setting display type to embedded ...")
-            suite.default_display_type = DisplayTypes.embedded_screen
-        else:
-            logger.info("Setting display type to detailed ...")
-            suite.default_display_type = DisplayTypes.detailed_screen
 
         logger.info("Adding devices ...")
         for device in devices:

@@ -10,11 +10,14 @@ import sys
 import coloredlogs
 import pcdsutils
 from ophyd.sim import clear_fake_device, make_fake_device
+from pydm.widgets.template_repeater import FlowLayout
+from qtpy import QtWidgets
 
 import typhos
 from typhos.app import get_qapp, launch_suite
 from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
+from typhos.display import DisplayType
 from typhos.utils import nullcontext
 
 logger = logging.getLogger(__name__)
@@ -28,10 +31,20 @@ parser.add_argument('devices', nargs='*',
                     help='Device names to load in the TyphosSuite or '
                          'class name with parameters on the format: '
                          'package.ClassName[{"param1":"val1",...}]')
-parser.add_argument('--embed', action='store_true',
-                    help='Load the embedded templates instead of the '
-                         'detailed templates. Good for suites with many '
-                         'devices.')
+parser.add_argument('--layout', default='horizontal',
+                    help='Select a alternate layout for suites of many '
+                         'devices. Valid options are "horizontal" (default), '
+                         '"vertical", "grid", "flow", and any unique '
+                         'shortenings of those options.')
+parser.add_argument('--cols', default=3,
+                    help='The number of columns to use for the grid layout '
+                         'if selected in the layout argument. This will have '
+                         'no effect for other layouts.')
+parser.add_argument('--display_type', default='detailed',
+                    help='The kind of display to open for each device at '
+                         'initial load. Valid options are "embedded", '
+                         '"detailed" (default), "engineering", and any '
+                         'unique shortenings of those options.')
 parser.add_argument('--happi-cfg',
                     help='Location of happi configuration file '
                          'if not specified by $HAPPI_CFG environment variable')
@@ -111,7 +124,8 @@ def _create_happi_client(cfg):
     return happi.Client.from_config(cfg=cfg)
 
 
-def create_suite(device_names, cfg=None, fake_devices=False, embedded=False):
+def create_suite(device_names, cfg=None, fake_devices=False,
+                 layout='horizontal', cols=3, display_type='detailed'):
     """Create a TyphosSuite from a list of device names."""
     if device_names:
         devices = create_devices(device_names, cfg=cfg,
@@ -119,7 +133,61 @@ def create_suite(device_names, cfg=None, fake_devices=False, embedded=False):
     else:
         devices = []
     if devices or not device_names:
-        return typhos.TyphosSuite.from_devices(devices, embedded=embedded)
+        layout_obj = get_layout_from_cli(layout, cols)
+        display_type_enum = get_display_type_from_cli(display_type)
+        return typhos.TyphosSuite.from_devices(
+            devices,
+            content_layout=layout_obj,
+            default_display_type=display_type_enum,
+            )
+
+
+def get_layout_from_cli(layout, cols):
+    """
+    Return a correct layout object based on user input.
+    """
+    if 'horizontal'.startswith(layout):
+        return QtWidgets.QHBoxLayout()
+    if 'vertical'.startswith(layout):
+        return QtWidgets.QVBoxLayout()
+    if 'grid'.startswith(layout):
+        return FixedColGrid(cols=cols)
+    if 'flow'.startswith(layout):
+        return FlowLayout()
+    else:
+        raise ValueError(
+            f'{layout} is not a valid layout name. '
+            'The allowed values are "horizontal", '
+            '"vertical", "grid", and "flow".'
+            )
+
+
+class FixedColGrid(QtWidgets.QGridLayout):
+    def __init__(self, *args, cols=3, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._n_cols = cols
+        self._widget_index = 0
+
+    def addWidget(self, widget, *args):
+        row = self._widget_index // self._n_cols
+        col = self._widget_index % self._n_cols
+        super().addWidget(widget, row, col, *args)
+        self._widget_index += 1
+
+
+def get_display_type_from_cli(display_type):
+    if 'embedded'.startswith(display_type):
+        return DisplayType.embedded_screen
+    if 'detailed'.startswith(display_type):
+        return DisplayType.detailed_screen
+    if 'engineering'.startswith(display_type):
+        return DisplayType.engineering_screen
+    else:
+        raise ValueError(
+            f'{display_type} is not a valid display type. '
+            'The allowed values are "embedded", "detailed", '
+            'and "engineering".'
+            )
 
 
 def create_devices(device_names, cfg=None, fake_devices=False):
@@ -188,14 +256,17 @@ def create_devices(device_names, cfg=None, fake_devices=False):
     return devices
 
 
-def typhos_run(device_names, cfg=None, fake_devices=False, embedded=False):
+def typhos_run(device_names, cfg=None, fake_devices=False,
+               layout='horizontal', cols=3, display_type='detailed'):
     """Run the central typhos part of typhos."""
     with typhos.utils.no_device_lazy_load():
         suite = create_suite(
             device_names,
             cfg=cfg,
             fake_devices=fake_devices,
-            embedded=embedded,
+            layout=layout,
+            cols=cols,
+            display_type=display_type,
             )
     if suite:
         return launch_suite(suite)
@@ -228,7 +299,9 @@ def typhos_cli(args):
             suite = typhos_run(args.devices,
                                cfg=args.happi_cfg,
                                fake_devices=args.fake_device,
-                               embedded=args.embed,
+                               layout=args.layout,
+                               cols=args.cols,
+                               display_type=args.display_type,
                                )
         return suite
 
