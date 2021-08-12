@@ -17,7 +17,7 @@ import typhos
 from typhos.app import get_qapp, launch_suite
 from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
-from typhos.display import DisplayType
+from typhos.display import DisplayTypes
 from typhos.utils import nullcontext
 
 logger = logging.getLogger(__name__)
@@ -177,11 +177,11 @@ class FixedColGrid(QtWidgets.QGridLayout):
 
 def get_display_type_from_cli(display_type):
     if 'embedded'.startswith(display_type):
-        return DisplayType.embedded_screen
+        return DisplayTypes.embedded_screen
     if 'detailed'.startswith(display_type):
-        return DisplayType.detailed_screen
+        return DisplayTypes.detailed_screen
     if 'engineering'.startswith(display_type):
-        return DisplayType.engineering_screen
+        return DisplayTypes.engineering_screen
     else:
         raise ValueError(
             f'{display_type} is not a valid display type. '
@@ -300,7 +300,7 @@ def typhos_cli(args):
                                cfg=args.happi_cfg,
                                fake_devices=args.fake_device,
                                layout=args.layout,
-                               cols=args.cols,
+                               cols=int(args.cols),
                                display_type=args.display_type,
                                )
         return suite
