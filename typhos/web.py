@@ -20,6 +20,7 @@ except ImportError as ex:
     QWebEngineProfile = None
     QWebEngineUrlRequestInterceptor = None
     QWebEngineView = None
+    TyphosWebEnginePage = None
     TyphosWebEngineView = None
     TyphosWebRequestInterceptor = None
     logger.warning("Unable to import %s; typhos web views disabled.", ex)
@@ -34,12 +35,21 @@ else:
                     value.encode("utf-8"),
                 )
 
+    class TyphosWebEnginePage(QWebEnginePage):
+        def javaScriptConsoleMessage(
+            self, level, message, line_number, source_id
+        ):
+            logger.debug(
+                "[WebEngine] level=%s %s:%s %s",
+                level, source_id, line_number, message
+            )
+
     class TyphosWebEngineView(QWebEngineView):
         def __init__(self, parent=None):
             super().__init__(parent=parent)
 
-            self._interceptor = TyphosWebRequestInterceptor(self)
-            self._profile = QWebEngineProfile(self)
-            self._profile.setRequestInterceptor(self._interceptor)
-            self._page = QWebEnginePage(self._profile, self)
-            self.setPage(self._page)
+            interceptor = TyphosWebRequestInterceptor(self)
+            profile = QWebEngineProfile(self)
+            profile.setRequestInterceptor(interceptor)
+            page = TyphosWebEnginePage(profile, self)
+            self.setPage(page)
