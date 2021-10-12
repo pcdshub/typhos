@@ -20,7 +20,7 @@ env:
 
 jobs:
   allow_failures:
-    - name: "Python 3.8 - PIP"
+    - name: "Python - PIP"
 
 after_failure:
   - cat logs/run_tests_log.txt

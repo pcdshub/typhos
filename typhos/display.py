@@ -16,24 +16,9 @@ from pcdsutils.qt import forward_property
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
 
-# Unfortunately, this is not importable in qt designer.
-# Qt mandates that this is imported before a QCoreApplication is created,
-# but qt designer is itself a Qt application!
-# Skip if this fails, will not impact use of qt designer.
-try:
-    from qtpy.QtWebEngineWidgets import QWebEngineView
-except ImportError:
-    QWebEngineView = None
-
-try:
-    # Well, um, this is unavailable in qtpy...
-    from PyQt5.QtWebEngineCore import QWebEngineHttpRequest
-except ImportError:
-    QWebEngineHttpRequest = None
-
 from . import cache
 from . import panel as typhos_panel
-from . import utils, widgets
+from . import utils, web, widgets
 from .jira import TyphosJiraIssueWidget
 
 logger = logging.getLogger(__name__)
@@ -655,28 +640,19 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
     def show_help(self):
         """Show the help information in a QWebEngineView."""
-        if self.help_web_view:
-            self.help_web_view.show()
-            return
-        if QWebEngineView is None:
+        if web.TyphosWebEngineView is None:
             logger.error(
                 "Failed to import QWebEngineView; "
                 "help view is unavailable."
                 )
             return
-        self.help_web_view = QWebEngineView()
-        if QWebEngineHttpRequest is not None:
-            request = QWebEngineHttpRequest()
-            request.setUrl(self.help_url)
-            for header, value in utils.HELP_HEADERS.items():
-                request.setHeader(
-                    header.encode("utf-8"),
-                    value.encode("utf-8"),
-                )
 
-            self.help_web_view.load(request)
-        else:
-            self.help_web_view.setUrl(self.help_url)
+        if self.help_web_view:
+            self.help_web_view.show()
+            return
+
+        self.help_web_view = web.TyphosWebEngineView()
+        self.help_web_view.page().setUrl(self.help_url)
 
         self.help_web_view.setEnabled(True)
         self.help_web_view.setMinimumSize(QtCore.QSize(100, 400))

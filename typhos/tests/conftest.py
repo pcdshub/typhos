@@ -56,11 +56,10 @@ def _show_widgets(pytestconfig):
 @pytest.fixture(scope='session', autouse=True)
 def qapp(pytestconfig):
     global application
-    if application:
-        pass
-    else:
+    application = QtWidgets.QApplication.instance()
+    if application is None:
         application = PyDMApplication(use_main_window=False)
-        typhos.use_stylesheet(pytestconfig.getoption('--dark'))
+    typhos.use_stylesheet(pytestconfig.getoption('--dark'))
     return application
 
 

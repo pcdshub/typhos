@@ -56,6 +56,8 @@ DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
 HELP_URL = os.environ.get('TYPHOS_HELP_URL', "").strip()
 # TYPHOS_HELP_HEADERS (json): headers to pass to HELP_URL
 HELP_HEADERS = json.loads(os.environ.get('TYPHOS_HELP_HEADERS', "") or "{}")
+HELP_HEADERS_HOSTS = os.environ.get("TYPHOS_HELP_HEADERS_HOSTS", "").split(",")
+
 # TYPHOS_HELP_TOKEN (str): An optional token for the bearer authentication
 # scheme - e.g., personal access tokens with Confluence
 HELP_TOKEN = os.environ.get('TYPHOS_HELP_TOKEN', None)
