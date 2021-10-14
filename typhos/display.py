@@ -1168,7 +1168,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             return widget.size()
 
         # sizeHint is not defined so we suggest the widget size
-        widget.sizeHint = size_hint
+        try:
+            widget.sizeHint
+        except AttributeError:
+            widget.sizeHint = size_hint
 
         # We should _move_display_to_layout as soon as it is created. This
         # allow us to speed up since if the widget is too complex it takes
