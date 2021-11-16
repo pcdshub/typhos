@@ -213,7 +213,9 @@ customize the following environment variables.
    consider using: ``device.root.name`` instead in the format string.
 2. ``TYPHOS_HELP_HEADERS`` (json): headers to pass to HELP_URL.  This should be
    in a JSON format, such as ``{"my_key":"my_value"}``.
-3. ``TYPHOS_HELP_TOKEN`` (str): An optional token for the bearer authentication
+3. ``TYPHOS_HELP_HEADERS_HOSTS`` (str): comma-delimited hosts that headers may
+   be sent to, aside from the host configured in ``TYPHOS_HELP_URL``.
+4. ``TYPHOS_HELP_TOKEN`` (str): An optional token for the bearer authentication
    scheme - e.g., personal access tokens with Confluence.  This is a shortcut
    to add a header ``"Authorization"`` with the value
    ``"Bearer ${TYPHOS_HELP_TOKEN}"``.

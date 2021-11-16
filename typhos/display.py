@@ -16,24 +16,9 @@ from pcdsutils.qt import forward_property
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property, Qt, Slot
 
-# Unfortunately, this is not importable in qt designer.
-# Qt mandates that this is imported before a QCoreApplication is created,
-# but qt designer is itself a Qt application!
-# Skip if this fails, will not impact use of qt designer.
-try:
-    from qtpy.QtWebEngineWidgets import QWebEngineView
-except ImportError:
-    QWebEngineView = None
-
-try:
-    # Well, um, this is unavailable in qtpy...
-    from PyQt5.QtWebEngineCore import QWebEngineHttpRequest
-except ImportError:
-    QWebEngineHttpRequest = None
-
 from . import cache
 from . import panel as typhos_panel
-from . import utils, widgets
+from . import utils, web, widgets
 from .jira import TyphosJiraIssueWidget
 
 logger = logging.getLogger(__name__)
@@ -485,6 +470,9 @@ class TyphosHelpToggleButton(TyphosToolButton):
 
     Attributes
     ----------
+    pop_out : QtCore.Signal
+        A Qt signal indicating a request to pop out the help widget.
+
     open_in_browser : QtCore.Signal
         A Qt signal indicating a request to open the help in a browser.
 
@@ -500,6 +488,7 @@ class TyphosHelpToggleButton(TyphosToolButton):
         A Qt signal indicating a request to toggle the related help display
         frame.
     """
+    pop_out = QtCore.Signal()
     open_in_browser = QtCore.Signal()
     open_python_docs = QtCore.Signal()
     report_jira_issue = QtCore.Signal()
@@ -515,6 +504,9 @@ class TyphosHelpToggleButton(TyphosToolButton):
 
     def generate_context_menu(self):
         menu = QtWidgets.QMenu(parent=self)
+        open_in_browser = menu.addAction("Pop &out documentation...")
+        open_in_browser.triggered.connect(self.pop_out.emit)
+
         open_in_browser = menu.addAction("Open in &browser...")
         open_in_browser.triggered.connect(self.open_in_browser.emit)
 
@@ -637,6 +629,8 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self._tooltip = self._get_tooltip()
         self.tooltip_updated.emit(self._tooltip)
 
+        self.setWindowTitle(f"Help: {device.name}")
+
     @property
     def help_url(self):
         """The full help URL, generated from ``TYPHOS_HELP_URL``."""
@@ -655,28 +649,19 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
     def show_help(self):
         """Show the help information in a QWebEngineView."""
-        if self.help_web_view:
-            self.help_web_view.show()
-            return
-        if QWebEngineView is None:
+        if web.TyphosWebEngineView is None:
             logger.error(
                 "Failed to import QWebEngineView; "
                 "help view is unavailable."
                 )
             return
-        self.help_web_view = QWebEngineView()
-        if QWebEngineHttpRequest is not None:
-            request = QWebEngineHttpRequest()
-            request.setUrl(self.help_url)
-            for header, value in utils.HELP_HEADERS.items():
-                request.setHeader(
-                    header.encode("utf-8"),
-                    value.encode("utf-8"),
-                )
 
-            self.help_web_view.load(request)
-        else:
-            self.help_web_view.setUrl(self.help_url)
+        if self.help_web_view:
+            self.help_web_view.show()
+            return
+
+        self.help_web_view = web.TyphosWebEngineView()
+        self.help_web_view.page().setUrl(self.help_url)
 
         self.help_web_view.setEnabled(True)
         self.help_web_view.setMinimumSize(QtCore.QSize(100, 400))
@@ -770,7 +755,10 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         else:
             self.help = TyphosHelpFrame()
             self.switcher.help_toggle_button.toggle_help.connect(
-                self.help.toggle_help
+                self.toggle_help
+            )
+            self.switcher.help_toggle_button.pop_out.connect(
+                self.pop_out_help
             )
             self.switcher.help_toggle_button.open_in_browser.connect(
                 self.help.open_in_browser
@@ -793,6 +781,26 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         # Set the property:
         self.show_switcher = show_switcher
         self.show_underline = show_underline
+
+    def toggle_help(self, show):
+        """Toggle the help visibility."""
+        if self.help is None:
+            return
+
+        self.help.toggle_help(show)
+        if self.help.parent() is None:
+            self.grid_layout.addWidget(self.help, 2, 0, 1, 2)
+
+    def pop_out_help(self):
+        """Pop out the help widget."""
+        if self.help is None:
+            return
+
+        self.help.setParent(None)
+        self.switcher.help_toggle_button.setChecked(True)
+        self.help.show_help()
+        self.help.show()
+        self.help.raise_()
 
     @Property(bool)
     def show_switcher(self):

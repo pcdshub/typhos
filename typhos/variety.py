@@ -15,7 +15,7 @@ def _warn_unhandled(instance, metadata_key, value):
     if value is None:
         return
 
-    logger.warning(
+    logger.debug(
         '%s: Not yet implemented variety handling: key=%s value=%s',
         instance.__class__.__name__, metadata_key, value
     )

@@ -8,7 +8,7 @@ import textwrap
 from functools import partial
 
 import pcdsutils.qt
-from pyqtgraph.parametertree import ParameterTree
+from pyqtgraph import parametertree
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtCore, QtWidgets
 
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_TOOLS = object()
 
 
-class SidebarParameter(ptypes.Parameter):
+class SidebarParameter(parametertree.Parameter):
     """
     Parameter to hold information for the sidebar.
 
@@ -172,7 +172,7 @@ class TyphosSuite(TyphosBase):
 
         self._update_title()
 
-        self._tree = ParameterTree(parent=self, showHeader=False)
+        self._tree = parametertree.ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
         self._save_action = ptypes.ActionParameter(name='Save Suite')
         self._tree.addParameters(self._save_action)

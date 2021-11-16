@@ -16,7 +16,7 @@ import pydm.widgets.enum_button
 import qtawesome as qta
 from ophyd.signal import EpicsSignalBase
 from pydm.widgets.display_format import DisplayFormat
-from pyqtgraph.parametertree import parameterTypes as ptypes
+from pyqtgraph.parametertree import ParameterItem
 from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import Property, QObject, QSize, Qt, Signal, Slot
 from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
@@ -335,7 +335,7 @@ class TyphosLabel(pydm.widgets.PyDMLabel):
             self.displayFormat = DisplayFormat.Exponential
 
 
-class TyphosSidebarItem(ptypes.ParameterItem):
+class TyphosSidebarItem(ParameterItem):
     """
     Class to display a Device or Tool in the sidebar
 
