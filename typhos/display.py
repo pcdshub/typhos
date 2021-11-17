@@ -1034,14 +1034,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             return
 
         widget.setParent(None)
-        if self._scroll_option == ScrollOptions.auto:
+        if self.scroll_option == ScrollOptions.auto:
             if self.display_type == DisplayTypes.embedded_screen:
                 scrollable = False
             else:
                 scrollable = True
-        elif self._scroll_option == ScrollOptions.scrollbar:
+        elif self.scroll_option == ScrollOptions.scrollbar:
             scrollable = True
-        elif self._scroll_option == ScrollOptions.no_scroll:
+        elif self.scroll_option == ScrollOptions.no_scroll:
             scrollable = False
         else:
             scrollable = True
