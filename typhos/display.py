@@ -1440,7 +1440,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             obj = pcdsutils.utils.get_instance_by_name(klass, **kwargs)
         except Exception:
             logger.exception('Failed to generate TyphosDeviceDisplay from '
-                             'device %s', obj)
+                             'class %s', klass)
             return None
 
         return cls.from_device(obj, template=template, macros=macros)
