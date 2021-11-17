@@ -40,7 +40,7 @@ parser.add_argument('--cols', default=3,
                     help='The number of columns to use for the grid layout '
                          'if selected in the layout argument. This will have '
                          'no effect for other layouts.')
-parser.add_argument('--display_type', default='detailed',
+parser.add_argument('--display-type', default='detailed',
                     help='The kind of display to open for each device at '
                          'initial load. Valid options are "embedded", '
                          '"detailed" (default), "engineering", and any '
