@@ -17,7 +17,7 @@ import typhos
 from typhos.app import get_qapp, launch_suite
 from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
-from typhos.display import DisplayTypes
+from typhos.display import DisplayTypes, ScrollOptions
 from typhos.utils import nullcontext
 
 logger = logging.getLogger(__name__)
@@ -45,6 +45,12 @@ parser.add_argument('--display-type', default='detailed',
                          'initial load. Valid options are "embedded", '
                          '"detailed" (default), "engineering", and any '
                          'unique shortenings of those options.')
+parser.add_argument('--scrollable', default='auto',
+                    help='Whether or not to include the scrollbar. '
+                         'Valid options are "auto", "true", "false", '
+                         'and any unique shortenings of those options. '
+                         'Selecting "auto" will include a scrollbar for '
+                         'non-embedded layouts.')
 parser.add_argument('--happi-cfg',
                     help='Location of happi configuration file '
                          'if not specified by $HAPPI_CFG environment variable')
@@ -125,7 +131,8 @@ def _create_happi_client(cfg):
 
 
 def create_suite(device_names, cfg=None, fake_devices=False,
-                 layout='horizontal', cols=3, display_type='detailed'):
+                 layout='horizontal', cols=3, display_type='detailed',
+                 scroll_option='auto'):
     """Create a TyphosSuite from a list of device names."""
     if device_names:
         devices = create_devices(device_names, cfg=cfg,
@@ -135,10 +142,12 @@ def create_suite(device_names, cfg=None, fake_devices=False,
     if devices or not device_names:
         layout_obj = get_layout_from_cli(layout, cols)
         display_type_enum = get_display_type_from_cli(display_type)
+        scroll_enum = get_scrollable_from_cli(scroll_option)
         return typhos.TyphosSuite.from_devices(
             devices,
             content_layout=layout_obj,
             default_display_type=display_type_enum,
+            scroll_option=scroll_enum,
             )
 
 
@@ -187,6 +196,21 @@ def get_display_type_from_cli(display_type):
             f'{display_type} is not a valid display type. '
             'The allowed values are "embedded", "detailed", '
             'and "engineering".'
+            )
+
+
+def get_scrollable_from_cli(scrollable):
+    if 'auto'.startswith(scrollable):
+        return ScrollOptions.auto
+    if 'true'.startswith(scrollable):
+        return ScrollOptions.scrollbar
+    if 'false'.startswith(scrollable):
+        return ScrollOptions.no_scroll
+    else:
+        raise ValueError(
+            f'{scrollable} is not a valid scroll option. '
+            'The allowed values are "auto", "true", '
+            'and "false".'
             )
 
 
@@ -257,7 +281,8 @@ def create_devices(device_names, cfg=None, fake_devices=False):
 
 
 def typhos_run(device_names, cfg=None, fake_devices=False,
-               layout='horizontal', cols=3, display_type='detailed'):
+               layout='horizontal', cols=3, display_type='detailed',
+               scroll_option='auto'):
     """Run the central typhos part of typhos."""
     with typhos.utils.no_device_lazy_load():
         suite = create_suite(
@@ -267,6 +292,7 @@ def typhos_run(device_names, cfg=None, fake_devices=False,
             layout=layout,
             cols=cols,
             display_type=display_type,
+            scroll_option=scroll_option,
             )
     if suite:
         return launch_suite(suite)
@@ -302,6 +328,7 @@ def typhos_cli(args):
                                layout=args.layout,
                                cols=int(args.cols),
                                display_type=args.display_type,
+                               scroll_option=args.scrollable,
                                )
         return suite
 

@@ -13,7 +13,7 @@ from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtCore, QtWidgets
 
 from . import utils, widgets
-from .display import DisplayTypes, TyphosDeviceDisplay
+from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
 from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
 from .utils import TyphosBase, clean_name, flatten_tree, save_suite
 
@@ -152,6 +152,12 @@ class TyphosSuite(TyphosBase):
         DisplayType enum that determines the type of display to open when we
         add a device to the suite. Defaults to DisplayType.detailed_screen.
 
+    scroll_option : ScrollOptions, optional
+        ScrollOptions enum that determines the behavior of scrollbars
+        in the suite. Default is ScrollOptions.auto, which enables
+        scrollbars for detailed and engineering screens but not for
+        embedded displays.
+
     Attributes
     ----------
     default_tools : dict
@@ -167,7 +173,8 @@ class TyphosSuite(TyphosBase):
                      'Console': TyphosConsole}
 
     def __init__(self, parent=None, *, pin=False, content_layout=None,
-                 default_display_type=DisplayTypes.detailed_screen):
+                 default_display_type=DisplayTypes.detailed_screen,
+                 scroll_option=ScrollOptions.auto):
         super().__init__(parent=parent)
 
         self._update_title()
@@ -201,6 +208,7 @@ class TyphosSuite(TyphosBase):
 
         self.embedded_dock = None
         self.default_display_type = default_display_type
+        self.scroll_option = scroll_option
 
     def add_subdisplay(self, name, display, category):
         """
@@ -326,6 +334,8 @@ class TyphosSuite(TyphosBase):
         self._show_sidebar(widget, dock)
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
+        if hasattr(widget, 'scroll_option'):
+            widget.scroll_option = self.scroll_option
         if hasattr(widget, 'display_type'):
             widget.display_type = self.default_display_type
         widget.setVisible(True)
@@ -462,6 +472,7 @@ class TyphosSuite(TyphosBase):
     def from_device(cls, device, parent=None, tools=DEFAULT_TOOLS, pin=False,
                     content_layout=None,
                     default_display_type=DisplayTypes.detailed_screen,
+                    scroll_option=ScrollOptions.auto,
                     **kwargs):
         """
         Create a new :class:`TyphosSuite` from an :class:`ophyd.Device`.
@@ -494,18 +505,26 @@ class TyphosSuite(TyphosBase):
             we add a device to the suite. Defaults to
             DisplayTypes.detailed_screen.
 
+        scroll_option : ScrollOptions, optional
+            ScrollOptions enum that determines the behavior of scrollbars
+            in the suite. Default is ScrollOptions.auto, which enables
+            scrollbars for detailed and engineering screens but not for
+            embedded displays.
+
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
         return cls.from_devices([device], parent=parent, tools=tools, pin=pin,
                                 content_layout=content_layout,
                                 default_display_type=default_display_type,
+                                scroll_option=scroll_option,
                                 **kwargs)
 
     @classmethod
     def from_devices(cls, devices, parent=None, tools=DEFAULT_TOOLS, pin=False,
                      content_layout=None,
                      default_display_type=DisplayTypes.detailed_screen,
+                     scroll_option=ScrollOptions.auto,
                      **kwargs):
         """
         Create a new TyphosSuite from an iterator of :class:`ophyd.Device`
@@ -537,6 +556,12 @@ class TyphosSuite(TyphosBase):
             we add a device to the suite. Defaults to
             DisplayTypes.detailed_screen.
 
+        scroll_option : ScrollOptions, optional
+            ScrollOptions enum that determines the behavior of scrollbars
+            in the suite. Default is ScrollOptions.auto, which enables
+            scrollbars for detailed and engineering screens but not for
+            embedded displays.
+
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
@@ -545,6 +570,7 @@ class TyphosSuite(TyphosBase):
             pin=pin,
             content_layout=content_layout,
             default_display_type=default_display_type,
+            scroll_option=scroll_option,
             )
         if tools is not None:
             logger.info("Loading Tools ...")

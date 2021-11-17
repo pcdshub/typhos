@@ -35,6 +35,19 @@ class DisplayTypes(enum.IntEnum):
 _DisplayTypes = utils.pyqt_class_from_enum(DisplayTypes)
 DisplayTypes.names = [view.name for view in DisplayTypes]
 
+
+class ScrollOptions(enum.IntEnum):
+    """Enumeration of scrollable options for displays."""
+
+    auto = 0
+    scrollbar = 1
+    no_scroll = 2
+
+
+_ScrollOptions = utils.pyqt_class_from_enum(ScrollOptions)
+ScrollOptions.names = [view.name for view in ScrollOptions]
+
+
 DEFAULT_TEMPLATES = {
     name: [(utils.ui_dir / 'core' / f'{name}.ui').resolve()]
     for name in DisplayTypes.names
@@ -72,6 +85,17 @@ def normalize_display_type(display_type):
         if display_type in DisplayTypes.names:
             return getattr(DisplayTypes, display_type)
         raise ValueError(f'Unrecognized display type: {display_type}') from ex
+
+
+def normalize_scroll_option(scroll_option):
+    try:
+        return ScrollOptions(scroll_option)
+    except Exception as ex:
+        if scroll_option in ScrollOptions.names:
+            return getattr(ScrollOptions, scroll_option)
+        raise ValueError(
+            f'Unrecognized scroll option: {scroll_option}'
+        ) from ex
 
 
 class TyphosToolButton(QtWidgets.QToolButton):
@@ -919,17 +943,18 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     device_count_threshold = 0
     signal_count_threshold = 30
 
-    def __init__(self, parent=None, *, scrollable=True,
+    def __init__(self, parent=None, *, scrollable=None,
                  composite_heuristics=True, embedded_templates=None,
                  detailed_templates=None, engineering_templates=None,
-                 display_type='detailed_screen', nested=False):
+                 display_type='detailed_screen', scroll_option='auto',
+                 nested=False):
 
         self._composite_heuristics = composite_heuristics
         self._current_template = None
         self._forced_template = ''
         self._macros = {}
         self._display_widget = None
-        self._scrollable = False
+        self._scroll_option = ScrollOptions.no_scroll
         self._searched = False
         self._hide_empty = False
         self._nested = nested
@@ -961,7 +986,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._scroll_area)
 
-        self.scrollable = scrollable
+        if scrollable is None:
+            self.scroll_option = scroll_option
+        else:
+            if scrollable:
+                self.scroll_option = ScrollOptions.scrollbar
+            else:
+                self.scroll_option = ScrollOptions.no_scroll
+
 
     @Property(bool)
     def composite_heuristics(self):
@@ -972,18 +1004,19 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     def composite_heuristics(self, composite_heuristics):
         self._composite_heuristics = bool(composite_heuristics)
 
-    @Property(bool)
-    def scrollable(self):
+    @Property(_ScrollOptions)
+    def scroll_option(self):
         """Place the display in a scrollable area."""
-        return self._scrollable
+        return self._scroll_option
 
-    @scrollable.setter
-    def scrollable(self, scrollable):
+    @scroll_option.setter
+    def scroll_option(self, scrollable):
         # Switch between using the scroll area layout or
-        if scrollable == self._scrollable:
+        opt = normalize_scroll_option(scrollable)
+        if opt == self._scroll_option:
             return
 
-        self._scrollable = bool(scrollable)
+        self._scroll_option = opt
         self._move_display_to_layout(self._display_widget)
 
     @Property(bool)
@@ -1001,12 +1034,24 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             return
 
         widget.setParent(None)
-        if self._scrollable:
+        if self._scroll_option == ScrollOptions.auto:
+            if self.display_type == DisplayTypes.embedded_screen:
+                scrollable = False
+            else:
+                scrollable = True
+        elif self._scroll_option == ScrollOptions.scrollbar:
+            scrollable = True
+        elif self._scroll_option == ScrollOptions.no_scroll:
+            scrollable = False
+        else:
+            scrollable = True
+
+        if scrollable:
             self._scroll_area.setWidget(widget)
         else:
             self.layout().addWidget(widget)
 
-        self._scroll_area.setVisible(self._scrollable)
+        self._scroll_area.setVisible(scrollable)
 
     def _generate_template_menu(self, base_menu):
         """Generate the template switcher menu, adding it to ``base_menu``."""
