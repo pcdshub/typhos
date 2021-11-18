@@ -1098,6 +1098,9 @@ def _get_ndimensional_widget_class(dimensions, desc, variety_md, read_only):
     }.get(dimensions, TyphosLabel)
 
 
+DIRECT_CONTROL_LAYERS = {"pyepics", "caproto"}
+
+
 def widget_type_from_description(signal, desc, read_only=False):
     """
     Determine which widget class should be used for the given signal
@@ -1120,7 +1123,14 @@ def widget_type_from_description(signal, desc, read_only=False):
     kwargs : dict
         Keyword arguments for the class
     """
-    if isinstance(signal, EpicsSignalBase):
+    use_pv_directly = (
+        # We can use PyDM's data source directly with EpicsSignalBase:
+        isinstance(signal, EpicsSignalBase) and
+        # So long as its underlying control layer is a supported ophyd-provided
+        # one, at least.
+        getattr(signal.cl, "name", "") in DIRECT_CONTROL_LAYERS
+    )
+    if use_pv_directly:
         # Still re-route EpicsSignal through the ca:// plugin
         pv = (signal._read_pv
               if read_only else signal._write_pv)
