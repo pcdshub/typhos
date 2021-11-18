@@ -1,13 +1,16 @@
 """
 The high-level Typhos Suite, which bundles tools and panels.
 """
+from __future__ import annotations
 
 import logging
 import os
 import textwrap
 from functools import partial
+from typing import Dict, List, Optional, Union
 
 import pcdsutils.qt
+from ophyd import Device
 from pyqtgraph import parametertree
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtCore, QtWidgets
@@ -143,7 +146,7 @@ class TyphosSuite(TyphosBase):
     pin : bool, optional
         Pin the parameter tree on startup.
 
-    layout : QLayout, optional
+    content_layout : QLayout, optional
         Sets the layout for when we have multiple subdisplays
         open in the suite. This will have a horizontal layout by
         default but can be changed as needed for the use case.
@@ -172,9 +175,15 @@ class TyphosSuite(TyphosBase):
                      'StripTool': TyphosTimePlot,
                      'Console': TyphosConsole}
 
-    def __init__(self, parent=None, *, pin=False, content_layout=None,
-                 default_display_type=DisplayTypes.detailed_screen,
-                 scroll_option=ScrollOptions.auto):
+    def __init__(
+        self,
+        parent: Optional[QtWidgets.QWidget] = None,
+        *,
+        pin: bool = False,
+        content_layout: Optional[QtWidgets.QLayout] = None,
+        default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
+        scroll_option: ScrollOptions = ScrollOptions.auto,
+    ):
         super().__init__(parent=parent)
 
         self._update_title()
@@ -478,11 +487,17 @@ class TyphosSuite(TyphosBase):
                                  device.name, type(tool))
 
     @classmethod
-    def from_device(cls, device, parent=None, tools=DEFAULT_TOOLS, pin=False,
-                    content_layout=None,
-                    default_display_type=DisplayTypes.detailed_screen,
-                    scroll_option=ScrollOptions.auto,
-                    **kwargs):
+    def from_device(
+        cls,
+        device: Device,
+        parent: Optional[QtWidgets.QWidget] = None,
+        tools: Union[Dict[str, type], None, DEFAULT_TOOLS] = DEFAULT_TOOLS,
+        pin: bool = False,
+        content_layout: Optional[QtWidgets.QLayout] = None,
+        default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
+        scroll_option: ScrollOptions = ScrollOptions.auto,
+        **kwargs,
+    ) -> TyphosSuite:
         """
         Create a new :class:`TyphosSuite` from an :class:`ophyd.Device`.
 
@@ -530,11 +545,17 @@ class TyphosSuite(TyphosBase):
                                 **kwargs)
 
     @classmethod
-    def from_devices(cls, devices, parent=None, tools=DEFAULT_TOOLS, pin=False,
-                     content_layout=None,
-                     default_display_type=DisplayTypes.detailed_screen,
-                     scroll_option=ScrollOptions.auto,
-                     **kwargs):
+    def from_devices(
+        cls,
+        devices: List[Device],
+        parent: Optional[QtWidgets.QWidget] = None,
+        tools: Union[Dict[str, type], None, DEFAULT_TOOLS] = DEFAULT_TOOLS,
+        pin: bool = False,
+        content_layout: Optional[QtWidgets.QLayout] = None,
+        default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
+        scroll_option: ScrollOptions = ScrollOptions.auto,
+        **kwargs,
+    ) -> TyphosSuite:
         """
         Create a new TyphosSuite from an iterator of :class:`ophyd.Device`
 

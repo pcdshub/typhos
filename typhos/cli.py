@@ -6,6 +6,7 @@ import logging
 import re
 import signal
 import sys
+from typing import List, Optional
 
 import coloredlogs
 import pcdsutils
@@ -18,6 +19,7 @@ from typhos.app import get_qapp, launch_suite
 from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
 from typhos.display import DisplayTypes, ScrollOptions
+from typhos.suite import TyphosSuite
 from typhos.utils import nullcontext
 
 logger = logging.getLogger(__name__)
@@ -134,10 +136,47 @@ def _create_happi_client(cfg):
     return happi.Client.from_config(cfg=cfg)
 
 
-def create_suite(device_names, cfg=None, fake_devices=False,
-                 layout='horizontal', cols=3, display_type='detailed',
-                 scroll_option='auto'):
-    """Create a TyphosSuite from a list of device names."""
+def create_suite(
+    device_names: List[str],
+    cfg: Optional[str] = None,
+    fake_devices: bool = False,
+    layout: str = 'horizontal',
+    cols: int = 3,
+    display_type: str = 'detailed',
+    scroll_option: str = 'auto'
+) -> TyphosSuite:
+    """
+    Create a TyphosSuite from a list of device names.
+
+    Parameters
+    ----------
+    device_names : list of str
+        The happi names associated with the devices to instantiate,
+        or the full class specifications from the cli. These two
+        styles can be mixed.
+    cfg : str, optional
+        The happi configuration file to use. If omitted, uses
+        the environment variables specified by happi.
+    fake_devices : bool, optional
+        If True, use fake devices behind the screen instead of
+        making real connections.
+    layout : str, optional
+        The layout to use for the suite. See the cli help for
+        valid options.
+    cols : int, optional
+        The number of columns to use when we create a grid
+        layout.
+    display_type : str, optional
+        The type of display to use in the suite. See the
+        cli help for valid options.
+    scroll_option : str, optional
+        Options for the scrollbar. See the cli help for valid options.
+
+    Returns
+    -------
+    suite : TyphosSuite
+        A suite that has been populated with devices.
+    """
     if device_names:
         devices = create_devices(device_names, cfg=cfg,
                                  fake_devices=fake_devices)
@@ -155,9 +194,24 @@ def create_suite(device_names, cfg=None, fake_devices=False,
             )
 
 
-def get_layout_from_cli(layout, cols):
+def get_layout_from_cli(
+    layout: str,
+    cols: int,
+) -> QtWidgets.QLayout:
     """
     Return a correct layout object based on user input.
+
+    Parameters
+    ----------
+    layout : str
+        String representation of the layout.
+    cols : int
+        Number of columns to use for the grid layout.
+
+    Returns
+    -------
+    qlayout : QLayout
+        The qt layout object, instantiated.
     """
     if 'horizontal'.startswith(layout):
         return QtWidgets.QHBoxLayout()
@@ -176,19 +230,38 @@ def get_layout_from_cli(layout, cols):
 
 
 class FixedColGrid(QtWidgets.QGridLayout):
-    def __init__(self, *args, cols=3, **kwargs):
+    """
+    A QGridLayout with fixed number of columns.
+
+    QGridLayout allows us to add widgets at any row or column, but
+    for the purposes of typhos we'd like to be able to pass in just
+    the widget like for other layouts. As such, we select a fixed
+    number of columns and fill devices in row-by-row, left-to-right
+    first and then top-to-bottom.
+    """
+    def __init__(
+        self,
+        *args,
+        cols: int = 3,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self._n_cols = cols
         self._widget_index = 0
 
-    def addWidget(self, widget, *args):
+    def addWidget(
+        self,
+        widget: QtWidgets.QWidget,
+        *args,
+    ):
         row = self._widget_index // self._n_cols
         col = self._widget_index % self._n_cols
         super().addWidget(widget, row, col, *args)
         self._widget_index += 1
 
 
-def get_display_type_from_cli(display_type):
+def get_display_type_from_cli(display_type: str) -> DisplayTypes:
+    """Convert the cli string to the appropriate DisplayTypes enum."""
     if 'embedded'.startswith(display_type):
         return DisplayTypes.embedded_screen
     if 'detailed'.startswith(display_type):
@@ -203,7 +276,8 @@ def get_display_type_from_cli(display_type):
             )
 
 
-def get_scrollable_from_cli(scrollable):
+def get_scrollable_from_cli(scrollable: str) -> ScrollOptions:
+    """Convert the cli string to the appropriate ScrollOptions enum."""
     if 'auto'.startswith(scrollable):
         return ScrollOptions.auto
     if 'true'.startswith(scrollable):
@@ -284,10 +358,51 @@ def create_devices(device_names, cfg=None, fake_devices=False):
     return devices
 
 
-def typhos_run(device_names, cfg=None, fake_devices=False,
-               layout='horizontal', cols=3, display_type='detailed',
-               scroll_option='auto', initial_size=None):
-    """Run the central typhos part of typhos."""
+def typhos_run(
+    device_names: List[str],
+    cfg: Optional[str] = None,
+    fake_devices: bool = False,
+    layout: str = 'horizontal',
+    cols: int = 3,
+    display_type: str = 'detailed',
+    scroll_option: str = 'auto',
+    initial_size: Optional[str] = None,
+) -> QtWidgets.QMainWindow:
+    """
+    Run the central typhos part of typhos.
+
+    Parameters
+    ----------
+    device_names : list of str
+        The happi names associated with the devices to instantiate,
+        or the full class specifications from the cli. These two
+        styles can be mixed.
+    cfg : str, optional
+        The happi configuration file to use. If omitted, uses
+        the environment variables specified by happi.
+    fake_devices : bool, optional
+        If True, use fake devices behind the screen instead of
+        making real connections.
+    layout : str, optional
+        The layout to use for the suite. See the cli help for
+        valid options.
+    cols : int, optional
+        The number of columns to use when we create a grid
+        layout.
+    display_type : str, optional
+        The type of display to use in the suite. See the
+        cli help for valid options.
+    scroll_option : str, optional
+        Options for the scrollbar. See the cli help for valid options.
+    initial_size : str, optional
+        Specification for the starting width,height of the window.
+
+    Returns
+    -------
+    suite : QMainWindow
+        The window created. This is returned after the application
+        is done running. Primarily used in unit tests.
+    """
     with typhos.utils.no_device_lazy_load():
         suite = create_suite(
             device_names,

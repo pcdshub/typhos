@@ -6,6 +6,7 @@ import logging
 import os
 import pathlib
 import webbrowser
+from typing import List, Optional, Union
 
 import ophyd
 import pcdsutils
@@ -60,7 +61,9 @@ DEFAULT_TEMPLATES_FLATTEN = [f for _, files in DEFAULT_TEMPLATES.items()
                              for f in files]
 
 
-def normalize_display_type(display_type):
+def normalize_display_type(
+    display_type: Union[DisplayTypes, str, int]
+) -> DisplayTypes:
     """
     Normalize a given display type.
 
@@ -87,7 +90,27 @@ def normalize_display_type(display_type):
         raise ValueError(f'Unrecognized display type: {display_type}') from ex
 
 
-def normalize_scroll_option(scroll_option):
+def normalize_scroll_option(
+    scroll_option: Union[ScrollOptions, str, int]
+) -> ScrollOptions:
+    """
+    Normalize a given scroll option.
+
+    Parameters
+    ----------
+    display_type : ScrollOptions, str, or int
+        The display type.
+
+    Returns
+    -------
+    display_type : ScrollOptions
+        The normalized :class:`ScrollOptions`.
+
+    Raises
+    ------
+    ValueError
+        If the input cannot be made a :class:`ScrollOptions`.
+    """
     try:
         return ScrollOptions(scroll_option)
     except Exception as ex:
@@ -911,8 +934,11 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         The parent widget.
 
     scrollable : bool, optional
+        Semi-deprecated parameter. Use scroll_option instead.
         If ``True``, put the loaded template into a :class:`QScrollArea`.
-        Otherwise, the display widget will go directly in this widget's layout.
+        If ``False``, the display widget will go directly in this widget's
+        layout.
+        If omitted, scroll_option is used instead.
 
     composite_heuristics : bool, optional
         Enable composite heuristics, which may change the suggested detailed
@@ -929,8 +955,11 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         List of engineering templates to use in addition to those found on
         disk.
 
-    display_type : DisplayTypes, optional
+    display_type : DisplayTypes, str, or int, optional
         The default display type.
+
+    scroll_option : ScrollOptions, str, or int, optional
+        The scroll behavior.
 
     nested : bool, optional
         An optional annotation for a display that may be nested inside another.
@@ -943,12 +972,19 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     device_count_threshold = 0
     signal_count_threshold = 30
 
-    def __init__(self, parent=None, *, scrollable=None,
-                 composite_heuristics=True, embedded_templates=None,
-                 detailed_templates=None, engineering_templates=None,
-                 display_type='detailed_screen', scroll_option='auto',
-                 nested=False):
-
+    def __init__(
+        self,
+        parent: Optional[QtWidgets.QWidget] = None,
+        *,
+        scrollable: Optional[bool] = None,
+        composite_heuristics: bool = True,
+        embedded_templates: Optional[List[str]] = None,
+        detailed_templates: Optional[List[str]] = None,
+        engineering_templates: Optional[List[str]] = None,
+        display_type: Union[DisplayTypes, str, int] = 'detailed_screen',
+        scroll_option: Union[ScrollOptions, str, int] = 'auto',
+        nested: bool = False,
+    ):
         self._composite_heuristics = composite_heuristics
         self._current_template = None
         self._forced_template = ''
@@ -1004,13 +1040,13 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self._composite_heuristics = bool(composite_heuristics)
 
     @Property(_ScrollOptions)
-    def scroll_option(self):
+    def scroll_option(self) -> ScrollOptions:
         """Place the display in a scrollable area."""
         return self._scroll_option
 
     @scroll_option.setter
-    def scroll_option(self, scrollable):
-        # Switch between using the scroll area layout or
+    def scroll_option(self, scrollable: ScrollOptions):
+        # Switch the scroll area behavior
         opt = normalize_scroll_option(scrollable)
         if opt == self._scroll_option:
             return
