@@ -334,11 +334,12 @@ class TyphosSuite(TyphosBase):
         self._show_sidebar(widget, dock)
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
-        if hasattr(widget, 'scroll_option'):
-            widget.scroll_option = self.scroll_option
         if hasattr(widget, 'display_type'):
             widget.display_type = self.default_display_type
+        if hasattr(widget, 'scroll_option'):
+            widget.scroll_option = self.scroll_option
         widget.setVisible(True)
+        widget.load_best_template()
         dock.setWidget(widget)
         # Add to layout
         self._content_frame.layout().addWidget(dock)
