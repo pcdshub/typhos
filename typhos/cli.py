@@ -11,7 +11,7 @@ import coloredlogs
 import pcdsutils
 from ophyd.sim import clear_fake_device, make_fake_device
 from pydm.widgets.template_repeater import FlowLayout
-from qtpy import QtWidgets
+from qtpy import QtCore, QtWidgets
 
 import typhos
 from typhos.app import get_qapp, launch_suite
@@ -51,6 +51,10 @@ parser.add_argument('--scrollable', default='auto',
                          'and any unique shortenings of those options. '
                          'Selecting "auto" will include a scrollbar for '
                          'non-embedded layouts.')
+parser.add_argument('--size', 
+                    help='A starting x,y size for the typhos suite. '
+                         'Useful if the default size is not suitable for '
+                         'your application. Example: --size 1000,1000')
 parser.add_argument('--happi-cfg',
                     help='Location of happi configuration file '
                          'if not specified by $HAPPI_CFG environment variable')
@@ -282,7 +286,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
 
 def typhos_run(device_names, cfg=None, fake_devices=False,
                layout='horizontal', cols=3, display_type='detailed',
-               scroll_option='auto'):
+               scroll_option='auto', initial_size=None):
     """Run the central typhos part of typhos."""
     with typhos.utils.no_device_lazy_load():
         suite = create_suite(
@@ -295,7 +299,17 @@ def typhos_run(device_names, cfg=None, fake_devices=False,
             scroll_option=scroll_option,
             )
     if suite:
-        return launch_suite(suite)
+        if initial_size is not None:
+            try:
+                initial_size = QtCore.QSize(
+                    *(int(opt) for opt in initial_size.split(','))
+                )
+            except TypeError as exc:
+                raise ValueError(
+                    "Invalid --size argument. Expected a two-element pair "
+                    "of comma-separated integers, e.g. --size 1000,1000"
+                ) from exc
+        return launch_suite(suite, initial_size=initial_size)
 
 
 def typhos_cli(args):
@@ -322,6 +336,7 @@ def typhos_cli(args):
             # Note: actually a list of suites
             suite = run_benchmarks(args.benchmark)
         else:
+
             suite = typhos_run(args.devices,
                                cfg=args.happi_cfg,
                                fake_devices=args.fake_device,
@@ -329,6 +344,7 @@ def typhos_cli(args):
                                cols=int(args.cols),
                                display_type=args.display_type,
                                scroll_option=args.scrollable,
+                               initial_size=args.size,
                                )
         return suite
 

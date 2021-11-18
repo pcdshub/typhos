@@ -23,12 +23,14 @@ def get_qapp():
     return qapp
 
 
-def launch_suite(suite):
+def launch_suite(suite, initial_size=None):
     """Creates a main window and execs the application."""
     window = QMainWindow()
     window.setCentralWidget(suite)
     window.setWindowTitle(suite.windowTitle())
     window.setUnifiedTitleAndToolBarOnMac(True)
+    if initial_size is not None:
+        window.resize(initial_size)
     window.show()
     logger.info("Launching application ...")
     get_qapp().exec_()
