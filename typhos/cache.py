@@ -89,6 +89,8 @@ class _GlobalDescribeCache(QtCore.QObject):
         except Exception:
             logger.error("Unable to connect to %r during widget creation",
                          obj.name)
+            logger.debug("Unable to connect to %r during widget creation",
+                         obj.name, exc_info=True)
         return {}
 
     def _worker_describe(self, obj):

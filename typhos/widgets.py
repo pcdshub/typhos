@@ -157,6 +157,33 @@ class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
     Notes
     -----
     """
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ophyd_signal = ophyd_signal
+        self._ophyd_enum_strings = None
+        self._md_sub = ophyd_signal.subscribe(
+            self._metadata_update, event_type="meta"
+        )
+
+    def __dtor__(self):
+        """PyQt5 destructor hook."""
+        if self._md_sub is not None:
+            self.ophyd_signal.unsubscribe(self._md_sub)
+            self._md_sub = None
+
+    def _metadata_update(self, enum_strs=None, **kwargs):
+        if enum_strs:
+            self._ophyd_enum_strings = tuple(enum_strs)
+            self.enum_strings_changed(enum_strs)
+
+    def enum_strings_changed(self, new_enum_strings):
+        current_idx = self.currentIndex()
+        super().enum_strings_changed(
+            tuple(self._ophyd_enum_strings or new_enum_strings)
+        )
+        self.value_changed(current_idx)
+
     def wheelEvent(self, event: QtGui.QWheelEvent):
         event.ignore()
 
@@ -306,7 +333,9 @@ class TyphosLabel(pydm.widgets.PyDMLabel):
     Notes
     -----
     """
-    def __init__(self, *args, display_format=None, **kwargs):
+    def __init__(
+        self, *args, display_format=None, ophyd_signal=None, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.setAlignment(Qt.AlignCenter)
         self.setSizePolicy(QtWidgets.QSizePolicy.Preferred,
@@ -314,6 +343,28 @@ class TyphosLabel(pydm.widgets.PyDMLabel):
         self.showUnits = True
         if display_format is not None:
             self.displayFormat = display_format
+
+        self.ophyd_signal = ophyd_signal
+        self._ophyd_enum_strings = None
+        self._md_sub = ophyd_signal.subscribe(
+            self._metadata_update, event_type="meta"
+        )
+
+    def __dtor__(self):
+        """PyQt5 destructor hook."""
+        if self._md_sub is not None:
+            self.ophyd_signal.unsubscribe(self._md_sub)
+            self._md_sub = None
+
+    def _metadata_update(self, enum_strs=None, **kwargs):
+        if enum_strs:
+            self._ophyd_enum_strings = tuple(enum_strs)
+            self.enum_strings_changed(enum_strs)
+
+    def enum_strings_changed(self, new_enum_strings):
+        super().enum_strings_changed(
+            tuple(self._ophyd_enum_strings or new_enum_strings)
+        )
 
     def unit_changed(self, new_unit):
         """
@@ -833,7 +884,11 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
     def __dtor__(self):
         """PyQt5 destructor hook"""
         # Ensure our delta signal subscription is cleared:
-        self.delta_signal = None
+        if self._delta_signal is not None:
+            if self._delta_signal_sub is not None:
+                self._delta_signal.unsubscribe(self._delta_signal_sub)
+                self._delta_signal_sub = None
+            self.delta_signal = None
 
     @variety.key_handler('range')
     def _variety_key_handler_range(self, value, source, **kwargs):
@@ -880,6 +935,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
     def delta_signal(self, signal):
         if self._delta_signal is not None:
             self._delta_signal.unsubscribe(self._delta_signal_sub)
+            self._delta_signal_sub = None
 
         if signal is None:
             return
