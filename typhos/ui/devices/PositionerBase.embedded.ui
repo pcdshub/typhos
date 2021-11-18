@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>343</width>
+    <width>337</width>
     <height>258</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -66,9 +66,6 @@
     <widget class="TyphosDisplayTitle" name="TyphosDisplayTitle">
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="show_switcher" stdset="0">
-      <bool>true</bool>
      </property>
     </widget>
    </item>
