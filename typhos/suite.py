@@ -342,9 +342,11 @@ class TyphosSuite(TyphosBase):
         widget.load_best_template()
         dock.setWidget(widget)
         # Add to layout
-        self._content_frame.layout().addWidget(dock)
-        self._content_frame.layout().setAlignment(dock, QtCore.Qt.AlignHCenter)
-        self._content_frame.layout().setAlignment(dock, QtCore.Qt.AlignTop)
+        content_layout = self._content_frame.layout()
+        content_layout.addWidget(dock)
+        if isinstance(content_layout, QtWidgets.QGridLayout):
+            self._content_frame.layout().setAlignment(dock, QtCore.Qt.AlignHCenter)
+            self._content_frame.layout().setAlignment(dock, QtCore.Qt.AlignTop)
 
     @QtCore.Slot(str)
     @QtCore.Slot(object)
