@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Widgets &mdash; Typhos 2.1.0+2.g9e46fb7 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Widgets &mdash; Typhos 2.1.0+5.g22664be documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.1.0+2.g9e46fb7
+                2.1.0+5.g22664be
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -1109,12 +1109,25 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosComboBox">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosComboBox</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosComboBox</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox" title="Permalink to this definition">¶</a></dt>
 <dd><p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>Used for variety text-enum (setpoint)</p></li>
 <li><p>Used for variety enum (setpoint)</p></li>
 </ul>
+<dl class="py method">
+<dt id="typhos.widgets.TyphosComboBox.enum_strings_changed">
+<code class="sig-name descname"><span class="pre">enum_strings_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_enum_strings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox.enum_strings_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox.enum_strings_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback invoked when the Channel has new enum values.
+This callback also triggers a value_changed call so the
+new enum values to be broadcasted</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><em>tuple</em></a>) – The new list of values</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="typhos.widgets.TyphosComboBox.wheelEvent">
 <code class="sig-name descname"><span class="pre">wheelEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QWheelEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox.wheelEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox.wheelEvent" title="Permalink to this definition">¶</a></dt>
@@ -1194,7 +1207,7 @@ new enum values to be broadcasted.</p>
 
 <dl class="py class">
 <dt id="typhos.widgets.TyphosLabel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosLabel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></code><code class="sig-name descname"><span class="pre">TyphosLabel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reimplementation of PyDMLabel to set some custom defaults</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1210,6 +1223,19 @@ new enum values to be broadcasted.</p>
 <li><p>Used for variety command-enum (readback)</p></li>
 <li><p>Used for variety array-nd (readback)</p></li>
 </ul>
+<dl class="py method">
+<dt id="typhos.widgets.TyphosLabel.enum_strings_changed">
+<code class="sig-name descname"><span class="pre">enum_strings_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_enum_strings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel.enum_strings_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel.enum_strings_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback invoked when the Channel has new enum values.
+This callback also triggers a value_changed call so the
+new enum values to be broadcasted</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><em>tuple</em></a>) – The new list of values</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="typhos.widgets.TyphosLabel.unit_changed">
 <code class="sig-name descname"><span class="pre">unit_changed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel.unit_changed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel.unit_changed" title="Permalink to this definition">¶</a></dt>

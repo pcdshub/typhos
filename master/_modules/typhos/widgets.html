@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.widgets &mdash; Typhos 2.1.0+2.g9e46fb7 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.widgets &mdash; Typhos 2.1.0+5.g22664be documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.1.0+2.g9e46fb7
+                2.1.0+5.g22664be
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -240,6 +240,33 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ophyd_enum_strings</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_md_sub</span> <span class="o">=</span> <span class="n">ophyd_signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_update</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;meta&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__dtor__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;PyQt5 destructor hook.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_md_sub</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_md_sub</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_md_sub</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_metadata_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_strs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">enum_strs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ophyd_enum_strings</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">enum_strs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enum_strings_changed</span><span class="p">(</span><span class="n">enum_strs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TyphosComboBox.enum_strings_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosComboBox.enum_strings_changed">[docs]</a>    <span class="k">def</span> <span class="nf">enum_strings_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_enum_strings</span><span class="p">):</span>
+        <span class="n">current_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">enum_strings_changed</span><span class="p">(</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ophyd_enum_strings</span> <span class="ow">or</span> <span class="n">new_enum_strings</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_changed</span><span class="p">(</span><span class="n">current_idx</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="TyphosComboBox.wheelEvent"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosComboBox.wheelEvent">[docs]</a>    <span class="k">def</span> <span class="nf">wheelEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWheelEvent</span><span class="p">):</span>
         <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span></div></div>
 
@@ -389,7 +416,9 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">display_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">display_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Preferred</span><span class="p">,</span>
@@ -397,6 +426,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">showUnits</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">display_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">displayFormat</span> <span class="o">=</span> <span class="n">display_format</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ophyd_enum_strings</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_md_sub</span> <span class="o">=</span> <span class="n">ophyd_signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_update</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;meta&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__dtor__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;PyQt5 destructor hook.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_md_sub</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ophyd_signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_md_sub</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_md_sub</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_metadata_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_strs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">enum_strs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ophyd_enum_strings</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">enum_strs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enum_strings_changed</span><span class="p">(</span><span class="n">enum_strs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TyphosLabel.enum_strings_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLabel.enum_strings_changed">[docs]</a>    <span class="k">def</span> <span class="nf">enum_strings_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_enum_strings</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">enum_strings_changed</span><span class="p">(</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ophyd_enum_strings</span> <span class="ow">or</span> <span class="n">new_enum_strings</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="TyphosLabel.unit_changed"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.TyphosLabel.unit_changed">[docs]</a>    <span class="k">def</span> <span class="nf">unit_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_unit</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -916,7 +967,11 @@
     <span class="k">def</span> <span class="nf">__dtor__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;PyQt5 destructor hook&quot;&quot;&quot;</span>
         <span class="c1"># Ensure our delta signal subscription is cleared:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">delta_signal</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal_sub</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal_sub</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal_sub</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_signal</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s1">&#39;range&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_variety_key_handler_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -963,6 +1018,7 @@
     <span class="k">def</span> <span class="nf">delta_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal_sub</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_delta_signal_sub</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
