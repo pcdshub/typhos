@@ -51,7 +51,7 @@ parser.add_argument('--scrollable', default='auto',
                          'and any unique shortenings of those options. '
                          'Selecting "auto" will include a scrollbar for '
                          'non-embedded layouts.')
-parser.add_argument('--size', 
+parser.add_argument('--size',
                     help='A starting x,y size for the typhos suite. '
                          'Useful if the default size is not suitable for '
                          'your application. Example: --size 1000,1000')

@@ -994,7 +994,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             else:
                 self.scroll_option = ScrollOptions.no_scroll
 
-
     @Property(bool)
     def composite_heuristics(self):
         """Allow composite screen to be suggested first by heuristics."""

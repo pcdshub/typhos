@@ -345,8 +345,12 @@ class TyphosSuite(TyphosBase):
         content_layout = self._content_frame.layout()
         content_layout.addWidget(dock)
         if isinstance(content_layout, QtWidgets.QGridLayout):
-            self._content_frame.layout().setAlignment(dock, QtCore.Qt.AlignHCenter)
-            self._content_frame.layout().setAlignment(dock, QtCore.Qt.AlignTop)
+            self._content_frame.layout().setAlignment(
+                dock, QtCore.Qt.AlignHCenter
+            )
+            self._content_frame.layout().setAlignment(
+                dock, QtCore.Qt.AlignTop
+            )
 
     @QtCore.Slot(str)
     @QtCore.Slot(object)
