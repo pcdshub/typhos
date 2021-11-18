@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.widgets &mdash; Typhos 2.1.0+5.g22664be documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.widgets &mdash; Typhos 2.1.0+7.g4234b6a documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.1.0+5.g22664be
+                2.1.0+7.g4234b6a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1181,6 +1181,9 @@
     <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dimensions</span><span class="p">,</span> <span class="n">TyphosLabel</span><span class="p">)</span>
 
 
+<span class="n">DIRECT_CONTROL_LAYERS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;pyepics&quot;</span><span class="p">,</span> <span class="s2">&quot;caproto&quot;</span><span class="p">}</span>
+
+
 <div class="viewcode-block" id="widget_type_from_description"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.widget_type_from_description">[docs]</a><span class="k">def</span> <span class="nf">widget_type_from_description</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine which widget class should be used for the given signal</span>
@@ -1203,7 +1206,14 @@
 <span class="sd">    kwargs : dict</span>
 <span class="sd">        Keyword arguments for the class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">):</span>
+    <span class="n">use_pv_directly</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="c1"># We can use PyDM&#39;s data source directly with EpicsSignalBase:</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">)</span> <span class="ow">and</span>
+        <span class="c1"># So long as its underlying control layer is a supported ophyd-provided</span>
+        <span class="c1"># one, at least.</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">cl</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">DIRECT_CONTROL_LAYERS</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">use_pv_directly</span><span class="p">:</span>
         <span class="c1"># Still re-route EpicsSignal through the ca:// plugin</span>
         <span class="n">pv</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">_read_pv</span>
               <span class="k">if</span> <span class="n">read_only</span> <span class="k">else</span> <span class="n">signal</span><span class="o">.</span><span class="n">_write_pv</span><span class="p">)</span>
