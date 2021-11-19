@@ -1,7 +1,8 @@
 """This module defines methods for launching full typhos applications."""
 import logging
+from typing import Optional
 
-from qtpy.QtCore import QTimer
+from qtpy.QtCore import QSize, QTimer
 from qtpy.QtWidgets import QApplication, QMainWindow
 
 from .suite import TyphosSuite
@@ -23,12 +24,36 @@ def get_qapp():
     return qapp
 
 
-def launch_suite(suite):
-    """Creates a main window and execs the application."""
+def launch_suite(
+    suite: TyphosSuite,
+    initial_size: Optional[QSize] = None
+) -> QMainWindow:
+    """
+    Creates a main window and execs the application.
+
+    Parameters
+    ----------
+    suite : TyphosSuite
+        The suite that we'd like to launch.
+    initial_size : QSize, optional
+        If provided, the initial size for the full suite window.
+        This can be useful when creating launcher scripts when
+        the default window size isn't very good for that
+        particular suite (e.g. flow layouts)
+
+    Returns
+    -------
+    window : QMainWindow
+        The window that we created. This will not be returned until
+        after the application is done running. This is primarily
+        useful for unit tests.
+    """
     window = QMainWindow()
     window.setCentralWidget(suite)
     window.setWindowTitle(suite.windowTitle())
     window.setUnifiedTitleAndToolBarOnMac(True)
+    if initial_size is not None:
+        window.resize(initial_size)
     window.show()
     logger.info("Launching application ...")
     get_qapp().exec_()

@@ -1,19 +1,22 @@
 """
 The high-level Typhos Suite, which bundles tools and panels.
 """
+from __future__ import annotations
 
 import logging
 import os
 import textwrap
 from functools import partial
+from typing import Dict, List, Optional, Union
 
 import pcdsutils.qt
+from ophyd import Device
 from pyqtgraph import parametertree
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtCore, QtWidgets
 
 from . import utils, widgets
-from .display import TyphosDeviceDisplay
+from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
 from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
 from .utils import TyphosBase, clean_name, flatten_tree, save_suite
 
@@ -143,6 +146,21 @@ class TyphosSuite(TyphosBase):
     pin : bool, optional
         Pin the parameter tree on startup.
 
+    content_layout : QLayout, optional
+        Sets the layout for when we have multiple subdisplays
+        open in the suite. This will have a horizontal layout by
+        default but can be changed as needed for the use case.
+
+    default_display_type : DisplayType, optional
+        DisplayType enum that determines the type of display to open when we
+        add a device to the suite. Defaults to DisplayType.detailed_screen.
+
+    scroll_option : ScrollOptions, optional
+        ScrollOptions enum that determines the behavior of scrollbars
+        in the suite. Default is ScrollOptions.auto, which enables
+        scrollbars for detailed and engineering screens but not for
+        embedded displays.
+
     Attributes
     ----------
     default_tools : dict
@@ -157,7 +175,15 @@ class TyphosSuite(TyphosBase):
                      'StripTool': TyphosTimePlot,
                      'Console': TyphosConsole}
 
-    def __init__(self, parent=None, *, pin=False):
+    def __init__(
+        self,
+        parent: Optional[QtWidgets.QWidget] = None,
+        *,
+        pin: bool = False,
+        content_layout: Optional[QtWidgets.QLayout] = None,
+        default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
+        scroll_option: ScrollOptions = ScrollOptions.auto,
+    ):
         super().__init__(parent=parent)
 
         self._update_title()
@@ -174,7 +200,12 @@ class TyphosSuite(TyphosBase):
         self._content_frame = QtWidgets.QFrame(self)
         self._content_frame.setObjectName("content")
         self._content_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self._content_frame.setLayout(QtWidgets.QHBoxLayout())
+
+        # Content frame layout: configurable
+        # Defaults to [content] [content] [content] ... in one line
+        if content_layout is None:
+            content_layout = QtWidgets.QHBoxLayout()
+        self._content_frame.setLayout(content_layout)
 
         # Horizontal box layout: [PopBar] [Content Frame]
         layout = QtWidgets.QHBoxLayout()
@@ -185,6 +216,8 @@ class TyphosSuite(TyphosBase):
         layout.addWidget(self._content_frame)
 
         self.embedded_dock = None
+        self.default_display_type = default_display_type
+        self.scroll_option = scroll_option
 
     def add_subdisplay(self, name, display, category):
         """
@@ -311,11 +344,22 @@ class TyphosSuite(TyphosBase):
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
         if hasattr(widget, 'display_type'):
-            widget.display_type = widget.detailed_screen
+            widget.display_type = self.default_display_type
+        if hasattr(widget, 'scroll_option'):
+            widget.scroll_option = self.scroll_option
         widget.setVisible(True)
+        widget.load_best_template()
         dock.setWidget(widget)
         # Add to layout
-        self._content_frame.layout().addWidget(dock)
+        content_layout = self._content_frame.layout()
+        content_layout.addWidget(dock)
+        if isinstance(content_layout, QtWidgets.QGridLayout):
+            self._content_frame.layout().setAlignment(
+                dock, QtCore.Qt.AlignHCenter
+            )
+            self._content_frame.layout().setAlignment(
+                dock, QtCore.Qt.AlignTop
+            )
 
     @QtCore.Slot(str)
     @QtCore.Slot(object)
@@ -443,8 +487,17 @@ class TyphosSuite(TyphosBase):
                                  device.name, type(tool))
 
     @classmethod
-    def from_device(cls, device, parent=None, tools=DEFAULT_TOOLS, pin=False,
-                    **kwargs):
+    def from_device(
+        cls,
+        device: Device,
+        parent: Optional[QtWidgets.QWidget] = None,
+        tools: Union[Dict[str, type], None, DEFAULT_TOOLS] = DEFAULT_TOOLS,
+        pin: bool = False,
+        content_layout: Optional[QtWidgets.QLayout] = None,
+        default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
+        scroll_option: ScrollOptions = ScrollOptions.auto,
+        **kwargs,
+    ) -> TyphosSuite:
         """
         Create a new :class:`TyphosSuite` from an :class:`ophyd.Device`.
 
@@ -463,15 +516,46 @@ class TyphosSuite(TyphosBase):
             By default these will be ``.default_tools``, but ``None`` can be
             passed to avoid tool loading completely.
 
+        pin : bool, optional
+            Pin the parameter tree on startup.
+
+        content_layout : QLayout, optional
+            Sets the layout for when we have multiple subdisplays
+            open in the suite. This will have a horizontal layout by
+            default but can be changed as needed for the use case.
+
+        default_display_type : DisplayTypes, optional
+            DisplayTypes enum that determines the type of display to open when
+            we add a device to the suite. Defaults to
+            DisplayTypes.detailed_screen.
+
+        scroll_option : ScrollOptions, optional
+            ScrollOptions enum that determines the behavior of scrollbars
+            in the suite. Default is ScrollOptions.auto, which enables
+            scrollbars for detailed and engineering screens but not for
+            embedded displays.
+
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
         return cls.from_devices([device], parent=parent, tools=tools, pin=pin,
+                                content_layout=content_layout,
+                                default_display_type=default_display_type,
+                                scroll_option=scroll_option,
                                 **kwargs)
 
     @classmethod
-    def from_devices(cls, devices, parent=None, tools=DEFAULT_TOOLS, pin=False,
-                     **kwargs):
+    def from_devices(
+        cls,
+        devices: List[Device],
+        parent: Optional[QtWidgets.QWidget] = None,
+        tools: Union[Dict[str, type], None, DEFAULT_TOOLS] = DEFAULT_TOOLS,
+        pin: bool = False,
+        content_layout: Optional[QtWidgets.QLayout] = None,
+        default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
+        scroll_option: ScrollOptions = ScrollOptions.auto,
+        **kwargs,
+    ) -> TyphosSuite:
         """
         Create a new TyphosSuite from an iterator of :class:`ophyd.Device`
 
@@ -489,10 +573,35 @@ class TyphosSuite(TyphosBase):
             By default these will be ``.default_tools``, but ``None`` can be
             passed to avoid tool loading completely.
 
+        pin : bool, optional
+            Pin the parameter tree on startup.
+
+        content_layout : QLayout, optional
+            Sets the layout for when we have multiple subdisplays
+            open in the suite. This will have a horizontal layout by
+            default but can be changed as needed for the use case.
+
+        default_display_type : DisplayTypes, optional
+            DisplayTypes enum that determines the type of display to open when
+            we add a device to the suite. Defaults to
+            DisplayTypes.detailed_screen.
+
+        scroll_option : ScrollOptions, optional
+            ScrollOptions enum that determines the behavior of scrollbars
+            in the suite. Default is ScrollOptions.auto, which enables
+            scrollbars for detailed and engineering screens but not for
+            embedded displays.
+
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
-        suite = cls(parent=parent, pin=pin)
+        suite = cls(
+            parent=parent,
+            pin=pin,
+            content_layout=content_layout,
+            default_display_type=default_display_type,
+            scroll_option=scroll_option,
+            )
         if tools is not None:
             logger.info("Loading Tools ...")
             if tools is DEFAULT_TOOLS:
@@ -503,6 +612,7 @@ class TyphosSuite(TyphosBase):
                     suite.add_tool(name, tool())
                 except Exception:
                     logger.exception("Unable to load %s", type(tool))
+
         logger.info("Adding devices ...")
         for device in devices:
             try:
