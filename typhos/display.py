@@ -84,10 +84,13 @@ def normalize_display_type(
     """
     try:
         return DisplayTypes(display_type)
-    except Exception as ex:
-        if display_type in DisplayTypes.names:
-            return getattr(DisplayTypes, display_type)
-        raise ValueError(f'Unrecognized display type: {display_type}') from ex
+    except ValueError:
+        try:
+            return DisplayTypes[display_type]
+        except KeyError:
+            raise ValueError(
+                f'Unrecognized display type: {display_type}'
+            )
 
 
 def normalize_scroll_option(
@@ -113,12 +116,13 @@ def normalize_scroll_option(
     """
     try:
         return ScrollOptions(scroll_option)
-    except Exception as ex:
-        if scroll_option in ScrollOptions.names:
-            return getattr(ScrollOptions, scroll_option)
-        raise ValueError(
-            f'Unrecognized scroll option: {scroll_option}'
-        ) from ex
+    except ValueError:
+        try:
+            return ScrollOptions[scroll_option]
+        except KeyError:
+            raise ValueError(
+                f'Unrecognized scroll option: {scroll_option}'
+            )
 
 
 class TyphosToolButton(QtWidgets.QToolButton):
