@@ -26,68 +26,83 @@ logger = logging.getLogger(__name__)
 
 # Argument Parser Setup
 parser = argparse.ArgumentParser(
-    description='Create a TyphosSuite for '
-    'device/s stored in a Happi '
-    'Database'
+    description=(
+        'Create a TyphosSuite for device/s stored in a Happi Database'
+    ),
 )
 
 parser.add_argument(
     'devices',
     nargs='*',
-    help='Device names to load in the TyphosSuite or '
-    'class name with parameters on the format: '
-    'package.ClassName[{"param1":"val1",...}]',
+    help=(
+        'Device names to load in the TyphosSuite or class name with '
+        'parameters on the format: package.ClassName[{"param1":"val1",...}]'
+    ),
 )
 parser.add_argument(
     '--layout',
     default='horizontal',
-    help='Select a alternate layout for suites of many '
-    'devices. Valid options are "horizontal" (default), '
-    '"vertical", "grid", "flow", and any unique '
-    'shortenings of those options.',
+    help=(
+        'Select a alternate layout for suites of many '
+        'devices. Valid options are "horizontal" (default), '
+        '"vertical", "grid", "flow", and any unique '
+        'shortenings of those options.'
+    ),
 )
 parser.add_argument(
     '--cols',
     default=3,
-    help='The number of columns to use for the grid layout '
-    'if selected in the layout argument. This will have '
-    'no effect for other layouts.',
+    help=(
+        'The number of columns to use for the grid layout '
+        'if selected in the layout argument. This will have '
+        'no effect for other layouts.'
+    ),
 )
 parser.add_argument(
     '--display-type',
     default='detailed',
-    help='The kind of display to open for each device at '
-    'initial load. Valid options are "embedded", '
-    '"detailed" (default), "engineering", and any '
-    'unique shortenings of those options.',
+    help=(
+        'The kind of display to open for each device at '
+        'initial load. Valid options are "embedded", '
+        '"detailed" (default), "engineering", and any '
+        'unique shortenings of those options.'
+    ),
 )
 parser.add_argument(
     '--scrollable',
     default='auto',
-    help='Whether or not to include the scrollbar. '
-    'Valid options are "auto", "true", "false", '
-    'and any unique shortenings of those options. '
-    'Selecting "auto" will include a scrollbar for '
-    'non-embedded layouts.',
+    help=(
+        'Whether or not to include the scrollbar. '
+        'Valid options are "auto", "true", "false", '
+        'and any unique shortenings of those options. '
+        'Selecting "auto" will include a scrollbar for '
+        'non-embedded layouts.'
+    ),
 )
 parser.add_argument(
     '--size',
-    help='A starting x,y size for the typhos suite. '
-    'Useful if the default size is not suitable for '
-    'your application. Example: --size 1000,1000',
+    help=(
+        'A starting x,y size for the typhos suite. '
+        'Useful if the default size is not suitable for '
+        'your application. Example: --size 1000,1000'
+    ),
 )
 parser.add_argument(
     '--happi-cfg',
-    help='Location of happi configuration file '
-    'if not specified by $HAPPI_CFG environment variable',
+    help=(
+        'Location of happi configuration file '
+        'if not specified by $HAPPI_CFG environment variable'
+    ),
 )
 parser.add_argument(
     '--fake-device',
     action='store_true',
-    help='Create fake devices with no EPICS connections. '
-    'This does not yet work for happi devices. An '
-    'example invocation: '
-    'typhos --fake-device ophyd.EpicsMotor[]',
+    help=(
+        'Create fake devices with no EPICS connections. '
+        'This does not yet work for happi devices. An '
+        'example invocation: '
+        'typhos --fake-device ophyd.EpicsMotor[]'
+    ),
 )
 parser.add_argument(
     '--version',
@@ -110,25 +125,31 @@ parser.add_argument('--stylesheet', help='Additional stylesheet options')
 parser.add_argument(
     '--profile-modules',
     nargs='*',
-    help='Submodules to profile during the execution. '
-    'If no specific modules are specified, '
-    'profiles all submodules of typhos. '
-    'Turns on line profiling.',
+    help=(
+        'Submodules to profile during the execution. '
+        'If no specific modules are specified, '
+        'profiles all submodules of typhos. '
+        'Turns on line profiling.'
+    ),
 )
 parser.add_argument(
     '--profile-output',
-    help='Filename to output the profile results to. '
-    'If omitted, prints results to stdout. '
-    'Turns on line profiling.',
+    help=(
+        'Filename to output the profile results to. '
+        'If omitted, prints results to stdout. '
+        'Turns on line profiling.'
+    ),
 )
 parser.add_argument(
     '--benchmark',
     nargs='*',
-    help='Runs the specified benchmarking tests instead of '
-    'launching a screen. '
-    'If no specific tests are specified, '
-    'runs all of them. '
-    'Turns on line profiling.',
+    help=(
+        'Runs the specified benchmarking tests instead of '
+        'launching a screen. '
+        'If no specific tests are specified, '
+        'runs all of them. '
+        'Turns on line profiling.'
+    ),
 )
 
 
