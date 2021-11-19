@@ -327,34 +327,34 @@ class FixedColGrid(QtWidgets.QGridLayout):
 
 def get_display_type_from_cli(display_type: str) -> DisplayTypes:
     """Convert the cli string to the appropriate DisplayTypes enum."""
+    display_type = display_type.lower()
     if 'embedded'.startswith(display_type):
         return DisplayTypes.embedded_screen
     if 'detailed'.startswith(display_type):
         return DisplayTypes.detailed_screen
     if 'engineering'.startswith(display_type):
         return DisplayTypes.engineering_screen
-    else:
-        raise ValueError(
-            f'{display_type} is not a valid display type. '
-            'The allowed values are "embedded", "detailed", '
-            'and "engineering".'
-        )
+    raise ValueError(
+        f'{display_type} is not a valid display type. '
+        'The allowed values are "embedded", "detailed", '
+        'and "engineering".'
+    )
 
 
 def get_scrollable_from_cli(scrollable: str) -> ScrollOptions:
     """Convert the cli string to the appropriate ScrollOptions enum."""
+    scrollable = scrollable.lower()
     if 'auto'.startswith(scrollable):
         return ScrollOptions.auto
     if 'true'.startswith(scrollable):
         return ScrollOptions.scrollbar
     if 'false'.startswith(scrollable):
         return ScrollOptions.no_scroll
-    else:
-        raise ValueError(
-            f'{scrollable} is not a valid scroll option. '
-            'The allowed values are "auto", "true", '
-            'and "false".'
-        )
+    raise ValueError(
+        f'{scrollable} is not a valid scroll option. '
+        'The allowed values are "auto", "true", '
+        'and "false".'
+    )
 
 
 def create_devices(device_names, cfg=None, fake_devices=False):
