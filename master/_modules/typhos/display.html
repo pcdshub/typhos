@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.display &mdash; Typhos 2.1.0+7.g4234b6a documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.display &mdash; Typhos 2.1.0+30.g16af30d documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.1.0+7.g4234b6a
+                2.1.0+30.g16af30d
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -89,6 +89,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">webbrowser</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">ophyd</span>
 <span class="kn">import</span> <span class="nn">pcdsutils</span>
@@ -118,6 +119,19 @@
 <span class="n">_DisplayTypes</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pyqt_class_from_enum</span><span class="p">(</span><span class="n">DisplayTypes</span><span class="p">)</span>
 <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">view</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">DisplayTypes</span><span class="p">]</span>
 
+
+<span class="k">class</span> <span class="nc">ScrollOptions</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Enumeration of scrollable options for displays.&quot;&quot;&quot;</span>
+
+    <span class="n">auto</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">scrollbar</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">no_scroll</span> <span class="o">=</span> <span class="mi">2</span>
+
+
+<span class="n">_ScrollOptions</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">pyqt_class_from_enum</span><span class="p">(</span><span class="n">ScrollOptions</span><span class="p">)</span>
+<span class="n">ScrollOptions</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">view</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">ScrollOptions</span><span class="p">]</span>
+
+
 <span class="n">DEFAULT_TEMPLATES</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">name</span><span class="p">:</span> <span class="p">[(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.ui&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">names</span>
@@ -130,7 +144,9 @@
                              <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="normalize_display_type"><a class="viewcode-back" href="../../display.html#typhos.normalize_display_type">[docs]</a><span class="k">def</span> <span class="nf">normalize_display_type</span><span class="p">(</span><span class="n">display_type</span><span class="p">):</span>
+<div class="viewcode-block" id="normalize_display_type"><a class="viewcode-back" href="../../display.html#typhos.normalize_display_type">[docs]</a><span class="k">def</span> <span class="nf">normalize_display_type</span><span class="p">(</span>
+    <span class="n">display_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DisplayTypes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DisplayTypes</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Normalize a given display type.</span>
 
@@ -151,10 +167,45 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">DisplayTypes</span><span class="p">(</span><span class="n">display_type</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">display_type</span> <span class="ow">in</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">DisplayTypes</span><span class="p">,</span> <span class="n">display_type</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized display type: </span><span class="si">{</span><span class="n">display_type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span></div>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DisplayTypes</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Unrecognized display type: </span><span class="si">{</span><span class="n">display_type</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">normalize_scroll_option</span><span class="p">(</span>
+    <span class="n">scroll_option</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ScrollOptions</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScrollOptions</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Normalize a given scroll option.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    display_type : ScrollOptions, str, or int</span>
+<span class="sd">        The display type.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    display_type : ScrollOptions</span>
+<span class="sd">        The normalized :class:`ScrollOptions`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the input cannot be made a :class:`ScrollOptions`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ScrollOptions</span><span class="p">(</span><span class="n">scroll_option</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ScrollOptions</span><span class="p">[</span><span class="n">scroll_option</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Unrecognized scroll option: </span><span class="si">{</span><span class="n">scroll_option</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
 
 
 <div class="viewcode-block" id="TyphosToolButton"><a class="viewcode-back" href="../../display.html#typhos.TyphosToolButton">[docs]</a><span class="k">class</span> <span class="nc">TyphosToolButton</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QToolButton</span><span class="p">):</span>
@@ -970,8 +1021,11 @@
 <span class="sd">        The parent widget.</span>
 
 <span class="sd">    scrollable : bool, optional</span>
+<span class="sd">        Semi-deprecated parameter. Use scroll_option instead.</span>
 <span class="sd">        If ``True``, put the loaded template into a :class:`QScrollArea`.</span>
-<span class="sd">        Otherwise, the display widget will go directly in this widget&#39;s layout.</span>
+<span class="sd">        If ``False``, the display widget will go directly in this widget&#39;s</span>
+<span class="sd">        layout.</span>
+<span class="sd">        If omitted, scroll_option is used instead.</span>
 
 <span class="sd">    composite_heuristics : bool, optional</span>
 <span class="sd">        Enable composite heuristics, which may change the suggested detailed</span>
@@ -988,8 +1042,11 @@
 <span class="sd">        List of engineering templates to use in addition to those found on</span>
 <span class="sd">        disk.</span>
 
-<span class="sd">    display_type : DisplayTypes, optional</span>
+<span class="sd">    display_type : DisplayTypes, str, or int, optional</span>
 <span class="sd">        The default display type.</span>
+
+<span class="sd">    scroll_option : ScrollOptions, str, or int, optional</span>
+<span class="sd">        The scroll behavior.</span>
 
 <span class="sd">    nested : bool, optional</span>
 <span class="sd">        An optional annotation for a display that may be nested inside another.</span>
@@ -1002,17 +1059,25 @@
     <span class="n">device_count_threshold</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">signal_count_threshold</span> <span class="o">=</span> <span class="mi">30</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">scrollable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">composite_heuristics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">embedded_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">detailed_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">engineering_templates</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">display_type</span><span class="o">=</span><span class="s1">&#39;detailed_screen&#39;</span><span class="p">,</span> <span class="n">nested</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">scrollable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">composite_heuristics</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">embedded_templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">detailed_templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">engineering_templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">display_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DisplayTypes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;detailed_screen&#39;</span><span class="p">,</span>
+        <span class="n">scroll_option</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ScrollOptions</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+        <span class="n">nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_composite_heuristics</span> <span class="o">=</span> <span class="n">composite_heuristics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_forced_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_macros</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_display_widget</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scrollable</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_option</span> <span class="o">=</span> <span class="n">ScrollOptions</span><span class="o">.</span><span class="n">no_scroll</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_searched</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hide_empty</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nested</span> <span class="o">=</span> <span class="n">nested</span>
@@ -1044,7 +1109,13 @@
         <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">scrollable</span> <span class="o">=</span> <span class="n">scrollable</span>
+        <span class="k">if</span> <span class="n">scrollable</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scroll_option</span> <span class="o">=</span> <span class="n">scroll_option</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scrollable</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scroll_option</span> <span class="o">=</span> <span class="n">ScrollOptions</span><span class="o">.</span><span class="n">scrollbar</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scroll_option</span> <span class="o">=</span> <span class="n">ScrollOptions</span><span class="o">.</span><span class="n">no_scroll</span>
 
     <span class="nd">@Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">composite_heuristics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1055,18 +1126,19 @@
     <span class="k">def</span> <span class="nf">composite_heuristics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">composite_heuristics</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_composite_heuristics</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">composite_heuristics</span><span class="p">)</span>
 
-    <span class="nd">@Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">scrollable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@Property</span><span class="p">(</span><span class="n">_ScrollOptions</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">scroll_option</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScrollOptions</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Place the display in a scrollable area.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scrollable</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_option</span>
 
-    <span class="nd">@scrollable</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">scrollable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scrollable</span><span class="p">):</span>
-        <span class="c1"># Switch between using the scroll area layout or</span>
-        <span class="k">if</span> <span class="n">scrollable</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scrollable</span><span class="p">:</span>
+    <span class="nd">@scroll_option</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">scroll_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scrollable</span><span class="p">:</span> <span class="n">ScrollOptions</span><span class="p">):</span>
+        <span class="c1"># Switch the scroll area behavior</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">normalize_scroll_option</span><span class="p">(</span><span class="n">scrollable</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_option</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scrollable</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">scrollable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_option</span> <span class="o">=</span> <span class="n">opt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_move_display_to_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_display_widget</span><span class="p">)</span>
 
     <span class="nd">@Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
@@ -1084,12 +1156,24 @@
             <span class="k">return</span>
 
         <span class="n">widget</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scrollable</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scroll_option</span> <span class="o">==</span> <span class="n">ScrollOptions</span><span class="o">.</span><span class="n">auto</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_type</span> <span class="o">==</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">embedded_screen</span><span class="p">:</span>
+                <span class="n">scrollable</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">scrollable</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scroll_option</span> <span class="o">==</span> <span class="n">ScrollOptions</span><span class="o">.</span><span class="n">scrollbar</span><span class="p">:</span>
+            <span class="n">scrollable</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">scroll_option</span> <span class="o">==</span> <span class="n">ScrollOptions</span><span class="o">.</span><span class="n">no_scroll</span><span class="p">:</span>
+            <span class="n">scrollable</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scrollable</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">scrollable</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scrollable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">scrollable</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_generate_template_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_menu</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate the template switcher menu, adding it to ``base_menu``.&quot;&quot;&quot;</span>
@@ -1520,7 +1604,7 @@
             <span class="n">obj</span> <span class="o">=</span> <span class="n">pcdsutils</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_instance_by_name</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to generate TyphosDeviceDisplay from &#39;</span>
-                             <span class="s1">&#39;device </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+                             <span class="s1">&#39;class </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">klass</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span></div>

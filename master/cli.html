@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Command Line Utilities &mdash; Typhos 2.1.0+7.g4234b6a documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Command Line Utilities &mdash; Typhos 2.1.0+30.g16af30d documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.1.0+7.g4234b6a
+                2.1.0+30.g16af30d
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -85,8 +85,10 @@
   <div class="section" id="module-typhos.cli">
 <span id="command-line-utilities"></span><h1>Command Line Utilities<a class="headerlink" href="#module-typhos.cli" title="Permalink to this headline">¶</a></h1>
 <p>This module defines the <code class="docutils literal notranslate"><span class="pre">typhos</span></code> command line utility</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>usage: __main__.py [-h] [--happi-cfg HAPPI_CFG] [--fake-device] [--version]
-                   [--verbose] [--dark] [--stylesheet STYLESHEET]
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>usage: __main__.py [-h] [--layout LAYOUT] [--cols COLS]
+                   [--display-type DISPLAY_TYPE] [--scrollable SCROLLABLE]
+                   [--size SIZE] [--happi-cfg HAPPI_CFG] [--fake-device]
+                   [--version] [--verbose] [--dark] [--stylesheet STYLESHEET]
                    [--profile-modules [PROFILE_MODULES ...]]
                    [--profile-output PROFILE_OUTPUT]
                    [--benchmark [BENCHMARK ...]]
@@ -101,6 +103,26 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --layout LAYOUT       Select a alternate layout for suites of many devices.
+                        Valid options are &quot;horizontal&quot; (default), &quot;vertical&quot;,
+                        &quot;grid&quot;, &quot;flow&quot;, and any unique shortenings of those
+                        options.
+  --cols COLS           The number of columns to use for the grid layout if
+                        selected in the layout argument. This will have no
+                        effect for other layouts.
+  --display-type DISPLAY_TYPE
+                        The kind of display to open for each device at initial
+                        load. Valid options are &quot;embedded&quot;, &quot;detailed&quot;
+                        (default), &quot;engineering&quot;, and any unique shortenings
+                        of those options.
+  --scrollable SCROLLABLE
+                        Whether or not to include the scrollbar. Valid options
+                        are &quot;auto&quot;, &quot;true&quot;, &quot;false&quot;, and any unique
+                        shortenings of those options. Selecting &quot;auto&quot; will
+                        include a scrollbar for non-embedded layouts.
+  --size SIZE           A starting x,y size for the typhos suite. Useful if
+                        the default size is not suitable for your application.
+                        Example: --size 1000,1000
   --happi-cfg HAPPI_CFG
                         Location of happi configuration file if not specified
                         by $HAPPI_CFG environment variable
