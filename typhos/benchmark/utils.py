@@ -131,10 +131,10 @@ def get_native_methods(cls, module, *, native_methods=None, seen=None):
         try:
             if obj in seen:
                 continue
+            seen.add(obj)
         except TypeError:
             # Unhashable type, definitely not a class or function
             continue
-        seen.add(obj)
         if not is_native(obj, module):
             continue
         elif isclass(obj):
