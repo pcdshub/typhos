@@ -10,7 +10,7 @@ env:
 
     - CONDA_PACKAGE="typhos"
     - CONDA_RECIPE_FOLDER="conda-recipe"
-    - CONDA_EXTRAS="pip pyqt=5 happi"
+    - CONDA_EXTRAS="pip pyqt=5 happi pcdsdevices"
     - CONDA_REQUIREMENTS="dev-requirements.txt"
 
     - BENCHMARK_PYTHON="3.8"

@@ -6,6 +6,7 @@ from functools import wraps
 
 import numpy as np
 import ophyd.sim
+import pydm
 import pytest
 import qtpy
 from happi import Client
@@ -61,6 +62,15 @@ def qapp(pytestconfig):
         application = PyDMApplication(use_main_window=False)
     typhos.use_stylesheet(pytestconfig.getoption('--dark'))
     return application
+
+
+@pytest.fixture(scope='function', autouse=True)
+def noapp(monkeypatch):
+    monkeypatch.setattr(QtWidgets.QApplication, 'exec_', lambda x: 1)
+    monkeypatch.setattr(QtWidgets.QApplication, 'exit', lambda x: 1)
+    monkeypatch.setattr(
+        pydm.exception, 'raise_to_operator', lambda *_, **__: None
+    )
 
 
 @pytest.fixture(scope='session')
