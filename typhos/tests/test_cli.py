@@ -1,22 +1,11 @@
 import os
 
-import pydm
 import pytest
 
 import typhos
-from typhos.app import QApplication
 from typhos.cli import typhos_cli
 
 from . import conftest
-
-
-@pytest.fixture(scope='function')
-def noapp(monkeypatch):
-    monkeypatch.setattr(QApplication, 'exec_', lambda x: 1)
-    monkeypatch.setattr(QApplication, 'exit', lambda x: 1)
-    monkeypatch.setattr(
-        pydm.exception, 'raise_to_operator', lambda *_, **__: None
-    )
 
 
 def test_cli_version(capsys):
@@ -25,7 +14,7 @@ def test_cli_version(capsys):
     assert typhos.__version__ in readout.out
 
 
-def test_cli_happi_cfg(noapp, qtbot, happi_cfg):
+def test_cli_happi_cfg(qtbot, happi_cfg):
     window = typhos_cli(['test_motor', '--happi-cfg', happi_cfg])
     qtbot.addWidget(window)
     assert window.isVisible()
@@ -37,14 +26,14 @@ def test_cli_bad_entry(qtbot, happi_cfg):
     assert window is None
 
 
-def test_cli_no_entry(noapp, qtbot, happi_cfg):
+def test_cli_no_entry(qtbot, happi_cfg):
     window = typhos_cli(['--happi-cfg', happi_cfg])
     qtbot.addWidget(window)
     assert window.isVisible()
     assert window.centralWidget().devices == []
 
 
-def test_cli_stylesheet(noapp, qapp, qtbot, happi_cfg):
+def test_cli_stylesheet(qapp, qtbot, happi_cfg):
     with open('test.qss', 'w+') as handle:
         handle.write(
             "TyphosDeviceDisplay {qproperty-force_template: 'test.ui'}")
@@ -63,7 +52,7 @@ def test_cli_stylesheet(noapp, qapp, qtbot, happi_cfg):
     ("ophyd.sim.SynAxis[]", "SynAxis"),
     ("ophyd.sim.SynAxis[{'name':'foo'}]", "foo")
 ])
-def test_cli_class(noapp, qapp, qtbot, klass, name, happi_cfg):
+def test_cli_class(qtbot, klass, name, happi_cfg):
     window = typhos_cli([klass])
     qtbot.addWidget(window)
     assert window.isVisible()
@@ -80,7 +69,7 @@ def test_cli_class_invalid(qtbot):
     assert window is None
 
 
-def test_cli_profile_modules(noapp, capsys, qapp, qtbot):
+def test_cli_profile_modules(capsys, qtbot):
     window = typhos_cli(['ophyd.sim.SynAxis[]', '--profile-modules',
                          'typhos.suite'])
     qtbot.addWidget(window)
@@ -88,7 +77,7 @@ def test_cli_profile_modules(noapp, capsys, qapp, qtbot):
     assert 'add_device' in output.out
 
 
-def test_cli_benchmark(noapp, capsys, qapp, qtbot):
+def test_cli_benchmark(capsys, qtbot):
     windows = typhos_cli(['ophyd.sim.SynAxis[]', '--benchmark',
                           'flat_soft'])
     qtbot.addWidget(windows[0])
@@ -96,7 +85,7 @@ def test_cli_benchmark(noapp, capsys, qapp, qtbot):
     assert 'add_device' in output.out
 
 
-def test_cli_profile_output(noapp, capsys, qapp, qtbot):
+def test_cli_profile_output(capsys, qtbot):
     path_obj = conftest.MODULE_PATH / 'artifacts' / 'prof'
     if not path_obj.parent.exists():
         path_obj.parent.mkdir(parents=True)
