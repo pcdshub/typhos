@@ -17,6 +17,7 @@ Enhancements / What's new
   starting window size. These are all also available as CLI arguments,
   with the intention of augmenting typhos suite launcher scripts.
   Here are some examples:
+
   * ``--layout grid --cols 3``: lays out the device displays in a 3-column
     grid
   * ``--layout flow``: lays out the device displays in a grid that adjusts
@@ -26,20 +27,20 @@ Enhancements / What's new
   * ``--size 1000,1000``: sets a starting size of 1000 width, 1000 height for
     the suite window.
 
-  See https://github.com/pcdshub/typhos/pull/450
+  See `#450 <https://github.com/pcdshub/typhos/pull/450>`_
 
 Fixes
 -----
 * Respect ophyd signal enum_strs and metadata updates. Previously, these were
   ignored, but these can update during the lifetime of a screen and should be
-  used. (https://github.com/pcdshub/typhos/pull/459)
+  used. (`#459 <https://github.com/pcdshub/typhos/pull/459>`_)
 * Identify signals that use non-EPICS control layers and handle them
   appropriately. Previously, these would be misidentified as EPICS signals
   and handled using the ca:// PyDM plugin, which was not correct.
-  (https://github.com/pcdshub/typhos/pull/463)
+  (`#463 <https://github.com/pcdshub/typhos/pull/463>`_)
 * Fix an issue where get_native_methods could fail. This was not observed
   in the field, but it broke the test suite.
-  (https://github.com/pcdshub/typhos/pull/464)
+  (`#464 <https://github.com/pcdshub/typhos/pull/464>`_)
 
 Maintenance
 -----------
@@ -55,17 +56,23 @@ This is a minor feature release of typhos.
 
 Enhancements / What's new
 -------------------------
-* Added option to pop out documentation frame (https://github.com/pcdshub/typhos/pull/458)
+* Added option to pop out documentation frame
+  (`#458 <https://github.com/pcdshub/typhos/pull/458>`_)
 
 Fixes
 -----
-* Fixed authorization headers on Typhos help widget redirect (https://github.com/pcdshub/typhos/pull/457)
-    - This allows for the latest Confluence to work with Personal Access Tokens while navigating through the page
+* Fixed authorization headers on Typhos help widget redirect
+  (`#457 <https://github.com/pcdshub/typhos/pull/457>`_)
+
+  * This allows for the latest Confluence to work with Personal
+    Access Tokens while navigating through the page
 
 Maintenance
 -----------
-* Reduced javascript log message spam from the web view widget (part of #457)
-* Reduced log message spam from variety metadata handling (part of #457)
+* Reduced javascript log message spam from the web view widget
+  (part of `#457 <https://github.com/pcdshub/typhos/pull/457>`_)
+* Reduced log message spam from variety metadata handling
+  (part of `#457 <https://github.com/pcdshub/typhos/pull/457>`_)
 * Fixed compatibility with pyqtgraph v0.12.3
 * Web-related widgets are now in a new submodule `typhos.web`.
 
