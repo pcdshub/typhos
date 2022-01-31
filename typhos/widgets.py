@@ -188,6 +188,14 @@ class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
         event.ignore()
 
 
+class NoScrollComboBox(QtWidgets.QComboBox):
+    """
+    A combobox disconnected from direct EPICS/ophyd with scrolling ignored.
+    """
+    def wheelEvent(self, event: QtGui.QWheelEvent):
+        event.ignore()
+
+
 @use_for_variety_write('scalar')
 @use_for_variety_write('text')
 class TyphosLineEdit(pydm.widgets.PyDMLineEdit):

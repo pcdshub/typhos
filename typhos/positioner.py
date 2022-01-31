@@ -154,7 +154,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         """Inner `set` routine - call device.set() and monitor the status."""
         self._clear_status_thread()
         self._last_move = None
-        if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+        if isinstance(self.ui.set_value, widgets.NoScrollComboBox):
             set_position = value
         else:
             set_position = float(value)
@@ -182,7 +182,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             return
 
         try:
-            if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+            if isinstance(self.ui.set_value, widgets.NoScrollComboBox):
                 value = self.ui.set_value.currentText()
             else:
                 value = self.ui.set_value.text()
@@ -344,7 +344,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             selection = False
 
         if selection:
-            self.ui.set_value = QtWidgets.QComboBox()
+            self.ui.set_value = widgets.NoScrollComboBox()
             self.ui.set_value.addItems(setpoint_signal.enum_strs)
             # Activated signal triggers only when the user selects an option
             self.ui.set_value.activated.connect(self.set)
@@ -608,7 +608,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
 
         # Update set_value if it's not being edited.
         if not self.ui.set_value.hasFocus():
-            if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+            if isinstance(self.ui.set_value, widgets.NoScrollComboBox):
                 try:
                     idx = int(text)
                     self.ui.set_value.setCurrentIndex(idx)
