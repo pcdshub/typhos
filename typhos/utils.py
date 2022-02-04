@@ -154,11 +154,23 @@ def channel_from_signal(signal, read=True):
     """
     Create a PyDM address from arbitrary signal type
     """
-    # Add an item
     if isinstance(signal, EpicsSignalBase):
         if read:
-            return channel_name(signal._read_pv.pvname)
-        return channel_name(signal._write_pv.pvname)
+            # For readback widgets, focus on the _read_pv only:
+            attrs = ["_read_pv"]
+        else:
+            # For setpoint widgets, _write_pv may exist (and differ) from
+            # _read_pv, try it first:
+            attrs = ["_write_pv", "_read_pv"]
+
+        # Some customizations of EpicsSignalBase may have different attributes.
+        # Try the attributes, but don't fail if they are not present:
+        for attr in attrs:
+            pv_instance = getattr(signal, attr, None)
+            pvname = getattr(pv_instance, "pvname", None)
+            if pvname is not None and isinstance(pvname, str):
+                return channel_name(pvname)
+
     return channel_name(signal.name, protocol='sig')
 
 
