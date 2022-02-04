@@ -644,7 +644,7 @@ def clear_error_in_background(device):
         except AttributeError:
             pass
         except Exception:
-            msg = 'Count not clear error!'
+            msg = "Could not clear error!"
             logger.error(msg)
             logger.debug(msg, exc_info=True)
 
