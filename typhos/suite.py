@@ -554,7 +554,7 @@ class TyphosSuite(TyphosBase):
         content_layout: Optional[QtWidgets.QLayout] = None,
         default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
         scroll_option: ScrollOptions = ScrollOptions.auto,
-        show_displays: bool = False,
+        show_displays: bool = True,
         **kwargs,
     ) -> TyphosSuite:
         """
