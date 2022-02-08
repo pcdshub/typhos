@@ -554,6 +554,7 @@ class TyphosSuite(TyphosBase):
         content_layout: Optional[QtWidgets.QLayout] = None,
         default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
         scroll_option: ScrollOptions = ScrollOptions.auto,
+        show_displays: bool = False,
         **kwargs,
     ) -> TyphosSuite:
         """
@@ -592,6 +593,10 @@ class TyphosSuite(TyphosBase):
             scrollbars for detailed and engineering screens but not for
             embedded displays.
 
+        show_displays : bool, optional
+            If True (default), open all the included device displays.
+            If False, do not open any of the displays.
+
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
@@ -617,7 +622,8 @@ class TyphosSuite(TyphosBase):
         for device in devices:
             try:
                 suite.add_device(device, **kwargs)
-                suite.show_subdisplay(device)
+                if show_displays:
+                    suite.show_subdisplay(device)
             except Exception:
                 logger.exception("Unable to add %r to TyphosSuite",
                                  device.name)
