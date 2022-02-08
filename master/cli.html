@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Command Line Utilities &mdash; Typhos 2.2.1 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Command Line Utilities &mdash; Typhos 2.2.1+5.g1937324 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.2.1
+                2.2.1+5.g1937324
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -87,8 +87,9 @@
 <p>This module defines the <code class="docutils literal notranslate"><span class="pre">typhos</span></code> command line utility</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>usage: __main__.py [-h] [--layout LAYOUT] [--cols COLS]
                    [--display-type DISPLAY_TYPE] [--scrollable SCROLLABLE]
-                   [--size SIZE] [--happi-cfg HAPPI_CFG] [--fake-device]
-                   [--version] [--verbose] [--dark] [--stylesheet STYLESHEET]
+                   [--size SIZE] [--hide-displays] [--happi-cfg HAPPI_CFG]
+                   [--fake-device] [--version] [--verbose] [--dark]
+                   [--stylesheet STYLESHEET]
                    [--profile-modules [PROFILE_MODULES ...]]
                    [--profile-output PROFILE_OUTPUT]
                    [--benchmark [BENCHMARK ...]]
@@ -123,6 +124,8 @@ optional arguments:
   --size SIZE           A starting x,y size for the typhos suite. Useful if
                         the default size is not suitable for your application.
                         Example: --size 1000,1000
+  --hide-displays       Option to start with subdisplays hidden instead of
+                        shown.
   --happi-cfg HAPPI_CFG
                         Location of happi configuration file if not specified
                         by $HAPPI_CFG environment variable
