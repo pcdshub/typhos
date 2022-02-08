@@ -265,6 +265,7 @@ def create_suite(
             default_display_type=display_type_enum,
             scroll_option=scroll_enum,
             show_displays=show_displays,
+            pin=not show_displays,
         )
 
 
