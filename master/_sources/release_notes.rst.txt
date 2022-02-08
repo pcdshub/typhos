@@ -2,6 +2,24 @@
  Release History
 =================
 
+v2.2.1 (2022-02-07)
+===================
+
+Description
+-----------
+This is a small bugfix release that was deployed as a hotfix
+to avoid accidental moves.
+
+Fixes
+-----
+- Disable scroll wheel interaction with positioner combo boxes.
+  This created a situation where operators were accidentally
+  requesting moves while trying to scroll past the control box.
+  This was previously fixed for the typhos combo boxes found on
+  the various automatically generated panels in v1.1.0, but not
+  for the positioner combo boxes.
+
+
 v2.2.0 (2021-11-30)
 ===================
 
