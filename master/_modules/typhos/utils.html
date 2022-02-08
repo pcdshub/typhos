@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.utils &mdash; Typhos 2.2.1+5.g1937324 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.utils &mdash; Typhos 2.2.1+8.g92868fa documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.2.1+5.g1937324
+                2.2.1+8.g92868fa
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -237,11 +237,23 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a PyDM address from arbitrary signal type</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Add an item</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">read</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">_read_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">_write_pv</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
+            <span class="c1"># For readback widgets, focus on the _read_pv only:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_read_pv&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># For setpoint widgets, _write_pv may exist (and differ) from</span>
+            <span class="c1"># _read_pv, try it first:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_write_pv&quot;</span><span class="p">,</span> <span class="s2">&quot;_read_pv&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Some customizations of EpicsSignalBase may have different attributes.</span>
+        <span class="c1"># Try the attributes, but don&#39;t fail if they are not present:</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="n">pv_instance</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">pvname</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pv_instance</span><span class="p">,</span> <span class="s2">&quot;pvname&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pvname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pvname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">pvname</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">)</span></div>
 
 
