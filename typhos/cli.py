@@ -88,6 +88,14 @@ parser.add_argument(
     ),
 )
 parser.add_argument(
+    '--hide-displays',
+    action='store_true',
+    help=(
+        'Option to start with subdisplays hidden instead '
+        'of shown.'
+    )
+)
+parser.add_argument(
     '--happi-cfg',
     help=(
         'Location of happi configuration file '
@@ -207,6 +215,7 @@ def create_suite(
     cols: int = 3,
     display_type: str = 'detailed',
     scroll_option: str = 'auto',
+    show_displays: bool = True,
 ) -> TyphosSuite:
     """
     Create a TyphosSuite from a list of device names.
@@ -234,6 +243,9 @@ def create_suite(
         cli help for valid options.
     scroll_option : str, optional
         Options for the scrollbar. See the cli help for valid options.
+    show_displays : bool, optional
+        If True (default), open all the included device displays.
+        If False, do not open any of the displays.
 
     Returns
     -------
@@ -255,6 +267,8 @@ def create_suite(
             content_layout=layout_obj,
             default_display_type=display_type_enum,
             scroll_option=scroll_enum,
+            show_displays=show_displays,
+            pin=not show_displays,
         )
 
 
@@ -438,6 +452,7 @@ def typhos_run(
     display_type: str = 'detailed',
     scroll_option: str = 'auto',
     initial_size: Optional[str] = None,
+    show_displays: bool = True,
 ) -> QtWidgets.QMainWindow:
     """
     Run the central typhos part of typhos.
@@ -467,6 +482,9 @@ def typhos_run(
         Options for the scrollbar. See the cli help for valid options.
     initial_size : str, optional
         Specification for the starting width,height of the window.
+    show_displays : bool, optional
+        If True (default), open all the included device displays.
+        If False, do not open any of the displays.
 
     Returns
     -------
@@ -483,6 +501,7 @@ def typhos_run(
             cols=cols,
             display_type=display_type,
             scroll_option=scroll_option,
+            show_displays=show_displays,
         )
     if suite:
         if initial_size is not None:
@@ -539,6 +558,7 @@ def typhos_cli(args):
                 display_type=args.display_type,
                 scroll_option=args.scrollable,
                 initial_size=args.size,
+                show_displays=not args.hide_displays,
             )
         return suite
 
