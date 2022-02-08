@@ -496,6 +496,7 @@ class TyphosSuite(TyphosBase):
         content_layout: Optional[QtWidgets.QLayout] = None,
         default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
         scroll_option: ScrollOptions = ScrollOptions.auto,
+        show_displays: bool = True,
         **kwargs,
     ) -> TyphosSuite:
         """
@@ -535,6 +536,10 @@ class TyphosSuite(TyphosBase):
             scrollbars for detailed and engineering screens but not for
             embedded displays.
 
+        show_displays : bool, optional
+            If True (default), open all the included device displays.
+            If False, do not open any of the displays.
+
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
@@ -542,6 +547,7 @@ class TyphosSuite(TyphosBase):
                                 content_layout=content_layout,
                                 default_display_type=default_display_type,
                                 scroll_option=scroll_option,
+                                show_displays=show_displays,
                                 **kwargs)
 
     @classmethod

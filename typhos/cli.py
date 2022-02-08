@@ -243,6 +243,9 @@ def create_suite(
         cli help for valid options.
     scroll_option : str, optional
         Options for the scrollbar. See the cli help for valid options.
+    show_displays : bool, optional
+        If True (default), open all the included device displays.
+        If False, do not open any of the displays.
 
     Returns
     -------
@@ -479,6 +482,9 @@ def typhos_run(
         Options for the scrollbar. See the cli help for valid options.
     initial_size : str, optional
         Specification for the starting width,height of the window.
+    show_displays : bool, optional
+        If True (default), open all the included device displays.
+        If False, do not open any of the displays.
 
     Returns
     -------
