@@ -25,10 +25,19 @@ def register_signal(signal):
     has any effect.
 
     Signals can be referenced by their ``name`` attribute or by their
-    ``dotted_name`` attribute.
+    full dotted path starting from the parent's name.
     """
+    # Pick all the name aliases (name, dotted path)
+    if signal is signal.root:
+        names = (signal.name,)
+    else:
+        # .dotted_name does not include the root device's name
+        names = (
+            signal.name,
+            '.'.join((signal.root.name, signal.dotted_name)),
+        )
     # Warn the user if they are adding twice
-    for name in (signal.name, signal.dotted_name):
+    for name in names:
         if name in signal_registry:
             # Case 1: harmless re-add
             if signal_registry[name] is signal:
@@ -43,13 +52,9 @@ def register_signal(signal):
                     name,
                 )
             return
-    logger.debug(
-        "Registering signal %s (alias %s)",
-        signal.name,
-        signal.dotted_name,
-    )
-    signal_registry[signal.name] = signal
-    signal_registry[signal.dotted_name] = signal
+    logger.debug("Registering signal with names %s", names)
+    for name in names:
+        signal_registry[name] = signal
 
 
 class SignalConnection(PyDMConnection):
