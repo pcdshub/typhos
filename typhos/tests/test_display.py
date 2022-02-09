@@ -142,3 +142,14 @@ def test_display_with_py_file(display, motor):
     display.load_best_template()
     assert isinstance(display.display_widget, Display)
     assert getattr(display.display_widget, 'is_from_test_file', False)
+
+
+def test_display_with_sig_template(display, device, qapp):
+    display.force_template = str(conftest.MODULE_PATH / 'utils' / 'sig.ui')
+    display.add_device(device)
+    print(display.macros)
+    qapp.processEvents()
+    for num in range(10):
+        device.setpoint.put(num)
+        qapp.processEvents()
+        assert display.display_widget.ui.setpoint.text() == str(num)

@@ -230,7 +230,7 @@ class MockDevice(Device):
 
 @pytest.fixture(scope='function')
 def device():
-    dev = MockDevice('Tst:This', name='Simulated Device')
+    dev = MockDevice('Tst:This', name='simulated_device')
     yield dev
     clear_handlers(dev)
 
@@ -261,6 +261,7 @@ def happi_cfg():
     return path
 
 
+@pytest.fixture(scope='function', autouse=True)
 def reset_signal_plugin():
     """
     Completely restart the sig:// plugin.
