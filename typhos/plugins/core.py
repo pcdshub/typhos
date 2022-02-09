@@ -4,10 +4,9 @@ Module Docstring
 import logging
 
 import numpy as np
-from qtpy.QtCore import Qt, Slot
-
-from ophyd.utils.epics_pvs import _type_map, AlarmSeverity
+from ophyd.utils.epics_pvs import AlarmSeverity, _type_map
 from pydm.data_plugins.plugin import PyDMConnection, PyDMPlugin
+from qtpy.QtCore import Qt, Slot
 
 from ..utils import raise_to_operator
 
@@ -21,14 +20,36 @@ def register_signal(signal):
     Add a new Signal to the registry.
 
     The Signal object is kept within ``signal_registry`` for reference by name
-    in the :class:`.SignalConnection`. Signals can be added multiple times and
-    overwritten but a warning will be emitted.
+    in the :class:`.SignalConnection`. Signals can be added multiple times,
+    but only the first register_signal call for each unique signal name
+    has any effect.
+
+    Signals can be referenced by their ``name`` attribute or by their
+    ``dotted_name`` attribute.
     """
     # Warn the user if they are adding twice
-    if signal.name in signal_registry:
-        logger.debug("A signal named %s is already registered!", signal.name)
-        return
+    for name in (signal.name, signal.dotted_name):
+        if name in signal_registry:
+            # Case 1: harmless re-add
+            if signal_registry[name] is signal:
+                logger.debug(
+                    "The signal named %s is already registered!",
+                    name,
+                )
+            # Case 2: harmful overwrite! Name collision!
+            else:
+                logger.warning(
+                    "A different signal named %s is already registered!",
+                    name,
+                )
+            return
+    logger.debug(
+        "Registering signal %s (alias %s)",
+        signal.name,
+        signal.dotted_name,
+    )
     signal_registry[signal.name] = signal
+    signal_registry[signal.dotted_name] = signal
 
 
 class SignalConnection(PyDMConnection):
