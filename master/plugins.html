@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Typhos Data Plugins for PyDM &mdash; Typhos 2.2.1+8.g92868fa documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Typhos Data Plugins for PyDM &mdash; Typhos 2.2.1+14.ge0a2e9a documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.2.1+8.g92868fa
+                2.2.1+14.ge0a2e9a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -95,8 +95,11 @@
 <code class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></code><code class="sig-name descname"><span class="pre">register_signal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#register_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.register_signal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new Signal to the registry.</p>
 <p>The Signal object is kept within <code class="docutils literal notranslate"><span class="pre">signal_registry</span></code> for reference by name
-in the <a class="reference internal" href="#typhos.plugins.SignalConnection" title="typhos.plugins.SignalConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalConnection</span></code></a>. Signals can be added multiple times and
-overwritten but a warning will be emitted.</p>
+in the <a class="reference internal" href="#typhos.plugins.SignalConnection" title="typhos.plugins.SignalConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalConnection</span></code></a>. Signals can be added multiple times,
+but only the first register_signal call for each unique signal name
+has any effect.</p>
+<p>Signals can be referenced by their <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute or by their
+full dotted path starting from the parent’s name.</p>
 </dd></dl>
 
 <dl class="py class">

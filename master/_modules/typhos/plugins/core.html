@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.plugins.core &mdash; Typhos 2.2.1+8.g92868fa documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <title>typhos.plugins.core &mdash; Typhos 2.2.1+14.ge0a2e9a documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.2.1+8.g92868fa
+                2.2.1+14.ge0a2e9a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -87,10 +87,9 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
-
-<span class="kn">from</span> <span class="nn">ophyd.utils.epics_pvs</span> <span class="kn">import</span> <span class="n">_type_map</span><span class="p">,</span> <span class="n">AlarmSeverity</span>
+<span class="kn">from</span> <span class="nn">ophyd.utils.epics_pvs</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">_type_map</span>
 <span class="kn">from</span> <span class="nn">pydm.data_plugins.plugin</span> <span class="kn">import</span> <span class="n">PyDMConnection</span><span class="p">,</span> <span class="n">PyDMPlugin</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
 
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">raise_to_operator</span>
 
@@ -104,14 +103,41 @@
 <span class="sd">    Add a new Signal to the registry.</span>
 
 <span class="sd">    The Signal object is kept within ``signal_registry`` for reference by name</span>
-<span class="sd">    in the :class:`.SignalConnection`. Signals can be added multiple times and</span>
-<span class="sd">    overwritten but a warning will be emitted.</span>
+<span class="sd">    in the :class:`.SignalConnection`. Signals can be added multiple times,</span>
+<span class="sd">    but only the first register_signal call for each unique signal name</span>
+<span class="sd">    has any effect.</span>
+
+<span class="sd">    Signals can be referenced by their ``name`` attribute or by their</span>
+<span class="sd">    full dotted path starting from the parent&#39;s name.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Pick all the name aliases (name, dotted path)</span>
+    <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="n">signal</span><span class="o">.</span><span class="n">root</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># .dotted_name does not include the root device&#39;s name</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">signal</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">dotted_name</span><span class="p">)),</span>
+        <span class="p">)</span>
     <span class="c1"># Warn the user if they are adding twice</span>
-    <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">signal_registry</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;A signal named </span><span class="si">%s</span><span class="s2"> is already registered!&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span>
-    <span class="n">signal_registry</span><span class="p">[</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span></div>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">signal_registry</span><span class="p">:</span>
+            <span class="c1"># Case 1: harmless re-add</span>
+            <span class="k">if</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="n">signal</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;The signal named </span><span class="si">%s</span><span class="s2"> is already registered!&quot;</span><span class="p">,</span>
+                    <span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="c1"># Case 2: harmful overwrite! Name collision!</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;A different signal named </span><span class="si">%s</span><span class="s2"> is already registered!&quot;</span><span class="p">,</span>
+                    <span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Registering signal with names </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">signal_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span></div>
 
 
 <div class="viewcode-block" id="SignalConnection"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection">[docs]</a><span class="k">class</span> <span class="nc">SignalConnection</span><span class="p">(</span><span class="n">PyDMConnection</span><span class="p">):</span>

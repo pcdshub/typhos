@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.suite &mdash; Typhos 2.2.1+8.g92868fa documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.suite &mdash; Typhos 2.2.1+14.ge0a2e9a documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.2.1+8.g92868fa
+                2.2.1+14.ge0a2e9a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -101,7 +101,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">widgets</span>
 <span class="kn">from</span> <span class="nn">.display</span> <span class="kn">import</span> <span class="n">DisplayTypes</span><span class="p">,</span> <span class="n">ScrollOptions</span><span class="p">,</span> <span class="n">TyphosDeviceDisplay</span>
 <span class="kn">from</span> <span class="nn">.tools</span> <span class="kn">import</span> <span class="n">TyphosConsole</span><span class="p">,</span> <span class="n">TyphosLogDisplay</span><span class="p">,</span> <span class="n">TyphosTimePlot</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TyphosBase</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">flatten_tree</span><span class="p">,</span> <span class="n">save_suite</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TyphosBase</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span> <span class="n">flatten_tree</span><span class="p">,</span> <span class="n">save_suite</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="c1"># Use non-None sentinel value since None means no tools</span>
@@ -153,7 +153,8 @@
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
             <span class="p">(</span><span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">,</span>
              <span class="n">device</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="s1">&#39;devices&#39;</span><span class="p">,</span> <span class="p">[]),</span>
-             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="n">device</span>
+             <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="n">device</span><span class="p">,</span>
+             <span class="nb">isinstance</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">==</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">device</span><span class="p">),</span>
              <span class="p">)</span>
         <span class="p">)</span>
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.display &mdash; Typhos 2.2.1+8.g92868fa documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.display &mdash; Typhos 2.2.1+14.ge0a2e9a documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.2.1+8.g92868fa
+                2.2.1+14.ge0a2e9a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -104,6 +104,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">panel</span> <span class="k">as</span> <span class="n">typhos_panel</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">web</span><span class="p">,</span> <span class="n">widgets</span>
 <span class="kn">from</span> <span class="nn">.jira</span> <span class="kn">import</span> <span class="n">TyphosJiraIssueWidget</span>
+<span class="kn">from</span> <span class="nn">.plugins.core</span> <span class="kn">import</span> <span class="n">register_signal</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -1445,6 +1446,10 @@
 <span class="sd">           3. The argument ``macros`` is then used to fill/update the final</span>
 <span class="sd">              macro dictionary.</span>
 
+<span class="sd">        This will also register the device&#39;s signals in the sig:// plugin.</span>
+<span class="sd">        This means that any templates can refer to their device&#39;s signals by</span>
+<span class="sd">        name.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        device : ophyd.Device</span>
@@ -1459,6 +1464,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="c1"># Add the device to the cache</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Registering signals from device </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">component_walk</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">walk_signals</span><span class="p">():</span>
+            <span class="n">register_signal</span><span class="p">(</span><span class="n">component_walk</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_searched</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">macros</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_macros_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_best_template</span><span class="p">()</span></div>
