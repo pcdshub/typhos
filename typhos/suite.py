@@ -18,7 +18,7 @@ from qtpy import QtCore, QtWidgets
 from . import utils, widgets
 from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
 from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
-from .utils import TyphosBase, clean_name, flatten_tree, save_suite
+from .utils import TyphosBase, clean_attr, clean_name, flatten_tree, save_suite
 
 logger = logging.getLogger(__name__)
 # Use non-None sentinel value since None means no tools
@@ -70,7 +70,8 @@ class SidebarParameter(parametertree.Parameter):
         return any(
             (device in self.devices,
              device in getattr(self.value(), 'devices', []),
-             self.name() == device
+             self.name() == device,
+             isinstance(device, str) and self.name() == clean_attr(device),
              )
         )
 
