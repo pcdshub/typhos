@@ -147,7 +147,6 @@ def test_display_with_py_file(display, motor):
 def test_display_with_sig_template(display, device, qapp):
     display.force_template = str(conftest.MODULE_PATH / 'utils' / 'sig.ui')
     display.add_device(device)
-    print(display.macros)
     qapp.processEvents()
     for num in range(10):
         device.setpoint.put(num)
