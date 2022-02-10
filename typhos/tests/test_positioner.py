@@ -8,7 +8,7 @@ from ophyd.sim import SynAxis
 from typhos.positioner import TyphosPositionerWidget
 from typhos.utils import SignalRO
 
-from .conftest import RichSignal, reset_signal_plugin, show_widget
+from .conftest import RichSignal, show_widget
 
 
 class SimMotor(SynAxis):
@@ -35,7 +35,6 @@ class SimMotor(SynAxis):
 
 @pytest.fixture(scope='function')
 def motor_widget(qtbot):
-    reset_signal_plugin()
     motor = SimMotor(name='test')
     widget = TyphosPositionerWidget()
     widget.readback_attribute = 'readback'

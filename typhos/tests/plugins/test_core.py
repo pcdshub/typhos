@@ -1,11 +1,13 @@
 import numpy as np
 import pydm.utilities
-from ophyd import Signal
+from ophyd import Component as Cpt
+from ophyd import Device, Signal
 from pydm.widgets import PyDMLineEdit
 
+from typhos.plugins.core import (SignalConnection, SignalPlugin,
+                                 register_signal, signal_registry)
+
 from ..conftest import DeadSignal, RichSignal
-from typhos.plugins.core import (SignalPlugin, SignalConnection,
-                                 register_signal)
 
 
 def test_signal_connection(qapp, qtbot):
@@ -50,6 +52,16 @@ def test_signal_connection(qapp, qtbot):
     widget.send_value_signal.emit(1)
     qapp.processEvents()
     assert sig.get() == 3
+
+
+def test_dotted_name():
+    class TestDevice(Device):
+        test = Cpt(Signal)
+
+    device = TestDevice(name='test')
+    register_signal(device.test)
+
+    assert 'test.test' in signal_registry
 
 
 def test_metadata(qapp, qtbot):

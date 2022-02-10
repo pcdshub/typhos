@@ -21,6 +21,7 @@ from . import cache
 from . import panel as typhos_panel
 from . import utils, web, widgets
 from .jira import TyphosJiraIssueWidget
+from .plugins.core import register_signal
 
 logger = logging.getLogger(__name__)
 
@@ -1362,6 +1363,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
            3. The argument ``macros`` is then used to fill/update the final
               macro dictionary.
 
+        This will also register the device's signals in the sig:// plugin.
+        This means that any templates can refer to their device's signals by
+        name.
+
         Parameters
         ----------
         device : ophyd.Device
@@ -1376,6 +1381,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             self.devices.clear()
         # Add the device to the cache
         super().add_device(device)
+        logger.debug("Registering signals from device %s", device.name)
+        for component_walk in device.walk_signals():
+            register_signal(component_walk.item)
         self._searched = False
         self.macros = self._build_macros_from_device(device, macros=macros)
         self.load_best_template()
