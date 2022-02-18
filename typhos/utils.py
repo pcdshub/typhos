@@ -333,8 +333,8 @@ class TyphosLoading(QtWidgets.QLabel):
 
 class TyphosObject:
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.devices = list()
+        super().__init__(*args, **kwargs)
 
     def add_device(self, device):
         """
