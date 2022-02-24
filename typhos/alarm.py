@@ -313,11 +313,18 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         else:
             new_alarm = max(info.alarm for info in self.signal_info.values())
         if new_alarm != self.alarm_summary:
-            self.alarm_changed.emit(new_alarm)
-            logger.debug(
-                f'Updated alarm from {self.alarm_summary} to {new_alarm} '
-                f'on alarm widget with channel {self.channels()[0]}'
+            try:
+                self.alarm_changed.emit(new_alarm)
+            except RuntimeError:
+                # Widget was destroyed and not properly cleaned up
+                logger.debug('Dangling reference to alarm widget!')
+                return
+            else:
+                logger.debug(
+                    f'Updated alarm from {self.alarm_summary} to {new_alarm} '
+                    f'on alarm widget with channel {self.channels()[0]}'
                 )
+
         self.alarm_summary = new_alarm
 
     def set_alarm_color(self, alarm_level):
