@@ -2,6 +2,29 @@
  Release History
 =================
 
+v2.3.0 (2022-03-31)
+===================
+
+Description
+-----------
+This is a small release with fixes and features that were implemented
+last month.
+
+Features
+--------
+- Add the option to hide displays in the suite at launch,
+  rather than automatically showing all of them.
+- Allow the sig:// protocol to be used in typhos templates by
+  automatically registering all of a device's signals at launch.
+
+Fixes
+-----
+- Fix an issue where an assumption about the nature of EpicsSignal
+  object was breaking when using PytmcSignal objects from pcdsdevices.
+- Make a workaround for a C++ wrapped exception that could happen
+  in specific orders of loading and unloading typhos alarm widgets.
+
+
 v2.2.1 (2022-02-07)
 ===================
 
