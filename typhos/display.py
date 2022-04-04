@@ -5,6 +5,7 @@ import inspect
 import logging
 import os
 import pathlib
+import weakref
 import webbrowser
 from typing import List, Optional, Union
 
@@ -1582,9 +1583,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         )
 
 
+# This holds the status of displays which had visibility toggled below in
+# ``toggle_display``.
+_last_toggle_status = weakref.WeakKeyDictionary()
+
+
 def toggle_display(widget, force_state=None):
     """
-    Toggle the visibility of all :class:`TyphosSignalPanel` in a display.
+    Toggle the visibility of all TyphosBase widgets in a display.
 
     Parameters
     ----------
@@ -1596,15 +1602,28 @@ def toggle_display(widget, force_state=None):
         force_state.
         If not set or set to None, it will flip the current panels state.
     """
-    panels = widget.findChildren(typhos_panel.TyphosSignalPanel) or []
-    visible = all(panel.isVisible() for panel in panels)
+    children = (
+        set(widget.findChildren(utils.TyphosBase)) |
+        set(widget.findChildren(typhos_panel.TyphosSignalPanel)) |
+        # There is no typhos-specific tab widget for signals:
+        set(widget.findChildren(QtWidgets.QTabWidget))
+    )
 
-    state = not visible
+    try:
+        new_state = not _last_toggle_status[widget]
+    except KeyError:
+        # Default to showing the opposite of the existing state, if all
+        # children are in the same state.
+        new_state = not all(child.isVisible() for child in children)
+
     if force_state is not None:
-        state = force_state
+        new_state = force_state
 
-    for panel in panels:
-        panel.setVisible(state)
+    _last_toggle_status[widget] = new_state
+
+    for child in children:
+        child.setVisible(new_state)
+        child.adjustSize()
 
 
 def show_empty(widget):
