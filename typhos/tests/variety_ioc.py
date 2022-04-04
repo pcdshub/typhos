@@ -7,9 +7,10 @@ from caproto.server import PVGroup, ioc_arg_parser, pvproperty, run
 from ophyd import Component as Cpt
 from ophyd import EpicsSignal
 
-pytest.importorskip('pcdsdevices')
-
-from pcdsdevices.variety import set_metadata  # noqa: E402
+try:
+    from pcdsdevices.variety import set_metadata  # noqa: E402
+except Exception:
+    pytest.skip(reason="Unable to import pcdsdevices for testing")
 
 
 class Variants(ophyd.Device):

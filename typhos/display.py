@@ -360,12 +360,12 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         if not display:
             return base_menu
 
+        base_menu.addSection('Templates')
+        display._generate_template_menu(base_menu)
+
         panels = display.findChildren(typhos_panel.TyphosSignalPanel) or []
         if not panels:
             return base_menu
-
-        base_menu.addSection('Templates')
-        display._generate_template_menu(base_menu)
 
         base_menu.addSection('Filters')
         filter_menu = base_menu.addMenu("&Kind filter")
