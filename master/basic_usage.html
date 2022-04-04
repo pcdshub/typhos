@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How it Works &mdash; Typhos 2.3.0+3.gfd6f3f2 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>How it Works &mdash; Typhos 2.3.0+5.gf3a06e4 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.0+3.gfd6f3f2
+                2.3.0+5.gf3a06e4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -43,6 +43,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">How it Works</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#interpreting-a-device">Interpreting a Device</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#using-happi">Using Happi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#signals-of-devices">Signals of Devices</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#display-signals">Display Signals</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#filling-templates">Filling Templates</a></li>
 </ul>
@@ -148,8 +149,16 @@ repository. The main purpose of the package is to store information on our
 Ophyd objects so that we can load them in a variety of contexts. If you do not
 use <code class="docutils literal notranslate"><span class="pre">happi</span></code> you will need to create your objects and displays in the same
 process.</p>
-<p>Here is a quick example if you wanted to get a feel for what <code class="docutils literal notranslate"><span class="pre">typhos</span></code> looks
-like with <cite>happi`</cite>:</p>
+<p>From the command-line, using typhos and happi together is easy.  For example,
+to load an auto-generated typhos screen for your device named <code class="docutils literal notranslate"><span class="pre">&quot;my_device&quot;</span></code>
+would only require the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ typhos my_device
+</pre></div>
+</div>
+<p>typhos automatically configures the happi client, finds your device, and
+creates an appropriate screen for it.</p>
+<p>If you are looking to integrate typhos at the Python source code level,
+consider the following example which uses <code class="docutils literal notranslate"><span class="pre">typhos</span></code> with <code class="docutils literal notranslate"><span class="pre">happi</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">happi</span>
 <span class="kn">from</span> <span class="nn">typhos.plugins</span> <span class="kn">import</span> <span class="n">register_client</span>
 
@@ -172,6 +181,33 @@ configured the <code class="docutils literal notranslate"><span class="pre">$HAP
 </pre></div>
 </div>
 </div>
+<div class="section" id="signals-of-devices">
+<h3>Signals of Devices<a class="headerlink" href="#signals-of-devices" title="Permalink to this headline">¶</a></h3>
+<p>When making a custom screen, you can access signals associated with your device
+in several ways, in order of suggested use:</p>
+<ol class="arabic simple">
+<li><p>By using the typhos built-in “signal” plugin to connect to the signal with
+the dotted ophyd name, just as you would use in an IPython session.
+In the designer “channel” property, specify: <code class="docutils literal notranslate"><span class="pre">sig://device_name.attr</span></code>
+with as many <code class="docutils literal notranslate"><span class="pre">.attrs</span></code> required to reach the signal from the top-level
+device as needed.
+For example, for a motor named “my_motor”, you could use:
+<code class="docutils literal notranslate"><span class="pre">sig://my_motor.user_readback</span></code></p></li>
+<li><p>An alternate signal name is available, that which is seen by the data
+acquisition system (e.g., the databroker by way of bluesky).  Generally,
+characters seen as invalid for a MongoDB are replaced with an underscore
+(<code class="docutils literal notranslate"><span class="pre">_</span></code>).  To check a signal’s name, see the <code class="docutils literal notranslate"><span class="pre">.name</span></code> property of that
+signal.
+For example, for a motor named “my_motor”, you could use:
+<code class="docutils literal notranslate"><span class="pre">sig://my_motor_user_readback</span></code></p></li>
+<li><p>By PV name directly.  Assuming your signal is available through the
+underlying control system (EPICS, for example), you could look and see which
+PVs your signal talks to and use those directly.  That is,
+<code class="docutils literal notranslate"><span class="pre">my_motor.user_readback.pvname</span></code> would tell you which EPICS PV the user
+readback uses.  From there, you could set the widget’s channel to use EPICS
+Channel Access with <code class="docutils literal notranslate"><span class="pre">ca://pv_name_here</span></code>.</p></li>
+</ol>
+</div>
 <div class="section" id="display-signals">
 <h3>Display Signals<a class="headerlink" href="#display-signals" title="Permalink to this headline">¶</a></h3>
 <p>The first thing we’ll talk about is showing a group of signals associated with
@@ -193,15 +229,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1649101316.886776}),</span>
-<span class="go">             (&#39;motor_setpoint&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1649101316.886775})])</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1649102975.2033715}),</span>
+<span class="go">             (&#39;motor_setpoint&#39;,</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1649102975.2033708})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1649101316.887343}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1649102975.2039468}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1649101316.88739})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1649102975.203993})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a

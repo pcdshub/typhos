@@ -64,8 +64,19 @@ Ophyd objects so that we can load them in a variety of contexts. If you do not
 use ``happi`` you will need to create your objects and displays in the same
 process.
 
-Here is a quick example if you wanted to get a feel for what ``typhos`` looks
-like with `happi``:
+From the command-line, using typhos and happi together is easy.  For example,
+to load an auto-generated typhos screen for your device named ``"my_device"``
+would only require the following:
+
+.. code:: bash
+
+   $ typhos my_device
+
+typhos automatically configures the happi client, finds your device, and
+creates an appropriate screen for it.
+
+If you are looking to integrate typhos at the Python source code level,
+consider the following example which uses ``typhos`` with ``happi``:
 
 .. code:: python
 
@@ -91,6 +102,34 @@ We can now check that we can load the complete ``SynAxis`` object.
 .. code:: python
 
     motor = client.load_device(name='my_motor')
+
+Signals of Devices
+^^^^^^^^^^^^^^^^^^
+
+When making a custom screen, you can access signals associated with your device
+in several ways, in order of suggested use:
+
+1. By using the typhos built-in "signal" plugin to connect to the signal with
+   the dotted ophyd name, just as you would use in an IPython session.
+   In the designer "channel" property, specify: ``sig://device_name.attr``
+   with as many ``.attrs`` required to reach the signal from the top-level
+   device as needed.
+   For example, for a motor named "my_motor", you could use:
+   ``sig://my_motor.user_readback``
+2. An alternate signal name is available, that which is seen by the data
+   acquisition system (e.g., the databroker by way of bluesky).  Generally,
+   characters seen as invalid for a MongoDB are replaced with an underscore
+   (``_``).  To check a signal's name, see the ``.name`` property of that
+   signal.
+   For example, for a motor named "my_motor", you could use:
+   ``sig://my_motor_user_readback``
+3. By PV name directly.  Assuming your signal is available through the
+   underlying control system (EPICS, for example), you could look and see which
+   PVs your signal talks to and use those directly.  That is,
+   ``my_motor.user_readback.pvname`` would tell you which EPICS PV the user
+   readback uses.  From there, you could set the widget's channel to use EPICS
+   Channel Access with ``ca://pv_name_here``.
+
 
 Display Signals
 ^^^^^^^^^^^^^^^
