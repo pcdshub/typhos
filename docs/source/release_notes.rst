@@ -2,6 +2,27 @@
  Release History
 =================
 
+v2.3.1 (2022-05-02)
+===================
+
+Description
+-----------
+This is a small bugfix release.
+
+Fixes
+-----
+- Fix an issue where the configuration menu would be defunct for
+  custom template screens.
+
+Maintenance
+-----------
+- Add some additional documentation about sig:// and cli usage.
+
+Contributors
+------------
+- klauer
+
+
 v2.3.0 (2022-03-31)
 ===================
 
