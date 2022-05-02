@@ -17,7 +17,6 @@ __all__ = [
     'TyphosSignalPanel',
     'TyphosPositionerWidget',
     'TyphosMethodButton',
-    '__version__',
 ]
 
 
