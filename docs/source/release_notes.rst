@@ -17,6 +17,7 @@ Fixes
 Maintenance
 -----------
 - Add some additional documentation about sig:// and cli usage.
+- Configure and satisfy the repository's own pre-commit checks.
 
 Contributors
 ------------
