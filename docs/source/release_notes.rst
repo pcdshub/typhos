@@ -18,10 +18,12 @@ Maintenance
 -----------
 - Add some additional documentation about sig:// and cli usage.
 - Configure and satisfy the repository's own pre-commit checks.
+- Update versioneer install to current latest.
 
 Contributors
 ------------
 - klauer
+- zllentz
 
 
 v2.3.0 (2022-03-31)
