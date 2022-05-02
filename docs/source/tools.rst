@@ -1,8 +1,8 @@
-############### 
+###############
 Supported Tools
 ###############
 
-In experimental environments there are a variety of external tools and 
+In experimental environments there are a variety of external tools and
 applications that are critical to day to day operation. Typhos hopes to
 integrate many of these services into the :class:`.TyphosDeviceDisplay` for
 ease of operation. This approach has two advantages; the first is that getting
@@ -27,6 +27,5 @@ Tool Classes
    :toctree: generated
 
    TyphosConsole
-   TyphosLogDisplay 
+   TyphosLogDisplay
    TyphosTimePlot
-

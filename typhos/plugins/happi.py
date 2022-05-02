@@ -1,11 +1,10 @@
 import logging
 
-from qtpy import QtCore
-
 from happi import Client
 from happi.errors import SearchError
 from happi.loader import from_container
 from pydm.data_plugins.plugin import PyDMConnection, PyDMPlugin
+from qtpy import QtCore
 
 
 class HappiClientState:

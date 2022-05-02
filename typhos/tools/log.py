@@ -1,8 +1,7 @@
 import logging
 
-from qtpy.QtWidgets import QVBoxLayout
-
 from pydm.widgets.logdisplay import PyDMLogDisplay
+from qtpy.QtWidgets import QVBoxLayout
 
 from ..utils import TyphosBase
 

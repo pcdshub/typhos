@@ -5,5 +5,5 @@ __all__ = ['TyphosConsole',
            ]
 
 from .console import TyphosConsole
-from .plot import TyphosTimePlot
 from .log import TyphosLogDisplay
+from .plot import TyphosTimePlot
