@@ -1,18 +1,19 @@
 from uuid import uuid4
 
+import pytest
 from happi.item import HappiItem
 from happi.loader import from_container
-from ophyd import Device, Component as Cpt
+from ophyd import Component as Cpt
+from ophyd import Device
 from ophyd.utils.epics_pvs import AlarmSeverity
-import pytest
 
-from typhos.alarm import (TyphosAlarmCircle, TyphosAlarmRectangle,
-                          TyphosAlarmTriangle, TyphosAlarmEllipse,
-                          TyphosAlarmPolygon, AlarmLevel)
+from typhos.alarm import (AlarmLevel, TyphosAlarmCircle, TyphosAlarmEllipse,
+                          TyphosAlarmPolygon, TyphosAlarmRectangle,
+                          TyphosAlarmTriangle)
 from typhos.plugins.core import register_signal
-from typhos.plugins.happi import register_client, HappiClientState
+from typhos.plugins.happi import HappiClientState, register_client
 
-from .conftest import show_widget, RichSignal
+from .conftest import RichSignal, show_widget
 
 
 @pytest.fixture(

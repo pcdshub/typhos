@@ -1,9 +1,9 @@
 #!/usr/bin/env python
+import logging
 import os
 import sys
-import logging
-from pathlib import Path
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 import pytest
 

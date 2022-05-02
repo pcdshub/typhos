@@ -3,6 +3,7 @@ import sys
 from unittest.mock import Mock, patch
 
 import ophyd
+
 import typhos
 import typhos.plugins
 from typhos.plugins.happi import HappiPlugin

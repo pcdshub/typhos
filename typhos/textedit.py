@@ -7,9 +7,8 @@ Variety support pending:
 import logging
 
 import numpy as np
-from qtpy import QtWidgets
-
 from pydm.widgets.base import PyDMWritableWidget
+from qtpy import QtWidgets
 
 from . import variety
 

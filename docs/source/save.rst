@@ -38,7 +38,7 @@ There are two major ways to use this created file:
    saved_suite.show()
    app.exec_()
 
- 
+
 .. note::
 
    The saved file only stores a reference to the devices loaded into the
@@ -47,5 +47,3 @@ There are two major ways to use this created file:
    ``load_suite`` is called. If the device has a different name in the database
    or you have configured a different ``happi`` database to be used your
    devices will not be loaded properly.
-
-  

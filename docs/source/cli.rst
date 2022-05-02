@@ -1,5 +1,4 @@
 Command Line Utilities
 ======================
 
-.. automodule:: typhos.cli 
-
+.. automodule:: typhos.cli
