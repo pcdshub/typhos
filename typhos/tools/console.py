@@ -186,8 +186,9 @@ class TyphosConsole(utils.TyphosBase):
             script = utils.code_from_device(device)
             self.execute(script)
         except Exception:
+            # Prevent traceback from being displayed
             logger.error("Unable to add device %r to TyphosConsole.",
-                             device.name)
+                         device.name)
         else:
             self.device_added.emit(device)
 
