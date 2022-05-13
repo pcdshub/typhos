@@ -642,6 +642,11 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         The PyDM channel with which to initialize the widget.
     """
 
+    _qt_designer_ = {
+        "group": "Typhos Widgets",
+        "is_container": False,
+    }
+
     Q_ENUMS(SignalOrder)  # Necessary for display in Designer
     SignalOrder = SignalOrder  # For convenience
     # From top of page to bottom
