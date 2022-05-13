@@ -37,15 +37,17 @@ def test_cli_stylesheet(qapp, qtbot, happi_cfg):
     with open('test.qss', 'w+') as handle:
         handle.write(
             "TyphosDeviceDisplay {qproperty-force_template: 'test.ui'}")
-    style = qapp.styleSheet()
-    window = typhos_cli(['test_motor', '--stylesheet', 'test.qss',
-                         '--happi-cfg', happi_cfg])
-    qtbot.addWidget(window)
-    suite = window.centralWidget()
-    dev_display = suite.get_subdisplay(suite.devices[0])
-    assert dev_display.force_template == 'test.ui'
-    qapp.setStyleSheet(style)
-    os.remove('test.qss')
+    try:
+        style = qapp.styleSheet()
+        window = typhos_cli(['test_motor', '--stylesheet', 'test.qss',
+                             '--happi-cfg', happi_cfg])
+        qtbot.addWidget(window)
+        suite = window.centralWidget()
+        dev_display = suite.get_subdisplay(suite.devices[0])
+        assert dev_display.force_template == 'test.ui'
+        qapp.setStyleSheet(style)
+    finally:
+        os.remove('test.qss')
 
 
 @pytest.mark.parametrize('klass, name', [
