@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.tools.console &mdash; Typhos 2.3.1 documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <title>typhos.tools.console &mdash; Typhos 2.3.1+7.g6867755 documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.1
+                2.3.1+7.g6867755
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -269,8 +269,9 @@
             <span class="n">script</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">code_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to add device </span><span class="si">%r</span><span class="s2"> to TyphosConsole.&quot;</span><span class="p">,</span>
-                             <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># Prevent traceback from being displayed</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to add device </span><span class="si">%r</span><span class="s2"> to TyphosConsole.&quot;</span><span class="p">,</span>
+                         <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device_added</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
