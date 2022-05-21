@@ -111,3 +111,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Editors
+*.swp
+*~
