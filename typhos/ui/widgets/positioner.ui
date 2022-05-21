@@ -473,7 +473,7 @@ Screen</string>
            <string/>
           </property>
           <property name="text">
-           <string/>
+           <string>error_label</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
