@@ -60,8 +60,8 @@
      </property>
      <property name="baseSize">
       <size>
-       <width>400</width>
-       <height>250</height>
+       <width>100</width>
+       <height>100</height>
       </size>
      </property>
      <property name="frameShape">
