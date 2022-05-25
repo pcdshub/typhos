@@ -385,7 +385,6 @@ class TyphosObject:
 
 class TyphosBase(TyphosObject, QWidget):
     """Base widget for all Typhos widgets that interface with devices"""
-    pass
 
 
 def make_identifier(name):
