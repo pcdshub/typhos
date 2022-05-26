@@ -54,6 +54,8 @@ DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
 # Help settings:
 # TYPHOS_HELP_URL (str): The help URL format string
 HELP_URL = os.environ.get('TYPHOS_HELP_URL', "").strip()
+HELP_WEB_ENABLED = bool(HELP_URL.strip())
+
 # TYPHOS_HELP_HEADERS (json): headers to pass to HELP_URL
 HELP_HEADERS = json.loads(os.environ.get('TYPHOS_HELP_HEADERS', "") or "{}")
 HELP_HEADERS_HOSTS = os.environ.get("TYPHOS_HELP_HEADERS_HOSTS", "").split(",")
