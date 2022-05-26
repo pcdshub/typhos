@@ -556,11 +556,13 @@ class TyphosHelpToggleButton(TyphosToolButton):
 
     def generate_context_menu(self):
         menu = QtWidgets.QMenu(parent=self)
-        open_in_browser = menu.addAction("Pop &out documentation...")
-        open_in_browser.triggered.connect(self.pop_out.emit)
 
-        open_in_browser = menu.addAction("Open in &browser...")
-        open_in_browser.triggered.connect(self.open_in_browser.emit)
+        if utils.HELP_WEB_ENABLED:
+            pop_out_docs = menu.addAction("Pop &out documentation...")
+            pop_out_docs.triggered.connect(self.pop_out.emit)
+
+            open_in_browser = menu.addAction("Open in &browser...")
+            open_in_browser.triggered.connect(self.open_in_browser.emit)
 
         open_python_docs = menu.addAction("Open &Python docs...")
         open_python_docs.triggered.connect(self.open_python_docs.emit)
@@ -569,8 +571,9 @@ class TyphosHelpToggleButton(TyphosToolButton):
             self.setChecked(not self.isChecked())
             self._clicked()
 
-        toggle_help = menu.addAction("Toggle &help")
-        toggle_help.triggered.connect(toggle)
+        if utils.HELP_WEB_ENABLED:
+            toggle_help = menu.addAction("Toggle &help")
+            toggle_help.triggered.connect(toggle)
 
         if utils.JIRA_URL:
             menu.addSeparator()
@@ -632,6 +635,7 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     def open_python_docs(self):
         """Open the Python docstring information in a new window."""
         if self.python_docs_browser is not None:
+            self.python_docs_browser.show()
             self.python_docs_browser.raise_()
             return
 
@@ -686,7 +690,7 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     @property
     def help_url(self):
         """The full help URL, generated from ``TYPHOS_HELP_URL``."""
-        if not self.devices:
+        if not self.devices or not utils.HELP_WEB_ENABLED:
             return QtCore.QUrl("about:blank")
 
         device, *_ = self.devices
@@ -800,32 +804,32 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.grid_layout.addWidget(self.switcher, 0, 1, Qt.AlignRight)
         self.grid_layout.addWidget(self.underline, 1, 0, 1, 2)
 
-        if not utils.HELP_URL:
-            # The help widget is entirely optional, based on environment
-            # settings.
-            self.help = None
-        else:
-            self.help = TyphosHelpFrame()
+        self.help = TyphosHelpFrame()
+        if utils.HELP_WEB_ENABLED:
+            # Toggle the help web view if we have documentation to show
             self.switcher.help_toggle_button.toggle_help.connect(
                 self.toggle_help
             )
-            self.switcher.help_toggle_button.pop_out.connect(
-                self.pop_out_help
-            )
-            self.switcher.help_toggle_button.open_in_browser.connect(
-                self.help.open_in_browser
-            )
-            self.switcher.help_toggle_button.open_python_docs.connect(
+        else:
+            # Otherwise, open the python docs as a fallback
+            self.switcher.help_toggle_button.toggle_help.connect(
                 self.help.open_python_docs
             )
-            self.switcher.help_toggle_button.report_jira_issue.connect(
-                self.help.new_jira_widget
-            )
-            self.help.tooltip_updated.connect(
-                self.switcher.help_toggle_button.setToolTip
-            )
+        self.switcher.help_toggle_button.pop_out.connect(self.pop_out_help)
+        self.switcher.help_toggle_button.open_in_browser.connect(
+            self.help.open_in_browser
+        )
+        self.switcher.help_toggle_button.open_python_docs.connect(
+            self.help.open_python_docs
+        )
+        self.switcher.help_toggle_button.report_jira_issue.connect(
+            self.help.new_jira_widget
+        )
+        self.help.tooltip_updated.connect(
+            self.switcher.help_toggle_button.setToolTip
+        )
 
-            self.grid_layout.addWidget(self.help, 2, 0, 1, 2)
+        self.grid_layout.addWidget(self.help, 2, 0, 1, 2)
 
         self.grid_layout.setSizeConstraint(self.grid_layout.SetMinimumSize)
         self.setLayout(self.grid_layout)
