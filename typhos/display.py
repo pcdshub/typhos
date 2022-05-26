@@ -632,11 +632,17 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             self.help_url.toString(), new=new, autoraise=autoraise
         )
 
-    def open_python_docs(self):
+    def open_python_docs(self, show: bool = True):
         """Open the Python docstring information in a new window."""
         if self.python_docs_browser is not None:
-            self.python_docs_browser.show()
-            self.python_docs_browser.raise_()
+            if show:
+                self.python_docs_browser.show()
+                self.python_docs_browser.raise_()
+            else:
+                self.python_docs_browser.hide()
+            return
+
+        if not show:
             return
 
         self.python_docs_browser = QtWidgets.QTextBrowser()
