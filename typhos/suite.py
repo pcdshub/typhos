@@ -404,8 +404,8 @@ class TyphosSuite(TyphosBase):
         logger.debug("Showing widget %r ...", widget)
         if hasattr(widget, 'scroll_option'):
             widget.scroll_option = self.scroll_option
-        widget.setVisible(True)
         dock.setWidget(widget)
+        widget.setVisible(True)
 
         if hasattr(widget, "display_type"):
             # Setting a display_type implicitly loads the best template.
@@ -414,7 +414,6 @@ class TyphosSuite(TyphosBase):
         # Add to layout
         content_layout = self._content_frame.layout()
         content_layout.addWidget(dock)
-        print("show subdisplay", widget, dock)
         if isinstance(content_layout, QtWidgets.QGridLayout):
             self._content_frame.layout().setAlignment(
                 dock, QtCore.Qt.AlignHCenter
