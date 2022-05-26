@@ -9,11 +9,12 @@ import textwrap
 from functools import partial
 from typing import Dict, List, Optional, Type, Union
 
+import ophyd
 import pcdsutils.qt
 from ophyd import Device
 from pyqtgraph import parametertree
 from pyqtgraph.parametertree import parameterTypes as ptypes
-from qtpy import QtCore, QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 
 from . import utils, widgets
 from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
@@ -54,7 +55,7 @@ class SidebarParameter(parametertree.Parameter):
         self.embeddable = embeddable
         self.devices = list(devices) if devices else []
 
-    def has_device(self, device):
+    def has_device(self, device: ophyd.Device):
         """
         Determine if this parameter contains the given device.
 
@@ -77,6 +78,17 @@ class SidebarParameter(parametertree.Parameter):
 
 
 class LazySubdisplay(QtWidgets.QWidget):
+    """
+    A lazy subdisplay which only is instantiated when shown in the suite.
+
+    Supports devices by way of ``add_device``.
+
+    Parameters
+    ----------
+    widget_cls : QtWidgets.QWidget subclass
+        The widget class to instantiate.
+    """
+
     widget_cls: Type[QtWidgets.QWidget]
     widget: Optional[QtWidgets.QWidget]
     label: QtWidgets.QLabel
@@ -86,10 +98,8 @@ class LazySubdisplay(QtWidgets.QWidget):
         self.widget_cls = widget_cls
         self.widget = None
 
-        self.setAutoFillBackground(True)
+        self.setVisible(False)
         self.setLayout(QtWidgets.QVBoxLayout())
-        self.label = QtWidgets.QLabel("(Lazy Subdisplay)")
-        self.layout().addWidget(self.label)
         self.devices = []
 
     def add_device(self, device: ophyd.Device):
@@ -97,8 +107,40 @@ class LazySubdisplay(QtWidgets.QWidget):
         self.devices.append(device)
         self.label.setText(", ".join(device.name for device in self.devices))
 
-    def load_best_template(self):
-        """Hook for showing the tool in the suite."""
+    def hideEvent(self, event: QtGui.QHideEvent):
+        """Hook for when the tool is hidden."""
+        return super().hideEvent(event)
+
+    def _create_widget(self):
+        """Make the widget no longer lazy."""
+        if self.widget is not None:
+            return
+
+        self.widget = self.widget_cls()
+        self.layout().removeWidget(self.label)
+        self.layout().addWidget(self.widget)
+        self.setSizePolicy(self.widget.sizePolicy())
+
+        if hasattr(self.widget, "add_device"):
+            for device in self.devices:
+                self.widget.add_device(device)
+
+    def showEvent(self, event: QtGui.QShowEvent):
+        """Hook for when the tool is shown in the suite."""
+        if self.widget is None:
+            self._create_widget()
+
+        return super().showEvent(event)
+
+    def minimumSizeHint(self):
+        if self.widget is not None:
+            return self.widget.minimumSizeHint()
+        return self.sizeHint()
+
+    def sizeHint(self):
+        if self.widget is not None:
+            return self.widget.sizeHint()
+        return QtCore.QSize(100, 100)
 
 
 class DeviceParameter(SidebarParameter):
