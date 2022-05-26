@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.display &mdash; Typhos 2.3.1+12.ge3a5b50 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.display &mdash; Typhos 2.3.1+15.gbea71d2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.1+12.ge3a5b50
+                2.3.1+15.gbea71d2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -639,11 +639,13 @@
 
     <span class="k">def</span> <span class="nf">generate_context_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">menu</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">open_in_browser</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Pop &amp;out documentation...&quot;</span><span class="p">)</span>
-        <span class="n">open_in_browser</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_out</span><span class="o">.</span><span class="n">emit</span><span class="p">)</span>
 
-        <span class="n">open_in_browser</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Open in &amp;browser...&quot;</span><span class="p">)</span>
-        <span class="n">open_in_browser</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_in_browser</span><span class="o">.</span><span class="n">emit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">HELP_WEB_ENABLED</span><span class="p">:</span>
+            <span class="n">pop_out_docs</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Pop &amp;out documentation...&quot;</span><span class="p">)</span>
+            <span class="n">pop_out_docs</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_out</span><span class="o">.</span><span class="n">emit</span><span class="p">)</span>
+
+            <span class="n">open_in_browser</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Open in &amp;browser...&quot;</span><span class="p">)</span>
+            <span class="n">open_in_browser</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_in_browser</span><span class="o">.</span><span class="n">emit</span><span class="p">)</span>
 
         <span class="n">open_python_docs</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Open &amp;Python docs...&quot;</span><span class="p">)</span>
         <span class="n">open_python_docs</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_python_docs</span><span class="o">.</span><span class="n">emit</span><span class="p">)</span>
@@ -652,8 +654,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isChecked</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_clicked</span><span class="p">()</span>
 
-        <span class="n">toggle_help</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Toggle &amp;help&quot;</span><span class="p">)</span>
-        <span class="n">toggle_help</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">toggle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">HELP_WEB_ENABLED</span><span class="p">:</span>
+            <span class="n">toggle_help</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Toggle &amp;help&quot;</span><span class="p">)</span>
+            <span class="n">toggle_help</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">toggle</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">JIRA_URL</span><span class="p">:</span>
             <span class="n">menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
@@ -712,10 +715,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">help_url</span><span class="o">.</span><span class="n">toString</span><span class="p">(),</span> <span class="n">new</span><span class="o">=</span><span class="n">new</span><span class="p">,</span> <span class="n">autoraise</span><span class="o">=</span><span class="n">autoraise</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">open_python_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">open_python_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Open the Python docstring information in a new window.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">python_docs_browser</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">python_docs_browser</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">python_docs_browser</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">python_docs_browser</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">python_docs_browser</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">show</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">python_docs_browser</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QTextBrowser</span><span class="p">()</span>
@@ -769,7 +779,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">help_url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;The full help URL, generated from ``TYPHOS_HELP_URL``.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">HELP_WEB_ENABLED</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QUrl</span><span class="p">(</span><span class="s2">&quot;about:blank&quot;</span><span class="p">)</span>
 
         <span class="n">device</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span>
@@ -883,32 +893,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">grid_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grid_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">underline</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">HELP_URL</span><span class="p">:</span>
-            <span class="c1"># The help widget is entirely optional, based on environment</span>
-            <span class="c1"># settings.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="n">TyphosHelpFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="n">TyphosHelpFrame</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">HELP_WEB_ENABLED</span><span class="p">:</span>
+            <span class="c1"># Toggle the help web view if we have documentation to show</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">toggle_help</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">toggle_help</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">pop_out</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pop_out_help</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_in_browser</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_in_browser</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_python_docs</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Otherwise, open the python docs as a fallback</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">toggle_help</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_python_docs</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">report_jira_issue</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">new_jira_widget</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">tooltip_updated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">setToolTip</span>
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">pop_out</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_out_help</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_in_browser</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_in_browser</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_python_docs</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_python_docs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">report_jira_issue</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">new_jira_widget</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">tooltip_updated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">setToolTip</span>
+        <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">grid_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">grid_layout</span><span class="o">.</span><span class="n">setSizeConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_layout</span><span class="o">.</span><span class="n">SetMinimumSize</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_layout</span><span class="p">)</span>
