@@ -7,7 +7,7 @@ import logging
 import os
 import textwrap
 from functools import partial
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Type, Union
 
 import pcdsutils.qt
 from ophyd import Device
@@ -74,6 +74,31 @@ class SidebarParameter(parametertree.Parameter):
              isinstance(device, str) and self.name() == clean_attr(device),
              )
         )
+
+
+class LazySubdisplay(QtWidgets.QWidget):
+    widget_cls: Type[QtWidgets.QWidget]
+    widget: Optional[QtWidgets.QWidget]
+    label: QtWidgets.QLabel
+
+    def __init__(self, widget_cls: Type[QtWidgets.QWidget]):
+        super().__init__()
+        self.widget_cls = widget_cls
+        self.widget = None
+
+        self.setAutoFillBackground(True)
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.label = QtWidgets.QLabel("(Lazy Subdisplay)")
+        self.layout().addWidget(self.label)
+        self.devices = []
+
+    def add_device(self, device: ophyd.Device):
+        """Hook for adding a device from the suite."""
+        self.devices.append(device)
+        self.label.setText(", ".join(device.name for device in self.devices))
+
+    def load_best_template(self):
+        """Hook for showing the tool in the suite."""
 
 
 class DeviceParameter(SidebarParameter):
@@ -248,6 +273,33 @@ class TyphosSuite(TyphosBase):
         parameter = SidebarParameter(value=display, name=name)
         self._add_to_sidebar(parameter, category)
 
+    def add_lazy_subdisplay(
+        self, name: str, display_class: Type[QtWidgets.QWidget], category: str
+    ):
+        """
+        Add an arbitrary widget to the tree of available widgets and tools.
+
+        Parameters
+        ----------
+        name : str
+            Name to be displayed in the tree
+
+        display_class : subclass of QWidget
+            QWidget class to show in the dock when expanded.
+
+        category : str
+            The top level group to place the controls under in the tree. If the
+            category does not exist, a new one will be made
+        """
+        logger.debug("Adding lazy subdisplay %r with %r to %r ...",
+                     name, display_class, category)
+        # Create our parameter
+        parameter = SidebarParameter(
+            value=LazySubdisplay(display_class),
+            name=name
+        )
+        self._add_to_sidebar(parameter, category)
+
     @property
     def top_level_groups(self):
         """
@@ -264,7 +316,7 @@ class TyphosSuite(TyphosBase):
                      root.child(idx).param)
                     for idx in range(root.childCount()))
 
-    def add_tool(self, name, tool):
+    def add_tool(self, name: str, tool: Type[QtWidgets.QWidget]):
         """
         Add a widget to the toolbar.
 
@@ -276,13 +328,13 @@ class TyphosSuite(TyphosBase):
 
         Parameters
         ----------
-        name :str
+        name : str
             Name of tool to be displayed in sidebar
 
-        tool: QWidget
+        tool : QWidget
             Widget to be added to ``.ui.subdisplay``
         """
-        self.add_subdisplay(name, tool, 'Tools')
+        self.add_lazy_subdisplay(name, tool, "Tools")
 
     def get_subdisplay(self, display):
         """
@@ -350,16 +402,19 @@ class TyphosSuite(TyphosBase):
         self._show_sidebar(widget, dock)
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
-        if hasattr(widget, 'display_type'):
-            widget.display_type = self.default_display_type
         if hasattr(widget, 'scroll_option'):
             widget.scroll_option = self.scroll_option
         widget.setVisible(True)
-        widget.load_best_template()
         dock.setWidget(widget)
+
+        if hasattr(widget, "display_type"):
+            # Setting a display_type implicitly loads the best template.
+            widget.display_type = self.default_display_type
+
         # Add to layout
         content_layout = self._content_frame.layout()
         content_layout.addWidget(dock)
+        print("show subdisplay", widget, dock)
         if isinstance(content_layout, QtWidgets.QGridLayout):
             self._content_frame.layout().setAlignment(
                 dock, QtCore.Qt.AlignHCenter
@@ -485,7 +540,7 @@ class TyphosSuite(TyphosBase):
         # Grab children
         for child in flatten_tree(dev_param)[1:]:
             self._add_to_sidebar(child)
-        # Add a device to all the tool displays
+        # # Add a device to all the tool displays
         for tool in self.tools:
             try:
                 tool.add_device(device)
@@ -627,7 +682,7 @@ class TyphosSuite(TyphosBase):
                 tools = cls.default_tools
             for name, tool in tools.items():
                 try:
-                    suite.add_tool(name, tool())
+                    suite.add_tool(name, tool)
                 except Exception:
                     logger.exception("Unable to load %s", type(tool))
 
