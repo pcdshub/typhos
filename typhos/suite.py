@@ -105,7 +105,6 @@ class LazySubdisplay(QtWidgets.QWidget):
     def add_device(self, device: ophyd.Device):
         """Hook for adding a device from the suite."""
         self.devices.append(device)
-        self.label.setText(", ".join(device.name for device in self.devices))
 
     def hideEvent(self, event: QtGui.QHideEvent):
         """Hook for when the tool is hidden."""

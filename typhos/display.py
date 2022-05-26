@@ -1214,7 +1214,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     def load_best_template(self):
         """Load the best available template for the current display type."""
-        print("load best template", self.device.name)
         if self.layout() is None:
             # If we are not fully initialized yet do not try and add anything
             # to the layout. This will happen if the QApplication has a
@@ -1222,7 +1221,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             # display
             return
 
-        print("OK load best template", self.device.name)
         if not self._searched:
             self.search_for_templates()
 
