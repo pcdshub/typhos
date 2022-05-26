@@ -446,12 +446,10 @@ class TyphosSuite(TyphosBase):
         logger.debug("Showing widget %r ...", widget)
         if hasattr(widget, 'scroll_option'):
             widget.scroll_option = self.scroll_option
-        dock.setWidget(widget)
-        widget.setVisible(True)
-
         if hasattr(widget, "display_type"):
             # Setting a display_type implicitly loads the best template.
             widget.display_type = self.default_display_type
+        dock.setWidget(widget)
 
         # Add to layout
         content_layout = self._content_frame.layout()
