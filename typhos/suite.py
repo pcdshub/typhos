@@ -91,7 +91,7 @@ class LazySubdisplay(QtWidgets.QWidget):
 
     widget_cls: Type[QtWidgets.QWidget]
     widget: Optional[QtWidgets.QWidget]
-    label: QtWidgets.QLabel
+    devices: List[ophyd.Device]
 
     def __init__(self, widget_cls: Type[QtWidgets.QWidget]):
         super().__init__()
@@ -117,7 +117,6 @@ class LazySubdisplay(QtWidgets.QWidget):
             return
 
         self.widget = self.widget_cls()
-        self.layout().removeWidget(self.label)
         self.layout().addWidget(self.widget)
         self.setSizePolicy(self.widget.sizePolicy())
 
@@ -133,11 +132,13 @@ class LazySubdisplay(QtWidgets.QWidget):
         return super().showEvent(event)
 
     def minimumSizeHint(self):
+        """Minimum size hint forwarder from the embedded widget."""
         if self.widget is not None:
             return self.widget.minimumSizeHint()
         return self.sizeHint()
 
     def sizeHint(self):
+        """Size hint forwarder from the embedded widget."""
         if self.widget is not None:
             return self.widget.sizeHint()
         return QtCore.QSize(100, 100)
