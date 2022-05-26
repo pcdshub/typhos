@@ -198,6 +198,12 @@ class TyphosSuite(TyphosBase):
         self._bar = pcdsutils.qt.QPopBar(title='Suite', parent=self,
                                          widget=self._tree, pin=pin)
 
+        self._tree.setSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding
+        )
+        self._tree.setMinimumSize(250, 150)
+
         self._content_frame = QtWidgets.QFrame(self)
         self._content_frame.setObjectName("content")
         self._content_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
