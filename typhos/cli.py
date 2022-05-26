@@ -159,6 +159,14 @@ parser.add_argument(
         'Turns on line profiling.'
     ),
 )
+parser.add_argument(
+    '--exit-after',
+    type=float,
+    help=(
+        "(For profiling purposes) Exit typhos after the provided number of "
+        "seconds"
+    ),
+)
 
 
 # Append to module docs
@@ -453,6 +461,7 @@ def typhos_run(
     scroll_option: str = 'auto',
     initial_size: Optional[str] = None,
     show_displays: bool = True,
+    exit_after: Optional[float] = None,
 ) -> QtWidgets.QMainWindow:
     """
     Run the central typhos part of typhos.
@@ -514,6 +523,17 @@ def typhos_run(
                     "Invalid --size argument. Expected a two-element pair "
                     "of comma-separated integers, e.g. --size 1000,1000"
                 ) from exc
+
+        def exit_early():
+            logger.warning(
+                "Exiting typhos early due to --exit-after=%s CLI argument.",
+                exit_after
+            )
+            sys.exit(0)
+
+        if exit_after is not None and exit_after >= 0:
+            QtCore.QTimer.singleShot(exit_after * 1000.0, exit_early)
+
         return launch_suite(suite, initial_size=initial_size)
 
 
@@ -559,7 +579,9 @@ def typhos_cli(args):
                 scroll_option=args.scrollable,
                 initial_size=args.size,
                 show_displays=not args.hide_displays,
+                exit_after=args.exit_after,
             )
+
         return suite
 
 
