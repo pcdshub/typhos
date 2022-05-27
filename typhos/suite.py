@@ -7,13 +7,14 @@ import logging
 import os
 import textwrap
 from functools import partial
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Type, Union
 
+import ophyd
 import pcdsutils.qt
 from ophyd import Device
 from pyqtgraph import parametertree
 from pyqtgraph.parametertree import parameterTypes as ptypes
-from qtpy import QtCore, QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 
 from . import utils, widgets
 from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
@@ -54,7 +55,7 @@ class SidebarParameter(parametertree.Parameter):
         self.embeddable = embeddable
         self.devices = list(devices) if devices else []
 
-    def has_device(self, device):
+    def has_device(self, device: ophyd.Device):
         """
         Determine if this parameter contains the given device.
 
@@ -74,6 +75,72 @@ class SidebarParameter(parametertree.Parameter):
              isinstance(device, str) and self.name() == clean_attr(device),
              )
         )
+
+
+class LazySubdisplay(QtWidgets.QWidget):
+    """
+    A lazy subdisplay which only is instantiated when shown in the suite.
+
+    Supports devices by way of ``add_device``.
+
+    Parameters
+    ----------
+    widget_cls : QtWidgets.QWidget subclass
+        The widget class to instantiate.
+    """
+
+    widget_cls: Type[QtWidgets.QWidget]
+    widget: Optional[QtWidgets.QWidget]
+    devices: List[ophyd.Device]
+
+    def __init__(self, widget_cls: Type[QtWidgets.QWidget]):
+        super().__init__()
+        self.widget_cls = widget_cls
+        self.widget = None
+
+        self.setVisible(False)
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.devices = []
+
+    def add_device(self, device: ophyd.Device):
+        """Hook for adding a device from the suite."""
+        self.devices.append(device)
+
+    def hideEvent(self, event: QtGui.QHideEvent):
+        """Hook for when the tool is hidden."""
+        return super().hideEvent(event)
+
+    def _create_widget(self):
+        """Make the widget no longer lazy."""
+        if self.widget is not None:
+            return
+
+        self.widget = self.widget_cls()
+        self.layout().addWidget(self.widget)
+        self.setSizePolicy(self.widget.sizePolicy())
+
+        if hasattr(self.widget, "add_device"):
+            for device in self.devices:
+                self.widget.add_device(device)
+
+    def showEvent(self, event: QtGui.QShowEvent):
+        """Hook for when the tool is shown in the suite."""
+        if self.widget is None:
+            self._create_widget()
+
+        return super().showEvent(event)
+
+    def minimumSizeHint(self):
+        """Minimum size hint forwarder from the embedded widget."""
+        if self.widget is not None:
+            return self.widget.minimumSizeHint()
+        return self.sizeHint()
+
+    def sizeHint(self):
+        """Size hint forwarder from the embedded widget."""
+        if self.widget is not None:
+            return self.widget.sizeHint()
+        return QtCore.QSize(100, 100)
 
 
 class DeviceParameter(SidebarParameter):
@@ -248,6 +315,33 @@ class TyphosSuite(TyphosBase):
         parameter = SidebarParameter(value=display, name=name)
         self._add_to_sidebar(parameter, category)
 
+    def add_lazy_subdisplay(
+        self, name: str, display_class: Type[QtWidgets.QWidget], category: str
+    ):
+        """
+        Add an arbitrary widget to the tree of available widgets and tools.
+
+        Parameters
+        ----------
+        name : str
+            Name to be displayed in the tree
+
+        display_class : subclass of QWidget
+            QWidget class to show in the dock when expanded.
+
+        category : str
+            The top level group to place the controls under in the tree. If the
+            category does not exist, a new one will be made
+        """
+        logger.debug("Adding lazy subdisplay %r with %r to %r ...",
+                     name, display_class, category)
+        # Create our parameter
+        parameter = SidebarParameter(
+            value=LazySubdisplay(display_class),
+            name=name
+        )
+        self._add_to_sidebar(parameter, category)
+
     @property
     def top_level_groups(self):
         """
@@ -264,7 +358,7 @@ class TyphosSuite(TyphosBase):
                      root.child(idx).param)
                     for idx in range(root.childCount()))
 
-    def add_tool(self, name, tool):
+    def add_tool(self, name: str, tool: Type[QtWidgets.QWidget]):
         """
         Add a widget to the toolbar.
 
@@ -276,13 +370,13 @@ class TyphosSuite(TyphosBase):
 
         Parameters
         ----------
-        name :str
+        name : str
             Name of tool to be displayed in sidebar
 
-        tool: QWidget
+        tool : QWidget
             Widget to be added to ``.ui.subdisplay``
         """
-        self.add_subdisplay(name, tool, 'Tools')
+        self.add_lazy_subdisplay(name, tool, "Tools")
 
     def get_subdisplay(self, display):
         """
@@ -350,13 +444,13 @@ class TyphosSuite(TyphosBase):
         self._show_sidebar(widget, dock)
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
-        if hasattr(widget, 'display_type'):
-            widget.display_type = self.default_display_type
         if hasattr(widget, 'scroll_option'):
             widget.scroll_option = self.scroll_option
-        widget.setVisible(True)
-        widget.load_best_template()
+        if hasattr(widget, "display_type"):
+            # Setting a display_type implicitly loads the best template.
+            widget.display_type = self.default_display_type
         dock.setWidget(widget)
+
         # Add to layout
         content_layout = self._content_frame.layout()
         content_layout.addWidget(dock)
@@ -627,7 +721,7 @@ class TyphosSuite(TyphosBase):
                 tools = cls.default_tools
             for name, tool in tools.items():
                 try:
-                    suite.add_tool(name, tool())
+                    suite.add_tool(name, tool)
                 except Exception:
                     logger.exception("Unable to load %s", type(tool))
 
