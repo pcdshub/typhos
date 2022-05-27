@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suite and Displays &mdash; Typhos 2.3.1+17.g12ca086 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Suite and Displays &mdash; Typhos 2.3.1+27.ga3bbf12 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -28,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.1+17.g12ca086
+                2.3.1+27.ga3bbf12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -155,6 +155,22 @@ the “Devices” group</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="typhos.TyphosSuite.add_lazy_subdisplay">
+<code class="sig-name descname"><span class="pre">add_lazy_subdisplay</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_class</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">PyQt5.QtWidgets.QWidget</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/suite.html#TyphosSuite.add_lazy_subdisplay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSuite.add_lazy_subdisplay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an arbitrary widget to the tree of available widgets and tools.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Name to be displayed in the tree</p></li>
+<li><p><strong>display_class</strong> (<em>subclass of QWidget</em>) – QWidget class to show in the dock when expanded.</p></li>
+<li><p><strong>category</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – The top level group to place the controls under in the tree. If the
+category does not exist, a new one will be made</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="typhos.TyphosSuite.add_subdisplay">
 <code class="sig-name descname"><span class="pre">add_subdisplay</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/suite.html#TyphosSuite.add_subdisplay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSuite.add_subdisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add an arbitrary widget to the tree of available widgets and tools.</p>
@@ -172,7 +188,7 @@ category does not exist, a new one will be made</p></li>
 
 <dl class="py method">
 <dt id="typhos.TyphosSuite.add_tool">
-<code class="sig-name descname"><span class="pre">add_tool</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/suite.html#TyphosSuite.add_tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSuite.add_tool" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_tool</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">PyQt5.QtWidgets.QWidget</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/suite.html#TyphosSuite.add_tool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSuite.add_tool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a widget to the toolbar.</p>
 <p>Shortcut for:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">suite</span><span class="o">.</span><span class="n">add_subdisplay</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tool</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;Tools&#39;</span><span class="p">)</span>
