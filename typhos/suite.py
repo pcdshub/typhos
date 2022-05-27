@@ -579,7 +579,7 @@ class TyphosSuite(TyphosBase):
         # Grab children
         for child in flatten_tree(dev_param)[1:]:
             self._add_to_sidebar(child)
-        # # Add a device to all the tool displays
+        # Add a device to all the tool displays
         for tool in self.tools:
             try:
                 tool.add_device(device)
