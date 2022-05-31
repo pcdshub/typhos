@@ -4,7 +4,7 @@ numpy
 numpydoc
 ophyd
 pcdsutils
-pydm >=1.16.1
+pydm>=1.16.1
 pyqtgraph
 qdarkstyle
 qtawesome
