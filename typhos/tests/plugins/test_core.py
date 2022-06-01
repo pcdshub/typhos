@@ -117,4 +117,4 @@ def test_array_signal_put_value(qapp, qtbot):
     widget.channel = 'sig://my_array_write'
     widget.send_value_signal[np.ndarray].emit(np.zeros(4))
     qapp.processEvents()
-    assert all(sig.value == np.zeros(4))
+    assert all(sig.get() == np.zeros(4))
