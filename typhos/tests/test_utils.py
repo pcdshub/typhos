@@ -1,10 +1,8 @@
 import os
 import pathlib
-import subprocess
 import tempfile
 
 import pytest
-import simplejson as json
 from ophyd import Component as Cpt
 from ophyd import Device
 from qtpy.QtCore import QRect
@@ -39,24 +37,6 @@ def test_stylesheet(qtbot):
     qtbot.addWidget(widget)
     use_stylesheet(widget=widget)
     use_stylesheet(widget=widget, dark=True)
-
-
-# Check to see that we were installed via CONDA. If not, we can not expect the
-# PYQTDESIGNERPATH variable to have been configured correctly
-try:
-    channel = json.loads(subprocess.check_output(['conda',
-                                                  'list',
-                                                  'typhos',
-                                                  '--json']))[0]['channel']
-    is_conda_installed = channel != 'pypi'
-except Exception:
-    is_conda_installed = False
-
-
-@pytest.mark.skipif(not is_conda_installed,
-                    reason='Package not installed via CONDA')
-def test_qtdesigner_env():
-    assert 'etc/typhos' in os.getenv('PYQTDESIGNERPATH', '')
 
 
 def test_typhosbase_repaint_smoke(qtbot):
