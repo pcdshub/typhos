@@ -41,5 +41,9 @@ setup(
     entry_points={
         "console_scripts": ["typhos=typhos.cli:main"],
         "pydm.widget": designer_widgets,
+        "pydm.data_plugin": [
+            "HappiPlugin=typhos.plugins:HappiPlugin",
+            "SignalPlugin=typhos.plugins:SignalPlugin",
+        ],
     },
 )
