@@ -10,8 +10,8 @@ from typhos.widgets import (ImageDialogButton, QDialog, SignalDialogButton,
 
 
 class DialogButton(SignalDialogButton):
-    icon = 'fa.play'
-    text = 'Show Widget'
+    icon = "fa5s.play"
+    text = "Show Widget"
 
     def widget(self):
         return QWidget(parent=self)
