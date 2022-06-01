@@ -17,7 +17,6 @@ def test_cli_version(capsys):
 def test_cli_happi_cfg(qtbot, happi_cfg):
     window = typhos_cli(['test_motor', '--happi-cfg', happi_cfg])
     qtbot.addWidget(window)
-    assert window.isVisible()
     assert 'test_motor' == window.centralWidget().devices[0].name
 
 
@@ -29,7 +28,6 @@ def test_cli_bad_entry(qtbot, happi_cfg):
 def test_cli_no_entry(qtbot, happi_cfg):
     window = typhos_cli(['--happi-cfg', happi_cfg])
     qtbot.addWidget(window)
-    assert window.isVisible()
     assert window.centralWidget().devices == []
 
 
@@ -57,7 +55,6 @@ def test_cli_stylesheet(qapp, qtbot, happi_cfg):
 def test_cli_class(qtbot, klass, name, happi_cfg):
     window = typhos_cli([klass])
     qtbot.addWidget(window)
-    assert window.isVisible()
 
     suite = window.centralWidget()
     assert name == suite.devices[0].name
