@@ -2,13 +2,14 @@
 Helpful functions that don't belong in a more specific submodule.
 """
 import importlib
+import inspect
 import logging
 import os
 import pkgutil
 import signal
 import uuid
 from contextlib import contextmanager
-from inspect import isclass, isfunction
+from inspect import isclass, isfunction, ismethod
 from multiprocessing import Process
 
 from ophyd.signal import EpicsSignalBase
@@ -127,7 +128,7 @@ def get_native_methods(cls, module, *, native_methods=None, seen=None):
         native_methods = set()
     if seen is None:
         seen = set()
-    for obj in cls.__dict__.values():
+    for _, obj in inspect.getmembers(cls):
         try:
             if obj in seen:
                 continue
@@ -141,6 +142,8 @@ def get_native_methods(cls, module, *, native_methods=None, seen=None):
             get_native_methods(obj, module, native_methods=native_methods,
                                seen=seen)
         elif isfunction(obj):
+            native_methods.add(obj)
+        elif ismethod(obj):
             native_methods.add(obj)
     return native_methods
 
