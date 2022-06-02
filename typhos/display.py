@@ -1551,9 +1551,12 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         That is, screens that are not default Typhos-provided screens.
         """
+        paths = cache.get_global_display_path_cache().paths
         return [
-            template for template in utils.find_templates_for_class(
-                device_cls, 'detailed', utils.DISPLAY_PATHS)
+            template
+            for template in utils.find_templates_for_class(
+                device_cls, "detailed", paths
+            )
             if not utils.is_standard_template(template)
         ]
 
