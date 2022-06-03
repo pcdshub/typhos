@@ -11,7 +11,7 @@ if __name__ == '__main__':
     # Show output results from every test function
     # Show the message output for skipped and expected failures
     # Skip the benchmarking
-    args = ['-v', '-vrxs', '--benchmark-skip']
+    args = ['-v', '-vrxs', '--benchmark-skip', '-s']
 
     # Add extra arguments
     if len(sys.argv) > 1:
@@ -42,8 +42,11 @@ if __name__ == '__main__':
                                        '%(message)s'),
                                   datefmt='%H:%M:%S')
     handler.setFormatter(formatter)
+    handler2 = logging.StreamHandler()
+    handler2.setFormatter(formatter)
     for log in (typhos_logger, pydm_logger):
         log.setLevel(logging.DEBUG)
         log.addHandler(handler)
+        log.addHandler(handler2)
 
     sys.exit(pytest.main(args))
