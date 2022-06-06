@@ -23,6 +23,5 @@ jobs:
     - name: "Python - PIP"
 
 import:
-  - pcdshub/pcds-ci-helpers:travis/shared_configs/setup-env-ui.yml
   - zllentz/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml@show-debug-on-fail
   - pcdshub/pcds-ci-helpers:travis/shared_configs/python-benchmark.yml
