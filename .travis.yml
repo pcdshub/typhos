@@ -22,13 +22,16 @@ jobs:
   allow_failures:
     - name: "Python - PIP"
   include:
-    - name: "Python 3.7"
+    - stage: test
+      name: "Python 3.7"
       after_failure:
         - cat logs/run_tests_log.txt
-    - name: "Python 3.8"
+    - stage: test
+      name: "Python 3.8"
       after_failure:
         - cat logs/run_tests_log.txt
-    - name: "Python 3.9"
+    - stage: test
+      name: "Python 3.9"
       after_failure:
         - cat logs/run_tests_log.txt
 
