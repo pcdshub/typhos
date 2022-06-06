@@ -21,21 +21,8 @@ env:
 jobs:
   allow_failures:
     - name: "Python - PIP"
-  include:
-    - stage: test
-      name: "Python 3.7"
-      after_failure:
-        - cat logs/run_tests_log.txt
-    - stage: test
-      name: "Python 3.8"
-      after_failure:
-        - cat logs/run_tests_log.txt
-    - stage: test
-      name: "Python 3.9"
-      after_failure:
-        - cat logs/run_tests_log.txt
 
 import:
   - pcdshub/pcds-ci-helpers:travis/shared_configs/setup-env-ui.yml
-  - pcdshub/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml
+  - zllentz/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml@show-debug-on-fail
   - pcdshub/pcds-ci-helpers:travis/shared_configs/python-benchmark.yml
