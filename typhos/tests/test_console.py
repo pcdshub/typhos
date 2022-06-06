@@ -33,7 +33,6 @@ def test_add_happi_device(qapp, qtbot, happi_cfg, client):
         qapp.processEvents()
         print(tc._plain_text)
         time.sleep(0.5)
-    1/0
 
 
 def test_add_importable_device(qapp, qtbot):
