@@ -21,9 +21,16 @@ env:
 jobs:
   allow_failures:
     - name: "Python - PIP"
-
-after_failure:
-  - cat logs/run_tests_log.txt
+  include:
+    - name: "Python 3.7"
+      after_failure:
+        - cat logs/run_tests_log.txt
+    - name: "Python 3.8"
+      after_failure:
+        - cat logs/run_tests_log.txt
+    - name: "Python 3.9"
+      after_failure:
+        - cat logs/run_tests_log.txt
 
 import:
   - pcdshub/pcds-ci-helpers:travis/shared_configs/setup-env-ui.yml
