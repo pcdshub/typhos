@@ -278,3 +278,8 @@ def reset_signal_plugin():
     plugin = plugin_for_address('sig://test')
     for channel in list(plugin.channels):
         plugin.remove_connection(channel)
+
+
+@pytest.fixture(scope='function', autouse=True)
+def show_test_name(request):
+    logger.debug(f'Running test named {request.node.name}')

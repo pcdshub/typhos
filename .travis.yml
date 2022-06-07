@@ -22,10 +22,6 @@ jobs:
   allow_failures:
     - name: "Python - PIP"
 
-after_failure:
-  - cat logs/run_tests_log.txt
-
 import:
-  - pcdshub/pcds-ci-helpers:travis/shared_configs/setup-env-ui.yml
   - pcdshub/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml
   - pcdshub/pcds-ci-helpers:travis/shared_configs/python-benchmark.yml
