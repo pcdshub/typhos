@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.widgets &mdash; Typhos 2.3.1+44.g5b9240e documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.widgets &mdash; Typhos 2.3.1+48.gd653598 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.1+44.g5b9240e
+                2.3.1+48.gd653598
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -492,15 +492,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">setIconSize</span><span class="p">(</span><span class="n">QSize</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
         <span class="c1"># Setup the action to open the widget</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">open_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span>
-            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa.square&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">),</span> <span class="s1">&#39;Open&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa5s.square&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">),</span> <span class="s1">&#39;Open&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">open_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">open_requested</span><span class="p">)</span>
         <span class="c1"># Setup the action to embed the widget</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embed_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span>
-            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa.th-large&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">),</span> <span class="s1">&#39;Embed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa5s.th-large&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;yellow&#39;</span><span class="p">),</span> <span class="s1">&#39;Embed&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embed_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embed_requested</span><span class="p">)</span>
         <span class="c1"># Setup the action to hide the widget</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span>
-            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa.times-circle&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">),</span> <span class="s1">&#39;Close&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
+            <span class="n">qta</span><span class="o">.</span><span class="n">icon</span><span class="p">(</span><span class="s1">&#39;fa5s.times-circle&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">),</span> <span class="s1">&#39;Close&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_requested</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hide_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="c1"># Add actions to toolbars</span>
@@ -675,8 +675,8 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Show Image&#39;</span>
-    <span class="n">icon</span> <span class="o">=</span> <span class="s1">&#39;fa.camera&#39;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Show Image&quot;</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;fa5s.camera&quot;</span>
     <span class="n">parent_widget_class</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span>
 
 <div class="viewcode-block" id="ImageDialogButton.widget"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.ImageDialogButton.widget">[docs]</a>    <span class="k">def</span> <span class="nf">widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -695,7 +695,7 @@
 <span class="sd">    -----</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Show Waveform&#39;</span>
-    <span class="n">icon</span> <span class="o">=</span> <span class="s1">&#39;fa5s.chart-line&#39;</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="s2">&quot;fa5s.chart-line&quot;</span>
     <span class="n">parent_widget_class</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span>
 
 <div class="viewcode-block" id="WaveformDialogButton.widget"><a class="viewcode-back" href="../../widgets.html#typhos.widgets.WaveformDialogButton.widget">[docs]</a>    <span class="k">def</span> <span class="nf">widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
