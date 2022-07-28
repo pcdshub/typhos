@@ -2,7 +2,7 @@
  Release History
 =================
 
-v2.3.2 (2022-07-27)
+v2.3.2 (2022-07-28)
 ===================
 
 Description
@@ -18,6 +18,7 @@ Fixes
 - Fix the profiler to also profile class methods.
 - Use cached paths for finding class templates.
 - Properly handle various deprecations and deprecation warnings.
+- Fix usage of deprecated methods in happi (optional dependency).
 
 Maintenance
 -----------
