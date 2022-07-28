@@ -22,9 +22,10 @@ Fixes
 Maintenance
 -----------
 - Log "unable to add device" without the traceback, which was previously unhelpful.
-- Pin pyqt at 5.15 for test suite incompatibility in newer versions.
+- Pin pyqt at 5.12 for test suite incompatibility in newer versions.
 - Ensure that test.qss test suite artifact is cleaned up properly.
 - Fix the broken test suite.
+- Pin jinja2 at <3.1 in CI builds for sphinx <4.0.0 compatibility
 
 Contributors
 ------------
