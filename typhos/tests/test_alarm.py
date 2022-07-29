@@ -117,7 +117,7 @@ class FakeClient:
 @pytest.mark.parametrize("metadata,response", alarm_cases)
 def test_one_alarm_happi_ch(alarm, qtbot, metadata, response, fake_client):
     name = 'happi_test_device_' + str(uuid4()).replace('-', '_')
-    item = fake_client.find_device(name=name)
+    item = fake_client.find_item(name=name)
     device = from_container(item)
 
     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
