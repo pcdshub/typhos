@@ -106,7 +106,7 @@ def fake_client():
 
 
 class FakeClient:
-    def find_device(self, *args, name, **kwargs):
+    def find_item(self, *args, name, **kwargs):
         return HappiItem(
             name=name,
             device_class='typhos.tests.test_alarm.SimpleDevice',
