@@ -743,7 +743,7 @@ def code_from_device(device):
 import happi
 from happi.loader import from_container
 client = happi.Client.from_config()
-md = client.find_device(name="{happi_name}")
+md = client.find_item(name="{happi_name}")
 {device.name} = from_container(md)
 '''
 

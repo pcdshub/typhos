@@ -2,6 +2,39 @@
  Release History
 =================
 
+v2.3.2 (2022-07-28)
+===================
+
+Description
+-----------
+This is a bugfix and maintenance release.
+
+Fixes
+-----
+- Fix various instances of clipping in the positioner widget.
+- Show Python documentation when no web help is available.
+- Fix issues with suite sidebar width.
+- Lazy load all tools to improve performance.
+- Fix the profiler to also profile class methods.
+- Use cached paths for finding class templates.
+- Properly handle various deprecations and deprecation warnings.
+- Fix usage of deprecated methods in happi (optional dependency).
+
+Maintenance
+-----------
+- Log "unable to add device" without the traceback, which was previously unhelpful.
+- Pin pyqt at 5.12 for test suite incompatibility in newer versions.
+- Ensure that test.qss test suite artifact is cleaned up properly.
+- Fix the broken test suite.
+- Pin jinja2 at <3.1 in CI builds for sphinx <4.0.0 compatibility
+
+Contributors
+------------
+- anleslac
+- klauer
+- zllentz
+
+
 v2.3.1 (2022-05-02)
 ===================
 
