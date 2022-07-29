@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.plugins.happi &mdash; Typhos 2.3.1+50.gba6b2d6 documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <title>typhos.plugins.happi &mdash; Typhos 2.3.2 documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.1+50.gba6b2d6
+                2.3.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -126,7 +126,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">device</span><span class="p">,</span> <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="kc">None</span>
         <span class="c1"># Load the device from the Client</span>
-        <span class="n">md</span> <span class="o">=</span> <span class="n">HappiClientState</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">find_device</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">HappiClientState</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">find_item</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">from_container</span><span class="p">(</span><span class="n">md</span><span class="p">)</span>
         <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">post</span><span class="p">()</span>
         <span class="c1"># If we have a child grab it</span>
