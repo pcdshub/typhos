@@ -123,7 +123,8 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
         """Start the status monitoring thread for the given status object."""
         self._status_thread = thread = TyphosStatusThread(
             status, start_delay=self._min_visible_operation,
-            timeout=timeout
+            timeout=timeout,
+            parent=self,
         )
         thread.status_started.connect(self.move_changed)
         thread.status_finished.connect(self._status_finished)
