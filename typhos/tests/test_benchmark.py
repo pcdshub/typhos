@@ -24,6 +24,13 @@ def test_benchmark(unit_test_name, qapp, qtbot, benchmark, monkeypatch):
     suite = benchmark(inner_benchmark, unit_tests[unit_test_name], qtbot)
     save_image(suite, 'test_benchmark_' + unit_test_name)
 
+    for idx, window in enumerate(list(qapp.allWindows())):
+        print(idx, window, window.title())
+        window.close()
+        window.deleteLater()
+
+    assert len(qapp.allWindows()) == 0
+
 
 def inner_benchmark(unit_test, qtbot):
     suite, context = unit_test()
