@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>343</width>
-    <height>212</height>
+    <width>409</width>
+    <height>241</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -75,7 +75,7 @@
        <number>5</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="left_side_layout" stretch="0,0,0,1">
+       <layout class="QVBoxLayout" name="left_side_layout" stretch="0,0,0">
         <property name="spacing">
          <number>5</number>
         </property>
@@ -148,7 +148,7 @@
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignHCenter">
+          <item alignment="Qt::AlignHCenter|Qt::AlignTop">
            <widget class="PyDMLabel" name="low_limit">
             <property name="minimumSize">
              <size>
@@ -243,7 +243,7 @@
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignHCenter">
+          <item alignment="Qt::AlignHCenter|Qt::AlignTop">
            <widget class="QLabel" name="moving_indicator_label">
             <property name="minimumSize">
              <size>
@@ -296,23 +296,10 @@ Screen</string>
           </property>
          </widget>
         </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,0,0,0,0,0,0">
+       <layout class="QVBoxLayout" name="value_layout" stretch="1,0,0,0,0,0,0">
         <property name="spacing">
          <number>10</number>
         </property>
@@ -367,6 +354,9 @@ Screen</string>
          <layout class="QVBoxLayout" name="setpoint_layout">
           <property name="spacing">
            <number>0</number>
+          </property>
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMinimumSize</enum>
           </property>
          </layout>
         </item>
@@ -499,25 +489,15 @@ Screen</string>
           </property>
          </widget>
         </item>
-        <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="right_side_layout" stretch="0,0,0,1">
+       <layout class="QVBoxLayout" name="right_side_layout" stretch="0,0,0">
         <property name="spacing">
          <number>5</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMaximumSize</enum>
         </property>
         <property name="rightMargin">
          <number>0</number>
@@ -588,7 +568,7 @@ Screen</string>
             </property>
            </widget>
           </item>
-          <item>
+          <item alignment="Qt::AlignTop">
            <widget class="PyDMLabel" name="high_limit">
             <property name="minimumSize">
              <size>
@@ -619,6 +599,9 @@ Screen</string>
         </item>
         <item>
          <layout class="QVBoxLayout" name="alarm_layout">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetDefaultConstraint</enum>
+          </property>
           <property name="topMargin">
            <number>0</number>
           </property>
@@ -644,7 +627,7 @@ Screen</string>
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignHCenter">
+          <item alignment="Qt::AlignHCenter|Qt::AlignTop">
            <widget class="QLabel" name="alarm_label">
             <property name="minimumSize">
              <size>
@@ -697,19 +680,6 @@ Error</string>
           </property>
          </widget>
         </item>
-        <item>
-         <spacer name="verticalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
        </layout>
       </item>
      </layout>
@@ -718,16 +688,6 @@ Error</string>
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>TyphosAlarmCircle</class>
-   <extends>QWidget</extends>
-   <header>typhos.alarm</header>
-  </customwidget>
-  <customwidget>
-   <class>TyphosRelatedSuiteButton</class>
-   <extends>QPushButton</extends>
-   <header>typhos.related_display</header>
-  </customwidget>
   <customwidget>
    <class>PyDMLabel</class>
    <extends>QLabel</extends>
@@ -742,6 +702,16 @@ Error</string>
    <class>PyDMLineEdit</class>
    <extends>QLineEdit</extends>
    <header>pydm.widgets.line_edit</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosAlarmCircle</class>
+   <extends>QWidget</extends>
+   <header>typhos.alarm</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosRelatedSuiteButton</class>
+   <extends>QPushButton</extends>
+   <header>typhos.related_display</header>
   </customwidget>
  </customwidgets>
  <resources/>
