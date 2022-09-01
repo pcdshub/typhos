@@ -1,6 +1,7 @@
 """
 Utility functions for typhos
 """
+import atexit
 import collections
 import contextlib
 import functools
@@ -988,12 +989,9 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
         self.include_lazy = include_lazy
         self._update_event = threading.Event()
 
-        app = QtWidgets.QApplication.instance()
-        assert app is not None
+        atexit.register(self.stop)
 
-        app.aboutToQuit.connect(self.stop)
-
-    def stop(self, wait_ms: int = 1000):
+    def stop(self, *, wait_ms: int = 1000):
         """
         Stop the background thread and clean up.
 
@@ -1045,12 +1043,9 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
         self.lock = threading.Lock()
         self._update_event = threading.Event()
 
-        app = QtWidgets.QApplication.instance()
-        assert app is not None
+        atexit.register(self.stop)
 
-        app.aboutToQuit.connect(self.stop)
-
-    def stop(self, wait_ms: int = 1000):
+    def stop(self, *, wait_ms: int = 1000):
         """
         Stop the background thread and clean up.
 
