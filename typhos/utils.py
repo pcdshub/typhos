@@ -988,6 +988,28 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
         self.include_lazy = include_lazy
         self._update_event = threading.Event()
 
+        app = QtWidgets.QApplication.instance()
+        assert app is not None
+
+        app.aboutToQuit.connect(self.stop)
+
+    def stop(self, wait_ms: int = 1000):
+        """
+        Stop the background thread and clean up.
+
+        Parameters
+        ----------
+        wait_ms : int, optional
+            Time to wait for the background thread to exit.  Set to 0 to
+            disable.
+        """
+        if not self.isRunning():
+            return
+
+        self.requestInterruption()
+        if wait_ms > 0:
+            self.wait(msecs=wait_ms)
+
     def callback(self, obj, connected, **kwargs):
         self._update_event.set()
         self.connection_update.emit(obj, connected, kwargs)
@@ -999,7 +1021,7 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
         with connection_status_monitor(*signals, callback=self.callback):
             while not self.isInterruptionRequested():
                 self._update_event.clear()
-                self._update_event.wait(timeout=0.5)
+                self._update_event.wait(timeout=0.25)
 
 
 class ObjectConnectionMonitorThread(QtCore.QThread):
@@ -1022,6 +1044,28 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
         self.status = None
         self.lock = threading.Lock()
         self._update_event = threading.Event()
+
+        app = QtWidgets.QApplication.instance()
+        assert app is not None
+
+        app.aboutToQuit.connect(self.stop)
+
+    def stop(self, wait_ms: int = 1000):
+        """
+        Stop the background thread and clean up.
+
+        Parameters
+        ----------
+        wait_ms : int, optional
+            Time to wait for the background thread to exit.  Set to 0 to
+            disable.
+        """
+        if not self.isRunning():
+            return
+
+        self.requestInterruption()
+        if wait_ms > 0:
+            self.wait(msecs=wait_ms)
 
     def clear(self):
         if self.status:
@@ -1059,7 +1103,7 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
                 self.lock.release()
                 while not self.isInterruptionRequested():
                     self._update_event.clear()
-                    self._update_event.wait(timeout=0.5)
+                    self._update_event.wait(timeout=0.25)
         finally:
             if self.lock.locked():
                 self.lock.release()
