@@ -16,6 +16,9 @@ import pathlib
 import random
 import re
 import threading
+import weakref
+from types import MethodType
+from typing import List
 
 import entrypoints
 import ophyd
@@ -384,9 +387,62 @@ class TyphosObject:
         return instance
 
 
+class WeakPartialMethodSlot:
+    def __init__(
+        self,
+        signal: QtCore.Signal,
+        method: MethodType,
+        *args,
+        **kwargs
+    ):
+        self.signal = signal
+        self.signal.connect(self._call, QtCore.Qt.QueuedConnection)
+        self.method = weakref.WeakMethod(method)
+        method_parent = method.__self__
+        self._finalizer = weakref.finalize(method_parent, self._cleanup)
+        self.partial_args = args
+        self.partial_kwargs = kwargs
+
+    def _cleanup(self):
+        print("disconnecting", self)
+        try:
+            self.signal.disconnect(self._call)
+        except Exception:
+            print("failed to disconnect", self.signal)
+
+        self.signal = None
+        self.method = None
+        self.partial_args = []
+        self.partial_kwargs = {}
+
+    def _call(self, *new_args):
+        method = self.method()
+        if method is None:
+            self._cleanup()
+        else:
+            return method(*self.partial_args, **self.partial_kwargs)
+            # return method(*self.partial_args, *new_args)
+
+
 class TyphosBase(TyphosObject, QWidget):
     """Base widget for all Typhos widgets that interface with devices"""
-    pass
+
+    _weak_partials: List[WeakPartialMethodSlot]
+
+    def __init__(self, *args, **kwargs):
+        self._weak_partials = []
+        super().__init__(*args, **kwargs)
+
+    def _connect_partial(
+        self,
+        signal: QtCore.Signal,
+        method: MethodType,
+        *args,
+        **kwargs
+    ):
+        self._weak_partials.append(
+            WeakPartialMethodSlot(signal, method, *args, **kwargs)
+        )
 
 
 def make_identifier(name):
