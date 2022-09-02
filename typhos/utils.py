@@ -390,6 +390,7 @@ class TyphosObject:
 class WeakPartialMethodSlot:
     def __init__(
         self,
+        signal_owner: QtCore.Signal,
         signal: QtCore.Signal,
         method: MethodType,
         *args,
@@ -398,12 +399,28 @@ class WeakPartialMethodSlot:
         self.signal = signal
         self.signal.connect(self._call, QtCore.Qt.QueuedConnection)
         self.method = weakref.WeakMethod(method)
-        method_parent = method.__self__
-        self._finalizer = weakref.finalize(method_parent, self._cleanup)
+        self._method_finalizer = weakref.finalize(
+            method.__self__, self._method_destroyed
+        )
+        self._signal_finalizer = weakref.finalize(
+            signal_owner, self._signal_destroyed
+        )
         self.partial_args = args
         self.partial_kwargs = kwargs
 
-    def _cleanup(self):
+    def _signal_destroyed(self):
+        if self.signal is None:
+            return
+
+        self.method = None
+        self.partial_args = []
+        self.partial_kwargs = {}
+        self.signal = None
+
+    def _method_destroyed(self):
+        if self.signal is None:
+            return
+
         self.method = None
         self.partial_args = []
         self.partial_kwargs = {}
@@ -416,7 +433,7 @@ class WeakPartialMethodSlot:
     def _call(self, *new_args):
         method = self.method()
         if method is None:
-            self._cleanup()
+            self._method_destroyed()
         else:
             return method(*self.partial_args, **self.partial_kwargs)
             # return method(*self.partial_args, *new_args)
@@ -433,14 +450,16 @@ class TyphosBase(TyphosObject, QWidget):
 
     def _connect_partial(
         self,
+        signal_owner: QtCore.QObject,
         signal: QtCore.Signal,
         method: MethodType,
         *args,
         **kwargs
     ):
-        self._weak_partials.append(
-            WeakPartialMethodSlot(signal, method, *args, **kwargs)
+        slot = WeakPartialMethodSlot(
+            signal_owner, signal, method, *args, **kwargs
         )
+        self._weak_partials.append(slot)
 
 
 def make_identifier(name):

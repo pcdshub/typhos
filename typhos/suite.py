@@ -781,7 +781,7 @@ class TyphosSuite(TyphosBase):
                 item._mark_shown()
             # Make sure we react if the dock is closed outside of our menu
             self._connect_partial(
-                dock.closing, self.hide_subdisplay, sidebar
+                dock, dock.closing, self.hide_subdisplay, sidebar
             )
         else:
             logger.warning("Unable to find sidebar item for %r", widget)
@@ -809,13 +809,13 @@ class TyphosSuite(TyphosBase):
 
         logger.debug("Connecting parameter signals ...")
         self._connect_partial(
-            parameter.sigOpen, self.show_subdisplay, parameter
+            parameter, parameter.sigOpen, self.show_subdisplay, parameter
         )
         self._connect_partial(
-            parameter.sigHide, self.hide_subdisplay, parameter
+            parameter, parameter.sigHide, self.hide_subdisplay, parameter
         )
         if parameter.embeddable:
             self._connect_partial(
-                parameter.sigEmbed, self.embed_subdisplay, parameter
+                parameter, parameter.sigEmbed, self.embed_subdisplay, parameter
             )
         return parameter
