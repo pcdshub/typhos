@@ -1,14 +1,27 @@
 """
 Run the benchmark test cases using pytest-benchmark
 """
+from typing import List
+
 import pytest
 from epics import PV
+from qtpy import QtWidgets
 
-import typhos.benchmark.utils as utils
-from typhos.benchmark.cases import unit_tests
-from typhos.benchmark.profile import profiler_context
-
+from ..benchmark import utils
+from ..benchmark.cases import unit_tests
+from ..benchmark.profile import profiler_context
+from ..suite import TyphosSuite
 from .conftest import save_image
+
+
+def get_top_level_suites() -> List[TyphosSuite]:
+    app = QtWidgets.QApplication.instance()
+    assert app is not None
+    return list(
+        widget
+        for widget in app.topLevelWidgets()
+        if isinstance(widget, TyphosSuite)
+    )
 
 
 # Name the test cases using the keys, run using the values
@@ -20,16 +33,10 @@ def test_benchmark(unit_test_name, qapp, qtbot, benchmark, monkeypatch):
     These typically just open and close a particular typhos screen.
     """
     # Crudely permenant patch here to get around cleanup bug
+    assert len(get_top_level_suites()) == 0
     PV.count = property(lambda self: 1)
     suite = benchmark(inner_benchmark, unit_tests[unit_test_name], qtbot)
     save_image(suite, 'test_benchmark_' + unit_test_name)
-
-    for idx, window in enumerate(list(qapp.allWindows())):
-        print(idx, window, window.title())
-        window.close()
-        window.deleteLater()
-
-    assert len(qapp.allWindows()) == 0
 
 
 def inner_benchmark(unit_test, qtbot):
