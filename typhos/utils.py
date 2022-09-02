@@ -404,16 +404,14 @@ class WeakPartialMethodSlot:
         self.partial_kwargs = kwargs
 
     def _cleanup(self):
-        print("disconnecting", self)
-        try:
-            self.signal.disconnect(self._call)
-        except Exception:
-            print("failed to disconnect", self.signal)
-
-        self.signal = None
         self.method = None
         self.partial_args = []
         self.partial_kwargs = {}
+        try:
+            self.signal.disconnect(self._call)
+        except Exception:
+            ...
+        self.signal = None
 
     def _call(self, *new_args):
         method = self.method()
