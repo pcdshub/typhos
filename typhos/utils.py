@@ -388,9 +388,30 @@ class TyphosObject:
 
 
 class WeakPartialMethodSlot:
+    """
+    A PyQt-compatible slot for a partial method.
+
+    This utility handles deleting the connection when the method class instance
+    gets garbage collected. This avoids cycles in the garbage collector
+    that would prevent the instance from being garbage collected prior to the
+    program exiting.
+
+    Parameters
+    ----------
+    signal_owner : QtCore.QObject
+        The owner of the signal.
+    signal : QtCore.Signal
+        The signal instance itself.
+    method : instance method
+        The method slot to call when the signal fires.
+    *args :
+        Arguments to pass to the method.
+    **kwargs :
+        Keyword arguments to pass to the method.
+    """
     def __init__(
         self,
-        signal_owner: QtCore.Signal,
+        signal_owner: QtCore.QObject,
         signal: QtCore.Signal,
         method: MethodType,
         *args,
@@ -409,6 +430,7 @@ class WeakPartialMethodSlot:
         self.partial_kwargs = kwargs
 
     def _signal_destroyed(self):
+        """Callback: the owner of the signal was destroyed; clean up."""
         if self.signal is None:
             return
 
@@ -418,6 +440,7 @@ class WeakPartialMethodSlot:
         self.signal = None
 
     def _method_destroyed(self):
+        """Callback: the owner of the method was destroyed; clean up."""
         if self.signal is None:
             return
 
@@ -431,21 +454,31 @@ class WeakPartialMethodSlot:
         self.signal = None
 
     def _call(self, *new_args):
+        """
+        PyQt callback slot which handles the internal WeakMethod.
+
+        This method currently throws away arguments passed in from the signal.
+        This is for backward-compatibility to how the previous
+        `partial()`-using implementation worked.
+
+        If reused beyond the TyphosSuite, this class may need revisiting in the
+        future.
+        """
         method = self.method()
         if method is None:
             self._method_destroyed()
-        else:
-            return method(*self.partial_args, **self.partial_kwargs)
-            # return method(*self.partial_args, *new_args)
+            return
+
+        return method(*self.partial_args, **self.partial_kwargs)
 
 
 class TyphosBase(TyphosObject, QWidget):
     """Base widget for all Typhos widgets that interface with devices"""
 
-    _weak_partials: List[WeakPartialMethodSlot]
+    _weak_partials_: List[WeakPartialMethodSlot]
 
     def __init__(self, *args, **kwargs):
-        self._weak_partials = []
+        self._weak_partials_ = []
         super().__init__(*args, **kwargs)
 
     def _connect_partial(
@@ -456,10 +489,26 @@ class TyphosBase(TyphosObject, QWidget):
         *args,
         **kwargs
     ):
+        """
+        Connect the provided signal to an instance method.
+
+        Parameters
+        ----------
+        signal_owner : QtCore.QObject
+            The owner of the signal.
+        signal : QtCore.Signal
+            The signal instance itself.
+        method : instance method
+            The method slot to call when the signal fires.
+        *args :
+            Arguments to pass to the method.
+        **kwargs :
+            Keyword arguments to pass to the method.
+        """
         slot = WeakPartialMethodSlot(
             signal_owner, signal, method, *args, **kwargs
         )
-        self._weak_partials.append(slot)
+        self._weak_partials_.append(slot)
 
 
 def make_identifier(name):
