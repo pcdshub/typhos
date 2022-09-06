@@ -16,11 +16,7 @@ env:
     - BENCHMARK_PYTHON="3.8"
     - BENCHMARK_COMMAND="--benchmark-only"
 
-    - PIP_EXTRAS="PyQt5<5.15 happi"
-
-jobs:
-  allow_failures:
-    - name: "Python - PIP"
+    - PIP_EXTRAS="PyQt5<5.15 happi ./"
 
 import:
   - pcdshub/pcds-ci-helpers:travis/shared_configs/standard-python-conda.yml
