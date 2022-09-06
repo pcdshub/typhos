@@ -580,7 +580,9 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
             logger.debug("Setting up new status thread ...")
             self._status_thread = TyphosStatusThread(
                 status, start_delay=self._min_visible_operation,
-                timeout=self._max_allowed_operation)
+                timeout=self._max_allowed_operation,
+                parent=self,
+            )
 
             def status_started():
                 self.setEnabled(False)
