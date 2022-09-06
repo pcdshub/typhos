@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utility Functions &mdash; Typhos 2.3.2 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Utility Functions &mdash; Typhos 2.3.2+12.g76486e3 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -27,7 +27,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.2
+                2.3.2+12.g76486e3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -120,6 +120,18 @@
 <code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#DeviceConnectionMonitorThread.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.DeviceConnectionMonitorThread.run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt id="typhos.utils.DeviceConnectionMonitorThread.stop">
+<code class="sig-name descname"><span class="pre">stop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#DeviceConnectionMonitorThread.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.DeviceConnectionMonitorThread.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the background thread and clean up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wait_ms</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Time to wait for the background thread to exit.  Set to 0 to
+disable.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -167,6 +179,18 @@
 <dt id="typhos.utils.ObjectConnectionMonitorThread.run">
 <code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#ObjectConnectionMonitorThread.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.ObjectConnectionMonitorThread.run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="typhos.utils.ObjectConnectionMonitorThread.stop">
+<code class="sig-name descname"><span class="pre">stop</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#ObjectConnectionMonitorThread.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.ObjectConnectionMonitorThread.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the background thread and clean up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wait_ms</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Time to wait for the background thread to exit.  Set to 0 to
+disable.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -217,6 +241,27 @@ and replace it with a default timeout message.</p>
 <code class="sig-name descname"><span class="pre">contextMenuEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QContextMenuEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosLoading.contextMenuEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.TyphosLoading.contextMenuEvent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="typhos.utils.WeakPartialMethodSlot">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.utils.</span></code><code class="sig-name descname"><span class="pre">WeakPartialMethodSlot</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_owner</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PyQt5.QtCore.QObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PyQt5.QtCore.pyqtSignal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#WeakPartialMethodSlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.WeakPartialMethodSlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>A PyQt-compatible slot for a partial method.</p>
+<p>This utility handles deleting the connection when the method class instance
+gets garbage collected. This avoids cycles in the garbage collector
+that would prevent the instance from being garbage collected prior to the
+program exiting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal_owner</strong> (<em>QtCore.QObject</em>) – The owner of the signal.</p></li>
+<li><p><strong>signal</strong> (<em>QtCore.Signal</em>) – The signal instance itself.</p></li>
+<li><p><strong>method</strong> (<em>instance method</em>) – The method slot to call when the signal fires.</p></li>
+<li><p><strong>*args</strong> – Arguments to pass to the method.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to the method.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

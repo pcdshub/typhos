@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.utils &mdash; Typhos 2.3.2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.utils &mdash; Typhos 2.3.2+12.g76486e3 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.2
+                2.3.2+12.g76486e3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -84,6 +84,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Utility functions for typhos</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">atexit</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">functools</span>
@@ -98,6 +99,9 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">entrypoints</span>
 <span class="kn">import</span> <span class="nn">ophyd</span>
@@ -466,9 +470,129 @@
         <span class="k">return</span> <span class="n">instance</span>
 
 
+<div class="viewcode-block" id="WeakPartialMethodSlot"><a class="viewcode-back" href="../../utils.html#typhos.utils.WeakPartialMethodSlot">[docs]</a><span class="k">class</span> <span class="nc">WeakPartialMethodSlot</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A PyQt-compatible slot for a partial method.</span>
+
+<span class="sd">    This utility handles deleting the connection when the method class instance</span>
+<span class="sd">    gets garbage collected. This avoids cycles in the garbage collector</span>
+<span class="sd">    that would prevent the instance from being garbage collected prior to the</span>
+<span class="sd">    program exiting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signal_owner : QtCore.QObject</span>
+<span class="sd">        The owner of the signal.</span>
+<span class="sd">    signal : QtCore.Signal</span>
+<span class="sd">        The signal instance itself.</span>
+<span class="sd">    method : instance method</span>
+<span class="sd">        The method slot to call when the signal fires.</span>
+<span class="sd">    *args :</span>
+<span class="sd">        Arguments to pass to the method.</span>
+<span class="sd">    **kwargs :</span>
+<span class="sd">        Keyword arguments to pass to the method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">signal_owner</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">,</span>
+        <span class="n">signal</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="n">MethodType</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakMethod</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_method_finalizer</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">.</span><span class="vm">__self__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_destroyed</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signal_finalizer</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span>
+            <span class="n">signal_owner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_destroyed</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span> <span class="nf">_signal_destroyed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Callback: the owner of the signal was destroyed; clean up.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_method_destroyed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Callback: the owner of the method was destroyed; clean up.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">new_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        PyQt callback slot which handles the internal WeakMethod.</span>
+
+<span class="sd">        This method currently throws away arguments passed in from the signal.</span>
+<span class="sd">        This is for backward-compatibility to how the previous</span>
+<span class="sd">        `partial()`-using implementation worked.</span>
+
+<span class="sd">        If reused beyond the TyphosSuite, this class may need revisiting in the</span>
+<span class="sd">        future.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_method_destroyed</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="TyphosBase"><a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosBase">[docs]</a><span class="k">class</span> <span class="nc">TyphosBase</span><span class="p">(</span><span class="n">TyphosObject</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base widget for all Typhos widgets that interface with devices&quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
+
+    <span class="n">_weak_partials_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">WeakPartialMethodSlot</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weak_partials_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_connect_partial_weakly</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">signal_owner</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">,</span>
+        <span class="n">signal</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="n">MethodType</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect the provided signal to an instance method via</span>
+<span class="sd">        WeakPartialMethodSlot.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal_owner : QtCore.QObject</span>
+<span class="sd">            The owner of the signal.</span>
+<span class="sd">        signal : QtCore.Signal</span>
+<span class="sd">            The signal instance itself.</span>
+<span class="sd">        method : instance method</span>
+<span class="sd">            The method slot to call when the signal fires.</span>
+<span class="sd">        *args :</span>
+<span class="sd">            Arguments to pass to the method.</span>
+<span class="sd">        **kwargs :</span>
+<span class="sd">            Keyword arguments to pass to the method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="n">WeakPartialMethodSlot</span><span class="p">(</span>
+            <span class="n">signal_owner</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weak_partials_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="make_identifier"><a class="viewcode-back" href="../../utils.html#typhos.utils.make_identifier">[docs]</a><span class="k">def</span> <span class="nf">make_identifier</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
@@ -1071,6 +1195,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">include_lazy</span> <span class="o">=</span> <span class="n">include_lazy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeviceConnectionMonitorThread.stop"><a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the background thread and clean up.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        wait_ms : int, optional</span>
+<span class="sd">            Time to wait for the background thread to exit.  Set to 0 to</span>
+<span class="sd">            disable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">requestInterruption</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">wait_ms</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">msecs</span><span class="o">=</span><span class="n">wait_ms</span><span class="p">)</span></div>
+
     <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_update</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
@@ -1082,7 +1225,7 @@
         <span class="k">with</span> <span class="n">connection_status_monitor</span><span class="p">(</span><span class="o">*</span><span class="n">signals</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">):</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isInterruptionRequested</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="ObjectConnectionMonitorThread"><a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread">[docs]</a><span class="k">class</span> <span class="nc">ObjectConnectionMonitorThread</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">):</span>
@@ -1105,6 +1248,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ObjectConnectionMonitorThread.stop"><a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the background thread and clean up.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        wait_ms : int, optional</span>
+<span class="sd">            Time to wait for the background thread to exit.  Set to 0 to</span>
+<span class="sd">            disable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">requestInterruption</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">wait_ms</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">msecs</span><span class="o">=</span><span class="n">wait_ms</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
@@ -1142,7 +1304,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                 <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isInterruptionRequested</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">locked</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>

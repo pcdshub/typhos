@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.cache &mdash; Typhos 2.3.2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.cache &mdash; Typhos 2.3.2+12.g76486e3 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.2
+                2.3.2+12.g76486e3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -157,6 +157,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">ObjectConnectionMonitorThread</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">connection_update</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connection_update</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 <div class="viewcode-block" id="_GlobalDescribeCache.clear"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

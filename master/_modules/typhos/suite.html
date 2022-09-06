@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.suite &mdash; Typhos 2.3.2 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.suite &mdash; Typhos 2.3.2+12.g76486e3 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.2
+                2.3.2+12.g76486e3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -654,6 +654,7 @@
 <span class="sd">            Category of device. By default, all devices will just be added to</span>
 <span class="sd">            the &quot;Devices&quot; group</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_title</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="c1"># Create DeviceParameter and add to top level category</span>
@@ -862,7 +863,9 @@
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sidebar</span><span class="o">.</span><span class="n">items</span><span class="p">:</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">_mark_shown</span><span class="p">()</span>
             <span class="c1"># Make sure we react if the dock is closed outside of our menu</span>
-            <span class="n">dock</span><span class="o">.</span><span class="n">closing</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_subdisplay</span><span class="p">,</span> <span class="n">sidebar</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connect_partial_weakly</span><span class="p">(</span>
+                <span class="n">dock</span><span class="p">,</span> <span class="n">dock</span><span class="o">.</span><span class="n">closing</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hide_subdisplay</span><span class="p">,</span> <span class="n">sidebar</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to find sidebar item for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
 
@@ -888,14 +891,15 @@
             <span class="n">widget</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connecting parameter signals ...&quot;</span><span class="p">)</span>
-        <span class="n">parameter</span><span class="o">.</span><span class="n">sigOpen</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_subdisplay</span><span class="p">,</span> <span class="n">parameter</span><span class="p">),</span>
-                                  <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
-        <span class="n">parameter</span><span class="o">.</span><span class="n">sigHide</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hide_subdisplay</span><span class="p">,</span> <span class="n">parameter</span><span class="p">),</span>
-                                  <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_partial_weakly</span><span class="p">(</span>
+            <span class="n">parameter</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">sigOpen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_subdisplay</span><span class="p">,</span> <span class="n">parameter</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_partial_weakly</span><span class="p">(</span>
+            <span class="n">parameter</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">sigHide</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hide_subdisplay</span><span class="p">,</span> <span class="n">parameter</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">embeddable</span><span class="p">:</span>
-            <span class="n">parameter</span><span class="o">.</span><span class="n">sigEmbed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embed_subdisplay</span><span class="p">,</span> <span class="n">parameter</span><span class="p">),</span>
-                <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connect_partial_weakly</span><span class="p">(</span>
+                <span class="n">parameter</span><span class="p">,</span> <span class="n">parameter</span><span class="o">.</span><span class="n">sigEmbed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed_subdisplay</span><span class="p">,</span> <span class="n">parameter</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">parameter</span></div>
 </pre></div>
