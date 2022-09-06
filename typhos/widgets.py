@@ -503,6 +503,11 @@ class TyphosDesignerMixin(pydm.widgets.base.PyDMWidget):
     A mixin class used to display Typhos widgets in the Qt designer.
     """
 
+    _qt_designer_ = {
+        "group": "Typhos Widgets",
+        "is_container": False,
+    }
+
     # Unused properties that we don't want visible in designer
     alarmSensitiveBorder = Property(bool, designable=False)
     alarmSensitiveContent = Property(bool, designable=False)

@@ -109,6 +109,11 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
     KindLevel = KindLevel
     AlarmLevel = AlarmLevel
 
+    _qt_designer_ = {
+        "group": "Typhos Alarm Widgets",
+        "is_container": False,
+    }
+
     alarm_changed = QtCore.Signal(_AlarmLevel)
 
     def __init__(self, *args, **kwargs):

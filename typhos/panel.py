@@ -805,6 +805,11 @@ class CompositeSignalPanel(SignalPanel):
         The column number for the setpoint widget.
     """
 
+    _qt_designer_ = {
+        "group": "Typhos Widgets",
+        "is_container": False,
+    }
+
     def __init__(self):
         super().__init__(signals=None)
         self._containers = {}

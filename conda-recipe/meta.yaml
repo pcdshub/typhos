@@ -24,7 +24,7 @@ requirements:
     - numpydoc
     - ophyd >=1.5.0
     - pcdsutils
-    - pydm
+    - pydm >=1.16.1
     - pyqt >=5,<5.15
     - pyqtgraph
     - qdarkstyle

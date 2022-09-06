@@ -54,8 +54,8 @@ def launch_suite(
     window.setUnifiedTitleAndToolBarOnMac(True)
     if initial_size is not None:
         window.resize(initial_size)
-    window.show()
     logger.info("Launching application ...")
+    QTimer.singleShot(0, window.show)
     get_qapp().exec_()
     logger.info("Execution complete!")
     return window

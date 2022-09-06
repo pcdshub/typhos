@@ -34,6 +34,12 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
     """
     Button to open a typhos suite with happi-loaded devices.
     """
+
+    _qt_designer_ = {
+        "group": "Typhos Widgets",
+        "is_container": False,
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._happi_names = []
