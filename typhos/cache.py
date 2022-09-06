@@ -74,6 +74,7 @@ class _GlobalDescribeCache(QtCore.QObject):
         self.connect_thread = utils.ObjectConnectionMonitorThread(parent=self)
         self.connect_thread.connection_update.connect(
             self._connection_update, QtCore.Qt.QueuedConnection)
+
         self.connect_thread.start()
 
     def clear(self):

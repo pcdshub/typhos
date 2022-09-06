@@ -571,6 +571,7 @@ class TyphosSuite(TyphosBase):
             Category of device. By default, all devices will just be added to
             the "Devices" group
         """
+
         super().add_device(device)
         self._update_title(device)
         # Create DeviceParameter and add to top level category
@@ -779,7 +780,9 @@ class TyphosSuite(TyphosBase):
             for item in sidebar.items:
                 item._mark_shown()
             # Make sure we react if the dock is closed outside of our menu
-            dock.closing.connect(partial(self.hide_subdisplay, sidebar))
+            self._connect_partial_weakly(
+                dock, dock.closing, self.hide_subdisplay, sidebar
+            )
         else:
             logger.warning("Unable to find sidebar item for %r", widget)
 
@@ -805,13 +808,14 @@ class TyphosSuite(TyphosBase):
             widget.setHidden(True)
 
         logger.debug("Connecting parameter signals ...")
-        parameter.sigOpen.connect(partial(self.show_subdisplay, parameter),
-                                  QtCore.Qt.QueuedConnection)
-        parameter.sigHide.connect(partial(self.hide_subdisplay, parameter),
-                                  QtCore.Qt.QueuedConnection)
+        self._connect_partial_weakly(
+            parameter, parameter.sigOpen, self.show_subdisplay, parameter
+        )
+        self._connect_partial_weakly(
+            parameter, parameter.sigHide, self.hide_subdisplay, parameter
+        )
         if parameter.embeddable:
-            parameter.sigEmbed.connect(
-                partial(self.embed_subdisplay, parameter),
-                QtCore.Qt.QueuedConnection
+            self._connect_partial_weakly(
+                parameter, parameter.sigEmbed, self.embed_subdisplay, parameter
             )
         return parameter
