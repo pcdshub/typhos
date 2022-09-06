@@ -481,7 +481,7 @@ class TyphosBase(TyphosObject, QWidget):
         self._weak_partials_ = []
         super().__init__(*args, **kwargs)
 
-    def _connect_partial(
+    def _connect_partial_weakly(
         self,
         signal_owner: QtCore.QObject,
         signal: QtCore.Signal,
@@ -490,7 +490,8 @@ class TyphosBase(TyphosObject, QWidget):
         **kwargs
     ):
         """
-        Connect the provided signal to an instance method.
+        Connect the provided signal to an instance method via
+        WeakPartialMethodSlot.
 
         Parameters
         ----------
