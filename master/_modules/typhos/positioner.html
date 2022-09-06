@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.positioner &mdash; Typhos 2.3.2+27.g079ccee documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <title>typhos.positioner &mdash; Typhos 2.3.2+29.g4bc5473 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.2+27.g079ccee
+                2.3.2+29.g4bc5473
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -206,7 +206,8 @@
         <span class="sd">&quot;&quot;&quot;Start the status monitoring thread for the given status object.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="n">thread</span> <span class="o">=</span> <span class="n">TyphosStatusThread</span><span class="p">(</span>
             <span class="n">status</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_visible_operation</span><span class="p">,</span>
-            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">status_started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">move_changed</span><span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">status_finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_status_finished</span><span class="p">)</span>
