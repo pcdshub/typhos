@@ -33,7 +33,9 @@ requirements:
     - qtpy
     - timechart >=1.2.4
   run_constrained:
+    - happi >=1.14.0
     - jupyter_client <7.3.2
+
 
 about:
   home: https://github.com/pcdshub/typhos

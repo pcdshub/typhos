@@ -43,7 +43,7 @@ class HappiConnection(PyDMConnection):
         else:
             device, child = self.address, None
         # Load the device from the Client
-        md = HappiClientState.client.find_device(name=device)
+        md = HappiClientState.client.find_item(name=device)
         obj = from_container(md)
         md = md.post()
         # If we have a child grab it

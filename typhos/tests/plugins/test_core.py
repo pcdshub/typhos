@@ -4,8 +4,8 @@ from ophyd import Component as Cpt
 from ophyd import Device, Signal
 from pydm.widgets import PyDMLineEdit
 
-from typhos.plugins.core import (SignalConnection, SignalPlugin,
-                                 register_signal, signal_registry)
+from typhos.plugins.core import (SignalConnection, register_signal,
+                                 signal_registry)
 
 from ..conftest import DeadSignal, RichSignal
 
@@ -85,15 +85,14 @@ def test_disconnection(qtbot):
     qtbot.addWidget(widget)
     widget.channel = 'sig://invalid'
     listener = widget.channels()[0]
-    plugin = SignalPlugin()
     # Non-existant signal doesn't raise an error
-    plugin.add_connection(listener)
+    listener.connect()
     # Create a signal that will raise a TimeoutError
     sig = DeadSignal(name='broken_signal', value=1)
     register_signal(sig)
     listener.address = 'sig://broken_signal'
     # This should fail on the subscribe
-    plugin.add_connection(listener)
+    listener.connect()
     # This should fail on the get
     sig.subscribable = True
     _ = SignalConnection(listener, 'broken_signal')
@@ -117,4 +116,4 @@ def test_array_signal_put_value(qapp, qtbot):
     widget.channel = 'sig://my_array_write'
     widget.send_value_signal[np.ndarray].emit(np.zeros(4))
     qapp.processEvents()
-    assert all(sig.value == np.zeros(4))
+    assert all(sig.get() == np.zeros(4))

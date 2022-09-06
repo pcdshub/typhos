@@ -10,8 +10,8 @@ from typhos.widgets import (ImageDialogButton, QDialog, SignalDialogButton,
 
 
 class DialogButton(SignalDialogButton):
-    icon = 'fa.play'
-    text = 'Show Widget'
+    icon = "fa5s.play"
+    text = "Show Widget"
 
     def widget(self):
         return QWidget(parent=self)
@@ -25,10 +25,9 @@ def widget_button(qtbot, monkeypatch):
     return button
 
 
-def test_sidebar_item(qtbot):
+def test_sidebar_item():
     param = SidebarParameter(name='test', embeddable=True)
     item = TyphosSidebarItem(param, 0)
-    qtbot.addWidget(item)
     assert len(item.toolbar.actions()) == 3
     assert item.open_action.isEnabled()
     assert item.embed_action.isEnabled()

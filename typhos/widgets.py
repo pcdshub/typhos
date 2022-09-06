@@ -409,15 +409,15 @@ class TyphosSidebarItem(ParameterItem):
         self.toolbar.setIconSize(QSize(15, 15))
         # Setup the action to open the widget
         self.open_action = QAction(
-            qta.icon('fa.square', color='green'), 'Open', self.toolbar)
+            qta.icon('fa5s.square', color='green'), 'Open', self.toolbar)
         self.open_action.triggered.connect(self.open_requested)
         # Setup the action to embed the widget
         self.embed_action = QAction(
-            qta.icon('fa.th-large', color='yellow'), 'Embed', self.toolbar)
+            qta.icon('fa5s.th-large', color='yellow'), 'Embed', self.toolbar)
         self.embed_action.triggered.connect(self.embed_requested)
         # Setup the action to hide the widget
         self.hide_action = QAction(
-            qta.icon('fa.times-circle', color='red'), 'Close', self.toolbar)
+            qta.icon('fa5s.times-circle', color='red'), 'Close', self.toolbar)
         self.hide_action.triggered.connect(self.hide_requested)
         self.hide_action.setEnabled(False)
         # Add actions to toolbars
@@ -597,8 +597,8 @@ class ImageDialogButton(SignalDialogButton):
     Notes
     -----
     """
-    text = 'Show Image'
-    icon = 'fa.camera'
+    text = "Show Image"
+    icon = "fa5s.camera"
     parent_widget_class = QtWidgets.QMainWindow
 
     def widget(self):
@@ -617,7 +617,7 @@ class WaveformDialogButton(SignalDialogButton):
     -----
     """
     text = 'Show Waveform'
-    icon = 'fa5s.chart-line'
+    icon = "fa5s.chart-line"
     parent_widget_class = QtWidgets.QMainWindow
 
     def widget(self):

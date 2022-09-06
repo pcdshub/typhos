@@ -1,6 +1,7 @@
 """
 Utility functions for typhos
 """
+import atexit
 import collections
 import contextlib
 import functools
@@ -15,6 +16,9 @@ import pathlib
 import random
 import re
 import threading
+import weakref
+from types import MethodType
+from typing import List
 
 import entrypoints
 import ophyd
@@ -383,8 +387,129 @@ class TyphosObject:
         return instance
 
 
+class WeakPartialMethodSlot:
+    """
+    A PyQt-compatible slot for a partial method.
+
+    This utility handles deleting the connection when the method class instance
+    gets garbage collected. This avoids cycles in the garbage collector
+    that would prevent the instance from being garbage collected prior to the
+    program exiting.
+
+    Parameters
+    ----------
+    signal_owner : QtCore.QObject
+        The owner of the signal.
+    signal : QtCore.Signal
+        The signal instance itself.
+    method : instance method
+        The method slot to call when the signal fires.
+    *args :
+        Arguments to pass to the method.
+    **kwargs :
+        Keyword arguments to pass to the method.
+    """
+    def __init__(
+        self,
+        signal_owner: QtCore.QObject,
+        signal: QtCore.Signal,
+        method: MethodType,
+        *args,
+        **kwargs
+    ):
+        self.signal = signal
+        self.signal.connect(self._call, QtCore.Qt.QueuedConnection)
+        self.method = weakref.WeakMethod(method)
+        self._method_finalizer = weakref.finalize(
+            method.__self__, self._method_destroyed
+        )
+        self._signal_finalizer = weakref.finalize(
+            signal_owner, self._signal_destroyed
+        )
+        self.partial_args = args
+        self.partial_kwargs = kwargs
+
+    def _signal_destroyed(self):
+        """Callback: the owner of the signal was destroyed; clean up."""
+        if self.signal is None:
+            return
+
+        self.method = None
+        self.partial_args = []
+        self.partial_kwargs = {}
+        self.signal = None
+
+    def _method_destroyed(self):
+        """Callback: the owner of the method was destroyed; clean up."""
+        if self.signal is None:
+            return
+
+        self.method = None
+        self.partial_args = []
+        self.partial_kwargs = {}
+        try:
+            self.signal.disconnect(self._call)
+        except Exception:
+            ...
+        self.signal = None
+
+    def _call(self, *new_args):
+        """
+        PyQt callback slot which handles the internal WeakMethod.
+
+        This method currently throws away arguments passed in from the signal.
+        This is for backward-compatibility to how the previous
+        `partial()`-using implementation worked.
+
+        If reused beyond the TyphosSuite, this class may need revisiting in the
+        future.
+        """
+        method = self.method()
+        if method is None:
+            self._method_destroyed()
+            return
+
+        return method(*self.partial_args, **self.partial_kwargs)
+
+
 class TyphosBase(TyphosObject, QWidget):
     """Base widget for all Typhos widgets that interface with devices"""
+
+    _weak_partials_: List[WeakPartialMethodSlot]
+
+    def __init__(self, *args, **kwargs):
+        self._weak_partials_ = []
+        super().__init__(*args, **kwargs)
+
+    def _connect_partial_weakly(
+        self,
+        signal_owner: QtCore.QObject,
+        signal: QtCore.Signal,
+        method: MethodType,
+        *args,
+        **kwargs
+    ):
+        """
+        Connect the provided signal to an instance method via
+        WeakPartialMethodSlot.
+
+        Parameters
+        ----------
+        signal_owner : QtCore.QObject
+            The owner of the signal.
+        signal : QtCore.Signal
+            The signal instance itself.
+        method : instance method
+            The method slot to call when the signal fires.
+        *args :
+            Arguments to pass to the method.
+        **kwargs :
+            Keyword arguments to pass to the method.
+        """
+        slot = WeakPartialMethodSlot(
+            signal_owner, signal, method, *args, **kwargs
+        )
+        self._weak_partials_.append(slot)
 
 
 def make_identifier(name):
@@ -742,7 +867,7 @@ def code_from_device(device):
 import happi
 from happi.loader import from_container
 client = happi.Client.from_config()
-md = client.find_device(name="{happi_name}")
+md = client.find_item(name="{happi_name}")
 {device.name} = from_container(md)
 '''
 
@@ -987,6 +1112,25 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
         self.include_lazy = include_lazy
         self._update_event = threading.Event()
 
+        atexit.register(self.stop)
+
+    def stop(self, *, wait_ms: int = 1000):
+        """
+        Stop the background thread and clean up.
+
+        Parameters
+        ----------
+        wait_ms : int, optional
+            Time to wait for the background thread to exit.  Set to 0 to
+            disable.
+        """
+        if not self.isRunning():
+            return
+
+        self.requestInterruption()
+        if wait_ms > 0:
+            self.wait(msecs=wait_ms)
+
     def callback(self, obj, connected, **kwargs):
         self._update_event.set()
         self.connection_update.emit(obj, connected, kwargs)
@@ -998,7 +1142,7 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
         with connection_status_monitor(*signals, callback=self.callback):
             while not self.isInterruptionRequested():
                 self._update_event.clear()
-                self._update_event.wait(timeout=0.5)
+                self._update_event.wait(timeout=0.25)
 
 
 class ObjectConnectionMonitorThread(QtCore.QThread):
@@ -1021,6 +1165,25 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
         self.status = None
         self.lock = threading.Lock()
         self._update_event = threading.Event()
+
+        atexit.register(self.stop)
+
+    def stop(self, *, wait_ms: int = 1000):
+        """
+        Stop the background thread and clean up.
+
+        Parameters
+        ----------
+        wait_ms : int, optional
+            Time to wait for the background thread to exit.  Set to 0 to
+            disable.
+        """
+        if not self.isRunning():
+            return
+
+        self.requestInterruption()
+        if wait_ms > 0:
+            self.wait(msecs=wait_ms)
 
     def clear(self):
         if self.status:
@@ -1058,7 +1221,7 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
                 self.lock.release()
                 while not self.isInterruptionRequested():
                     self._update_event.clear()
-                    self._update_event.wait(timeout=0.5)
+                    self._update_event.wait(timeout=0.25)
         finally:
             if self.lock.locked():
                 self.lock.release()
