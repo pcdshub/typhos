@@ -611,7 +611,8 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         if self._should_show(kind, dotted_name, **self._filter_settings):
             try:
-                signal = getattr(device, dotted_name)
+                with ophyd.do_not_wait_for_lazy_connection(device):
+                    signal = getattr(device, dotted_name)
             except Exception as ex:
                 logger.warning('Failed to get signal %r from device %s: %s',
                                dotted_name, device.name, ex, exc_info=True)
