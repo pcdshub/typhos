@@ -32,6 +32,7 @@ def test_add_signal(qtbot, sim_signal):
     assert ttp.signal_combo.itemData(1) == 'sig://tst_this_2'
 
 
+@pytest.mark.xfail(reason='Bug in pydm v1.17.0, resolved in next tag')
 def test_curve_methods(qtbot, sim_signal):
     ttp = TyphosTimePlot()
     qtbot.addWidget(ttp)
@@ -48,6 +49,7 @@ def test_curve_methods(qtbot, sim_signal):
     assert len(ttp.timechart.chart.curves) == 0
 
 
+@pytest.mark.xfail(reason='Bug in pydm v1.17.0, resolved in next tag')
 def test_curve_creation_button(qtbot, sim_signal):
     ttp = TyphosTimePlot()
     qtbot.addWidget(ttp)
