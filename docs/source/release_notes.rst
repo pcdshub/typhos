@@ -2,6 +2,37 @@
  Release History
 =================
 
+v2.3.3 (2022-10-20)
+===================
+
+Description
+-----------
+This is a small release with bugfixes and maintenance.
+
+Bugfixes
+--------
+- Do not wait for lazy signals when creating a SignalPanel.
+  This was causing long setup times in some applications.
+- Call stop with success=True in the positioner widget to avoid causing
+  our own UnknownStatusError, which was then displayed to the user.
+
+Maintenance
+-----------
+- Add cleanup for background threads.
+- Add replacement for functools.partial usage in methods as
+  this was preventing TyphosSuite from getting garbage collected.
+- Removes custom designer widget plugin,
+  instead relying on PyDM's own mechanism
+- Use pydm's data plugin entrypoint to include the sig and happi channels.
+- Prevent TyphosStatusThread objects from being orphaned.
+
+Contributors
+------------
+- klauer
+- tangkong
+- zllentz
+
+
 v2.3.2 (2022-07-28)
 ===================
 
