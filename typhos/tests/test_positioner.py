@@ -81,7 +81,7 @@ def test_positioner_widget_readback(motor_widget):
 def test_positioner_widget_stop(motor_widget):
     motor, widget = motor_widget
     widget.stop()
-    assert motor.stop.called
+    assert motor.stop.called_with(success=True)
 
 
 def test_positioner_widget_set(motor_widget):
