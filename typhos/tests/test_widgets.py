@@ -8,6 +8,8 @@ from typhos.suite import SidebarParameter
 from typhos.widgets import (ImageDialogButton, QDialog, SignalDialogButton,
                             TyphosSidebarItem, WaveformDialogButton)
 
+from .conftest import pydm_version_xfail
+
 
 class DialogButton(SignalDialogButton):
     icon = "fa5s.play"
@@ -60,6 +62,7 @@ def test_signal_dialog_button_repeated_show(widget_button):
     assert id(dialog) == id(widget_button.dialog)
 
 
+@pydm_version_xfail
 @pytest.mark.parametrize('button_type', [WaveformDialogButton,
                                          ImageDialogButton],
                          ids=['Waveform', 'Image'])

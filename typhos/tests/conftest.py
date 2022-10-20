@@ -283,3 +283,10 @@ def reset_signal_plugin():
 @pytest.fixture(scope='function', autouse=True)
 def show_test_name(request):
     logger.debug(f'Running test named {request.node.name}')
+
+
+# Remove this later please
+pydm_version_xfail = pytest.mark.xfail(
+    condition=pydm.__version__ == '1.17.0',
+    reason='PyDM bug in v1.17.0',
+)
