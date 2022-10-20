@@ -225,6 +225,7 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
     def stop(self):
         """Stop device"""
         for device in self.devices:
+            # success=True means expected stop
             device.stop(success=True)
 
     @QtCore.Slot()
