@@ -3,15 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How it Works &mdash; Typhos 2.3.2+29.g4bc5473 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <title>How it Works &mdash; Typhos 2.3.2+39.gc066e89 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script src="_static/doctr-versions-menu.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -28,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.2+29.g4bc5473
+                2.3.2+39.gc066e89
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -38,7 +42,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">User Documentation</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">How it Works</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#interpreting-a-device">Interpreting a Device</a><ul>
@@ -62,7 +66,7 @@
 <li class="toctree-l1"><a class="reference internal" href="templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Developer Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
@@ -97,7 +101,7 @@
            <div itemprop="articleBody">
              
   <div class="section" id="how-it-works">
-<h1>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h1>
+<h1>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this heading"></a></h1>
 <p>Typhos has three major building blocks that combine into the final display seen
 by the operator:</p>
 <ul class="simple">
@@ -121,13 +125,13 @@ arguments. The reason for this is to ensure that we can use all of the
 have an <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> every class has an <code class="docutils literal notranslate"><span class="pre">add_device</span></code> method and
 alternatively and be constructed using the <code class="docutils literal notranslate"><span class="pre">from_device</span></code> classmethod.</p>
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">typhos.utils.</span></code><code class="sig-name descname"><span class="pre">TyphosBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">TyphosBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Base widget for all Typhos widgets that interface with devices</p>
 </dd></dl>
 
 <div class="section" id="interpreting-a-device">
-<h2>Interpreting a Device<a class="headerlink" href="#interpreting-a-device" title="Permalink to this headline">¶</a></h2>
+<h2>Interpreting a Device<a class="headerlink" href="#interpreting-a-device" title="Permalink to this heading"></a></h2>
 <p>Typhos interprets the internal structure of the <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> to create the
 <cite>PyDM</cite> user interface, so the most intuitive way to configure the created
 display is to include components on the device itself. This also has the advantage
@@ -142,7 +146,7 @@ create any widgets:</p>
 </pre></div>
 </div>
 <div class="section" id="using-happi">
-<h3>Using Happi<a class="headerlink" href="#using-happi" title="Permalink to this headline">¶</a></h3>
+<h3>Using Happi<a class="headerlink" href="#using-happi" title="Permalink to this heading"></a></h3>
 <p>While <code class="docutils literal notranslate"><span class="pre">happi</span></code> is not a requirement for using <code class="docutils literal notranslate"><span class="pre">typhos</span></code>, it is recommended.
 For more information, visit the <a class="reference external" href="https://github.com/pcdshub/happi/">GitHub</a>
 repository. The main purpose of the package is to store information on our
@@ -182,7 +186,7 @@ configured the <code class="docutils literal notranslate"><span class="pre">$HAP
 </div>
 </div>
 <div class="section" id="signals-of-devices">
-<h3>Signals of Devices<a class="headerlink" href="#signals-of-devices" title="Permalink to this headline">¶</a></h3>
+<h3>Signals of Devices<a class="headerlink" href="#signals-of-devices" title="Permalink to this heading"></a></h3>
 <p>When making a custom screen, you can access signals associated with your device
 in several ways, in order of suggested use:</p>
 <ol class="arabic simple">
@@ -209,7 +213,7 @@ Channel Access with <code class="docutils literal notranslate"><span class="pre"
 </ol>
 </div>
 <div class="section" id="display-signals">
-<h3>Display Signals<a class="headerlink" href="#display-signals" title="Permalink to this headline">¶</a></h3>
+<h3>Display Signals<a class="headerlink" href="#display-signals" title="Permalink to this heading"></a></h3>
 <p>The first thing we’ll talk about is showing a group of signals associated with
 our <code class="docutils literal notranslate"><span class="pre">motor</span></code> object in a basic form called a
 <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a>.  Simply inspecting the device reveals a few
@@ -229,16 +233,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1662501012.6580243}),</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1666289757.6927192}),</span>
 <span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1662501012.6580234})])</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1666289757.6927178})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span><span class="go"></span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1662501012.6584163}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1666289757.6930542}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1662501012.6584334})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1666289757.6930683})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a
@@ -260,7 +264,7 @@ their importance to operation, each with a terse human-readable description of
 what the <code class="docutils literal notranslate"><span class="pre">Signal</span></code> represents.</p>
 </div>
 <div class="section" id="filling-templates">
-<h3>Filling Templates<a class="headerlink" href="#filling-templates" title="Permalink to this headline">¶</a></h3>
+<h3>Filling Templates<a class="headerlink" href="#filling-templates" title="Permalink to this heading"></a></h3>
 <p>Taking this concept further, instead of filling a single panel
 <a class="reference internal" href="display.html#typhos.TyphosDeviceDisplay" title="typhos.TyphosDeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosDeviceDisplay</span></code></a> allows a template to be created with a multitude
 of widgets and panels. <code class="docutils literal notranslate"><span class="pre">Typhos</span></code> will find widgets that accept devices, but do
@@ -279,7 +283,7 @@ shown:</p>
 </div>
 </div>
 <div class="section" id="the-typhossuite">
-<h2>The TyphosSuite<a class="headerlink" href="#the-typhossuite" title="Permalink to this headline">¶</a></h2>
+<h2>The TyphosSuite<a class="headerlink" href="#the-typhossuite" title="Permalink to this heading"></a></h2>
 <p>A complete application can be made by loading the <a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSuite</span></code></a>. Below
 is the complete code from start to finish required to create the suite. Look at
 the <code class="docutils literal notranslate"><span class="pre">TyphosSuited.default_tools</span></code> to control which <code class="docutils literal notranslate"><span class="pre">typhos.tools</span></code> are
@@ -300,7 +304,7 @@ loaded.</p>
 </div>
 </div>
 <div class="section" id="using-the-stylesheet">
-<h2>Using the StyleSheet<a class="headerlink" href="#using-the-stylesheet" title="Permalink to this headline">¶</a></h2>
+<h2>Using the StyleSheet<a class="headerlink" href="#using-the-stylesheet" title="Permalink to this heading"></a></h2>
 <p>While it is no means a requirement, Typhos ships with two stylesheets to
 improve the look of the widgets. By default this isn’t activated, but can be
 configured with <code class="xref py py-func docutils literal notranslate"><span class="pre">typhos.use_stylesheet()</span></code>. The operator can elect whether
@@ -309,7 +313,7 @@ keyword. This method also handles setting the “Fusion” <code class="docutils
 make the interface have an operating system independent look and feel.</p>
 </div>
 <div class="section" id="using-the-documentation-widget">
-<h2>Using the Documentation Widget<a class="headerlink" href="#using-the-documentation-widget" title="Permalink to this headline">¶</a></h2>
+<h2>Using the Documentation Widget<a class="headerlink" href="#using-the-documentation-widget" title="Permalink to this heading"></a></h2>
 <p>Typhos has a built-in documentation helper, which allows for the in-line
 linking and display of a user-provided website.</p>
 <p>To inform Typhos how to load documentation specific to your facility, please
@@ -335,7 +339,7 @@ to add a header <code class="docutils literal notranslate"><span class="pre">&qu
 </ol>
 </div>
 <div class="section" id="using-the-jira-bug-reporting-widget">
-<h2>Using the Jira Bug Reporting Widget<a class="headerlink" href="#using-the-jira-bug-reporting-widget" title="Permalink to this headline">¶</a></h2>
+<h2>Using the Jira Bug Reporting Widget<a class="headerlink" href="#using-the-jira-bug-reporting-widget" title="Permalink to this heading"></a></h2>
 <p>Typhos has an optional built-in widget to generate Jira user stories/bug
 reports.</p>
 <p>A prerequisite to this support is, of course, a working Jira installation
@@ -354,7 +358,7 @@ usernames, such as <code class="docutils literal notranslate"><span class="pre">
 </ol>
 </div>
 <div class="section" id="launching-the-examples">
-<h2>Launching the Examples<a class="headerlink" href="#launching-the-examples" title="Permalink to this headline">¶</a></h2>
+<h2>Launching the Examples<a class="headerlink" href="#launching-the-examples" title="Permalink to this heading"></a></h2>
 <p>There are example screens in the <code class="docutils literal notranslate"><span class="pre">typhos.examples</span></code> submodule. After
 installing <code class="docutils literal notranslate"><span class="pre">typhos</span></code>, you can launch them as follows:</p>
 <ul class="simple">

@@ -34,6 +34,7 @@ master/_sources/templates.rst.txt
 master/_sources/tools.rst.txt
 master/_sources/utils.rst.txt
 master/_sources/widgets.rst.txt
+master/_static/_sphinx_javascript_frameworks_compat.js
 master/_static/basic.css
 master/_static/css/badge_only.css
 master/_static/css/fonts/Roboto-Slab-Bold.woff
@@ -62,7 +63,7 @@ master/_static/expanded.jpg
 master/_static/file.png
 master/_static/function.png
 master/_static/hydra.jpg
-master/_static/jquery-3.5.1.js
+master/_static/jquery-3.6.0.js
 master/_static/jquery.js
 master/_static/js/badge_only.js
 master/_static/js/html5shiv-printshiv.min.js
@@ -74,7 +75,8 @@ master/_static/minus.png
 master/_static/plus.png
 master/_static/pygments.css
 master/_static/searchtools.js
-master/_static/underscore-1.12.0.js
+master/_static/sphinx_highlight.js
+master/_static/underscore-1.13.1.js
 master/_static/underscore.js
 master/basic_usage.html
 master/cli.html

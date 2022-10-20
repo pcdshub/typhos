@@ -3,15 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Custom Templates &mdash; Typhos 2.3.2+29.g4bc5473 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <title>Custom Templates &mdash; Typhos 2.3.2+39.gc066e89 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script src="_static/doctr-versions-menu.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -28,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.2+29.g4bc5473
+                2.3.2+39.gc066e89
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -38,7 +42,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">User Documentation</span></p>
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
@@ -56,7 +60,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Developer Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
@@ -91,7 +95,7 @@
            <div itemprop="articleBody">
              
   <div class="section" id="custom-templates">
-<h1>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this headline">¶</a></h1>
+<h1>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this heading"></a></h1>
 <p>Typhos ships with a handful of built-in templates. You can see these when you
 browse the <code class="docutils literal notranslate"><span class="pre">typhos/ui/core</span></code> and <code class="docutils literal notranslate"><span class="pre">typhos/ui/devices</span></code> directories.</p>
 <div class="admonition note">
@@ -104,13 +108,13 @@ of the module when launching screens. These can be done generically, to
 replace the default templates, or per-class, to replace the templates in
 specific cases.</p>
 <div class="section" id="template-creation">
-<h2>Template Creation<a class="headerlink" href="#template-creation" title="Permalink to this headline">¶</a></h2>
+<h2>Template Creation<a class="headerlink" href="#template-creation" title="Permalink to this heading"></a></h2>
 <p>Templates are <code class="docutils literal notranslate"><span class="pre">.ui</span></code> files created in qt designer. These are largely just
 normal pydm displays, with extra macro substitutions. See the
 <a class="reference external" href="https://slaclab.github.io/pydm-tutorial/action/intro_designer.html#designer" title="(in PyDM Tutorial v0.0.1)"><span class="xref std std-ref">pydm tutorial</span></a>
 for more guidance on using the designer.</p>
 <div class="section" id="template-substitutions">
-<h3>Template Substitutions<a class="headerlink" href="#template-substitutions" title="Permalink to this headline">¶</a></h3>
+<h3>Template Substitutions<a class="headerlink" href="#template-substitutions" title="Permalink to this heading"></a></h3>
 <p>All the information found in <code class="docutils literal notranslate"><span class="pre">happi</span></code> will be loaded as a pydm macro into the
 template. It does this by checking for attributes on the <code class="docutils literal notranslate"><span class="pre">device.md</span></code>
 namespace object.</p>
@@ -121,7 +125,7 @@ other keys from the happi database in your template and they will be
 filled in from the device database on load.</p>
 </div>
 <div class="section" id="template-filenames">
-<h3>Template Filenames<a class="headerlink" href="#template-filenames" title="Permalink to this headline">¶</a></h3>
+<h3>Template Filenames<a class="headerlink" href="#template-filenames" title="Permalink to this heading"></a></h3>
 <p>To replace a default template, create a template with exactly the same name.</p>
 <p>To create a template for a class, name it based on the class name
 and the template type, e.g.:</p>
@@ -136,7 +140,7 @@ PositionerBase.detailed.ui template by default.</p>
 <p>In this way you can create one template for a set of related classes.</p>
 </div>
 <div class="section" id="template-discovery">
-<h3>Template Discovery<a class="headerlink" href="#template-discovery" title="Permalink to this headline">¶</a></h3>
+<h3>Template Discovery<a class="headerlink" href="#template-discovery" title="Permalink to this heading"></a></h3>
 <p>There are currently three places that typhos checks for templates.
 In order of priority:</p>
 <ol class="arabic simple">
