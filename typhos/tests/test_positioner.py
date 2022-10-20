@@ -3,7 +3,10 @@ from unittest.mock import Mock
 import pytest
 from ophyd import Component as Cpt
 from ophyd import Signal
+from ophyd.device import Device
+from ophyd.positioner import SoftPositioner
 from ophyd.sim import SynAxis
+from ophyd.utils.errors import UnknownStatusFailure
 
 from typhos.positioner import TyphosPositionerWidget
 from typhos.utils import SignalRO
@@ -81,7 +84,36 @@ def test_positioner_widget_readback(motor_widget):
 def test_positioner_widget_stop(motor_widget):
     motor, widget = motor_widget
     widget.stop()
-    assert motor.stop.called
+    assert motor.stop.called_with(success=True)
+
+
+class NoMoveSoftPos(SoftPositioner, Device):
+    """
+    SoftPositioner that does not move.
+
+    This allows us to "stop" the move at any time.
+    This must be a device for inclusion in the widget,
+    as typhos calls "walk_signals".
+    """
+    def _setup_move(self, *args, **kwargs):
+        ...
+
+
+def test_positioner_widget_stop_no_error(motor_widget):
+    _, widget = motor_widget
+    motor = NoMoveSoftPos(name='motor')
+    widget.add_device(motor)
+    # Calling stop on the motor directly is an error status
+    status = motor.move(1, wait=False)
+    motor.stop()
+    with pytest.raises(UnknownStatusFailure):
+        # Raises if the outcome is an exception
+        status.wait(timeout=1)
+    # But the button should avoid this pitfall and have no error
+    status = motor.move(2, wait=False)
+    widget.stop()
+    # Raises if the outcome is an exception
+    status.wait(timeout=1)
 
 
 def test_positioner_widget_set(motor_widget):
