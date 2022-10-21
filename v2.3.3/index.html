@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Typhos &mdash; Typhos 2.3.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/doctr-versions-menu.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How it Works" href="basic_usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> Typhos
+          </a>
+              <div class="version">
+                2.3.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Custom Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Typhos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Typhos</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="typhos">
+<h1>Typhos<a class="headerlink" href="#typhos" title="Permalink to this heading"></a></h1>
+<p>EPICS is a flexible and powerful controls system to access to experimental
+information, however, the relation and meaning of process variables is often
+obscure. Many of the user interfaces for EPICS information reflect this, as
+walls of buttons and flashing lights bombard the user with little thought to
+structure or cohesion.</p>
+<p>Typhos addresses this by providing an automated way to generate screens based
+on a provided hierarchy of devices and signals. Built using PyDM, a PyQt based
+display manager developed at SLAC National Laboratory, Typhos utilizes a large
+toolkit of widgets to display EPICS information. For each process variable, a
+corresponding widget is created based on; the importance to the average
+operator, the type of value the EPICS PV will return, and whether a user should
+be allowed to write to the variable. These widgets are then placed in a
+convenient tab-based system to only show the necessary information for basic
+function, but still allow access to more advanced signals.</p>
+<p>Instead of reinventing a new way to specify device structures, Typhos uses
+<cite>Ophyd</cite>, a library to abstract EPICS information into consistently structured
+Python objects. Originally built for scripting experimental procedures at
+NSLS-II, Ophyd represents devices as combinations of components which are
+either signals or nested devices. Then, either at runtime or by using the
+defaults of the representative Python class, these signals are sorted into
+different categories based on their relevance to operators. Typhos uses this
+information to craft user interfaces.</p>
+<div class="section" id="related-projects">
+<h2>Related Projects<a class="headerlink" href="#related-projects" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/slaclab/pydm/">pydm</a></p></li>
+<li><p><a class="reference external" href="https://github.com/bluesky/ophyd/">ophyd</a></p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="basic_usage.html" class="btn btn-neutral float-right" title="How it Works" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>typhos.plugins.core &mdash; Typhos 2.3.3 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/doctr-versions-menu.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Typhos
+          </a>
+              <div class="version">
+                2.3.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../templates.html">Custom Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../release_notes.html">Release History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Typhos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>typhos.plugins.core</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for typhos.plugins.core</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module Docstring</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ophyd.utils.epics_pvs</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">_type_map</span>
+<span class="kn">from</span> <span class="nn">pydm.data_plugins.plugin</span> <span class="kn">import</span> <span class="n">PyDMConnection</span><span class="p">,</span> <span class="n">PyDMPlugin</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
+
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">raise_to_operator</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">signal_registry</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="register_signal"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.register_signal">[docs]</a><span class="k">def</span> <span class="nf">register_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a new Signal to the registry.</span>
+
+<span class="sd">    The Signal object is kept within ``signal_registry`` for reference by name</span>
+<span class="sd">    in the :class:`.SignalConnection`. Signals can be added multiple times,</span>
+<span class="sd">    but only the first register_signal call for each unique signal name</span>
+<span class="sd">    has any effect.</span>
+
+<span class="sd">    Signals can be referenced by their ``name`` attribute or by their</span>
+<span class="sd">    full dotted path starting from the parent&#39;s name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Pick all the name aliases (name, dotted path)</span>
+    <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="n">signal</span><span class="o">.</span><span class="n">root</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># .dotted_name does not include the root device&#39;s name</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">signal</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">dotted_name</span><span class="p">)),</span>
+        <span class="p">)</span>
+    <span class="c1"># Warn the user if they are adding twice</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">signal_registry</span><span class="p">:</span>
+            <span class="c1"># Case 1: harmless re-add</span>
+            <span class="k">if</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="n">signal</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;The signal named </span><span class="si">%s</span><span class="s2"> is already registered!&quot;</span><span class="p">,</span>
+                    <span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="c1"># Case 2: harmful overwrite! Name collision!</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;A different signal named </span><span class="si">%s</span><span class="s2"> is already registered!&quot;</span><span class="p">,</span>
+                    <span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Registering signal with names </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">signal_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span></div>
+
+
+<div class="viewcode-block" id="SignalConnection"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection">[docs]</a><span class="k">class</span> <span class="nc">SignalConnection</span><span class="p">(</span><span class="n">PyDMConnection</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Connection to monitor an Ophyd Signal.</span>
+
+<span class="sd">    This is meant as a generalized connection to any type of Ophyd Signal. It</span>
+<span class="sd">    handles reporting updates to listeners as well as pushing new values that</span>
+<span class="sd">    users request in the PyDM interface back to the underlying signal.</span>
+
+<span class="sd">    The signal `data_type` is used to inform PyDM on the Python type that the</span>
+<span class="sd">    signal will expect and emit. It is expected that this type is static</span>
+<span class="sd">    through the execution of the application.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signal : ophyd.Signal</span>
+<span class="sd">        Stored signal object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">supported_types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Create base connection</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Collect our signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="c1"># Subscribe to updates from Ophyd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">,</span>
+            <span class="n">event_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">SUB_VALUE</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_new_meta</span><span class="p">,</span>
+            <span class="n">event_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">SUB_META</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># Add listener</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SignalConnection.cast"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.cast">[docs]</a>    <span class="k">def</span> <span class="nf">cast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cast a value to the correct Python type based on ``signal_type``.</span>
+
+<span class="sd">        If ``signal_type`` is not set, the result of ``ophyd.Signal.describe``</span>
+<span class="sd">        is used to determine what the correct Python type for value is. We need</span>
+<span class="sd">        to be aware of the correct Python type so that we can emit the value</span>
+<span class="sd">        through the correct signal and convert values returned by the widget to</span>
+<span class="sd">        the correct type before handing them to Ophyd Signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If this is the first time we are receiving a new value note the type</span>
+        <span class="c1"># We make the assumption that signals do not change types during a</span>
+        <span class="c1"># connection</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">:</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span>
+            <span class="c1"># Only way this raises a KeyError is if ophyd is confused</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="o">=</span> <span class="n">_type_map</span><span class="p">[</span><span class="n">dtype</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found signal type </span><span class="si">%r</span><span class="s2"> for </span><span class="si">%r</span><span class="s2">. Using Python type </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                         <span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Casting </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="SignalConnection.put_value"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.put_value">[docs]</a>    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="nd">@Slot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">put_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pass a value from the UI to Signal.</span>
+
+<span class="sd">        We are not guaranteed that this signal is writeable so catch exceptions</span>
+<span class="sd">        if they are created. We attempt to cast the received value into the</span>
+<span class="sd">        reported type of the signal unless it is of type ``np.ndarray``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Putting value </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to put </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="n">raise_to_operator</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalConnection.send_new_value"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.send_new_value">[docs]</a>    <span class="k">def</span> <span class="nf">send_new_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the UI with a new value from the Signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">new_value_signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">]</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to update </span><span class="si">%r</span><span class="s2"> with value </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalConnection.send_new_meta"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.send_new_meta">[docs]</a>    <span class="k">def</span> <span class="nf">send_new_meta</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">connected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">write_access</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">severity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">precision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">enum_strs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the UI with new metadata from the Signal.</span>
+
+<span class="sd">        Signal metadata updates always send all available metadata, so</span>
+<span class="sd">        default values to this function will not be sent ever if the signal</span>
+<span class="sd">        has valid data there.</span>
+
+<span class="sd">        We default missing metadata to None and skip emitting in general,</span>
+<span class="sd">        but for severity we default to NO_ALARM for UI purposes. We don&#39;t</span>
+<span class="sd">        want the UI to assume that anything is in an alarm state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Only emit the non-None values</span>
+        <span class="k">if</span> <span class="n">connected</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connection_state_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">connected</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">write_access</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_access_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">write_access</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">precision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prec_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unit_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enum_strs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enum_strings_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">enum_strs</span><span class="p">)</span>
+
+        <span class="c1"># Special handling for severity</span>
+        <span class="k">if</span> <span class="n">severity</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">severity</span> <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">NO_ALARM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_severity_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">severity</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalConnection.add_listener"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.add_listener">[docs]</a>    <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a listener channel to this connection.</span>
+
+<span class="sd">        This attaches values input by the user to the `send_new_value` function</span>
+<span class="sd">        in order to update the Signal object in addition to the default setup</span>
+<span class="sd">        performed in PyDMConnection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Perform the default connection setup</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Gather the current value</span>
+            <span class="n">signal_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="c1"># Gather metadata</span>
+            <span class="n">signal_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">metadata</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to gather proper information &quot;</span>
+                             <span class="s2">&quot;from signal </span><span class="si">%r</span><span class="s2"> to initialize </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># Report new value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">(</span><span class="n">signal_val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_new_meta</span><span class="p">(</span><span class="o">**</span><span class="n">signal_meta</span><span class="p">)</span>
+        <span class="c1"># If the channel is used for writing to PVs, hook it up to the</span>
+        <span class="c1"># &#39;put&#39; methods.</span>
+        <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_types</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">val_sig</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span><span class="p">[</span><span class="n">_typ</span><span class="p">]</span>
+                    <span class="n">val_sig</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">put_value</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no value_signal for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                                 <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalConnection.remove_listener"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.remove_listener">[docs]</a>    <span class="k">def</span> <span class="nf">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a listener channel from this connection.</span>
+
+<span class="sd">        This removes the `send_new_value` connections from the channel in</span>
+<span class="sd">        addition to the default disconnection performed in PyDMConnection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Removing </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+        <span class="c1"># Disconnect put_value from outgoing channel</span>
+        <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">destroying</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_typ</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported_types</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span><span class="p">[</span><span class="n">_typ</span><span class="p">]</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">put_value</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Unable to disconnect value_signal from </span><span class="si">%s</span><span class="s2"> &quot;</span>
+                                 <span class="s2">&quot;for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span>
+        <span class="c1"># Disconnect any other signals</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="n">destroying</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Successfully removed </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SignalConnection.close"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Unsubscribe from the Ophyd signal.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_cid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_cid</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SignalPlugin"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalPlugin">[docs]</a><span class="k">class</span> <span class="nc">SignalPlugin</span><span class="p">(</span><span class="n">PyDMPlugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plugin registered with PyDM to handle SignalConnection.&quot;&quot;&quot;</span>
+    <span class="n">protocol</span> <span class="o">=</span> <span class="s1">&#39;sig&#39;</span>
+    <span class="n">connection_class</span> <span class="o">=</span> <span class="n">SignalConnection</span>
+
+    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a connection to a channel.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Add a PyDMConnection for the channel</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="c1"># There is a chance that we raise an Exception on creation. If so,</span>
+        <span class="c1"># don&#39;t add this to our list of good to go connections. The next</span>
+        <span class="c1"># attempt we try again.</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to find signal for </span><span class="si">%r</span><span class="s2"> in signal registry.&quot;</span>
+                         <span class="s2">&quot;Use typhos.plugins.register_signal()&quot;</span><span class="p">,</span>
+                         <span class="n">channel</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to create a connection to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                             <span class="n">channel</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

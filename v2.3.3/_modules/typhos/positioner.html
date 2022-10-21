@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>typhos.positioner &mdash; Typhos 2.3.3 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/doctr-versions-menu.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Typhos
+          </a>
+              <div class="version">
+                2.3.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>typhos.positioner</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for typhos.positioner</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">from</span> <span class="nn">pydm.widgets.channel</span> <span class="kn">import</span> <span class="n">PyDMChannel</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">uic</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">widgets</span>
+<span class="kn">from</span> <span class="nn">.status</span> <span class="kn">import</span> <span class="n">TyphosStatusThread</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TyphosPositionerWidget"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget">[docs]</a><span class="k">class</span> <span class="nc">TyphosPositionerWidget</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">widgets</span><span class="o">.</span><span class="n">TyphosDesignerMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Widget to interact with a :class:`ophyd.Positioner`.</span>
+
+<span class="sd">    Standard positioner motion requires a large amount of context for</span>
+<span class="sd">    operators. For most motors, it may not be enough to simply have a text</span>
+<span class="sd">    field where setpoints can be punched in. Instead, information like soft</span>
+<span class="sd">    limits and hardware limit switches are crucial for a full understanding of</span>
+<span class="sd">    the position and behavior of a motor. The widget will work with any object</span>
+<span class="sd">    that implements the method ``set``, however to get other relevant</span>
+<span class="sd">    information, we see if we can find other useful signals.  Below is a table</span>
+<span class="sd">    of attributes that the widget looks for to inform screen design.</span>
+
+<span class="sd">    ============== ===========================================================</span>
+<span class="sd">    Widget         Attribute Selection</span>
+<span class="sd">    ============== ===========================================================</span>
+<span class="sd">    User Readback  The ``readback_attribute`` property is used, which defaults</span>
+<span class="sd">                   to ``user_readback``. Linked to UI element</span>
+<span class="sd">                   ``user_readback``.</span>
+
+<span class="sd">    User Setpoint  The ``setpoint_attribute`` property is used, which defaults</span>
+<span class="sd">                   to ``user_setpoint``. Linked to UI element</span>
+<span class="sd">                   ``user_setpoint``.</span>
+
+<span class="sd">    Limit Switches The ``low_limit_switch_attribute`` and</span>
+<span class="sd">                   ``high_limit_switch_attribute`` properties are used, which</span>
+<span class="sd">                   default to ``low_limit_switch`` and ``high_limit_switch``,</span>
+<span class="sd">                   respectively.</span>
+
+<span class="sd">    Soft Limits    The ``low_limit_travel_attribute`` and</span>
+<span class="sd">                   ``high_limit_travel_attribute`` properties are used, which</span>
+<span class="sd">                   default to ``low_limit_travel`` and ``high_limit_travel``,</span>
+<span class="sd">                   respectively.  As a fallback, the ``limit`` property on the</span>
+<span class="sd">                   device may be queried directly.</span>
+
+<span class="sd">    Set and Tweak  Both of these methods simply use ``Device.set`` which is</span>
+<span class="sd">                   expected to take a ``float`` and return a ``status`` object</span>
+<span class="sd">                   that indicates the motion completeness. Must be implemented.</span>
+
+<span class="sd">    Stop           ``Device.stop()``, if available, otherwise hide the button.</span>
+<span class="sd">                   If you have a non-functional ``stop`` method inherited from</span>
+<span class="sd">                   a parent device, you can hide it from ``typhos`` by</span>
+<span class="sd">                   overriding it with a property that raises</span>
+<span class="sd">                   ``AttributeError`` on access.</span>
+
+<span class="sd">    Move Indicator The ``moving_attribute`` property is used, which defaults</span>
+<span class="sd">                   to ``motor_is_moving``. Linked to UI element</span>
+<span class="sd">                   ``moving_indicator``.</span>
+
+<span class="sd">    Error Message  The ``error_message_attribute`` property is used, which</span>
+<span class="sd">                   defaults to ``error_message``. Linked to UI element</span>
+<span class="sd">                   ``error_label``.</span>
+
+<span class="sd">    Clear Error    ``Device.clear_error()``, if applicable. This also clears</span>
+<span class="sd">                   any visible error messages from the status returned by</span>
+<span class="sd">                   ``Device.set``.</span>
+
+<span class="sd">    Alarm Circle   Uses the ``TyphosAlarmCircle`` widget to summarize the</span>
+<span class="sd">                   alarm state of all of the device&#39;s ``normal`` and</span>
+<span class="sd">                   ``hinted`` signals.</span>
+<span class="sd">    ============== ===========================================================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ui_template</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;widgets&#39;</span><span class="p">,</span> <span class="s1">&#39;positioner.ui&#39;</span><span class="p">)</span>
+    <span class="n">_readback_attr</span> <span class="o">=</span> <span class="s1">&#39;user_readback&#39;</span>
+    <span class="n">_setpoint_attr</span> <span class="o">=</span> <span class="s1">&#39;user_setpoint&#39;</span>
+    <span class="n">_low_limit_switch_attr</span> <span class="o">=</span> <span class="s1">&#39;low_limit_switch&#39;</span>
+    <span class="n">_high_limit_switch_attr</span> <span class="o">=</span> <span class="s1">&#39;high_limit_switch&#39;</span>
+    <span class="n">_low_limit_travel_attr</span> <span class="o">=</span> <span class="s1">&#39;low_limit_travel&#39;</span>
+    <span class="n">_high_limit_travel_attr</span> <span class="o">=</span> <span class="s1">&#39;high_limit_travel&#39;</span>
+    <span class="n">_velocity_attr</span> <span class="o">=</span> <span class="s1">&#39;velocity&#39;</span>
+    <span class="n">_acceleration_attr</span> <span class="o">=</span> <span class="s1">&#39;acceleration&#39;</span>
+    <span class="n">_moving_attr</span> <span class="o">=</span> <span class="s1">&#39;motor_is_moving&#39;</span>
+    <span class="n">_error_message_attr</span> <span class="o">=</span> <span class="s1">&#39;error_message&#39;</span>
+    <span class="n">_min_visible_operation</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_moving</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_moving_channel</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui_template</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tweak_positive</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positive_tweak</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tweak_negative</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">negative_tweak</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">clear_error_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_error</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">kindLevel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">NORMAL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">alarm_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_alarm_text</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_expert_button</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_after_set_moving</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_clear_status_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clear a previous status thread.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing current active status&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_start_status_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start the status monitoring thread for the given status object.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="n">thread</span> <span class="o">=</span> <span class="n">TyphosStatusThread</span><span class="p">(</span>
+            <span class="n">status</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_visible_operation</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">status_started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">move_changed</span><span class="p">)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">status_finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_status_finished</span><span class="p">)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_position</span><span class="p">,</span> <span class="n">settle_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use positioner&#39;s configuration to select a timeout.&quot;&quot;&quot;</span>
+        <span class="n">pos_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readback_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">vel_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">acc_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acceleration_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># Not enough info == no timeout</span>
+        <span class="k">if</span> <span class="n">pos_sig</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">vel_sig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">pos_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">-</span> <span class="n">set_position</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="n">vel_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="c1"># Bad speed == no timeout</span>
+        <span class="k">if</span> <span class="n">speed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># Bad acceleration == ignore acceleration</span>
+        <span class="k">if</span> <span class="n">acc_sig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">acc_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">acc_time</span> <span class="o">=</span> <span class="n">acc_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="c1"># This time is always greater than the kinematic calc</span>
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="o">/</span><span class="n">speed</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">acc_time</span><span class="p">)</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">settle_time</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inner `set` routine - call device.set() and monitor the status.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear_status_thread</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="p">,</span> <span class="n">widgets</span><span class="o">.</span><span class="n">NoScrollComboBox</span><span class="p">):</span>
+            <span class="n">set_position</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">set_position</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timeout</span><span class="p">(</span><span class="n">set_position</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># Something went wrong, just run without a timeout.</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Unable to estimate motor timeout.&#39;</span><span class="p">)</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting device </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2"> with timeout </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="c1"># Send timeout through thread because status timeout stops the move</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">set_position</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_status_thread</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">combo_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.set"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.set">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the device to the value configured by ``ui.set_value``&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="p">,</span> <span class="n">widgets</span><span class="o">.</span><span class="n">NoScrollComboBox</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error setting </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">raise_to_operator</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.tweak"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.tweak">[docs]</a>    <span class="k">def</span> <span class="nf">tweak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tweak by the given ``offset``.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">setpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_position</span><span class="p">()</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Tweak failed&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">setpoint</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.positive_tweak"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.positive_tweak">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">positive_tweak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tweak positive by the amount listed in ``ui.tweak_value``&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tweak</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tweak_value</span><span class="o">.</span><span class="n">text</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Tweak failed&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.negative_tweak"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.negative_tweak">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">negative_tweak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Tweak negative by the amount listed in ``ui.tweak_value``&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tweak</span><span class="p">(</span><span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tweak_value</span><span class="o">.</span><span class="n">text</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Tweak failed&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.stop"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.stop">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop device&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
+            <span class="c1"># success=True means expected stop</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.clear_error"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.clear_error">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">clear_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear the error messages from the device and screen.</span>
+
+<span class="sd">        The device may have errors in the IOC. These will be cleared by calling</span>
+<span class="sd">        the clear_error method.</span>
+
+<span class="sd">        The screen may have errors from the status of the last move. These will</span>
+<span class="sd">        be cleared from view.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
+            <span class="n">clear_error_in_background</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_status_text</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1"># This variable holds True if last move was good, False otherwise</span>
+        <span class="c1"># It also controls whether or not we have a red box on the widget</span>
+        <span class="c1"># False = Red, True = Green, None = no box (in motion is yellow)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No Device configured for widget!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;readback_attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;ui.user_readback&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_link_readback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link the positioner readback with the ui element.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_readback</span> <span class="o">=</span> <span class="n">signal</span>
+
+    <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;setpoint_attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;ui.user_setpoint&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_link_setpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link the positioner setpoint with the ui element.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint</span> <span class="o">=</span> <span class="n">signal</span>
+        <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Seed the set_value text with the user_setpoint channel value.</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s1">&#39;textChanged&#39;</span><span class="p">):</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">textChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_setpoint_update</span><span class="p">)</span>
+
+    <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;low_limit_switch_attribute&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;ui.low_limit_switch&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_link_low_limit_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link the positioner lower limit switch with the ui element.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+    <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;high_limit_switch_attribute&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;ui.high_limit_switch&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_link_high_limit_switch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link the positioner high limit switch with the ui element.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+    <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;low_limit_travel_attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;ui.low_limit&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_link_low_travel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link the positioner lower travel limit with the ui element.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;high_limit_travel_attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;ui.high_limit&#39;</span><span class="p">,</span>
+                            <span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_link_high_travel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link the positioner high travel limit with the ui element.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_link_limits_by_limits_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link limits by using ``device.limits``.&quot;&quot;&quot;</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">low_limit</span><span class="p">,</span> <span class="n">high_limit</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">limits</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">low_limit</span> <span class="o">&lt;</span> <span class="n">high_limit</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">low_limit</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">low_limit</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">high_limit</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">high_limit</span><span class="p">))</span>
+                <span class="k">return</span>
+
+        <span class="c1"># If not found or invalid, hide them:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">low_limit</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">high_limit</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+    <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;moving_attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;ui.moving_indicator&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_link_moving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link the positioner moving indicator with the ui element.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="c1"># Additional handling for updating self.moving</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moving_channel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_moving_channel</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+        <span class="n">chname</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_moving_channel</span> <span class="o">=</span> <span class="n">PyDMChannel</span><span class="p">(</span>
+            <span class="n">address</span><span class="o">=</span><span class="n">chname</span><span class="p">,</span>
+            <span class="n">value_slot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_moving</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_moving_channel</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;error_message_attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;ui.error_label&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_link_error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Link the IOC error message with the ui element.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_define_setpoint_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Leverage information at describe to define whether to use a</span>
+<span class="sd">        PyDMLineEdit or a PyDMEnumCombobox as setpoint widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">setpoint_signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_attribute</span><span class="p">)</span>
+            <span class="n">selection</span> <span class="o">=</span> <span class="n">setpoint_signal</span><span class="o">.</span><span class="n">enum_strs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">selection</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">selection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">NoScrollComboBox</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">setpoint_signal</span><span class="o">.</span><span class="n">enum_strs</span><span class="p">)</span>
+            <span class="c1"># Activated signal triggers only when the user selects an option</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">activated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span>
+                <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span>
+                <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setMinimumContentsLength</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tweak_widget</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setpoint_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The associated device.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="o">...</span>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.add_device"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a device to the widget&quot;&quot;&quot;</span>
+        <span class="c1"># Add device to cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># only one device allowed</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define_setpoint_widget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_readback</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_setpoint</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_low_limit_switch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_high_limit_switch</span><span class="p">()</span>
+
+        <span class="c1"># If the stop method is missing, hide the button</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">stop</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">stop_button</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_link_low_travel</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link_high_travel</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_link_limits_by_limits_attr</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link_moving</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">moving_indicator_label</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">moving_indicator_label</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_link_error_message</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_expert_button</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expert_button</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expert_button</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">clear_all_alarm_configs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">moving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Current state of widget</span>
+
+<span class="sd">        This will lag behind the actual state of the positioner in order to</span>
+<span class="sd">        prevent unnecessary rapid movements</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moving</span>
+
+    <span class="nd">@moving</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">moving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moving</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_moving</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_after_set_moving</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_after_set_moving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Common updates needed after a change to the moving state.</span>
+
+<span class="sd">        This is pulled out as a separate method because we need</span>
+<span class="sd">        to initialize the label here during __init__ without</span>
+<span class="sd">        modifying self.moving.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">moving_indicator_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;moving&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">moving_indicator_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_moving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Slot for updating the self.moving property.</span>
+
+<span class="sd">        This is used e.g. in updating the moving state when the</span>
+<span class="sd">        motor starts moving in EPICS but not by the request of</span>
+<span class="sd">        this widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">successful_move</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The last requested move was successful&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">failed_move</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The last requested move failed&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="ow">is</span> <span class="kc">False</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">readback_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the readback signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readback_attr</span>
+
+    <span class="nd">@readback_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">readback_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_readback_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">setpoint_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the setpoint signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_attr</span>
+
+    <span class="nd">@setpoint_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">setpoint_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setpoint_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">low_limit_switch_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the low limit switch signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_limit_switch_attr</span>
+
+    <span class="nd">@low_limit_switch_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">low_limit_switch_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_low_limit_switch_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">high_limit_switch_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the high limit switch signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_limit_switch_attr</span>
+
+    <span class="nd">@high_limit_switch_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">high_limit_switch_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_high_limit_switch_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">low_limit_travel_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the low limit signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_low_limit_travel_attr</span>
+
+    <span class="nd">@low_limit_travel_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">low_limit_travel_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_low_limit_travel_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">high_limit_travel_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the high (soft) limit travel signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_high_limit_travel_attr</span>
+
+    <span class="nd">@high_limit_travel_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">high_limit_travel_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_high_limit_travel_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">velocity_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the velocity signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_attr</span>
+
+    <span class="nd">@velocity_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">velocity_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">acceleration_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the acceleration time signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acceleration_attr</span>
+
+    <span class="nd">@acceleration_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">acceleration_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_acceleration_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">moving_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the motor moving indicator.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moving_attr</span>
+
+    <span class="nd">@moving_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">moving_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_moving_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">error_message_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The attribute name for the IOC error message label.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_message_attr</span>
+
+    <span class="nd">@error_message_attribute</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">error_message_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_error_message_attr</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">show_expert_button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If True, show the expert button.</span>
+
+<span class="sd">        The expert button opens a full suite for the device.</span>
+<span class="sd">        You typically want this False when you&#39;re already inside the</span>
+<span class="sd">        suite that the button would open.</span>
+<span class="sd">        You typically want this True when you&#39;re using the positioner widget</span>
+<span class="sd">        inside of an unrelated screen.</span>
+<span class="sd">        This will default to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_expert_button</span>
+
+    <span class="nd">@show_expert_button</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">show_expert_button</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_expert_button</span> <span class="o">=</span> <span class="n">show</span>
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expert_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expert_button</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.move_changed"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.move_changed">[docs]</a>    <span class="k">def</span> <span class="nf">move_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when a move is begun&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Begin showing move in TyphosPositionerWidget&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_status_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the status text label to ``text``.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_length</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[:</span><span class="n">max_length</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_status_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when a move is complete.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;b&gt;</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&lt;/b&gt; </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_status_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed move in TyphosPositionerWidget (result=</span><span class="si">%r</span><span class="s2">)&quot;</span><span class="p">,</span>
+                     <span class="n">result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="n">success</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_user_setpoint_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Qt slot - indicating the ``user_setpoint`` widget text changed.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Update set_value if it&#39;s not being edited.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">hasFocus</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="p">,</span> <span class="n">widgets</span><span class="o">.</span><span class="n">NoScrollComboBox</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Failed to convert value to int. </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TyphosPositionerWidget.update_alarm_text"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.update_alarm_text">[docs]</a>    <span class="k">def</span> <span class="nf">update_alarm_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_level</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Label the alarm circle with a short text bit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alarms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">AlarmLevel</span>
+        <span class="k">if</span> <span class="n">alarm_level</span> <span class="o">==</span> <span class="n">alarms</span><span class="o">.</span><span class="n">NO_ALARM</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;no alarm&#39;</span>
+        <span class="k">elif</span> <span class="n">alarm_level</span> <span class="o">==</span> <span class="n">alarms</span><span class="o">.</span><span class="n">MINOR</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;minor&#39;</span>
+        <span class="k">elif</span> <span class="n">alarm_level</span> <span class="o">==</span> <span class="n">alarms</span><span class="o">.</span><span class="n">MAJOR</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;major&#39;</span>
+        <span class="k">elif</span> <span class="n">alarm_level</span> <span class="o">==</span> <span class="n">alarms</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;no conn&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;invalid&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">clear_error_in_background</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">device</span><span class="o">.</span><span class="n">clear_error</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Could not clear error!&quot;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">td</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">inner</span><span class="p">)</span>
+    <span class="n">td</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
