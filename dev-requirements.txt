@@ -7,7 +7,7 @@ jinja2<3.1
 line_profiler
 pytest
 pytest-benchmark
-pytest-qt<4.0.0
+pytest-qt
 pytest-timeout
 sphinx<4.0.0
 sphinx_rtd_theme
