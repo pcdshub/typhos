@@ -6,12 +6,17 @@ from pydm.widgets.channel import PyDMChannel
 from qtpy import QtCore, QtWidgets, uic
 
 from . import utils, widgets
+from .alarm import KindLevel, _KindLevel
 from .status import TyphosStatusThread
 
 logger = logging.getLogger(__name__)
 
 
-class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
+class TyphosPositionerWidget(
+    utils.TyphosBase,
+    widgets.TyphosDesignerMixin,
+    _KindLevel,
+):
     """
     Widget to interact with a :class:`ophyd.Positioner`.
 
@@ -73,6 +78,8 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
                    ``hinted`` signals.
     ============== ===========================================================
     """
+    QtCore.Q_ENUMS(_KindLevel)
+    KindLevel = KindLevel
 
     ui_template = os.path.join(utils.ui_dir, 'widgets', 'positioner.ui')
     _readback_attr = 'user_readback'
@@ -568,6 +575,15 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             self.ui.expert_button.show()
         else:
             self.ui.expert_button.hide()
+
+    @QtCore.Property(_KindLevel, designable=True)
+    def alarmKindLevel(self) -> KindLevel:
+        return self.ui.alarm_circle.kindLevel
+
+    @alarmKindLevel.setter
+    def alarmKindLevel(self, kind_level: KindLevel):
+        if kind_level != self.alarmKindLevel:
+            self.ui.alarm_circle.kindLevel = kind_level
 
     def move_changed(self):
         """Called when a move is begun"""
