@@ -168,9 +168,15 @@ class TyphosPositionerWidget(utils.TyphosBase, widgets.TyphosDesignerMixin):
             timeout = None
         logger.debug("Setting device %r to %r with timeout %r",
                      self.device, value, timeout)
-        # Send timeout through thread because status timeout stops the move
-        status = self.device.set(set_position)
-        self._start_status_thread(status, timeout)
+        try:
+            status = self.device.set(set_position)
+        except Exception as exc:
+            # Treat this exception as a status to use normal error reporting
+            # Usually this is e.g. limits error
+            self._status_finished(exc)
+        else:
+            # Send timeout through thread because status timeout stops the move
+            self._start_status_thread(status, timeout)
 
     @QtCore.Slot(int)
     def combo_set(self, index):
