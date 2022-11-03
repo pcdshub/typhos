@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Widgets &mdash; Typhos 2.3.3 documentation</title>
+  <title>Widgets &mdash; Typhos 2.3.3+3.g4919ff4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -32,7 +32,7 @@
             <a href="index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.3
+                2.3.3+3.g4919ff4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -82,6 +82,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#typhospositionerwidget">TyphosPositionerWidget</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#typhos.TyphosPositionerWidget"><code class="docutils literal notranslate"><span class="pre">TyphosPositionerWidget</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#typhos.TyphosPositionerWidget.KindLevel"><code class="docutils literal notranslate"><span class="pre">TyphosPositionerWidget.KindLevel</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#typhos.TyphosPositionerWidget.acceleration_attribute"><code class="docutils literal notranslate"><span class="pre">TyphosPositionerWidget.acceleration_attribute</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#typhos.TyphosPositionerWidget.add_device"><code class="docutils literal notranslate"><span class="pre">TyphosPositionerWidget.add_device()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#typhos.TyphosPositionerWidget.clear_error"><code class="docutils literal notranslate"><span class="pre">TyphosPositionerWidget.clear_error()</span></code></a></li>
@@ -254,8 +255,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Widgets</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Widgets</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/widgets.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -283,9 +284,9 @@ is a function available:</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal</strong> (<em>ophyd.Signal</em>) – Signal object to create widget</p></li>
-<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether this widget should be able to write back to the signal you
+<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether this widget should be able to write back to the signal you
 provided</p></li>
-<li><p><strong>tooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Tooltip to use for the widget</p></li>
+<li><p><strong>tooltip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – Tooltip to use for the widget</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -305,10 +306,10 @@ be able to write back to the widget and if the signal has <code class="docutils 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>read_cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a>) – The readback widget class.</p></li>
-<li><p><strong>read_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – The readback widget initialization keyword arguments.</p></li>
-<li><p><strong>write_cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a>) – The setpoint widget class.</p></li>
-<li><p><strong>write_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – The setpoint widget initialization keyword arguments.</p></li>
+<li><p><strong>read_cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><em>type</em></a>) – The readback widget class.</p></li>
+<li><p><strong>read_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – The readback widget initialization keyword arguments.</p></li>
+<li><p><strong>write_cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><em>type</em></a>) – The setpoint widget class.</p></li>
+<li><p><strong>write_kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – The setpoint widget initialization keyword arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -320,7 +321,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.OphydObj</span></code>) – The object</p></li>
-<li><p><strong>desc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a><em>, </em><em>optional</em>) – The object description, if available.</p></li>
+<li><p><strong>desc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a><em>, </em><em>optional</em>) – The object description, if available.</p></li>
 </ul>
 </dd>
 </dl>
@@ -336,8 +337,8 @@ be able to write back to the widget and if the signal has <code class="docutils 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal</strong> (<em>ophyd.Signal</em>) – Signal object to determine widget class</p></li>
-<li><p><strong>desc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a>) – Previously recorded description from the signal</p></li>
-<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Should the chosen widget class be read-only?</p></li>
+<li><p><strong>desc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a>) – Previously recorded description from the signal</p></li>
+<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Should the chosen widget class be read-only?</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -358,7 +359,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal</strong> (<em>ophyd.Signal</em>) – Signal object to determine widget class</p></li>
-<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Should the chosen widget class be read-only?</p></li>
+<li><p><strong>read_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Should the chosen widget class be read-only?</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -409,7 +410,7 @@ Parent of panel.</p>
 <dd><p>The number of columns in the layout.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -420,7 +421,7 @@ Parent of panel.</p>
 <dd><p>The column number for the row label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -431,7 +432,7 @@ Parent of panel.</p>
 <dd><p>The column number for the readback widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -442,7 +443,7 @@ Parent of panel.</p>
 <dd><p>The column number for the setpoint widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -464,9 +465,9 @@ Parent of panel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>read_pv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – The readback PV name.</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Name of signal to display.</p></li>
-<li><p><strong>write_pv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – The setpoint PV name.</p></li>
+<li><p><strong>read_pv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The readback PV name.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – Name of signal to display.</p></li>
+<li><p><strong>write_pv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – The setpoint PV name.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -474,7 +475,7 @@ Parent of panel.</p>
 <cite>SignalPanel.layout()`</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -493,7 +494,7 @@ adjusted automatically to span the remaining columns.</p>
 <dd class="field-even"><p><strong>row</strong> – The row number.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -512,7 +513,7 @@ description callback.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal</strong> (<em>EpicsSignal</em><em>, </em><em>EpicsSignalRO</em>) – Signal to create a widget.</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – The name to be used for the row label.  This defaults to
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – The name to be used for the row label.  This defaults to
 <code class="docutils literal notranslate"><span class="pre">signal.name</span></code>.</p></li>
 </ul>
 </dd>
@@ -521,7 +522,7 @@ description callback.</p>
 <cite>SignalPanel.layout()`</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -540,7 +541,7 @@ description callback.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>kinds</strong> (list of <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Kind</span></code>) – List of kinds to show.</p></li>
-<li><p><strong>name_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Additionally filter signals by name.</p></li>
+<li><p><strong>name_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – Additionally filter signals by name.</p></li>
 </ul>
 </dd>
 </dl>
@@ -570,7 +571,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 <dd class="field-odd"><p><strong>signals</strong> – With the form: <code class="docutils literal notranslate"><span class="pre">{signal_name:</span> <span class="pre">signal}</span></code>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -584,7 +585,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 <dd class="field-odd"><p><strong>signals</strong> – With the form: <code class="docutils literal notranslate"><span class="pre">{signal_name:</span> <span class="pre">signal}</span></code>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -598,7 +599,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 <dd class="field-odd"><p><strong>signals</strong> – With the form: <code class="docutils literal notranslate"><span class="pre">{signal_name:</span> <span class="pre">signal}</span></code>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -613,7 +614,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parent</strong> (<em>QtWidgets.QWidget</em><em>, </em><em>optional</em>) – The parent widget.</p></li>
-<li><p><strong>init_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – The PyDM channel with which to initialize the widget.</p></li>
+<li><p><strong>init_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – The PyDM channel with which to initialize the widget.</p></li>
 </ul>
 </dd>
 </dl>
@@ -732,7 +733,7 @@ sub-device displays, which may or may not have custom screens.</p>
 <dd><p>The number of columns in the layout.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -743,7 +744,7 @@ sub-device displays, which may or may not have custom screens.</p>
 <dd><p>The column number for the row label.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -754,7 +755,7 @@ sub-device displays, which may or may not have custom screens.</p>
 <dd><p>The column number for the readback widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -765,7 +766,7 @@ sub-device displays, which may or may not have custom screens.</p>
 <dd><p>The column number for the setpoint widget.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -784,7 +785,7 @@ sub-device displays, which may or may not have custom screens.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>device</strong> (<em>ophyd.Device</em>) – The device to add.</p></li>
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – The name/label to go with the device.</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The name/label to go with the device.</p></li>
 </ul>
 </dd>
 </dl>
@@ -812,7 +813,7 @@ sub-device displays, which may or may not have custom screens.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parent</strong> (<em>QtWidgets.QWidget</em><em>, </em><em>optional</em>) – The parent widget.</p></li>
-<li><p><strong>init_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – The PyDM channel with which to initialize the widget.</p></li>
+<li><p><strong>init_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – The PyDM channel with which to initialize the widget.</p></li>
 </ul>
 </dd>
 </dl>
@@ -902,6 +903,12 @@ alarm state of all of the device’s <code class="docutils literal notranslate">
 </tr>
 </tbody>
 </table>
+<dl class="py class">
+<dt class="sig sig-object py" id="typhos.TyphosPositionerWidget.KindLevel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KindLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#typhos.TyphosPositionerWidget.KindLevel" title="Permalink to this definition"></a></dt>
+<dd><p>Options for TyphosAlarm.kindLevel.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="typhos.TyphosPositionerWidget.acceleration_attribute">
 <span class="sig-name descname"><span class="pre">acceleration_attribute</span></span><a class="headerlink" href="#typhos.TyphosPositionerWidget.acceleration_attribute" title="Permalink to this definition"></a></dt>
@@ -1073,7 +1080,7 @@ widgets arranged in a row. Each provided method has a
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em> of </em><em>callables</em><em>, </em><em>optional</em>) – List of callables to add to the FunctionPanel.</p></li>
+<li><p><strong>methods</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> of </em><em>callables</em><em>, </em><em>optional</em>) – List of callables to add to the FunctionPanel.</p></li>
 <li><p><strong>parent</strong> (<em>QWidget</em>) – </p></li>
 </ul>
 </dd>
@@ -1304,7 +1311,7 @@ This callback also triggers a value_changed call so the
 new enum values to be broadcasted</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><em>tuple</em></a>) – The new list of values</p>
+<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a>) – The new list of values</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1338,7 +1345,7 @@ This callback also triggers a value_changed call so the
 new enum values to be broadcasted</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><em>tuple</em></a>) – The new list of values</p>
+<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a>) – The new list of values</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1373,7 +1380,7 @@ This callback also triggers a value_changed call so the
 new enum values to be broadcasted.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><em>tuple</em></a>) – The new list of values</p>
+<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a>) – The new list of values</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1412,7 +1419,7 @@ This callback also triggers a value_changed call so the
 new enum values to be broadcasted</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.10)"><em>tuple</em></a>) – The new list of values</p>
+<dd class="field-odd"><p><strong>new_enum_strings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a>) – The new list of values</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1425,7 +1432,7 @@ This callback also triggers an update_format_string call so the
 new unit value is considered if <code class="docutils literal notranslate"><span class="pre">`showUnits`</span></code> is set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – The new unit</p>
+<dd class="field-odd"><p><strong>new_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The new unit</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1472,7 +1479,7 @@ This callback also triggers an update_format_string call so the
 new unit value is considered if <code class="docutils literal notranslate"><span class="pre">`showUnits`</span></code> is set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – The new unit</p>
+<dd class="field-odd"><p><strong>new_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The new unit</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1509,7 +1516,7 @@ This callback acts on the connection state to enable/disable the widget
 and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>connected</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – When this value is 0 the channel is disconnected, 1 otherwise.</p>
+<dd class="field-odd"><p><strong>connected</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – When this value is 0 the channel is disconnected, 1 otherwise.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1575,7 +1582,7 @@ if set.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parent</strong> (<em>QWidget</em>) – The parent widget.</p></li>
-<li><p><strong>init_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – The channel to be used by the widget.</p></li>
+<li><p><strong>init_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – The channel to be used by the widget.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1617,7 +1624,7 @@ if set.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parent</strong> (<em>QWidget</em>) – The parent widget.</p></li>
-<li><p><strong>init_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – The channel to be used by the widget.</p></li>
+<li><p><strong>init_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – The channel to be used by the widget.</p></li>
 <li><p><strong>(</strong><strong>setpoint</strong><strong>)</strong> (<em>* Used for variety text-multiline</em>) – </p></li>
 </ul>
 </dd>

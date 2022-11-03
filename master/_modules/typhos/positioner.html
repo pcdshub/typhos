@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.positioner &mdash; Typhos 2.3.3 documentation</title>
+  <title>typhos.positioner &mdash; Typhos 2.3.3+3.g4919ff4 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.3
+                2.3.3+3.g4919ff4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -73,9 +73,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>typhos.positioner</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">typhos.positioner</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -93,12 +93,17 @@
 <span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">uic</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">widgets</span>
+<span class="kn">from</span> <span class="nn">.alarm</span> <span class="kn">import</span> <span class="n">KindLevel</span><span class="p">,</span> <span class="n">_KindLevel</span>
 <span class="kn">from</span> <span class="nn">.status</span> <span class="kn">import</span> <span class="n">TyphosStatusThread</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TyphosPositionerWidget"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget">[docs]</a><span class="k">class</span> <span class="nc">TyphosPositionerWidget</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">widgets</span><span class="o">.</span><span class="n">TyphosDesignerMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosPositionerWidget"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget">[docs]</a><span class="k">class</span> <span class="nc">TyphosPositionerWidget</span><span class="p">(</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">,</span>
+    <span class="n">widgets</span><span class="o">.</span><span class="n">TyphosDesignerMixin</span><span class="p">,</span>
+    <span class="n">_KindLevel</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Widget to interact with a :class:`ophyd.Positioner`.</span>
 
@@ -160,6 +165,8 @@
 <span class="sd">                   ``hinted`` signals.</span>
 <span class="sd">    ============== ===========================================================</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">)</span>
+    <span class="n">KindLevel</span> <span class="o">=</span> <span class="n">KindLevel</span>
 
     <span class="n">ui_template</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;widgets&#39;</span><span class="p">,</span> <span class="s1">&#39;positioner.ui&#39;</span><span class="p">)</span>
     <span class="n">_readback_attr</span> <span class="o">=</span> <span class="s1">&#39;user_readback&#39;</span>
@@ -655,6 +662,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expert_button</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expert_button</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">alarmKindLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KindLevel</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">kindLevel</span>
+
+    <span class="nd">@alarmKindLevel</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">alarmKindLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind_level</span><span class="p">:</span> <span class="n">KindLevel</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">kind_level</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarmKindLevel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">kindLevel</span> <span class="o">=</span> <span class="n">kind_level</span>
 
 <div class="viewcode-block" id="TyphosPositionerWidget.move_changed"><a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.move_changed">[docs]</a>    <span class="k">def</span> <span class="nf">move_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Called when a move is begun&quot;&quot;&quot;</span>
