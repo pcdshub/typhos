@@ -6,7 +6,7 @@ from ophyd import Signal
 from ophyd.device import Device
 from ophyd.positioner import SoftPositioner
 from ophyd.sim import SynAxis
-from ophyd.utils.errors import UnknownStatusFailure
+from ophyd.utils.errors import LimitError, UnknownStatusFailure
 
 from typhos.alarm import KindLevel
 from typhos.positioner import TyphosPositionerWidget
@@ -34,7 +34,12 @@ class SimMotor(SynAxis):
 
     # PositionerBase has a timeout arg, SynAxis does not
     def set(self, value, timeout=None):
+        self.check_value(value)
         return super().set(value)
+
+    def check_value(self, pos: float):
+        if not self.low_limit.get() <= pos <= self.high_limit.get():
+            raise LimitError('Sim limits error')
 
 
 @pytest.fixture(scope='function')
@@ -145,7 +150,7 @@ def test_positioner_widget_moving_property(motor_widget, qtbot):
     motor, widget = motor_widget
     assert not widget.moving
     motor.delay = 1.
-    widget.ui.set_value.setText('34')
+    widget.ui.set_value.setText('7')
     widget.set()
     qtbot.waitUntil(lambda: widget.moving, timeout=500)
     qtbot.waitUntil(lambda: not widget.moving, timeout=1000)
@@ -228,3 +233,19 @@ def test_positioner_widget_clear_error(motor_widget, qtbot):
     motor, widget = motor_widget
     widget.clear_error()
     qtbot.waitUntil(lambda: motor.clear_error.called, timeout=500)
+
+
+def test_positioner_widget_move_error(motor_widget, qtbot):
+    motor, widget = motor_widget
+    bad_position = motor.high_limit.get() + 1
+
+    with pytest.raises(LimitError):
+        motor.check_value(bad_position)
+
+    assert widget.ui.status_label.text() == ''
+    widget._set(bad_position)
+
+    def has_limit_error():
+        assert 'LimitError' in widget.ui.status_label.text()
+
+    qtbot.waitUntil(has_limit_error, timeout=1000)
