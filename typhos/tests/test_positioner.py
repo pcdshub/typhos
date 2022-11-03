@@ -8,6 +8,7 @@ from ophyd.positioner import SoftPositioner
 from ophyd.sim import SynAxis
 from ophyd.utils.errors import UnknownStatusFailure
 
+from typhos.alarm import KindLevel
 from typhos.positioner import TyphosPositionerWidget
 from typhos.utils import SignalRO
 
@@ -210,6 +211,17 @@ def test_positioner_widget_alarm_text_changes(motor_widget, qtbot):
 
     for text in alarm_texts:
         assert alarm_texts.count(text) == 1
+
+
+def test_positioner_widget_alarm_kind_level(motor_widget, qtbot):
+    motor, widget = motor_widget
+    # Alarm widget has its own tests
+    # Just make sure the levels match when set
+    assert widget.alarmKindLevel == widget.ui.alarm_circle.kindLevel
+    for kind_level in KindLevel:
+        widget.alarmKindLevel = kind_level
+        assert widget.alarmKindLevel == kind_level
+        assert widget.ui.alarm_circle.kindLevel == kind_level
 
 
 def test_positioner_widget_clear_error(motor_widget, qtbot):
