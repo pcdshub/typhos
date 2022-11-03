@@ -149,7 +149,7 @@ def test_positioner_widget_moving_property(motor_widget, qtbot):
     motor, widget = motor_widget
     assert not widget.moving
     motor.delay = 1.
-    widget.ui.set_value.setText('34')
+    widget.ui.set_value.setText('7')
     widget.set()
     qtbot.waitUntil(lambda: widget.moving, timeout=500)
     qtbot.waitUntil(lambda: not widget.moving, timeout=1000)
