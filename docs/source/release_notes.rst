@@ -2,6 +2,30 @@
  Release History
 =================
 
+v2.4.0 (2022-11-4)
+==================
+
+Description
+-----------
+This is a small release with features for improving the usage
+and configurability of the ``PositionerWidget``.
+
+Features
+--------
+- Report errors raised during the execution of positioner
+  ``set`` commands in the positioner widget instead of in a pop-up.
+  This makes it easier to keep track of which positioner widget
+  is associated with which error and makes it less likely that the
+  message will be missed or lost on large monitors.
+- Add a designer property to ``PositionerWidget``, ``alarmKindLevel``,
+  to configure the enclosed alarm widget's ``kindLevel`` property in
+  designer. This was previously only configurable in code.
+
+Contributors
+------------
+- zllentz
+
+
 v2.3.3 (2022-10-20)
 ===================
 
