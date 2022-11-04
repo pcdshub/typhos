@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>typhos.utils &mdash; Typhos 2.4.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/doctr-versions-menu.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Typhos
+          </a>
+              <div class="version">
+                2.4.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">typhos.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for typhos.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utility functions for typhos</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">atexit</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">importlib.util</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">entrypoints</span>
+<span class="kn">import</span> <span class="nn">ophyd</span>
+<span class="kn">import</span> <span class="nn">ophyd.sim</span>
+<span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Device</span>
+<span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
+<span class="kn">from</span> <span class="nn">pydm.exception</span> <span class="kn">import</span> <span class="n">raise_to_operator</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.base</span> <span class="kn">import</span> <span class="n">PyDMWritableWidget</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">QSize</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="kn">import</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QMovie</span><span class="p">,</span> <span class="n">QPainter</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span>
+
+<span class="kn">from</span> <span class="nn">typhos</span> <span class="kn">import</span> <span class="n">plugins</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">happi</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">happi</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Entry point for directories of custom widgets</span>
+<span class="c1"># Must be one of:</span>
+<span class="c1"># - str</span>
+<span class="c1"># - pathlib.Path</span>
+<span class="c1"># - list of such objects</span>
+<span class="n">TYPHOS_ENTRY_POINT_KEY</span> <span class="o">=</span> <span class="s1">&#39;typhos.ui&#39;</span>
+<span class="n">MODULE_PATH</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">ui_dir</span> <span class="o">=</span> <span class="n">MODULE_PATH</span> <span class="o">/</span> <span class="s1">&#39;ui&#39;</span>
+<span class="n">ui_core_dir</span> <span class="o">=</span> <span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span>
+
+<span class="n">GrabKindItem</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;GrabKindItem&#39;</span><span class="p">,</span>
+                                      <span class="p">(</span><span class="s1">&#39;attr&#39;</span><span class="p">,</span> <span class="s1">&#39;component&#39;</span><span class="p">,</span> <span class="s1">&#39;signal&#39;</span><span class="p">))</span>
+<span class="n">DEBUG_MODE</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_DEBUG&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+
+<span class="c1"># Help settings:</span>
+<span class="c1"># TYPHOS_HELP_URL (str): The help URL format string</span>
+<span class="n">HELP_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_HELP_URL&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="n">HELP_WEB_ENABLED</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">HELP_URL</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+<span class="c1"># TYPHOS_HELP_HEADERS (json): headers to pass to HELP_URL</span>
+<span class="n">HELP_HEADERS</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_HELP_HEADERS&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">HELP_HEADERS_HOSTS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TYPHOS_HELP_HEADERS_HOSTS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+<span class="c1"># TYPHOS_HELP_TOKEN (str): An optional token for the bearer authentication</span>
+<span class="c1"># scheme - e.g., personal access tokens with Confluence</span>
+<span class="n">HELP_TOKEN</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_HELP_TOKEN&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">HELP_TOKEN</span><span class="p">:</span>
+    <span class="n">HELP_HEADERS</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">HELP_TOKEN</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># TYPHOS_JIRA_URL (str): The jira REST API collector URL</span>
+<span class="n">JIRA_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_JIRA_URL&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="c1"># TYPHOS_JIRA_HEADERS (json): headers to pass to JIRA_URL</span>
+<span class="n">JIRA_HEADERS</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_JIRA_HEADERS&#39;</span><span class="p">,</span> <span class="s1">&#39;{&quot;X-Atlassian-Token&quot;: &quot;no-check&quot;}&#39;</span><span class="p">)</span>
+    <span class="ow">or</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+<span class="c1"># TYPHOS_JIRA_TOKEN (str): An optional token for the bearer authentication</span>
+<span class="c1"># scheme - e.g., personal access tokens with Confluence</span>
+<span class="n">JIRA_TOKEN</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_JIRA_TOKEN&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="c1"># TYPHOS_JIRA_EMAIL_SUFFIX (str): The default e-mail address suffix</span>
+<span class="n">JIRA_EMAIL_SUFFIX</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_JIRA_EMAIL_SUFFIX&#39;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">JIRA_TOKEN</span><span class="p">:</span>
+    <span class="n">JIRA_HEADERS</span><span class="p">[</span><span class="s2">&quot;Authorization&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="n">JIRA_TOKEN</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="k">if</span> <span class="n">happi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;happi is not installed; some features may be unavailable&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_display_paths</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get all display paths.</span>
+
+<span class="sd">    This includes, in order:</span>
+
+<span class="sd">    - The $PYDM_DISPLAYS_PATH environment variable</span>
+<span class="sd">    - The typhos.ui entry point</span>
+<span class="sd">    - typhos built-ins</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PYDM_DISPLAYS_PATH&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">path</span>
+
+    <span class="n">_entries</span> <span class="o">=</span> <span class="n">entrypoints</span><span class="o">.</span><span class="n">get_group_all</span><span class="p">(</span><span class="n">TYPHOS_ENTRY_POINT_KEY</span><span class="p">)</span>
+    <span class="n">entry_objs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">_entries</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Failed to load </span><span class="si">{</span><span class="n">TYPHOS_ENTRY_POINT_KEY</span><span class="si">}</span><span class="s1"> &#39;</span>
+                   <span class="sa">f</span><span class="s1">&#39;entry: </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">entry_objs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">entry_objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">entry_objs</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">TYPHOS_ENTRY_POINT_KEY</span><span class="si">}</span><span class="s1"> entry point &#39;</span>
+                   <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s1"> is not a valid path!&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">yield</span> <span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span>
+    <span class="k">yield</span> <span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;devices&#39;</span>
+
+
+<span class="n">DISPLAY_PATHS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_get_display_paths</span><span class="p">())</span>
+
+
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ophyd</span><span class="o">.</span><span class="n">signal</span><span class="p">,</span> <span class="s1">&#39;SignalRO&#39;</span><span class="p">):</span>
+    <span class="n">SignalRO</span> <span class="o">=</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">SignalRO</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># SignalRO was re-introduced to ophyd.signal in December 2019 (1f83a055).</span>
+    <span class="c1"># If unavailable, fall back to our previous definition:</span>
+    <span class="k">class</span> <span class="nc">SignalRO</span><span class="p">(</span><span class="n">ophyd</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">SynSignalRO</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="n">connected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">write_access</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+
+
+<div class="viewcode-block" id="channel_from_signal"><a class="viewcode-back" href="../../utils.html#typhos.utils.channel_from_signal">[docs]</a><span class="k">def</span> <span class="nf">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a PyDM address from arbitrary signal type</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">read</span><span class="p">:</span>
+            <span class="c1"># For readback widgets, focus on the _read_pv only:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_read_pv&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># For setpoint widgets, _write_pv may exist (and differ) from</span>
+            <span class="c1"># _read_pv, try it first:</span>
+            <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_write_pv&quot;</span><span class="p">,</span> <span class="s2">&quot;_read_pv&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Some customizations of EpicsSignalBase may have different attributes.</span>
+        <span class="c1"># Try the attributes, but don&#39;t fail if they are not present:</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="n">pv_instance</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">pvname</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">pv_instance</span><span class="p">,</span> <span class="s2">&quot;pvname&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pvname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pvname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">pvname</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="is_signal_ro"><a class="viewcode-back" href="../../utils.html#typhos.utils.is_signal_ro">[docs]</a><span class="k">def</span> <span class="nf">is_signal_ro</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return whether the signal is read-only, based on its class.</span>
+
+<span class="sd">    In the future this may be easier to do through improvements to</span>
+<span class="sd">    introspection in the ophyd library. Until that day we need to check classes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="p">(</span><span class="n">SignalRO</span><span class="p">,</span> <span class="n">EpicsSignalRO</span><span class="p">,</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">SynSignalRO</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="channel_name"><a class="viewcode-back" href="../../utils.html#typhos.utils.channel_name">[docs]</a><span class="k">def</span> <span class="nf">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;ca&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a valid PyDM channel from a PV name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">protocol</span> <span class="o">+</span> <span class="s1">&#39;://&#39;</span> <span class="o">+</span> <span class="n">pv</span></div>
+
+
+<div class="viewcode-block" id="clean_attr"><a class="viewcode-back" href="../../utils.html#typhos.utils.clean_attr">[docs]</a><span class="k">def</span> <span class="nf">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a nicer, human readable alias from a Python attribute name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="clean_name"><a class="viewcode-back" href="../../utils.html#typhos.utils.clean_name">[docs]</a><span class="k">def</span> <span class="nf">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a human readable name for a device</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device: ophyd.Device</span>
+
+<span class="sd">    strip_parent: bool or Device</span>
+<span class="sd">        Remove the parent name of the device from name. If strip_parent is</span>
+<span class="sd">        True, the name of the direct parent of the device is stripped. If a</span>
+<span class="sd">        device is provided the name of that device is used. This allows</span>
+<span class="sd">        specification for removal at any point of the device schema</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">if</span> <span class="n">strip_parent</span> <span class="ow">and</span> <span class="n">device</span><span class="o">.</span><span class="n">parent</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">strip_parent</span><span class="p">,</span> <span class="n">Device</span><span class="p">):</span>
+            <span class="n">parent_name</span> <span class="o">=</span> <span class="n">strip_parent</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parent_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">parent_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="c1"># Return the cleaned alias</span>
+    <span class="k">return</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="use_stylesheet"><a class="viewcode-back" href="../../utils.html#typhos.utils.use_stylesheet">[docs]</a><span class="k">def</span> <span class="nf">use_stylesheet</span><span class="p">(</span><span class="n">dark</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use the Typhos stylesheet</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dark: bool, optional</span>
+<span class="sd">        Whether or not to use the QDarkStyleSheet theme. By default the light</span>
+<span class="sd">        theme is chosen.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Dark Style</span>
+    <span class="k">if</span> <span class="n">dark</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">qdarkstyle</span>
+        <span class="n">style</span> <span class="o">=</span> <span class="n">qdarkstyle</span><span class="o">.</span><span class="n">load_stylesheet_pyqt5</span><span class="p">()</span>
+    <span class="c1"># Light Style</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Load the path to the file</span>
+        <span class="n">style_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;style.qss&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">style_path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">EnvironmentError</span><span class="p">(</span><span class="s2">&quot;Unable to find Typhos stylesheet in </span><span class="si">{}</span><span class="s2">&quot;</span>
+                                   <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">style_path</span><span class="p">))</span>
+        <span class="c1"># Load the stylesheet from the file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">style_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+            <span class="n">style</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+    <span class="c1"># We can set Fusion style if it is an application</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="p">):</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s1">&#39;Fusion&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Set Stylesheet</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">style</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="random_color"><a class="viewcode-back" href="../../utils.html#typhos.utils.random_color">[docs]</a><span class="k">def</span> <span class="nf">random_color</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Return a random hex color description&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">QColor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+                  <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+                  <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TyphosLoading"><a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosLoading">[docs]</a><span class="k">class</span> <span class="nc">TyphosLoading</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A QLabel with an animation for loading status.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    LOADING_TIMEOUT_MS : int</span>
+<span class="sd">        The timeout value in milliseconds for when to stop the animation</span>
+<span class="sd">        and replace it with a default timeout message.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">LOADING_TIMEOUT_MS</span> <span class="o">=</span> <span class="mi">10000</span>
+    <span class="n">loading_gif</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout_message</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_message</span> <span class="o">=</span> <span class="n">timeout_message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span> <span class="o">=</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">TyphosLoading</span><span class="o">.</span><span class="n">loading_gif</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">loading_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ui_dir</span><span class="p">,</span> <span class="s1">&#39;loading.gif&#39;</span><span class="p">)</span>
+            <span class="n">TyphosLoading</span><span class="o">.</span><span class="n">loading_gif</span> <span class="o">=</span> <span class="n">QMovie</span><span class="p">(</span><span class="n">loading_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span> <span class="o">=</span> <span class="n">TyphosLoading</span><span class="o">.</span><span class="n">loading_gif</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">setScaledSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMovie</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">LOADING_TIMEOUT_MS</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">LOADING_TIMEOUT_MS</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">_handle_timeout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setContextMenuPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DefaultContextMenu</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TyphosLoading.contextMenuEvent"><a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosLoading.contextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">copy_to_clipboard</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+            <span class="n">clipboard</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">clipboard</span><span class="p">()</span>
+            <span class="n">clipboard</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="n">menu</span><span class="o">.</span><span class="n">addSection</span><span class="p">(</span><span class="s1">&#39;Copy to clipboard&#39;</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;&amp;All&#39;</span><span class="p">)</span>
+        <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">copy_to_clipboard</span><span class="p">,</span>
+                                                   <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">toolTip</span><span class="p">()))</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolTip</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">copy_to_clipboard</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">line</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">menu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()))</span></div>
+
+    <span class="k">def</span> <span class="nf">_handle_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMovie</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_message</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">iconSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span>
+
+    <span class="nd">@iconSize</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">iconSize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">setScaledSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">TyphosObject</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new device to the widget</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.Device</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding device </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># This is necessary because by default QWidget ignores stylesheets</span>
+        <span class="c1"># https://wiki.qt.io/How_to_Change_the_Background_Color_of_QWidget</span>
+        <span class="n">opt</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleOption</span><span class="p">()</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">initFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">painter</span> <span class="o">=</span> <span class="n">QPainter</span><span class="p">()</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">begin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">drawPrimitive</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PE_Widget</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">paintEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new instance of the widget for a Device</span>
+
+<span class="sd">        Shortcut for:</span>
+
+<span class="sd">        .. code::</span>
+
+<span class="sd">            tool = TyphosBase(parent=parent)</span>
+<span class="sd">            tool.add_device(device)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device: ophyd.Device</span>
+
+<span class="sd">        parent: QWidget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
+
+<div class="viewcode-block" id="WeakPartialMethodSlot"><a class="viewcode-back" href="../../utils.html#typhos.utils.WeakPartialMethodSlot">[docs]</a><span class="k">class</span> <span class="nc">WeakPartialMethodSlot</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A PyQt-compatible slot for a partial method.</span>
+
+<span class="sd">    This utility handles deleting the connection when the method class instance</span>
+<span class="sd">    gets garbage collected. This avoids cycles in the garbage collector</span>
+<span class="sd">    that would prevent the instance from being garbage collected prior to the</span>
+<span class="sd">    program exiting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signal_owner : QtCore.QObject</span>
+<span class="sd">        The owner of the signal.</span>
+<span class="sd">    signal : QtCore.Signal</span>
+<span class="sd">        The signal instance itself.</span>
+<span class="sd">    method : instance method</span>
+<span class="sd">        The method slot to call when the signal fires.</span>
+<span class="sd">    *args :</span>
+<span class="sd">        Arguments to pass to the method.</span>
+<span class="sd">    **kwargs :</span>
+<span class="sd">        Keyword arguments to pass to the method.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">signal_owner</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">,</span>
+        <span class="n">signal</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="n">MethodType</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakMethod</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_method_finalizer</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">.</span><span class="vm">__self__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_destroyed</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signal_finalizer</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span>
+            <span class="n">signal_owner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_destroyed</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span> <span class="nf">_signal_destroyed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Callback: the owner of the signal was destroyed; clean up.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_method_destroyed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Callback: the owner of the method was destroyed; clean up.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">new_args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        PyQt callback slot which handles the internal WeakMethod.</span>
+
+<span class="sd">        This method currently throws away arguments passed in from the signal.</span>
+<span class="sd">        This is for backward-compatibility to how the previous</span>
+<span class="sd">        `partial()`-using implementation worked.</span>
+
+<span class="sd">        If reused beyond the TyphosSuite, this class may need revisiting in the</span>
+<span class="sd">        future.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_method_destroyed</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TyphosBase"><a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosBase">[docs]</a><span class="k">class</span> <span class="nc">TyphosBase</span><span class="p">(</span><span class="n">TyphosObject</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base widget for all Typhos widgets that interface with devices&quot;&quot;&quot;</span>
+
+    <span class="n">_weak_partials_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">WeakPartialMethodSlot</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weak_partials_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_connect_partial_weakly</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">signal_owner</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">,</span>
+        <span class="n">signal</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="n">MethodType</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect the provided signal to an instance method via</span>
+<span class="sd">        WeakPartialMethodSlot.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal_owner : QtCore.QObject</span>
+<span class="sd">            The owner of the signal.</span>
+<span class="sd">        signal : QtCore.Signal</span>
+<span class="sd">            The signal instance itself.</span>
+<span class="sd">        method : instance method</span>
+<span class="sd">            The method slot to call when the signal fires.</span>
+<span class="sd">        *args :</span>
+<span class="sd">            Arguments to pass to the method.</span>
+<span class="sd">        **kwargs :</span>
+<span class="sd">            Keyword arguments to pass to the method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="n">WeakPartialMethodSlot</span><span class="p">(</span>
+            <span class="n">signal_owner</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weak_partials_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="make_identifier"><a class="viewcode-back" href="../../utils.html#typhos.utils.make_identifier">[docs]</a><span class="k">def</span> <span class="nf">make_identifier</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make a Python string into a valid Python identifier&quot;&quot;&quot;</span>
+    <span class="c1"># That was easy</span>
+    <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">name</span>
+    <span class="c1"># Lowercase</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="c1"># Leading / following whitespace</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># Intermediate whitespace should be underscores</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[</span><span class="se">\\</span><span class="s1">s</span><span class="se">\\</span><span class="s1">t</span><span class="se">\\</span><span class="s1">n]+&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="c1"># Remove invalid characters</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^0-9a-zA-Z_]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="c1"># Remove leading characters until we find a letter or an underscore</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;^[^a-zA-Z_]+&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="flatten_tree"><a class="viewcode-back" href="../../utils.html#typhos.utils.flatten_tree">[docs]</a><span class="k">def</span> <span class="nf">flatten_tree</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Flatten a tree of parameters&quot;&quot;&quot;</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="p">[</span><span class="n">param</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">childs</span><span class="p">:</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">flatten_tree</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">tree</span></div>
+
+
+<div class="viewcode-block" id="clear_layout"><a class="viewcode-back" href="../../utils.html#typhos.utils.clear_layout">[docs]</a><span class="k">def</span> <span class="nf">clear_layout</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Clear a QLayout&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
+        <span class="n">child</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">():</span>
+            <span class="n">child</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">child</span><span class="o">.</span><span class="n">layout</span><span class="p">():</span>
+            <span class="n">clear_layout</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="reload_widget_stylesheet"><a class="viewcode-back" href="../../utils.html#typhos.utils.reload_widget_stylesheet">[docs]</a><span class="k">def</span> <span class="nf">reload_widget_stylesheet</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reload the stylesheet of the provided widget&quot;&quot;&quot;</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">unpolish</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">polish</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">cascade</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">widget</span><span class="o">.</span><span class="n">children</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">):</span>
+                <span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_suite"><a class="viewcode-back" href="../../utils.html#typhos.utils.save_suite">[docs]</a><span class="k">def</span> <span class="nf">save_suite</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">file_or_buffer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a file capable of relaunching the TyphosSuite</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    suite: TyphosSuite</span>
+
+<span class="sd">    file_or_buffer : str or file-like</span>
+<span class="sd">        Either a path to the file or a handle that supports ``write``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Accept file-like objects or a handle</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_or_buffer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_or_buffer</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">handle</span> <span class="o">=</span> <span class="n">file_or_buffer</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Saving TyphosSuite contents to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">handle</span><span class="p">)</span>
+    <span class="n">devices</span> <span class="o">=</span> <span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="n">suite</span><span class="o">.</span><span class="n">devices</span><span class="p">]</span>
+    <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">saved_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="n">devices</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="load_suite"><a class="viewcode-back" href="../../utils.html#typhos.utils.load_suite">[docs]</a><span class="k">def</span> <span class="nf">load_suite</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="sd">    Load a file saved via Typhos</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str</span>
+<span class="sd">        Path to file describing the ``TyphosSuite``. This needs to be of the</span>
+<span class="sd">        format created by the :meth:`.save_suite` function.</span>
+
+<span class="sd">    cfg: str, optional</span>
+<span class="sd">        Location of happi configuration file to use to load devices. If not</span>
+<span class="sd">        entered the ``$HAPPI_CFG`` environment variable will be used.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    suite: TyphosSuite</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Importing TyphosSuite from file </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="n">module_name</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.py&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span>
+                                                  <span class="n">path</span><span class="p">)</span>
+    <span class="n">suite_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">suite_module</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">suite_module</span><span class="p">,</span> <span class="s1">&#39;create_suite&#39;</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Executing create_suite method from </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">suite_module</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">suite_module</span><span class="o">.</span><span class="n">create_suite</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Imported module has no &#39;create_suite&#39; method!&quot;</span><span class="p">)</span></div>
+
+
+<span class="n">saved_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">import sys</span>
+<span class="s2">import typhos.cli</span>
+
+<span class="s2">devices = </span><span class="si">{devices}</span><span class="s2"></span>
+
+<span class="s2">def create_suite(cfg=None):</span>
+<span class="s2">    return typhos.cli.create_suite(devices, cfg=cfg)</span>
+
+<span class="s2">if __name__ == &#39;__main__&#39;:</span>
+<span class="s2">    typhos.cli.typhos_cli(devices + sys.argv[1:])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="no_device_lazy_load"><a class="viewcode-back" href="../../utils.html#typhos.utils.no_device_lazy_load">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span> <span class="nf">no_device_lazy_load</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Context manager which disables the ophyd.device.Device</span>
+<span class="sd">    `lazy_wait_for_connection` behavior and later restore its value.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">old_val</span> <span class="o">=</span> <span class="n">Device</span><span class="o">.</span><span class="n">lazy_wait_for_connection</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Device</span><span class="o">.</span><span class="n">lazy_wait_for_connection</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">Device</span><span class="o">.</span><span class="n">lazy_wait_for_connection</span> <span class="o">=</span> <span class="n">old_val</span></div>
+
+
+<div class="viewcode-block" id="pyqt_class_from_enum"><a class="viewcode-back" href="../../utils.html#typhos.utils.pyqt_class_from_enum">[docs]</a><span class="k">def</span> <span class="nf">pyqt_class_from_enum</span><span class="p">(</span><span class="n">enum</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create an inheritable base class from a Python Enum, which can also be used</span>
+<span class="sd">    for Q_ENUMS.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">enum_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">enum</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="p">),</span> <span class="n">enum_dict</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_template_filenames_for_class</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">view_type</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">include_mro</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Yields all possible template filenames that can be used for the class, in</span>
+<span class="sd">    order of priority, including those in the class MRO.</span>
+
+<span class="sd">    This does not include the file extension, to be appended by the caller.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">class_</span><span class="o">.</span><span class="n">mro</span><span class="p">():</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">yield</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">yield</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">view_type</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">yield</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">include_mro</span><span class="p">:</span>
+            <span class="k">break</span>
+
+
+<div class="viewcode-block" id="remove_duplicate_items"><a class="viewcode-back" href="../../utils.html#typhos.utils.remove_duplicate_items">[docs]</a><span class="k">def</span> <span class="nf">remove_duplicate_items</span><span class="p">(</span><span class="n">list_</span><span class="p">):</span>
+    <span class="s1">&#39;Return a de-duplicated list/tuple of items in `list_`, retaining order&#39;</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">list_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">list_</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">list_</span><span class="o">.</span><span class="n">index</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="is_standard_template"><a class="viewcode-back" href="../../utils.html#typhos.utils.is_standard_template">[docs]</a><span class="k">def</span> <span class="nf">is_standard_template</span><span class="p">(</span><span class="n">template</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Is the template a core one provided with typhos?</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    template : str or pathlib.Path</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">common_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">((</span><span class="n">template</span><span class="p">,</span> <span class="n">ui_core_dir</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">common_path</span> <span class="o">==</span> <span class="n">ui_core_dir</span></div>
+
+
+<div class="viewcode-block" id="find_templates_for_class"><a class="viewcode-back" href="../../utils.html#typhos.utils.find_templates_for_class">[docs]</a><span class="k">def</span> <span class="nf">find_templates_for_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">view_type</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">include_mro</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Given a class `cls` and a view type (such as &#39;detailed&#39;), search `paths`</span>
+<span class="sd">    for potential templates to show.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : class</span>
+<span class="sd">        Search for templates with this class name</span>
+<span class="sd">    view_type : {&#39;detailed&#39;, &#39;engineering&#39;, &#39;embedded&#39;}</span>
+<span class="sd">        The view type</span>
+<span class="sd">    paths : iterable</span>
+<span class="sd">        Iterable of paths to be expanded, de-duplicated, and searched</span>
+<span class="sd">    extensions : str or list, optional</span>
+<span class="sd">        The template filename extension (default is ``&#39;.ui&#39;`` or ``&#39;.py&#39;``)</span>
+<span class="sd">    include_mro : bool, optional</span>
+<span class="sd">        Include superclasses - those in the MRO - of ``cls`` as well</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    path : pathlib.Path</span>
+<span class="sd">        A matching path, ordered from most-to-least specific.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">extensions</span><span class="p">:</span>
+        <span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;.py&#39;</span><span class="p">,</span> <span class="s1">&#39;.ui&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">extensions</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span><span class="n">extensions</span><span class="p">]</span>
+
+    <span class="kn">from</span> <span class="nn">.cache</span> <span class="kn">import</span> <span class="n">_CachedPath</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="n">remove_duplicate_items</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">_CachedPath</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">candidate_filename</span> <span class="ow">in</span> <span class="n">_get_template_filenames_for_class</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span> <span class="n">view_type</span><span class="p">,</span> <span class="n">include_mro</span><span class="o">=</span><span class="n">include_mro</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">extension</span> <span class="ow">in</span> <span class="n">extensions</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">candidate_filename</span> <span class="o">+</span> <span class="n">extension</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                        <span class="k">yield</span> <span class="n">match</span></div>
+
+
+<div class="viewcode-block" id="find_file_in_paths"><a class="viewcode-back" href="../../utils.html#typhos.utils.find_file_in_paths">[docs]</a><span class="k">def</span> <span class="nf">find_file_in_paths</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Search for filename ``filename`` in the list of paths ``paths``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str or pathlib.Path</span>
+<span class="sd">        The filename</span>
+<span class="sd">    paths : list or iterable, optional</span>
+<span class="sd">        List of paths to search. Defaults to DISPLAY_PATHS.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    All filenames that match in the given paths</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">paths</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">DISPLAY_PATHS</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="n">filename</span>
+            <span class="k">return</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="kn">from</span> <span class="nn">.cache</span> <span class="kn">import</span> <span class="n">_CachedPath</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="n">remove_duplicate_items</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">_CachedPath</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">match</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="n">match</span></div>
+
+
+<div class="viewcode-block" id="get_device_from_fake_class"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_device_from_fake_class">[docs]</a><span class="k">def</span> <span class="nf">get_device_from_fake_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the non-fake class, given a fake class</span>
+
+<span class="sd">    That is::</span>
+
+<span class="sd">        fake_cls = ophyd.sim.make_fake_device(cls)</span>
+<span class="sd">        get_device_from_fake_class(fake_cls)  # -&gt; cls</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The fake class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bases</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__bases__</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">bases</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">bases</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Not a fake class based on inheritance&#39;</span><span class="p">)</span>
+
+    <span class="n">actual_class</span><span class="p">,</span> <span class="o">=</span> <span class="n">bases</span>
+
+    <span class="k">if</span> <span class="n">actual_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">fake_device_cache</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Not a fake class (ophyd.sim does not know about it)&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">actual_class</span></div>
+
+
+<div class="viewcode-block" id="is_fake_device_class"><a class="viewcode-back" href="../../utils.html#typhos.utils.is_fake_device_class">[docs]</a><span class="k">def</span> <span class="nf">is_fake_device_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Is ``cls`` a fake device from :func:`ophyd.sim.make_fake_device`?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">get_device_from_fake_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="code_from_device_repr"><a class="viewcode-back" href="../../utils.html#typhos.utils.code_from_device_repr">[docs]</a><span class="k">def</span> <span class="nf">code_from_device_repr</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return code to create a device from its ``repr`` information.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : ophyd.Device</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__module__</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Device class must be in a module&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+
+    <span class="n">class_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Device class must be in a module&#39;</span><span class="p">)</span>
+
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__class__</span>
+    <span class="n">is_fake</span> <span class="o">=</span> <span class="n">is_fake_device_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+    <span class="n">full_class_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">   &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s1">,&#39;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">_repr_info</span><span class="p">())</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%r</span><span class="s1"> fully qualified Device class: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                 <span class="n">full_class_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_fake</span><span class="p">:</span>
+        <span class="n">actual_class</span> <span class="o">=</span> <span class="n">get_device_from_fake_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">actual_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">actual_class</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">actual_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%r</span><span class="s1"> fully qualified Device class is fake, based on: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span>
+                     <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">actual_class</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s1">import ophyd.sim</span>
+<span class="s1">import pcdsutils</span>
+
+<span class="si">{</span><span class="n">actual_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> = pcdsutils.utils.import_helper(</span><span class="si">{</span><span class="n">actual_name</span><span class="si">!r}</span><span class="s1">)</span>
+<span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1"> = ophyd.sim.make_fake_device(</span><span class="si">{</span><span class="n">actual_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">)</span>
+<span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">(</span>
+<span class="s1">    </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">)</span>
+<span class="s1">ophyd.sim.clear_fake_device(</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">)</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s1">import pcdsutils</span>
+
+<span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1"> = pcdsutils.utils.import_helper(</span><span class="si">{</span><span class="n">full_class_name</span><span class="si">!r}</span><span class="s1">)</span>
+<span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">(</span>
+<span class="s1">    </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">)</span>
+<span class="s1">&#39;&#39;&#39;</span></div>
+
+
+<div class="viewcode-block" id="code_from_device"><a class="viewcode-back" href="../../utils.html#typhos.utils.code_from_device">[docs]</a><span class="k">def</span> <span class="nf">code_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate code required to load ``device`` in another process</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">is_fake</span> <span class="o">=</span> <span class="n">is_fake_device_class</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">happi</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_fake</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">code_from_device_repr</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="n">happi_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s1">import happi</span>
+<span class="s1">from happi.loader import from_container</span>
+<span class="s1">client = happi.Client.from_config()</span>
+<span class="s1">md = client.find_item(name=&quot;</span><span class="si">{</span><span class="n">happi_name</span><span class="si">}</span><span class="s1">&quot;)</span>
+<span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> = from_container(md)</span>
+<span class="s1">&#39;&#39;&#39;</span></div>
+
+
+<div class="viewcode-block" id="subscription_context"><a class="viewcode-back" href="../../utils.html#typhos.utils.subscription_context">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span> <span class="nf">subscription_context</span><span class="p">(</span><span class="o">*</span><span class="n">objects</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    [Context manager] Subscribe to a specific event from all objects</span>
+
+<span class="sd">    Unsubscribes all signals before exiting</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    *objects : ophyd.OphydObj</span>
+<span class="sd">        Ophyd objects (signals) to monitor</span>
+<span class="sd">    callback : callable</span>
+<span class="sd">        Callback to run, with same signature as that of</span>
+<span class="sd">        :meth:`ophyd.OphydObj.subscribe`.</span>
+<span class="sd">    event_type : str, optional</span>
+<span class="sd">        The event type to subscribe to</span>
+<span class="sd">    run : bool, optional</span>
+<span class="sd">        Run the previously cached subscription immediately</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">obj_to_cid</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">obj_to_cid</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span>
+                                                <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to subscribe to object </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="nb">dict</span><span class="p">(</span><span class="n">obj_to_cid</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">cid</span> <span class="ow">in</span> <span class="n">obj_to_cid</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="c1"># It&#39;s possible that when the object is being torn down, or</span>
+                <span class="c1"># destroyed that this has already been done.</span>
+                <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="get_all_signals_from_device"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_all_signals_from_device">[docs]</a><span class="k">def</span> <span class="nf">get_all_signals_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">include_lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filter_by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get all signals in a given device</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : ophyd.Device</span>
+<span class="sd">        ophyd Device to monitor</span>
+<span class="sd">    include_lazy : bool, optional</span>
+<span class="sd">        Include lazy signals as well</span>
+<span class="sd">    filter_by : callable, optional</span>
+<span class="sd">        Filter signals, with signature ``callable(ophyd.Device.ComponentWalk)``</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">filter_by</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">filter_by</span><span class="p">(</span><span class="n">walk</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_get_signals</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">walk</span><span class="o">.</span><span class="n">item</span>
+            <span class="k">for</span> <span class="n">walk</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">walk_signals</span><span class="p">(</span><span class="n">include_lazy</span><span class="o">=</span><span class="n">include_lazy</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filter_by</span><span class="p">(</span><span class="n">walk</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">include_lazy</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_signals</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">no_device_lazy_load</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">_get_signals</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="subscription_context_device"><a class="viewcode-back" href="../../utils.html#typhos.utils.subscription_context_device">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span> <span class="nf">subscription_context_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                                <span class="n">include_lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filter_by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    [Context manager] Subscribe to ``event_type`` from signals in ``device``</span>
+
+<span class="sd">    Unsubscribes all signals before exiting</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : ophyd.Device</span>
+<span class="sd">        ophyd Device to monitor</span>
+<span class="sd">    callback : callable</span>
+<span class="sd">        Callback to run, with same signature as that of</span>
+<span class="sd">        :meth:`ophyd.OphydObj.subscribe`</span>
+<span class="sd">    event_type : str, optional</span>
+<span class="sd">        The event type to subscribe to</span>
+<span class="sd">    run : bool, optional</span>
+<span class="sd">        Run the previously cached subscription immediately</span>
+<span class="sd">    include_lazy : bool, optional</span>
+<span class="sd">        Include lazy signals as well</span>
+<span class="sd">    filter_by : callable, optional</span>
+<span class="sd">        Filter signals, with signature ``callable(ophyd.Device.ComponentWalk)``</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">signals</span> <span class="o">=</span> <span class="n">get_all_signals_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">include_lazy</span><span class="o">=</span><span class="n">include_lazy</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">subscription_context</span><span class="p">(</span><span class="o">*</span><span class="n">signals</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
+                              <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">)</span> <span class="k">as</span> <span class="n">obj_to_cid</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">obj_to_cid</span></div>
+
+
+<span class="k">class</span> <span class="nc">_ConnectionStatus</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="c1"># NOTE: this will be set externally</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_cid</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objects</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_run_callback_hack_on_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        HACK: peek into ophyd objects to see if they&#39;re connected but have</span>
+<span class="sd">        never run metadata callbacks</span>
+
+<span class="sd">        This is part of an ongoing ophyd issue and may be removed in the</span>
+<span class="sd">        future.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">connected</span> <span class="ow">and</span> <span class="n">obj</span><span class="o">.</span><span class="n">_args_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meta&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;connected&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
+                <span class="n">md</span><span class="p">[</span><span class="s1">&#39;connected&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connection_callback</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">md</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="s1">&#39;Add an additional object to be monitored&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+                <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_cid</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_connection_callback</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to subscribe to object: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_callback_hack_on_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="s1">&#39;Remove an object from being monitored - no more callbacks&#39;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">obj_to_cid</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">obj</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="c1"># It&#39;s possible that when the object is being torn down, or</span>
+                <span class="c1"># destroyed that this has already been done.</span>
+                <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">_connection_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+                <span class="c1"># May have been removed</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="n">connected</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">connected</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Connection update: </span><span class="si">%r</span><span class="s1"> (obj=</span><span class="si">%s</span><span class="s1"> connected=</span><span class="si">%s</span><span class="s1"> kwargs=</span><span class="si">%r</span><span class="s1">)&#39;</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="o">=</span><span class="n">connected</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> connected=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">)</span><span class="si">}</span><span class="s1"> &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;objects=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">)</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="connection_status_monitor"><a class="viewcode-back" href="../../utils.html#typhos.utils.connection_status_monitor">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span> <span class="nf">connection_status_monitor</span><span class="p">(</span><span class="o">*</span><span class="n">signals</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    [Context manager] Monitor connection status from a number of signals</span>
+
+<span class="sd">    Filters out any other metadata updates, only calling once</span>
+<span class="sd">    connected/disconnected</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    *signals : ophyd.OphydObj</span>
+<span class="sd">        Signals to monitor</span>
+<span class="sd">    callback : callable</span>
+<span class="sd">        Callback to run, with same signature as that of</span>
+<span class="sd">        :meth:`ophyd.OphydObj.subscribe`. ``obj`` and ``connected`` are</span>
+<span class="sd">        guaranteed kwargs.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="n">_ConnectionStatus</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">subscription_context</span><span class="p">(</span><span class="o">*</span><span class="n">signals</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">_connection_callback</span><span class="p">,</span>
+                              <span class="n">event_type</span><span class="o">=</span><span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">True</span>
+                              <span class="p">)</span> <span class="k">as</span> <span class="n">status</span><span class="o">.</span><span class="n">obj_to_cid</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">signals</span><span class="p">:</span>
+            <span class="n">status</span><span class="o">.</span><span class="n">_run_callback_hack_on_object</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+        <span class="k">yield</span> <span class="n">status</span></div>
+
+
+<div class="viewcode-block" id="DeviceConnectionMonitorThread"><a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread">[docs]</a><span class="k">class</span> <span class="nc">DeviceConnectionMonitorThread</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Monitor connection status in a background thread</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    device : ophyd.Device</span>
+<span class="sd">        The device to grab signals from</span>
+<span class="sd">    include_lazy : bool, optional</span>
+<span class="sd">        Include lazy signals as well</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    connection_update : QtCore.Signal</span>
+<span class="sd">        Connection update signal with signature::</span>
+
+<span class="sd">            (signal, connected, metadata_dict)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">connection_update</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">include_lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_lazy</span> <span class="o">=</span> <span class="n">include_lazy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeviceConnectionMonitorThread.stop"><a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the background thread and clean up.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        wait_ms : int, optional</span>
+<span class="sd">            Time to wait for the background thread to exit.  Set to 0 to</span>
+<span class="sd">            disable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">requestInterruption</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">wait_ms</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">msecs</span><span class="o">=</span><span class="n">wait_ms</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_update</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeviceConnectionMonitorThread.run"><a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">signals</span> <span class="o">=</span> <span class="n">get_all_signals_from_device</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">include_lazy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include_lazy</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">connection_status_monitor</span><span class="p">(</span><span class="o">*</span><span class="n">signals</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">):</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isInterruptionRequested</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ObjectConnectionMonitorThread"><a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread">[docs]</a><span class="k">class</span> <span class="nc">ObjectConnectionMonitorThread</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Monitor connection status in a background thread</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    connection_update : QtCore.Signal</span>
+<span class="sd">        Connection update signal with signature::</span>
+
+<span class="sd">            (signal, connected, metadata_dict)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">connection_update</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_objects</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">objects</span> <span class="ow">or</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ObjectConnectionMonitorThread.stop"><a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the background thread and clean up.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        wait_ms : int, optional</span>
+<span class="sd">            Time to wait for the background thread to exit.  Set to 0 to</span>
+<span class="sd">            disable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">requestInterruption</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">wait_ms</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">msecs</span><span class="o">=</span><span class="n">wait_ms</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">add_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="c1"># If the thread hasn&#39;t started yet, add it to the list</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_init_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">add_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="c1"># If the thread hasn&#39;t started yet, remove it prior to monitoring</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_init_objects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">remove_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection_update</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ObjectConnectionMonitorThread.run"><a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">connection_status_monitor</span><span class="p">(</span>
+                    <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_objects</span><span class="p">,</span>
+                    <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">)</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_init_objects</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isInterruptionRequested</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">locked</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ThreadPoolWorker"><a class="viewcode-back" href="../../utils.html#typhos.utils.ThreadPoolWorker">[docs]</a><span class="k">class</span> <span class="nc">ThreadPoolWorker</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRunnable</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Worker thread helper</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    func : callable</span>
+<span class="sd">        The function to call during :meth:`.run`</span>
+<span class="sd">    *args</span>
+<span class="sd">        Arguments for the function call</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword rarguments for the function call</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+<div class="viewcode-block" id="ThreadPoolWorker.run"><a class="viewcode-back" href="../../utils.html#typhos.utils.ThreadPoolWorker.run">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to run </span><span class="si">%s</span><span class="s1">(*</span><span class="si">%s</span><span class="s1">, **</span><span class="si">%r</span><span class="s1">) in thread pool&#39;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_get_top_level_components</span><span class="p">(</span><span class="n">device_cls</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get all top-level components from a device class.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">device_cls</span><span class="o">.</span><span class="n">_sig_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="find_parent_with_class"><a class="viewcode-back" href="../../utils.html#typhos.utils.find_parent_with_class">[docs]</a><span class="k">def</span> <span class="nf">find_parent_with_class</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the first parent of a widget that is an instance of ``klass``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    widget : QWidget</span>
+<span class="sd">        The widget from which to start the search</span>
+<span class="sd">    cls : type, optional</span>
+<span class="sd">        The class which the parent must be an instance of</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">widget</span>
+    <span class="k">while</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">parent</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="dump_grid_layout"><a class="viewcode-back" href="../../utils.html#typhos.utils.dump_grid_layout">[docs]</a><span class="k">def</span> <span class="nf">dump_grid_layout</span><span class="p">(</span><span class="n">layout</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cell_width</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dump the layout of a :class:`QtWidgets.QGridLayout` to ``file``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layout : QtWidgets.QGridLayout</span>
+<span class="sd">        The layout</span>
+<span class="sd">    rows : int</span>
+<span class="sd">        Number of rows to iterate over</span>
+<span class="sd">    cols : int</span>
+<span class="sd">        Number of columns to iterate over</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    table : str</span>
+<span class="sd">        The text for the summary table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">rows</span> <span class="ow">or</span> <span class="n">layout</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">cols</span> <span class="ow">or</span> <span class="n">layout</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()</span>
+
+    <span class="n">separator</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="p">((</span><span class="n">cell_width</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">cols</span><span class="p">)</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="s1">&#39; {:&lt;</span><span class="si">%d</span><span class="s1">s}&#39;</span> <span class="o">%</span> <span class="n">cell_width</span>
+
+    <span class="k">def</span> <span class="nf">get_text</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">entry</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span> <span class="ow">or</span> <span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+        <span class="n">visible</span> <span class="o">=</span> <span class="n">entry</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">entry</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;QLabel </span><span class="si">{</span><span class="n">entry</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="si">!r}</span><span class="s1">&gt;&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">visible</span><span class="p">:</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(invis) </span><span class="si">{</span><span class="n">entry</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="n">entry</span>
+
+    <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">separator</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">itemAtPosition</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39; |&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">separator</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="nullcontext"><a class="viewcode-back" href="../../utils.html#typhos.utils.nullcontext">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span> <span class="nf">nullcontext</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Stand-in for py3.7&#39;s contextlib.nullcontext&quot;&quot;&quot;</span>
+    <span class="k">yield</span></div>
+
+
+<div class="viewcode-block" id="get_component"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_component">[docs]</a><span class="k">def</span> <span class="nf">get_component</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the component that made the given object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : ophyd.OphydItem</span>
+<span class="sd">        The ophyd item for which to get the component.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    component : ophyd.Component</span>
+<span class="sd">        The component, if available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">attr_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_variety_metadata"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_variety_metadata">[docs]</a><span class="k">def</span> <span class="nf">get_variety_metadata</span><span class="p">(</span><span class="n">cpt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get &quot;variety&quot; metadata from a component or signal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cpt : ophyd.Component or ophyd.OphydItem</span>
+<span class="sd">        The component / ophyd item to get the metadata for.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    metadata : dict</span>
+<span class="sd">        The metadata, if set. Otherwise an empty dictionary.  This metadata is</span>
+<span class="sd">        guaranteed to be valid according to the known schemas.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cpt</span><span class="p">,</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">cpt</span> <span class="o">=</span> <span class="n">get_component</span><span class="p">(</span><span class="n">cpt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cpt</span><span class="p">,</span> <span class="s1">&#39;_variety_metadata&#39;</span><span class="p">,</span> <span class="p">{})</span></div>
+
+
+<div class="viewcode-block" id="widget_to_image"><a class="viewcode-back" href="../../utils.html#typhos.utils.widget_to_image">[docs]</a><span class="k">def</span> <span class="nf">widget_to_image</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">fill_color</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">transparent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Paint the given widget in a new QtGui.QImage.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    QtGui.QImage</span>
+<span class="sd">        The display, as an image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">width</span><span class="p">(),</span> <span class="n">widget</span><span class="o">.</span><span class="n">height</span><span class="p">(),</span>
+                         <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="o">.</span><span class="n">Format_ARGB32_Premultiplied</span><span class="p">)</span>
+
+    <span class="n">image</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">fill_color</span><span class="p">)</span>
+    <span class="n">pixmap</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPixmap</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+    <span class="n">painter</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPainter</span><span class="p">(</span><span class="n">pixmap</span><span class="p">)</span>
+    <span class="n">widget</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">painter</span><span class="o">.</span><span class="n">end</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">image</span></div>
+
+
+<span class="n">_connect_slots_unpatched</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="patch_connect_slots"><a class="viewcode-back" href="../../utils.html#typhos.utils.patch_connect_slots">[docs]</a><span class="k">def</span> <span class="nf">patch_connect_slots</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Patches QtCore.QMetaObject.connectSlotsByName to catch SystemErrors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_connect_slots_unpatched</span>
+
+    <span class="k">if</span> <span class="n">_connect_slots_unpatched</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># TODO there could be a version check here if we can isolate it</span>
+
+    <span class="n">_connect_slots_unpatched</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span>
+
+    <span class="k">def</span> <span class="nf">connect_slots_patch</span><span class="p">(</span><span class="n">top_level_widget</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_connect_slots_unpatched</span><span class="p">(</span><span class="n">top_level_widget</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">SystemError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Eating system error.  This may possibly be solved by either &quot;</span>
+                <span class="s2">&quot;downgrading Python or upgrading pyqt5 to &gt;= 5.13.1. &quot;</span>
+                <span class="s2">&quot;For further discussion, see &quot;</span>
+                <span class="s2">&quot;https://github.com/pcdshub/typhos/issues/354&quot;</span><span class="p">,</span>
+                <span class="n">exc_info</span><span class="o">=</span><span class="n">ex</span>
+            <span class="p">)</span>
+
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span> <span class="o">=</span> <span class="n">connect_slots_patch</span></div>
+
+
+<div class="viewcode-block" id="link_signal_to_widget"><a class="viewcode-back" href="../../utils.html#typhos.utils.link_signal_to_widget">[docs]</a><span class="k">def</span> <span class="nf">link_signal_to_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Registers the signal with PyDM, and sets the widget channel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signal : ophyd.OphydObj</span>
+<span class="sd">        The signal to use.</span>
+
+<span class="sd">    widget : QtWidgets.QWidget</span>
+<span class="sd">        The widget with which to connect the signal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plugins</span><span class="o">.</span><span class="n">register_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">read</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">PyDMWritableWidget</span><span class="p">)</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="n">read</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="linked_attribute"><a class="viewcode-back" href="../../utils.html#typhos.utils.linked_attribute">[docs]</a><span class="k">def</span> <span class="nf">linked_attribute</span><span class="p">(</span><span class="n">property_attr</span><span class="p">,</span> <span class="n">widget_attr</span><span class="p">,</span> <span class="n">hide_unavailable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator which connects a device signal with a widget.</span>
+
+<span class="sd">    Retrieves the signal from the device, registers it with PyDM, and sets the</span>
+<span class="sd">    widget channel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    property_attr : str</span>
+<span class="sd">        This is one level of indirection, allowing for the component attribute</span>
+<span class="sd">        to be configurable by way of designable properties.</span>
+<span class="sd">        In short, this looks like:</span>
+<span class="sd">        ``getattr(self.device, getattr(self, property_attr))``</span>
+<span class="sd">        The component attribute name may include multiple levels (e.g.,</span>
+<span class="sd">        ``&#39;cpt1.cpt2.low_limit&#39;``).</span>
+
+<span class="sd">    widget_attr : str</span>
+<span class="sd">        The attribute name of the widget, referenced from ``self``.</span>
+<span class="sd">        The component attribute name may include multiple levels (e.g.,</span>
+<span class="sd">        ``&#39;ui.low_limit&#39;``).</span>
+
+<span class="sd">    hide_unavailable : bool</span>
+<span class="sd">        Whether or not to hide widgets for which the device signal is not</span>
+<span class="sd">        available</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">get_widget_attr</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">attrgetter</span><span class="p">(</span><span class="n">widget_attr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">widget</span> <span class="o">=</span> <span class="n">get_widget_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">device_attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_attr</span><span class="p">)</span>
+            <span class="n">get_device_attr</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">attrgetter</span><span class="p">(</span><span class="n">device_attr</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">signal</span> <span class="o">=</span> <span class="n">get_device_attr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">signal</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Fall short of an `isinstance(signal, OphydObj) check here:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">link_signal_to_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                        <span class="s1">&#39;device.</span><span class="si">%s</span><span class="s1"> =&gt; self.</span><span class="si">%s</span><span class="s1"> (signal: </span><span class="si">%s</span><span class="s1"> widget: </span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span>
+                        <span class="n">device_attr</span><span class="p">,</span> <span class="n">widget_attr</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+                    <span class="n">signal</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;device.</span><span class="si">%s</span><span class="s1"> =&gt; self.</span><span class="si">%s</span><span class="s1"> (signal=</span><span class="si">%s</span><span class="s1"> widget=</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span>
+                                 <span class="n">device_attr</span><span class="p">,</span> <span class="n">widget_attr</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">hide_unavailable</span><span class="p">:</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapped</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="raise_window"><a class="viewcode-back" href="../../utils.html#typhos.utils.raise_window">[docs]</a><span class="k">def</span> <span class="nf">raise_window</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bring a widget&#39;s window into focus and on top of the window stack.</span>
+
+<span class="sd">    If the window is minimized, unminimize it.</span>
+
+<span class="sd">    Different window managers respond differently to the various</span>
+<span class="sd">    methods called here, the chosen sequence was intended for</span>
+<span class="sd">    good behavior on as many systems as possible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">window</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">window</span><span class="o">.</span><span class="n">isMinimized</span><span class="p">():</span>
+        <span class="n">window</span><span class="o">.</span><span class="n">showNormal</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">activateWindow</span><span class="p">()</span>
+    <span class="n">window</span><span class="o">.</span><span class="n">setFocus</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
