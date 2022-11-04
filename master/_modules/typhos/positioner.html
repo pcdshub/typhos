@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.positioner &mdash; Typhos 2.3.3+3.g4919ff4 documentation</title>
+  <title>typhos.positioner &mdash; Typhos 2.4.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="../../index.html" class="icon icon-home"> Typhos
           </a>
               <div class="version">
-                2.3.3+3.g4919ff4
+                2.4.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -262,9 +262,15 @@
             <span class="n">timeout</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting device </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2"> with timeout </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
                      <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
-        <span class="c1"># Send timeout through thread because status timeout stops the move</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">set_position</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_status_thread</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">set_position</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="c1"># Treat this exception as a status to use normal error reporting</span>
+            <span class="c1"># Usually this is e.g. limits error</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_status_finished</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Send timeout through thread because status timeout stops the move</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_status_thread</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
 
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">combo_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
