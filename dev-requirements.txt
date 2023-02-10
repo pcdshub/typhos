@@ -9,7 +9,7 @@ pytest
 pytest-benchmark
 pytest-qt
 pytest-timeout
-sphinx<4.0.0
+sphinx
 sphinx_rtd_theme
 simplejson
 sphinxcontrib-jquery
