@@ -337,7 +337,7 @@ class TyphosPositionerWidget(
         self._moving_channel = PyDMChannel(
             address=chname,
             value_slot=self._set_moving,
-            )
+        )
         self._moving_channel.connect()
         return True
 
@@ -366,7 +366,7 @@ class TyphosPositionerWidget(
             self.ui.set_value.setSizePolicy(
                 QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Fixed,
-                )
+            )
             self.ui.set_value.setMinimumContentsLength(20)
             self.ui.tweak_widget.setVisible(False)
         else:

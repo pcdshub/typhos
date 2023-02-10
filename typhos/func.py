@@ -38,7 +38,7 @@ class ParamWidget(QWidget):
     This creates the QLabel for the parameter and defines the interface
     required for subclasses of the ParamWidget.
     """
-    def __init__(self, parameter,  default=inspect._empty, parent=None):
+    def __init__(self, parameter, default=inspect._empty, parent=None):
         super().__init__(parent=parent)
         # Store parameter information
         self.parameter = parameter

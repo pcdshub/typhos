@@ -20,11 +20,8 @@ class SimMotor(SynAxis):
     high_limit_switch = Cpt(SignalRO, value=0)
     low_limit = Cpt(Signal, value=-10)
     high_limit = Cpt(Signal, value=10)
-    motor_is_moving = Cpt(RichSignal,
-                          value=0,
-                          metadata={
-                            'enum_strs': ('not moving', 'moving')
-                          })
+    motor_is_moving = Cpt(RichSignal, value=0,
+                          metadata={'enum_strs': ('not moving', 'moving')})
     stop = Mock()
     clear_error = Mock()
 
@@ -195,9 +192,9 @@ def test_positioner_widget_alarm_text_changes(motor_widget, qtbot):
 
     def update_alarm(level, connected=True):
         with qtbot.waitSignal(
-                widget.ui.alarm_circle.alarm_changed,
-                timeout=500,
-                ):
+            widget.ui.alarm_circle.alarm_changed,
+            timeout=500,
+        ):
             motor.motor_is_moving.update_metadata(
                 {
                     'severity': level,

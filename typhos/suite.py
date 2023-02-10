@@ -354,8 +354,8 @@ class TyphosSuite(TyphosBase):
         """
         root = self._tree.invisibleRootItem()
         return {root.child(idx).param.name():
-                     root.child(idx).param
-                    for idx in range(root.childCount())}
+                root.child(idx).param
+                for idx in range(root.childCount())}
 
     def add_tool(self, name: str, tool: type[QtWidgets.QWidget]):
         """
@@ -713,7 +713,7 @@ class TyphosSuite(TyphosBase):
             content_layout=content_layout,
             default_display_type=default_display_type,
             scroll_option=scroll_option,
-            )
+        )
         if tools is not None:
             logger.info("Loading Tools ...")
             if tools is DEFAULT_TOOLS:

@@ -248,7 +248,7 @@ def use_stylesheet(dark=False, widget=None):
         style_path = os.path.join(ui_dir, 'style.qss')
         if not os.path.exists(style_path):
             raise OSError("Unable to find Typhos stylesheet in {}"
-                                   "".format(style_path))
+                          "".format(style_path))
         # Load the stylesheet from the file
         with open(style_path) as handle:
             style = handle.read()

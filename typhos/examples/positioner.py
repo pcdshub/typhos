@@ -12,7 +12,7 @@ def main():
     devices = [
         ExamplePositioner(name='example_motor'),
         ExampleComboPositioner(name='example_combo'),
-        ]
+    ]
     suite = TyphosSuite.from_devices(devices)
     use_stylesheet()
     launch_suite(suite)

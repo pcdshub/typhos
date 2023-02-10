@@ -88,7 +88,7 @@ class ExamplePositioner(Device, PositionerBase):
             else:
                 self._status.set_exception(
                     RuntimeError('Move Interrupted')
-                    )
+                )
 
     @user_readback.sub_value
     def _update_position(self, value, **kwargs):
@@ -146,7 +146,7 @@ class ExampleComboPositioner(Device, PositionerBase):
         if value == 'Unknown':
             self._status.set_exception(
                 RuntimeError('Unknown not a valid target state')
-                )
+            )
         else:
             td = threading.Thread(target=self._motion_thread)
             td.start()

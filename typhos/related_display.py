@@ -26,7 +26,7 @@ def happi_check():
         logger.warning(
             'The happi module is not in your Python environment, '
             'happi TyphosRelatedSuiteButton features will not work.'
-            )
+        )
     return happi_loaded
 
 
@@ -135,7 +135,7 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
                     raise ValueError(
                         f'Did not find device with name {name} in happi. '
                         'Please check your spelling and your database.'
-                        ) from None
+                    ) from None
                 items.append(search_result.item)
 
             with no_device_lazy_load():

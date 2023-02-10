@@ -61,7 +61,7 @@ KIND_FILTERS = {
         (lambda walk: walk.item.kind != Kind.omitted),
     KindLevel.OMITTED:
         (lambda walk: True),
-    }
+}
 
 
 @dataclass
@@ -181,7 +181,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                 channel = HappiChannel(
                     address=self._channel,
                     tx_slot=self._tx,
-                    )
+                )
             else:
                 channel = PyDMChannel(
                     address=self._channel,
@@ -189,14 +189,14 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                                             addr=self._channel),
                     severity_slot=partial(self.update_severity,
                                           addr=self._channel),
-                    )
+                )
                 self.signal_info[self._channel] = SignalInfo(
                     address=self._channel,
                     channel=channel,
                     signal_name='',
                     connected=False,
                     severity=AlarmLevel.INVALID,
-                    )
+                )
             self._channels = [channel]
             # Connect the channel to the HappiPlugin
             if hasattr(channel, 'connect'):
@@ -247,7 +247,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         sigs = get_all_signals_from_device(
             device,
             filter_by=KIND_FILTERS[self._kind_level]
-            )
+        )
         channel_addrs = [channel_from_signal(sig) for sig in sigs]
         for sig in sigs:
             if not isinstance(sig, EpicsSignalBase):
@@ -257,7 +257,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                 address=addr,
                 connection_slot=partial(self.update_connection, addr=addr),
                 severity_slot=partial(self.update_severity, addr=addr),
-                )
+            )
             for addr in channel_addrs]
 
         for ch, sig in zip(channels, sigs):
@@ -267,7 +267,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                 signal_name=sig.dotted_name,
                 connected=False,
                 severity=AlarmLevel.INVALID,
-                )
+            )
             self.signal_info[ch.address] = info
             self.device_info[device.name].append(info)
             ch.connect()
@@ -277,12 +277,12 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
             logger.debug(
                 f'Finished setup of alarm config for device {device.name} on '
                 f'alarm widget with channel {all_channels[0]}.'
-                )
+            )
         else:
             logger.warning(
                 f'Tried to set up alarm config for device {device.name}, but '
                 'did not configure any channels! Check your kindLevel!'
-                )
+            )
 
     def update_alarm_config(self):
         """
@@ -386,7 +386,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                     QtCore.QPoint(event.x() + 10, event.y())),
                 tooltip,
                 self,
-                )
+            )
 
         # Return True if we showed something
         return bool(tooltip_lines)
@@ -443,7 +443,7 @@ def indicator_stylesheet(shape_cls, alarm):
         '{border: none; '
         ' background: transparent;'
         ' qproperty-brush: rgba'
-        )
+    )
 
     if alarm == AlarmLevel.DISCONNECTED:
         return base + '(255,255,255,255);}'

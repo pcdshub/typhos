@@ -275,7 +275,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         line_edit = QtWidgets.QLineEdit()
 
         filters = list({panel.nameFilter for panel in panels
-                           if panel.nameFilter})
+                        if panel.nameFilter})
         if len(filters) == 1:
             line_edit.setText(filters[0])
         else:
@@ -715,7 +715,7 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             logger.error(
                 "Failed to import QWebEngineView; "
                 "help view is unavailable."
-                )
+            )
             return
 
         if self.help_web_view:
