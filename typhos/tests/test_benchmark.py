@@ -14,7 +14,7 @@ from ..suite import TyphosSuite
 from .conftest import save_image
 
 
-def get_top_level_suites() -> List[TyphosSuite]:
+def get_top_level_suites() -> list[TyphosSuite]:
     app = QtWidgets.QApplication.instance()
     assert app is not None
     return list(

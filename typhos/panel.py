@@ -279,10 +279,10 @@ class SignalPanel(QtWidgets.QGridLayout):
             timeout_message='Connection timed out.'
         )
 
-        loading_tooltip = ['Connecting to:'] + list(set(
+        loading_tooltip = ['Connecting to:'] + list({
             getattr(signal, attr)
             for attr in ('setpoint_pvname', 'pvname') if hasattr(signal, attr)
-        ))
+        })
         loading.setToolTip('\n'.join(loading_tooltip))
 
         row = self.add_row(label, loading)

@@ -159,7 +159,7 @@ def test_suite_save(suite, monkeypatch):
     suite.save()
     assert tfile.exists()
     devices = [device.name for device in suite.devices]
-    with open(str(tfile), 'r') as f:
+    with open(str(tfile)) as f:
         assert str(devices) in f.read()
     os.remove(str(tfile))
 

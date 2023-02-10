@@ -197,7 +197,7 @@ def typhos_cli_setup(args):
     typhos.use_stylesheet(dark=args.dark)
     if args.stylesheet:
         logger.info("Loading QSS file %r ...", args.stylesheet)
-        with open(args.stylesheet, 'r') as handle:
+        with open(args.stylesheet) as handle:
             qapp.setStyleSheet(handle.read())
 
 
@@ -216,7 +216,7 @@ def _create_happi_client(cfg):
 
 
 def create_suite(
-    device_names: List[str],
+    device_names: list[str],
     cfg: Optional[str] = None,
     fake_devices: bool = False,
     layout: str = 'horizontal',
@@ -452,7 +452,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
 
 
 def typhos_run(
-    device_names: List[str],
+    device_names: list[str],
     cfg: Optional[str] = None,
     fake_devices: bool = False,
     layout: str = 'horizontal',

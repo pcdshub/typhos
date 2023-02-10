@@ -225,7 +225,7 @@ class FunctionDisplay(QGroupBox):
         self.signature = inspect.signature(func)
         self.name = name or self.func.__name__
         # Initialize parent
-        super().__init__('{} Parameters'.format(clean_attr(self.name)),
+        super().__init__(f'{clean_attr(self.name)} Parameters',
                          parent=parent)
         # Ignore certain parameters, args and kwargs by default
         self.hide_params = ['self', 'args', 'kwargs']

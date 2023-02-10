@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # Typhos documentation build configuration file, created by
 # sphinx-quickstart on Sat Nov 11 09:41:36 2017.
