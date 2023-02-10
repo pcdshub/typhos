@@ -1,4 +1,4 @@
-from . import _version
+from .version import __version__  # noqa: F401
 from .display import TyphosDeviceDisplay
 from .func import TyphosMethodButton
 from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
@@ -27,5 +27,3 @@ __all__ = [
 patch_connect_slots()
 
 del patch_connect_slots
-
-__version__ = _version.get_versions()['version']
