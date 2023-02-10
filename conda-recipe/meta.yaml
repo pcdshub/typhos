@@ -18,19 +18,20 @@ build:
 
 requirements:
   build:
-  - python >=3.7
+  - python >=3.9
   - pip
   - setuptools_scm
   host:
-  - python >=3.7
+  - python >=3.9
   - pip
   run:
-  - python >=3.7
+  - python >=3.9
   - coloredlogs
   - entrypoints
   - numpy
   - numpydoc
   - ophyd >=1.5.0
+  - pcdsdevices
   - pcdsutils
   - pydm >=1.16.1
   - pyqt
@@ -83,5 +84,5 @@ about:
 extra:
   recipe-maintainers:
   - klauer
-  - hhslepicka
+  - tangkong
   - zllentz
