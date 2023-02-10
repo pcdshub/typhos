@@ -1,0 +1,60 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools>=45", "setuptools_scm[toml]>=6.2",]
+
+[project]
+classifiers = [ "Development Status :: 2 - Pre-Alpha", "Natural Language :: English", "Programming Language :: Python :: 3",]
+description = "Interface generation for ophyd devices"
+dynamic = [ "version", "readme", "dependencies", "optional-dependencies", "optional-dependencies",]
+keywords = []
+name = "typhos"
+requires-python = ">=3.9"
+[[project.authors]]
+name = "SLAC National Accelerator Laboratory"
+
+[options]
+zip_safe = false
+include_package_data = true
+
+[project.license]
+file = "LICENSE.md"
+
+[project.scripts]
+typhos = "typhos.cli:main"
+
+[tool.setuptools_scm]
+write_to = "typhos/_version.py"
+
+[project.entry-points."pydm.widget"]
+TyphosAlarmCirclePlugin = "typhos.alarm:TyphosAlarmCircle"
+TyphosAlarmEllipsePlugin = "typhos.alarm:TyphosAlarmEllipse"
+TyphosAlarmPolygonPlugin = "typhos.alarm:TyphosAlarmPolygon"
+TyphosAlarmRectanglePlugin = "typhos.alarm:TyphosAlarmRectangle"
+TyphosAlarmTrianglePlugin = "typhos.alarm:TyphosAlarmTriangle"
+TyphosCompositeSignalPanelPlugin = "typhos.panel:TyphosCompositeSignalPanel"
+TyphosDeviceDisplayPlugin = "typhos.display:TyphosDeviceDisplay"
+TyphosDisplaySwitcherPlugin = "typhos.display:TyphosDisplaySwitcher"
+TyphosDisplayTitlePlugin = "typhos.display:TyphosDisplayTitle"
+TyphosHelpFramePlugin = "typhos.display:TyphosHelpFrame"
+TyphosMethodButtonPlugin = "typhos.func:TyphosMethodButton"
+TyphosPositionerWidgetPlugin = "typhos.positioner:TyphosPositionerWidget"
+TyphosRelatedSuiteButtonPlugin = "typhos.related_display:TyphosRelatedSuiteButton"
+TyphosSignalPanelPlugin = "typhos.panel:TyphosSignalPanel"
+
+[project.entry-points."pydm.data_plugin"]
+HappiPlugin = "typhos.plugins:HappiPlugin"
+SignalPlugin = "typhos.plugins:SignalPlugin"
+
+[tool.setuptools.packages.find]
+where = [ ".",]
+include = [ "typhos*",]
+namespaces = false
+
+[tool.setuptools.dynamic.readme]
+file = "README.md"
+
+[tool.setuptools.dynamic.dependencies]
+file = [ "requirements.txt",]
+
+[tool.setuptools.dynamic.optional-dependencies.test]
+file = "dev-requirements.txt"
