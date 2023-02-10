@@ -4,6 +4,7 @@ numpy
 numpydoc
 ophyd
 pcdsutils
+PyQt5
 pydm>=1.16.1
 pyqtgraph
 qdarkstyle
