@@ -1,4 +1,3 @@
-from .version import __version__  # noqa: F401
 from .display import TyphosDeviceDisplay
 from .func import TyphosMethodButton
 from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
@@ -6,6 +5,7 @@ from .plugins import register_signal
 from .positioner import TyphosPositionerWidget
 from .suite import TyphosSuite
 from .utils import load_suite, patch_connect_slots, use_stylesheet
+from .version import __version__  # noqa: F401
 
 __all__ = [
     'use_stylesheet',
