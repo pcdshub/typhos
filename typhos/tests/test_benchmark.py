@@ -1,7 +1,6 @@
 """
 Run the benchmark test cases using pytest-benchmark
 """
-from typing import List
 
 import pytest
 from epics import PV

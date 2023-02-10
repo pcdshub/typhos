@@ -18,7 +18,6 @@ import re
 import threading
 import weakref
 from types import MethodType
-from typing import List
 
 import entrypoints
 import ophyd

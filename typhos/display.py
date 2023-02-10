@@ -6,7 +6,7 @@ import logging
 import os
 import pathlib
 import webbrowser
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import ophyd
 import pcdsutils

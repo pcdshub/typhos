@@ -6,7 +6,7 @@ import logging
 import re
 import signal
 import sys
-from typing import List, Optional
+from typing import Optional
 
 import coloredlogs
 import pcdsutils

@@ -7,7 +7,6 @@ import logging
 import os
 import textwrap
 from functools import partial
-from typing import Dict, List, Optional, Type, Union
 
 import ophyd
 import pcdsutils.qt

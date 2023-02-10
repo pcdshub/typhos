@@ -6,7 +6,6 @@ import sys
 import urllib
 import urllib.parse
 import urllib.request
-from typing import Dict
 
 from pydm.exception import raise_to_operator
 from qtpy import QtWidgets
