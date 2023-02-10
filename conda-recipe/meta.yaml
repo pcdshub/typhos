@@ -1,64 +1,74 @@
-{% set data = load_setup_py_data() %}
+{% set package_name = "typhos" %}
+{% set import_name = "typhos" %}
+{% set version = load_file_regex(load_file=os.path.join(import_name, "_version.py"), regex_pattern=".*version = '(\S+)'").group(1) %}
 
 package:
-    name    : typhos
-    version : {{ data.get('version') }}
+  name: {{ package_name }}
+  version: {{ version }}
 
 source:
-    path: ..
+  path: ..
 
 build:
+  number: 0
   noarch: python
-  entry_points:
-    - typhos = typhos.cli:main
+  script: {{ PYTHON }} -m pip install . -vv
+
+
 
 requirements:
   build:
-    - python >=3.7
-    - pip
-    - setuptools_scm
+  - python >=3.7
+  - pip
+  - setuptools_scm
   host:
-    - python >=3.7
-    - pip
+  - python >=3.7
+  - pip
   run:
-    - python >=3.7
-    - coloredlogs
-    - entrypoints
-    - numpy
-    - numpydoc
-    - ophyd >=1.5.0
-    - pcdsutils
-    - pydm >=1.16.1
-    - pyqt >=5,<5.15
-    - pyqtgraph
-    - qdarkstyle
-    - qtawesome
-    - qtconsole
-    - qtpy
-    - timechart >=1.2.4
+  - python >=3.7
+  - coloredlogs
+  - entrypoints
+  - numpy
+  - numpydoc
+  - ophyd >=1.5.0
+  - pcdsutils
+  - pydm >=1.16.1
+  - pyqt >=5,<5.15
+  - pyqtgraph
+  - qdarkstyle
+  - qtawesome
+  - qtconsole
+  - qtpy
+  - timechart >=1.2.4
   run_constrained:
-    - happi >=1.14.0
-    - jupyter_client <7.3.2
+  - happi >=1.14.0
+  - jupyter_client <7.3.2
+
+
+
+test:
+  commands:
+  - typhos --help
+  imports:
+  - typhos
+  - typhos.cli
+
 
 
 about:
-  home: https://github.com/pcdshub/typhos
-  doc_url: https://pcdshub.github.io/typhos
   dev_url: https://github.com/pcdshub/typhos
-  summary: 'Automatic-yet-customizable Graphical User Interface Generation for Ophyd Devices'
+  doc_url: https://pcdshub.github.io/typhos
+  home: https://github.com/pcdshub/typhos
   license: SLAC Open
   license_family: OTHER
   license_file: LICENSE.md
+  summary: Automatic-yet-customizable Graphical User Interface Generation for Ophyd
+    Devices
 
-test:
-  imports:
-    - typhos
-    - typhos.cli
-  commands:
-    - typhos --help
+
 
 extra:
   recipe-maintainers:
-    - klauer
-    - hhslepicka
-    - zllentz
+  - klauer
+  - hhslepicka
+  - zllentz
