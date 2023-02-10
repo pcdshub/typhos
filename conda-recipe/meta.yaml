@@ -13,6 +13,10 @@ build:
     - typhos = typhos.cli:main
 
 requirements:
+  build:
+    - python >=3.7
+    - pip
+    - setuptools_scm
   host:
     - python >=3.7
     - pip
