@@ -45,7 +45,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
-    "docs-versions-menu",
+    "docs_versions_menu",
     "sphinx.ext.githubpages",
 ]
 
