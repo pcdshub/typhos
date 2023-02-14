@@ -8,4 +8,3 @@ pytest-benchmark
 pytest-qt
 pytest-timeout
 simplejson
-sphinxcontrib-jquery
