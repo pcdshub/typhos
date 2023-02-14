@@ -195,7 +195,7 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "pcdsdevices": ("https://pcdshub.github.io/pcdsdevices/", None),
+    "pcdsdevices": ("https://pcdshub.github.io/pcdsdevices/master/", None),
     "pydm": ("https://slaclab.github.io/pydm-tutorial/", None),
     "pydm-api": ("https://slaclab.github.io/pydm/", None),
     "python": ("https://docs.python.org/", None),
