@@ -1118,14 +1118,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             duplicates = utils.find_duplicate_filenames_in_paths(filenames)
 
             for filename in filenames:
-                current_filename = os.path.split(filename)[-1]
+                current_filename = os.path.basename(filename)
 
                 def switch_template(*, filename=filename):
                     self.force_template = filename
                 if current_filename in duplicates:
                     action = menu.addAction(str(filename))
                 else:
-                    action = menu.addAction(os.path.split(filename)[-1])
+                    action = menu.addAction(current_filename)
                 action.triggered.connect(switch_template)
 
         refresh_action = base_menu.addAction("Refresh Templates")
