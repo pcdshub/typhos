@@ -3,7 +3,7 @@ build-backend = "setuptools.build_meta"
 requires = [ "setuptools>=45", "setuptools_scm[toml]>=6.2",]
 
 [project]
-classifiers = [ "Development Status :: 2 - Pre-Alpha", "Natural Language :: English", "Programming Language :: Python :: 3",]
+classifiers = [ "Development Status :: 5 - Production/Stable", "Natural Language :: English", "Programming Language :: Python :: 3",]
 description = "Interface generation for ophyd devices"
 dynamic = [ "version", "readme", "dependencies", "optional-dependencies", "optional-dependencies",]
 keywords = []
