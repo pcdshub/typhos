@@ -274,7 +274,7 @@ def find_duplicate_filenames_in_paths(paths):
     duplicates = []
 
     for filename in paths:
-        candidate_filename = os.path.split(filename)[-1]
+        candidate_filename = os.path.basename(filename)
         if candidate_filename in seen:
             duplicates.append(candidate_filename)
         else:
