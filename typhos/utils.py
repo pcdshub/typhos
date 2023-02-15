@@ -137,7 +137,6 @@ def _get_display_paths():
 
 DISPLAY_PATHS = list(_get_display_paths())
 
-
 if hasattr(ophyd.signal, 'SignalRO'):
     SignalRO = ophyd.signal.SignalRO
 else:
@@ -268,6 +267,19 @@ def random_color():
     return QColor(random.randint(0, 255),
                   random.randint(0, 255),
                   random.randint(0, 255))
+
+
+def find_duplicate_filenames_in_paths(paths):
+    seen = set()
+    duplicates = []
+
+    for filename in paths:
+        candidate_filename = os.path.split(filename)[-1]
+        if candidate_filename in seen:
+            duplicates.append(candidate_filename)
+        else:
+            seen.add(candidate_filename)
+    return duplicates
 
 
 class TyphosLoading(QtWidgets.QLabel):

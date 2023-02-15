@@ -419,11 +419,16 @@ class TyphosDisplaySwitcherButton(TyphosToolButton):
             return
 
         menu = QtWidgets.QMenu(parent=self)
+
+        duplicates = utils.find_duplicate_filenames_in_paths(self.templates)
+
         for template in self.templates:
             def selected(*, template=template):
                 self.template_selected.emit(template)
-
-            action = menu.addAction(template.name)
+            if template.name in duplicates:
+                action = menu.addAction(str(template))
+            else:
+                action = menu.addAction(template.name)
             action.triggered.connect(selected)
 
         return menu
@@ -1110,11 +1115,17 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 view = view.split('_screen')[0]
             menu = base_menu.addMenu(view.capitalize())
 
+            duplicates = utils.find_duplicate_filenames_in_paths(filenames)
+
             for filename in filenames:
+                current_filename = os.path.split(filename)[-1]
+
                 def switch_template(*, filename=filename):
                     self.force_template = filename
-
-                action = menu.addAction(os.path.split(filename)[-1])
+                if current_filename in duplicates:
+                    action = menu.addAction(str(filename))
+                else:
+                    action = menu.addAction(os.path.split(filename)[-1])
                 action.triggered.connect(switch_template)
 
         refresh_action = base_menu.addAction("Refresh Templates")
