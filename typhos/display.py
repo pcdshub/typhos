@@ -414,7 +414,8 @@ class TyphosDisplaySwitcherButton(TyphosToolButton):
         self.template_selected.emit(template)
 
     def generate_context_menu(self):
-        """Context menu request."""
+        """Context menu request.
+            Duplicate filenames will show full path. """
         if not self.templates:
             return
 
@@ -1109,7 +1110,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self._scroll_area.setVisible(scrollable)
 
     def _generate_template_menu(self, base_menu):
-        """Generate the template switcher menu, adding it to ``base_menu``."""
+        """
+            Generate the template switcher menu, adding it to ``base_menu``.
+            Duplicate filenames will show full path.
+        """
         for view, filenames in self.templates.items():
             if view.endswith('_screen'):
                 view = view.split('_screen')[0]

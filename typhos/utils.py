@@ -270,6 +270,14 @@ def random_color():
 
 
 def find_duplicate_filenames_in_paths(paths):
+    """
+    Returns a list of duplicated filenames from a list of full path filenames.
+    Args:
+        paths (list[str]): list of fullpath filenames
+
+    Returns:
+        list[str]: list of filename duplicates
+    """
     seen = set()
     duplicates = []
 
