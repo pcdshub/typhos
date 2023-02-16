@@ -68,7 +68,7 @@ def test_positioner_widget_fixed_limits(qtbot, motor):
 
 
 @show_widget
-@pytest.skip()
+@pytest.mark.skip()
 def test_positioner_widget_with_signal_limits(motor_widget):
     motor, widget = motor_widget
     # Check limit switches
