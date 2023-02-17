@@ -86,11 +86,11 @@ class SignalConnection(PyDMConnection):
         self.value_cid = self.signal.subscribe(
             self.send_new_value,
             event_type=self.signal.SUB_VALUE,
-            )
+        )
         self.meta_cid = self.signal.subscribe(
             self.send_new_meta,
             event_type=self.signal.SUB_META,
-            )
+        )
         # Add listener
         self.add_listener(channel)
 
@@ -161,7 +161,7 @@ class SignalConnection(PyDMConnection):
             units=None,
             enum_strs=None,
             **kwargs
-            ):
+    ):
         """
         Update the UI with new metadata from the Signal.
 

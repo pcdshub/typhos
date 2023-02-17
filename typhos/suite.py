@@ -7,7 +7,6 @@ import logging
 import os
 import textwrap
 from functools import partial
-from typing import Dict, List, Optional, Type, Union
 
 import ophyd
 import pcdsutils.qt
@@ -89,11 +88,11 @@ class LazySubdisplay(QtWidgets.QWidget):
         The widget class to instantiate.
     """
 
-    widget_cls: Type[QtWidgets.QWidget]
-    widget: Optional[QtWidgets.QWidget]
-    devices: List[ophyd.Device]
+    widget_cls: type[QtWidgets.QWidget]
+    widget: QtWidgets.QWidget | None
+    devices: list[ophyd.Device]
 
-    def __init__(self, widget_cls: Type[QtWidgets.QWidget]):
+    def __init__(self, widget_cls: type[QtWidgets.QWidget]):
         super().__init__()
         self.widget_cls = widget_cls
         self.widget = None
@@ -245,10 +244,10 @@ class TyphosSuite(TyphosBase):
 
     def __init__(
         self,
-        parent: Optional[QtWidgets.QWidget] = None,
+        parent: QtWidgets.QWidget | None = None,
         *,
         pin: bool = False,
-        content_layout: Optional[QtWidgets.QLayout] = None,
+        content_layout: QtWidgets.QLayout | None = None,
         default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
         scroll_option: ScrollOptions = ScrollOptions.auto,
     ):
@@ -316,7 +315,7 @@ class TyphosSuite(TyphosBase):
         self._add_to_sidebar(parameter, category)
 
     def add_lazy_subdisplay(
-        self, name: str, display_class: Type[QtWidgets.QWidget], category: str
+        self, name: str, display_class: type[QtWidgets.QWidget], category: str
     ):
         """
         Add an arbitrary widget to the tree of available widgets and tools.
@@ -354,11 +353,11 @@ class TyphosSuite(TyphosBase):
             {'name': QGroupParameterItem}
         """
         root = self._tree.invisibleRootItem()
-        return dict((root.child(idx).param.name(),
-                     root.child(idx).param)
-                    for idx in range(root.childCount()))
+        return {root.child(idx).param.name():
+                root.child(idx).param
+                for idx in range(root.childCount())}
 
-    def add_tool(self, name: str, tool: Type[QtWidgets.QWidget]):
+    def add_tool(self, name: str, tool: type[QtWidgets.QWidget]):
         """
         Add a widget to the toolbar.
 
@@ -592,10 +591,10 @@ class TyphosSuite(TyphosBase):
     def from_device(
         cls,
         device: Device,
-        parent: Optional[QtWidgets.QWidget] = None,
-        tools: Union[Dict[str, type], None, DEFAULT_TOOLS] = DEFAULT_TOOLS,
+        parent: QtWidgets.QWidget | None = None,
+        tools: dict[str, type] | None | DEFAULT_TOOLS = DEFAULT_TOOLS,
         pin: bool = False,
-        content_layout: Optional[QtWidgets.QLayout] = None,
+        content_layout: QtWidgets.QLayout | None = None,
         default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
         scroll_option: ScrollOptions = ScrollOptions.auto,
         show_displays: bool = True,
@@ -655,11 +654,11 @@ class TyphosSuite(TyphosBase):
     @classmethod
     def from_devices(
         cls,
-        devices: List[Device],
-        parent: Optional[QtWidgets.QWidget] = None,
-        tools: Union[Dict[str, type], None, DEFAULT_TOOLS] = DEFAULT_TOOLS,
+        devices: list[Device],
+        parent: QtWidgets.QWidget | None = None,
+        tools: dict[str, type] | None | DEFAULT_TOOLS = DEFAULT_TOOLS,
         pin: bool = False,
-        content_layout: Optional[QtWidgets.QLayout] = None,
+        content_layout: QtWidgets.QLayout | None = None,
         default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
         scroll_option: ScrollOptions = ScrollOptions.auto,
         show_displays: bool = True,
@@ -714,7 +713,7 @@ class TyphosSuite(TyphosBase):
             content_layout=content_layout,
             default_display_type=default_display_type,
             scroll_option=scroll_option,
-            )
+        )
         if tools is not None:
             logger.info("Loading Tools ...")
             if tools is DEFAULT_TOOLS:

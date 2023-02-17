@@ -38,7 +38,7 @@ class ParamWidget(QWidget):
     This creates the QLabel for the parameter and defines the interface
     required for subclasses of the ParamWidget.
     """
-    def __init__(self, parameter,  default=inspect._empty, parent=None):
+    def __init__(self, parameter, default=inspect._empty, parent=None):
         super().__init__(parent=parent)
         # Store parameter information
         self.parameter = parameter
@@ -225,7 +225,7 @@ class FunctionDisplay(QGroupBox):
         self.signature = inspect.signature(func)
         self.name = name or self.func.__name__
         # Initialize parent
-        super().__init__('{} Parameters'.format(clean_attr(self.name)),
+        super().__init__(f'{clean_attr(self.name)} Parameters',
                          parent=parent)
         # Ignore certain parameters, args and kwargs by default
         self.hide_params = ['self', 'args', 'kwargs']

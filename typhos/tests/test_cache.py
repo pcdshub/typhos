@@ -58,7 +58,7 @@ def type_cache(qtbot, describe_cache):
 
 @pytest.fixture(scope='function')
 def sig():
-    name = 'test{}'.format(random.randint(0, 10000))
+    name = f'test{random.randint(0, 10000)}'
     sig = ophyd.Signal(name=name)
     yield sig
     sig.destroy()

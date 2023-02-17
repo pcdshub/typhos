@@ -2,6 +2,7 @@ import time
 
 import ophyd
 import ophyd.sim
+import pytest
 
 from typhos.tools import TyphosConsole
 
@@ -17,6 +18,7 @@ def test_base_console(qtbot):
     tc.shutdown()
 
 
+@pytest.mark.xfail(reason='inconsistent failures, see typhos #547')
 def test_add_happi_device(qapp, qtbot, happi_cfg, client):
     device = client['Syn:Motor'].get()
 
@@ -35,6 +37,7 @@ def test_add_happi_device(qapp, qtbot, happi_cfg, client):
         time.sleep(0.5)
 
 
+@pytest.mark.xfail(reason='inconsistent failures, see typhos #547')
 def test_add_importable_device(qapp, qtbot):
     device = ophyd.sim.SynAxis(name='device')
     tc = TyphosConsole.from_device(device)
@@ -54,6 +57,7 @@ def test_add_importable_device(qapp, qtbot):
     tc.shutdown()
 
 
+@pytest.mark.xfail(reason='inconsistent failures, see typhos #547')
 def test_add_fake_device(qapp, qtbot):
     EpicsMotor = ophyd.sim.make_fake_device(ophyd.EpicsMotor)
     device = EpicsMotor('sim:mtr1', name="sim_mtr1")

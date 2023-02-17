@@ -144,7 +144,7 @@ class RichSignal(Signal):
                 'enum_strs': ('a', 'b', 'c'),
                 'precision': 2,
                 'units': 'urad',
-                }
+            }
         super().__init__(*args, metadata=metadata, **kwargs)
 
     def describe(self):
@@ -219,7 +219,7 @@ class MockDevice(Device):
         """Fake insert function to display"""
         pass
 
-    def remove(self, height: float,  fast_mode: bool = False):
+    def remove(self, height: float, fast_mode: bool = False):
         """Fake remove function to display"""
         pass
 

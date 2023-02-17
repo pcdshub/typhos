@@ -18,7 +18,6 @@ import re
 import threading
 import weakref
 from types import MethodType
-from typing import List
 
 import entrypoints
 import ophyd
@@ -248,10 +247,10 @@ def use_stylesheet(dark=False, widget=None):
         # Load the path to the file
         style_path = os.path.join(ui_dir, 'style.qss')
         if not os.path.exists(style_path):
-            raise EnvironmentError("Unable to find Typhos stylesheet in {}"
-                                   "".format(style_path))
+            raise OSError("Unable to find Typhos stylesheet in {}"
+                          "".format(style_path))
         # Load the stylesheet from the file
-        with open(style_path, 'r') as handle:
+        with open(style_path) as handle:
             style = handle.read()
     if widget is None:
         widget = QtWidgets.QApplication.instance()
@@ -475,7 +474,7 @@ class WeakPartialMethodSlot:
 class TyphosBase(TyphosObject, QWidget):
     """Base widget for all Typhos widgets that interface with devices"""
 
-    _weak_partials_: List[WeakPartialMethodSlot]
+    _weak_partials_: list[WeakPartialMethodSlot]
 
     def __init__(self, *args, **kwargs):
         self._weak_partials_ = []

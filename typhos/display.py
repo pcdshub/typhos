@@ -6,7 +6,7 @@ import logging
 import os
 import pathlib
 import webbrowser
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 import ophyd
 import pcdsutils
@@ -274,8 +274,8 @@ class TyphosDisplayConfigButton(TyphosToolButton):
 
         line_edit = QtWidgets.QLineEdit()
 
-        filters = list(set(panel.nameFilter for panel in panels
-                           if panel.nameFilter))
+        filters = list({panel.nameFilter for panel in panels
+                        if panel.nameFilter})
         if len(filters) == 1:
             line_edit.setText(filters[0])
         else:
@@ -715,7 +715,7 @@ class TyphosHelpFrame(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             logger.error(
                 "Failed to import QWebEngineView; "
                 "help view is unavailable."
-                )
+            )
             return
 
         if self.help_web_view:
@@ -993,9 +993,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         *,
         scrollable: Optional[bool] = None,
         composite_heuristics: bool = True,
-        embedded_templates: Optional[List[str]] = None,
-        detailed_templates: Optional[List[str]] = None,
-        engineering_templates: Optional[List[str]] = None,
+        embedded_templates: Optional[list[str]] = None,
+        detailed_templates: Optional[list[str]] = None,
+        engineering_templates: Optional[list[str]] = None,
         display_type: Union[DisplayTypes, str, int] = 'detailed_screen',
         scroll_option: Union[ScrollOptions, str, int] = 'auto',
         nested: bool = False,

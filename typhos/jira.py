@@ -6,7 +6,6 @@ import sys
 import urllib
 import urllib.parse
 import urllib.request
-from typing import Dict
 
 from pydm.exception import raise_to_operator
 from qtpy import QtWidgets
@@ -99,7 +98,7 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
             for value in self.get_dictionary().values()
         )
 
-    def get_dictionary(self, full=False) -> Dict[str, str]:
+    def get_dictionary(self, full=False) -> dict[str, str]:
         """Return all issue details as a dictionary."""
         auto_generated = dict(
             environment=self.get_environment(),

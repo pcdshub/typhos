@@ -1,7 +1,6 @@
 """
 Run the benchmark test cases using pytest-benchmark
 """
-from typing import List
 
 import pytest
 from epics import PV
@@ -14,7 +13,7 @@ from ..suite import TyphosSuite
 from .conftest import save_image
 
 
-def get_top_level_suites() -> List[TyphosSuite]:
+def get_top_level_suites() -> list[TyphosSuite]:
     app = QtWidgets.QApplication.instance()
     assert app is not None
     return list(

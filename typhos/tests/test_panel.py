@@ -91,7 +91,7 @@ def test_panel_creation(qtbot, panel, panel_widget):
 
     wait_panel(
         qtbot, panel,
-        signal_names=set(sig.name for sig in signals.values())
+        signal_names={sig.name for sig in signals.values()}
     )
 
     def widget_at(row, col):

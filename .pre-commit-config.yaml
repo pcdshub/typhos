@@ -1,14 +1,13 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 exclude: |
-    (?x)^(
-        versioneer.py|
-        docs/source/conf.py|
-        typhos/_version.py|
-    )$
+  (?x)^(
+    typhos/_version.py|
+  )$
+
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.4.0
     hooks:
     -   id: no-commit-to-branch
     -   id: trailing-whitespace
@@ -23,12 +22,12 @@ repos:
         exclude: '^(conda-recipe/meta.yaml)$'
     -   id: debug-statements
 
--   repo: https://github.com/pycqa/flake8
-    rev: 3.9.2
+-   repo: https://github.com/pycqa/flake8.git
+    rev: 6.0.0
     hooks:
     -   id: flake8
 
 -   repo: https://github.com/timothycrosley/isort
-    rev: 5.10.1
+    rev: 5.11.5
     hooks:
     -   id: isort

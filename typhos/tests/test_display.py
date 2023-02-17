@@ -38,10 +38,10 @@ def test_device_display(device, motor, qtbot):
                 return False
             return sig.item.kind in kinds
 
-        return set(
+        return {
             sig.name for sig in
             utils.get_all_signals_from_device(device, filter_by=filter_by)
-        )
+        }
 
     def check_hint_panel(device):
         device_signals = signals_from_device(device, ophyd.Kind.hinted)

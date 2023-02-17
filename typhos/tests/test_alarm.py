@@ -24,8 +24,8 @@ from .conftest import RichSignal, show_widget
         TyphosAlarmTriangle,
         TyphosAlarmEllipse,
         TyphosAlarmPolygon,
-        ),
-    )
+    ),
+)
 def alarm(qtbot, request):
     alarm_widget = request.param()
     alarm_widget.kindLevel = alarm_widget.KindLevel.HINTED
@@ -66,13 +66,13 @@ alarm_cases = [
     ({'severity': AlarmSeverity.MINOR}, AlarmLevel.MINOR),
     ({'severity': AlarmSeverity.MAJOR}, AlarmLevel.MAJOR),
     ({'severity': AlarmSeverity.INVALID}, AlarmLevel.INVALID),
-    ]
+]
 
 
 @pytest.mark.parametrize("metadata,response", alarm_cases)
 def test_one_alarm_add_device(
         alarm_add_device, device, qtbot, metadata, response
-        ):
+):
     alarm = alarm_add_device
 
     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
@@ -111,7 +111,7 @@ class FakeClient:
             name=name,
             device_class='typhos.tests.test_alarm.SimpleDevice',
             kwargs={'name': '{{name}}'},
-            )
+        )
 
 
 @pytest.mark.parametrize("metadata,response", alarm_cases)

@@ -11,7 +11,7 @@ from . import conftest
 def test_cli_version(capsys):
     typhos_cli(['--version'])
     readout = capsys.readouterr()
-    assert typhos.__version__ in readout.out
+    assert str(typhos.__version__) in readout.out
 
 
 def test_cli_happi_cfg(qtbot, happi_cfg):
