@@ -199,6 +199,7 @@
       ~TyphosLogDisplay.resizeEvent
       ~TyphosLogDisplay.restoreGeometry
       ~TyphosLogDisplay.saveGeometry
+      ~TyphosLogDisplay.screen
       ~TyphosLogDisplay.scroll
       ~TyphosLogDisplay.sender
       ~TyphosLogDisplay.senderSignalIndex

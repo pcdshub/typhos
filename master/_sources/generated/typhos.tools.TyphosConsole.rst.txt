@@ -200,6 +200,7 @@
       ~TyphosConsole.resizeEvent
       ~TyphosConsole.restoreGeometry
       ~TyphosConsole.saveGeometry
+      ~TyphosConsole.screen
       ~TyphosConsole.scroll
       ~TyphosConsole.sender
       ~TyphosConsole.senderSignalIndex

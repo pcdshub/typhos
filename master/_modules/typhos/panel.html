@@ -3,20 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.panel &mdash; Typhos 2.4.0+2.ge17855a documentation</title>
+  <title>typhos.panel &mdash; Typhos 2.4.1.dev54+g553e3c5 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/doctr-versions-menu.js"></script>
+        <script src="../../_static/docs-versions-menu.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -27,14 +26,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Typhos
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Typhos
           </a>
               <div class="version">
-                2.4.0+2.ge17855a
+                2.4.1.dev54+g553e3c5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -73,7 +76,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
       <li class="breadcrumb-item active">typhos.panel</li>
       <li class="wy-breadcrumbs-aside">
@@ -116,7 +119,7 @@
 
 
 <span class="k">class</span> <span class="nc">SignalOrder</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Options for sorting signals.</span>
 
 <span class="sd">    This can be used as a base class for subclasses of</span>
@@ -132,7 +135,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_component_sorter</span><span class="p">(</span><span class="n">signal_order</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kind_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a sorting function for :class:`ophyd.device.ComponentWalk` entries.</span>
 
 <span class="sd">    Parameters</span>
@@ -146,11 +149,11 @@
     <span class="n">kind_order</span> <span class="o">=</span> <span class="n">kind_order</span> <span class="ow">or</span> <span class="n">DEFAULT_KIND_ORDER</span>
 
     <span class="k">def</span> <span class="nf">kind_sorter</span><span class="p">(</span><span class="n">walk</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sort by kind.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort by kind.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">kind_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">walk</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">kind</span><span class="p">),</span> <span class="n">walk</span><span class="o">.</span><span class="n">dotted_name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">name_sorter</span><span class="p">(</span><span class="n">walk</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sort by name.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort by name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">walk</span><span class="o">.</span><span class="n">dotted_name</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="n">SignalOrder</span><span class="o">.</span><span class="n">byKind</span><span class="p">:</span> <span class="n">kind_sorter</span><span class="p">,</span>
@@ -159,7 +162,7 @@
 
 
 <span class="k">class</span> <span class="nc">SignalPanelRowLabel</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A row label for a signal panel.</span>
 
 <span class="sd">    This subclass does not contain any special functionality currently, but</span>
@@ -169,7 +172,7 @@
 
 
 <div class="viewcode-block" id="SignalPanel"><a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel">[docs]</a><span class="k">class</span> <span class="nc">SignalPanel</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Basic panel layout for :class:`ophyd.Signal` and other ophyd objects.</span>
 
 <span class="sd">    This panel does not support hierarchical display of signals; rather, it</span>
@@ -230,7 +233,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all instantiated signals, omitting components.</span>
 
 <span class="sd">        Returns</span>
@@ -246,7 +249,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">visible_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all signals visible according to filters, omitting components.</span>
 
 <span class="sd">        Returns</span>
@@ -264,12 +267,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">row_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the number of filled-in rows.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of filled-in rows.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_count</span>
 
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">SignalWidgetInfo</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_got_signal_widget_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Slot: Received information on how to make widgets for ``obj``.</span>
 
 <span class="sd">        Parameters</span>
@@ -320,7 +323,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">loading_complete</span><span class="o">.</span><span class="n">emit</span><span class="p">([</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">signal_pairs</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">_create_row_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">tooltip</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create a row label (i.e., the one used to display the name).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a row label (i.e., the one used to display the name).&quot;&quot;&quot;</span>
         <span class="n">label_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_text_from_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">)</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">SignalPanelRowLabel</span><span class="p">(</span><span class="n">label_text</span><span class="p">)</span>
         <span class="n">label</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">dotted_name</span><span class="p">)</span>
@@ -329,7 +332,7 @@
         <span class="k">return</span> <span class="n">label</span>
 
 <div class="viewcode-block" id="SignalPanel.add_signal"><a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.add_signal">[docs]</a>    <span class="k">def</span> <span class="nf">add_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a signal to the panel.</span>
 
 <span class="sd">        The type of widget control that is drawn is dependent on</span>
@@ -366,10 +369,10 @@
             <span class="n">timeout_message</span><span class="o">=</span><span class="s1">&#39;Connection timed out.&#39;</span>
         <span class="p">)</span>
 
-        <span class="n">loading_tooltip</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Connecting to:&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span>
+        <span class="n">loading_tooltip</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Connecting to:&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">({</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;setpoint_pvname&#39;</span><span class="p">,</span> <span class="s1">&#39;pvname&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="p">))</span>
+        <span class="p">})</span>
         <span class="n">loading</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">loading_tooltip</span><span class="p">))</span>
 
         <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">loading</span><span class="p">)</span>
@@ -386,7 +389,7 @@
         <span class="k">return</span> <span class="n">row</span></div>
 
     <span class="k">def</span> <span class="nf">_connect_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Instantiate widgets for the given signal using the global cache.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate widgets for the given signal using the global cache.&quot;&quot;&quot;</span>
         <span class="n">monitor</span> <span class="o">=</span> <span class="n">get_global_widget_type_cache</span><span class="p">()</span>
         <span class="n">item</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -394,7 +397,7 @@
         <span class="c1"># else: - this will happen during a callback</span>
 
     <span class="k">def</span> <span class="nf">_add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a component which may be instantiated later.</span>
 
 <span class="sd">        Parameters</span>
@@ -431,7 +434,7 @@
         <span class="k">return</span> <span class="n">row</span>
 
 <div class="viewcode-block" id="SignalPanel.label_text_from_attribute"><a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.label_text_from_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">label_text_from_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get label text for a given attribute.</span>
 
 <span class="sd">        For a basic signal panel, use the full dotted name.  This is because</span>
@@ -441,7 +444,7 @@
         <span class="k">return</span> <span class="n">dotted_name</span></div>
 
 <div class="viewcode-block" id="SignalPanel.add_row"><a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.add_row">[docs]</a>    <span class="k">def</span> <span class="nf">add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">widgets</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add ``widgets`` to the next row.</span>
 
 <span class="sd">        If fewer than ``NUM_COLS`` widgets are given, the last widget will be</span>
@@ -466,7 +469,7 @@
         <span class="k">return</span> <span class="n">row</span></div>
 
     <span class="k">def</span> <span class="nf">_update_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">widgets</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update ``row`` to contain ``widgets``.</span>
 
 <span class="sd">        If fewer widgets than ``NUM_COLS`` are given, the last widget will be</span>
@@ -495,7 +498,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">last_widget</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">last_column</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">colspan</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SignalPanel.add_pv"><a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.add_pv">[docs]</a>    <span class="k">def</span> <span class="nf">add_pv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_pv</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write_pv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a row, given PV names.</span>
 
 <span class="sd">        Parameters</span>
@@ -525,7 +528,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_apply_name_filter</span><span class="p">(</span><span class="n">filter_by</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply the name filter.</span>
 
 <span class="sd">        Parameters</span>
@@ -542,7 +545,7 @@
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">filter_by</span> <span class="ow">in</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_should_show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kinds</span><span class="p">,</span> <span class="n">name_filter</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Based on the filter settings, indicate if ``signal`` should be shown.</span>
 
 <span class="sd">        Parameters</span>
@@ -568,7 +571,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_name_filter</span><span class="p">(</span><span class="n">name_filter</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">visible</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Change the visibility of ``signal_name`` to ``visible``.</span>
 
 <span class="sd">        Parameters</span>
@@ -616,7 +619,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_connect_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SignalPanel.filter_signals"><a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.filter_signals">[docs]</a>    <span class="k">def</span> <span class="nf">filter_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kinds</span><span class="p">,</span> <span class="n">name_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Filter signals based on the given kinds.</span>
 
 <span class="sd">        Parameters</span>
@@ -638,11 +641,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_filter_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the current filter settings from the owner widget.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current filter settings from the owner widget.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">filter_settings</span>
 
 <div class="viewcode-block" id="SignalPanel.add_device"><a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
@@ -660,7 +663,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setSizeConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SetMinimumSize</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_maybe_add_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        With the filter settings, add either the signal or a component stub.</span>
 
 <span class="sd">        If the component does not match the current filter settings, a</span>
@@ -710,7 +713,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_component</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SignalPanel.clear"><a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Clear the SignalPanel.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the SignalPanel.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing layout </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -718,7 +721,7 @@
 
 
 <div class="viewcode-block" id="TyphosSignalPanel"><a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel">[docs]</a><span class="k">class</span> <span class="nc">TyphosSignalPanel</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">TyphosDesignerMixin</span><span class="p">,</span> <span class="n">SignalOrder</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Panel of Signals for a given device, using :class:`SignalPanel`.</span>
 
 <span class="sd">    Parameters</span>
@@ -759,11 +762,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">contextMenuEvent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_context_menu</span>
 
     <span class="k">def</span> <span class="nf">_get_kind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Property getter for show[kind].&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property getter for show[kind].&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_set_kind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Property setter for show[kind] = value.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property setter for show[kind] = value.&quot;&quot;&quot;</span>
         <span class="c1"># If we have a new value store it</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]:</span>
             <span class="c1"># Store it internally</span>
@@ -773,20 +776,20 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filter_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the filter settings dictionary.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the filter settings dictionary.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">name_filter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nameFilter</span><span class="p">,</span>
             <span class="n">kinds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_kinds</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Apply filters and emit the update signal.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply filters and emit the update signal.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_panel_layout</span><span class="o">.</span><span class="n">filter_signals</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_settings</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">show_kinds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get a list of the :class:`ophyd.Kind` that should be shown.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of the :class:`ophyd.Kind` that should be shown.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">kind</span> <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">Kind</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="o">.</span><span class="n">name</span><span class="p">]]</span>
 
     <span class="c1"># Kind Configuration pyqtProperty</span>
@@ -809,7 +812,7 @@
 
     <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">nameFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get or set the current name filter.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the current name filter.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_filter</span>
 
     <span class="nd">@nameFilter</span><span class="o">.</span><span class="n">setter</span>
@@ -820,7 +823,7 @@
 
     <span class="nd">@Property</span><span class="p">(</span><span class="n">SignalOrder</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">sortBy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get or set the order that the signals will be placed in layout.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the order that the signals will be placed in layout.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span>
 
     <span class="nd">@sortBy</span><span class="o">.</span><span class="n">setter</span>
@@ -830,7 +833,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TyphosSignalPanel.add_device"><a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="c1"># Configure the layout for the new device</span>
@@ -838,11 +841,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TyphosSignalPanel.set_device_display"><a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.set_device_display">[docs]</a>    <span class="k">def</span> <span class="nf">set_device_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Typhos hook for when the TyphosDeviceDisplay is associated.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for when the TyphosDeviceDisplay is associated.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">display</span></div>
 
 <div class="viewcode-block" id="TyphosSignalPanel.generate_context_menu"><a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.generate_context_menu">[docs]</a>    <span class="k">def</span> <span class="nf">generate_context_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generate a context menu for this TyphosSignalPanel.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a context menu for this TyphosSignalPanel.&quot;&quot;&quot;</span>
         <span class="n">menu</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">menu</span><span class="o">.</span><span class="n">addSection</span><span class="p">(</span><span class="s1">&#39;Kinds&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">property_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind_to_property</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -856,7 +859,7 @@
         <span class="k">return</span> <span class="n">menu</span></div>
 
 <div class="viewcode-block" id="TyphosSignalPanel.open_context_menu"><a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.open_context_menu">[docs]</a>    <span class="k">def</span> <span class="nf">open_context_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Open a context menu when the Default Context Menu is requested.</span>
 
 <span class="sd">        Parameters</span>
@@ -868,7 +871,7 @@
 
 
 <div class="viewcode-block" id="CompositeSignalPanel"><a class="viewcode-back" href="../../widgets.html#typhos.panel.CompositeSignalPanel">[docs]</a><span class="k">class</span> <span class="nc">CompositeSignalPanel</span><span class="p">(</span><span class="n">SignalPanel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Composite panel layout for :class:`ophyd.Signal` and other ophyd objects.</span>
 
 <span class="sd">    Contrasted to :class:`SignalPanel`, this class retains the hierarchy built</span>
@@ -903,12 +906,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_containers</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="CompositeSignalPanel.label_text_from_attribute"><a class="viewcode-back" href="../../widgets.html#typhos.panel.CompositeSignalPanel.label_text_from_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">label_text_from_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get label text for a given attribute.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get label text for a given attribute.&quot;&quot;&quot;</span>
         <span class="c1"># For a hierarchical signal panel, use only the attribute name.</span>
         <span class="k">return</span> <span class="n">attr</span></div>
 
 <div class="viewcode-block" id="CompositeSignalPanel.add_sub_device"><a class="viewcode-back" href="../../widgets.html#typhos.panel.CompositeSignalPanel.add_sub_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_sub_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a sub-device to the next row.</span>
 
 <span class="sd">        Parameters</span>
@@ -929,7 +932,7 @@
         <span class="n">container</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CompositeSignalPanel.add_device"><a class="viewcode-back" href="../../widgets.html#typhos.panel.CompositeSignalPanel.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
         <span class="c1"># TODO: note that this does not call super</span>
         <span class="c1"># super().add_device(device)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
@@ -947,7 +950,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">visible_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return all visible signals and components.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all visible signals and components.&quot;&quot;&quot;</span>
         <span class="n">sigs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible_signals</span>
         <span class="n">containers</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">name</span><span class="p">:</span> <span class="n">cont</span>
@@ -958,7 +961,7 @@
 
 
 <div class="viewcode-block" id="TyphosCompositeSignalPanel"><a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosCompositeSignalPanel">[docs]</a><span class="k">class</span> <span class="nc">TyphosCompositeSignalPanel</span><span class="p">(</span><span class="n">TyphosSignalPanel</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Hierarchical panel for a device, using :class:`CompositeSignalPanel`.</span>
 
 <span class="sd">    Parameters</span>
@@ -980,7 +983,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2023, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

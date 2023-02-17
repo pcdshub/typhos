@@ -3,20 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.tools.console &mdash; Typhos 2.4.0+2.ge17855a documentation</title>
+  <title>typhos.tools.console &mdash; Typhos 2.4.1.dev54+g553e3c5 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/doctr-versions-menu.js"></script>
+        <script src="../../../_static/docs-versions-menu.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -27,14 +26,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> Typhos
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Typhos
           </a>
               <div class="version">
-                2.4.0+2.ge17855a
+                2.4.1.dev54+g553e3c5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -73,7 +76,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
       <li class="breadcrumb-item active">typhos.tools.console</li>
       <li class="wy-breadcrumbs-aside">
@@ -98,7 +101,7 @@
 
 
 <span class="k">def</span> <span class="nf">_make_jupyter_widget_with_kernel</span><span class="p">(</span><span class="n">kernel_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Start a kernel, connect to it, and create a RichJupyterWidget to use it.</span>
 
 <span class="sd">    Parameters</span>
@@ -119,7 +122,7 @@
 
 
 <div class="viewcode-block" id="TyphosConsole"><a class="viewcode-back" href="../../../generated/typhos.tools.TyphosConsole.html#typhos.tools.TyphosConsole">[docs]</a><span class="k">class</span> <span class="nc">TyphosConsole</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    IPython Widget for Typhos Display.</span>
 
 <span class="sd">    This widget handles starting a ``JupyterKernel`` and connecting an IPython</span>
@@ -177,17 +180,17 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">kernel_is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Is the Jupyter kernel ready?&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Is the Jupyter kernel ready?&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_is_alive</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_is_read</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">kernel_is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Is the Jupyter kernel alive and not shutting down?&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Is the Jupyter kernel alive and not shutting down?&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jupyter_widget</span><span class="o">.</span><span class="n">kernel_manager</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span> <span class="ow">and</span>
                 <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shutting_down</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_pending_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add devices that were requested prior to the kernel being ready.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add devices that were requested prior to the kernel being ready.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ready_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_is_ready</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -201,7 +204,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_devices</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">_wait_for_readiness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Wait for the kernel to show the prompt.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for the kernel to show the prompt.&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">looks_ready</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;In &#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
@@ -216,7 +219,7 @@
         <span class="k">return</span> <span class="n">default</span>
 
     <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Shutdown the Jupyter Kernel.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shutdown the Jupyter Kernel.&quot;&quot;&quot;</span>
         <span class="n">client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jupyter_widget</span><span class="o">.</span><span class="n">kernel_client</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shutting_down</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Kernel is already shutting down&quot;</span><span class="p">)</span>
@@ -247,13 +250,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_plain_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Text in the console.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">jupyter_widget</span><span class="o">.</span><span class="n">_control</span><span class="o">.</span><span class="n">toPlainText</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">echo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check_readiness</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Execute some code in the console.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">echo</span><span class="p">:</span>
@@ -295,7 +298,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2023, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

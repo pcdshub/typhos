@@ -203,6 +203,7 @@
       ~TyphosTimePlot.resizeEvent
       ~TyphosTimePlot.restoreGeometry
       ~TyphosTimePlot.saveGeometry
+      ~TyphosTimePlot.screen
       ~TyphosTimePlot.scroll
       ~TyphosTimePlot.sender
       ~TyphosTimePlot.senderSignalIndex

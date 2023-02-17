@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utility Functions &mdash; Typhos 2.4.0+2.ge17855a documentation</title>
+  <title>Utility Functions &mdash; Typhos 2.4.1.dev54+g553e3c5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
-        <script src="_static/doctr-versions-menu.js"></script>
+        <script src="_static/docs-versions-menu.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -28,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Typhos
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Typhos
           </a>
               <div class="version">
-                2.4.0+2.ge17855a
+                2.4.1.dev54+g553e3c5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -87,6 +91,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.WeakPartialMethodSlot"><code class="docutils literal notranslate"><span class="pre">WeakPartialMethodSlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#typhos.utils.apply_standard_stylesheets"><code class="docutils literal notranslate"><span class="pre">apply_standard_stylesheets()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.channel_from_signal"><code class="docutils literal notranslate"><span class="pre">channel_from_signal()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.channel_name"><code class="docutils literal notranslate"><span class="pre">channel_name()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.clean_attr"><code class="docutils literal notranslate"><span class="pre">clean_attr()</span></code></a></li>
@@ -94,6 +99,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.clear_layout"><code class="docutils literal notranslate"><span class="pre">clear_layout()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.code_from_device"><code class="docutils literal notranslate"><span class="pre">code_from_device()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.code_from_device_repr"><code class="docutils literal notranslate"><span class="pre">code_from_device_repr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#typhos.utils.compose_stylesheets"><code class="docutils literal notranslate"><span class="pre">compose_stylesheets()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.connection_status_monitor"><code class="docutils literal notranslate"><span class="pre">connection_status_monitor()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.dump_grid_layout"><code class="docutils literal notranslate"><span class="pre">dump_grid_layout()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#typhos.utils.find_file_in_paths"><code class="docutils literal notranslate"><span class="pre">find_file_in_paths()</span></code></a></li>
@@ -175,7 +181,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Utility Functions</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
@@ -186,7 +192,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="module-typhos.utils">
+  <section id="module-typhos.utils">
 <span id="utility-functions"></span><h1>Utility Functions<a class="headerlink" href="#module-typhos.utils" title="Permalink to this heading"></a></h1>
 <p>Utility functions for typhos</p>
 <dl class="py class">
@@ -194,7 +200,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">DeviceConnectionMonitorThread</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#DeviceConnectionMonitorThread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.DeviceConnectionMonitorThread" title="Permalink to this definition"></a></dt>
 <dd><p>Monitor connection status in a background thread</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>device</strong> (<em>ophyd.Device</em>) – The device to grab signals from</p></li>
 <li><p><strong>include_lazy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Include lazy signals as well</p></li>
@@ -209,7 +215,7 @@
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>QtCore.Signal</p>
 </dd>
 </dl>
@@ -225,7 +231,7 @@
 <span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#DeviceConnectionMonitorThread.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.DeviceConnectionMonitorThread.stop" title="Permalink to this definition"></a></dt>
 <dd><p>Stop the background thread and clean up.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>wait_ms</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – Time to wait for the background thread to exit.  Set to 0 to
 disable.</p>
 </dd>
@@ -269,7 +275,7 @@ disable.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>QtCore.Signal</p>
 </dd>
 </dl>
@@ -285,7 +291,7 @@ disable.</p>
 <span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_ms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#ObjectConnectionMonitorThread.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.ObjectConnectionMonitorThread.stop" title="Permalink to this definition"></a></dt>
 <dd><p>Stop the background thread and clean up.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>wait_ms</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em>, </em><em>optional</em>) – Time to wait for the background thread to exit.  Set to 0 to
 disable.</p>
 </dd>
@@ -299,7 +305,7 @@ disable.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">ThreadPoolWorker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#ThreadPoolWorker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.ThreadPoolWorker" title="Permalink to this definition"></a></dt>
 <dd><p>Worker thread helper</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>callable</em>) – The function to call during <a class="reference internal" href="#typhos.utils.ThreadPoolWorker.run" title="typhos.utils.ThreadPoolWorker.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a></p></li>
 <li><p><strong>*args</strong> – Arguments for the function call</p></li>
@@ -330,7 +336,7 @@ disable.</p>
 <dd><p>The timeout value in milliseconds for when to stop the animation
 and replace it with a default timeout message.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)">int</a></p>
 </dd>
 </dl>
@@ -338,7 +344,7 @@ and replace it with a default timeout message.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="typhos.utils.TyphosLoading.contextMenuEvent">
-<span class="sig-name descname"><span class="pre">contextMenuEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QContextMenuEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosLoading.contextMenuEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.TyphosLoading.contextMenuEvent" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">contextMenuEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ev</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QContextMenuEvent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#TyphosLoading.contextMenuEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.TyphosLoading.contextMenuEvent" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -352,13 +358,39 @@ gets garbage collected. This avoids cycles in the garbage collector
 that would prevent the instance from being garbage collected prior to the
 program exiting.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal_owner</strong> (<em>QtCore.QObject</em>) – The owner of the signal.</p></li>
 <li><p><strong>signal</strong> (<em>QtCore.Signal</em>) – The signal instance itself.</p></li>
 <li><p><strong>method</strong> (<em>instance method</em>) – The method slot to call when the signal fires.</p></li>
 <li><p><strong>*args</strong> – Arguments to pass to the method.</p></li>
 <li><p><strong>**kwargs</strong> – Keyword arguments to pass to the method.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="typhos.utils.apply_standard_stylesheets">
+<span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">apply_standard_stylesheets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_pydm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QtWidgets.QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/typhos/utils.html#apply_standard_stylesheets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.apply_standard_stylesheets" title="Permalink to this definition"></a></dt>
+<dd><p>Apply all the stylesheets at once, along with the Fusion style.</p>
+<p>Applies stylesheets with the following priority order:
+- Any existing stylesheet data on the widget
+- User stylesheets in the paths argument
+- User stylesheets in PYDM_STYLESHEET (which behaves as a path)
+- Typhos’s stylesheet (either the dark or the light variant)
+- PyDM’s built-in stylesheet, if PYDM_STYLESHEET_INCLUDE_DEFAULT is set.</p>
+<p>The Fusion style can only be applied to a QApplication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dark</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether or not to use the QDarkStyleSheet theme. By default the light
+theme is chosen.</p></li>
+<li><p><strong>paths</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><em>optional</em>) – User-provided paths to stylesheets to apply.</p></li>
+<li><p><strong>include_pydm</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether or not to use the stylesheets defined in the pydm environment
+variables. Defaults to True.</p></li>
+<li><p><strong>widget</strong> (<em>QWidget</em><em>, </em><em>optional</em>) – The widget to apply the stylesheet to.
+If omitted, apply to the whole QApplication.</p></li>
 </ul>
 </dd>
 </dl>
@@ -387,7 +419,7 @@ program exiting.</p>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">clean_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#clean_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.clean_name" title="Permalink to this definition"></a></dt>
 <dd><p>Create a human readable name for a device</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
 <li><p><strong>strip_parent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em> or </em><em>Device</em>) – Remove the parent name of the device from name. If strip_parent is
@@ -416,8 +448,43 @@ specification for removal at any point of the device schema</p></li>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">code_from_device_repr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#code_from_device_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.code_from_device_repr" title="Permalink to this definition"></a></dt>
 <dd><p>Return code to create a device from its <code class="docutils literal notranslate"><span class="pre">repr</span></code> information.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>device</strong> (<em>ophyd.Device</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="typhos.utils.compose_stylesheets">
+<span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">compose_stylesheets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stylesheets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><span class="pre">pathlib.Path</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></span><a class="reference internal" href="_modules/typhos/utils.html#compose_stylesheets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.compose_stylesheets" title="Permalink to this definition"></a></dt>
+<dd><p>Combine multiple qss stylesheets into one qss stylesheet.</p>
+<p>If two stylesheets make conflicting specifications, the one passed into
+this function first will take priority.</p>
+<p>This is accomplished by placing the text from the highest-priority
+stylesheets at the bottom of the combined stylesheet. Stylesheets are
+evaluated in order from top to bottom, and newer elements on the bottom
+will override elements at the top.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stylesheets</strong> (<em>iterable</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><em>pathlib.Path</em></a>) – An itetable, such as a list, of the stylesheets to combine.
+Each element can either be a fully-loaded stylesheet or a full path to
+a stylesheet. Stylesheet paths must end in the .qss suffix.
+In the unlikely event that a string is both a valid path
+and a valid stylesheet, it will be interpretted as a path,
+even if no file exists at that path.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>composed_style</strong> – A string suitable for passing into QWidget.setStylesheet that
+incorporates all of the input stylesheets.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.11)"><strong>OSError</strong></a> – If any error is encountered while reading a file</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.11)"><strong>TypeError</strong></a> – If the input is not a valid type</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -429,7 +496,7 @@ specification for removal at any point of the device schema</p></li>
 <p>Filters out any other metadata updates, only calling once
 connected/disconnected</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>*signals</strong> (<em>ophyd.OphydObj</em>) – Signals to monitor</p></li>
 <li><p><strong>callback</strong> (<em>callable</em>) – Callback to run, with same signature as that of
@@ -445,17 +512,17 @@ guaranteed kwargs.</p></li>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">dump_grid_layout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#dump_grid_layout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.dump_grid_layout" title="Permalink to this definition"></a></dt>
 <dd><p>Dump the layout of a <code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QGridLayout</span></code> to <code class="docutils literal notranslate"><span class="pre">file</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>layout</strong> (<em>QtWidgets.QGridLayout</em>) – The layout</p></li>
 <li><p><strong>rows</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Number of rows to iterate over</p></li>
 <li><p><strong>cols</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Number of columns to iterate over</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>table</strong> – The text for the summary table</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a></p>
 </dd>
 </dl>
@@ -466,13 +533,13 @@ guaranteed kwargs.</p></li>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">find_file_in_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#find_file_in_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.find_file_in_paths" title="Permalink to this definition"></a></dt>
 <dd><p>Search for filename <code class="docutils literal notranslate"><span class="pre">filename</span></code> in the list of paths <code class="docutils literal notranslate"><span class="pre">paths</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><em>pathlib.Path</em></a>) – The filename</p></li>
 <li><p><strong>paths</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><em>list</em></a><em> or </em><em>iterable</em><em>, </em><em>optional</em>) – List of paths to search. Defaults to DISPLAY_PATHS.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Yields</dt>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>All filenames that match in the given paths</em></p>
 </dd>
 </dl>
@@ -483,7 +550,7 @@ guaranteed kwargs.</p></li>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">find_parent_with_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cls=&lt;class</span> <span class="pre">'PyQt5.QtWidgets.QWidget'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#find_parent_with_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.find_parent_with_class" title="Permalink to this definition"></a></dt>
 <dd><p>Finds the first parent of a widget that is an instance of <code class="docutils literal notranslate"><span class="pre">klass</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>widget</strong> (<em>QWidget</em>) – The widget from which to start the search</p></li>
 <li><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><em>type</em></a><em>, </em><em>optional</em>) – The class which the parent must be an instance of</p></li>
@@ -498,7 +565,7 @@ guaranteed kwargs.</p></li>
 <dd><p>Given a class <cite>cls</cite> and a view type (such as ‘detailed’), search <cite>paths</cite>
 for potential templates to show.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cls</strong> (<em>class</em>) – Search for templates with this class name</p></li>
 <li><p><strong>view_type</strong> (<em>{'detailed'</em><em>, </em><em>'engineering'</em><em>, </em><em>'embedded'}</em>) – The view type</p></li>
@@ -507,7 +574,7 @@ for potential templates to show.</p>
 <li><p><strong>include_mro</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Include superclasses - those in the MRO - of <code class="docutils literal notranslate"><span class="pre">cls</span></code> as well</p></li>
 </ul>
 </dd>
-<dt class="field-even">Yields</dt>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>path</strong> (<em>pathlib.Path</em>) – A matching path, ordered from most-to-least specific.</p>
 </dd>
 </dl>
@@ -524,7 +591,7 @@ for potential templates to show.</p>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">get_all_signals_from_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_lazy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#get_all_signals_from_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.get_all_signals_from_device" title="Permalink to this definition"></a></dt>
 <dd><p>Get all signals in a given device</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>device</strong> (<em>ophyd.Device</em>) – ophyd Device to monitor</p></li>
 <li><p><strong>include_lazy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Include lazy signals as well</p></li>
@@ -539,13 +606,13 @@ for potential templates to show.</p>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">get_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#get_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.get_component" title="Permalink to this definition"></a></dt>
 <dd><p>Get the component that made the given object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>obj</strong> (<em>ophyd.OphydItem</em>) – The ophyd item for which to get the component.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>component</strong> – The component, if available.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ophyd.Component</p>
 </dd>
 </dl>
@@ -561,7 +628,7 @@ for potential templates to show.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cls</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><em>type</em></a>) – The fake class</p>
 </dd>
 </dl>
@@ -572,14 +639,14 @@ for potential templates to show.</p>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">get_variety_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#get_variety_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.get_variety_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Get “variety” metadata from a component or signal.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cpt</strong> (<em>ophyd.Component</em><em> or </em><em>ophyd.OphydItem</em>) – The component / ophyd item to get the metadata for.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>metadata</strong> – The metadata, if set. Otherwise an empty dictionary.  This metadata is
 guaranteed to be valid according to the known schemas.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
 </dd>
 </dl>
@@ -604,7 +671,7 @@ introspection in the ophyd library. Until that day we need to check classes</p>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">is_standard_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#is_standard_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.is_standard_template" title="Permalink to this definition"></a></dt>
 <dd><p>Is the template a core one provided with typhos?</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><em>pathlib.Path</em></a>) – </p>
 </dd>
 </dl>
@@ -615,7 +682,7 @@ introspection in the ophyd library. Until that day we need to check classes</p>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">link_signal_to_widget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#link_signal_to_widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.link_signal_to_widget" title="Permalink to this definition"></a></dt>
 <dd><p>Registers the signal with PyDM, and sets the widget channel.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal</strong> (<em>ophyd.OphydObj</em>) – The signal to use.</p></li>
 <li><p><strong>widget</strong> (<em>QtWidgets.QWidget</em>) – The widget with which to connect the signal.</p></li>
@@ -631,7 +698,7 @@ introspection in the ophyd library. Until that day we need to check classes</p>
 <p>Retrieves the signal from the device, registers it with PyDM, and sets the
 widget channel.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>property_attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – This is one level of indirection, allowing for the component attribute
 to be configurable by way of designable properties.
@@ -655,7 +722,7 @@ available</p></li>
 <dd><p>”
 Load a file saved via Typhos</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – Path to file describing the <code class="docutils literal notranslate"><span class="pre">TyphosSuite</span></code>. This needs to be of the
 format created by the <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_suite()</span></code> function.</p></li>
@@ -663,10 +730,10 @@ format created by the <code class="xref py py-meth docutils literal notranslate"
 entered the <code class="docutils literal notranslate"><span class="pre">$HAPPI_CFG</span></code> environment variable will be used.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>suite</strong></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite">TyphosSuite</a></p>
 </dd>
 </dl>
@@ -737,7 +804,7 @@ good behavior on as many systems as possible.</p>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">save_suite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_or_buffer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#save_suite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.save_suite" title="Permalink to this definition"></a></dt>
 <dd><p>Create a file capable of relaunching the TyphosSuite</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>suite</strong> (<a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite"><em>TyphosSuite</em></a>) – </p></li>
 <li><p><strong>file_or_buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>file-like</em>) – Either a path to the file or a handle that supports <code class="docutils literal notranslate"><span class="pre">write</span></code></p></li>
@@ -752,7 +819,7 @@ good behavior on as many systems as possible.</p>
 <dd><p>[Context manager] Subscribe to a specific event from all objects</p>
 <p>Unsubscribes all signals before exiting</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>*objects</strong> (<em>ophyd.OphydObj</em>) – Ophyd objects (signals) to monitor</p></li>
 <li><p><strong>callback</strong> (<em>callable</em>) – Callback to run, with same signature as that of
@@ -770,7 +837,7 @@ good behavior on as many systems as possible.</p>
 <dd><p>[Context manager] Subscribe to <code class="docutils literal notranslate"><span class="pre">event_type</span></code> from signals in <code class="docutils literal notranslate"><span class="pre">device</span></code></p>
 <p>Unsubscribes all signals before exiting</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>device</strong> (<em>ophyd.Device</em>) – ophyd Device to monitor</p></li>
 <li><p><strong>callback</strong> (<em>callable</em>) – Callback to run, with same signature as that of
@@ -786,10 +853,14 @@ good behavior on as many systems as possible.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="typhos.utils.use_stylesheet">
-<span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">use_stylesheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dark</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#use_stylesheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.use_stylesheet" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">use_stylesheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QtWidgets.QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/typhos/utils.html#use_stylesheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.use_stylesheet" title="Permalink to this definition"></a></dt>
 <dd><p>Use the Typhos stylesheet</p>
+<p>This is no longer used directly in typhos in favor of
+apply_standard_stylesheets.</p>
+<p>This can still be used if you want the legacy behavior of ignoring PyDM
+environment variables. The function is unchanged.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dark</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether or not to use the QDarkStyleSheet theme. By default the light
 theme is chosen.</p>
 </dd>
@@ -801,19 +872,19 @@ theme is chosen.</p>
 <span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">widget_to_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">19</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#widget_to_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.widget_to_image" title="Permalink to this definition"></a></dt>
 <dd><p>Paint the given widget in a new QtGui.QImage.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The display, as an image.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>QtGui.QImage</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="cache-utilities">
+</section>
+<section id="cache-utilities">
 <h1>Cache Utilities<a class="headerlink" href="#cache-utilities" title="Permalink to this heading"></a></h1>
-<div class="section" id="path-caching">
+<section id="path-caching">
 <h2>Path caching<a class="headerlink" href="#path-caching" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="typhos.cache.get_global_display_path_cache">
@@ -837,7 +908,7 @@ theme is chosen.</p>
 <span class="sig-name descname"><span class="pre">add_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/cache.html#_GlobalDisplayPathCache.add_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.cache._GlobalDisplayPathCache.add_path" title="Permalink to this definition"></a></dt>
 <dd><p>Add a path to be searched during <code class="docutils literal notranslate"><span class="pre">glob</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><em>pathlib.Path</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – The path to add.</p>
 </dd>
 </dl>
@@ -851,8 +922,8 @@ theme is chosen.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="ophyd-object-description-caching">
+</section>
+<section id="ophyd-object-description-caching">
 <h2>Ophyd Object Description Caching<a class="headerlink" href="#ophyd-object-description-caching" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="typhos.cache.get_global_describe_cache">
@@ -873,7 +944,7 @@ returned immediately.  Otherwise, wait for the <code class="docutils literal not
 <span class="sig-name descname"><span class="pre">connect_thread</span></span><a class="headerlink" href="#typhos.cache._GlobalDescribeCache.connect_thread" title="Permalink to this definition"></a></dt>
 <dd><p>The thread which monitors connection status.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectConnectionMonitorThread</span></code></p>
 </dd>
 </dl>
@@ -884,7 +955,7 @@ returned immediately.  Otherwise, wait for the <code class="docutils literal not
 <span class="sig-name descname"><span class="pre">cache</span></span><a class="headerlink" href="#typhos.cache._GlobalDescribeCache.cache" title="Permalink to this definition"></a></dt>
 <dd><p>The cache holding descriptions, keyed on <code class="docutils literal notranslate"><span class="pre">obj</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
 </dd>
 </dl>
@@ -903,13 +974,13 @@ returned immediately.  Otherwise, wait for the <code class="docutils literal not
 returned immediately.  Otherwise, upon connection and successful
 <code class="docutils literal notranslate"><span class="pre">describe()</span></code> call, the <code class="docutils literal notranslate"><span class="pre">new_description</span></code> Signal will be emitted.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>obj</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.OphydObj</span></code>) – The object to get the description of.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>desc</strong> – If available in the cache, the description will be returned.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a> or None</p>
 </dd>
 </dl>
@@ -917,8 +988,8 @@ returned immediately.  Otherwise, upon connection and successful
 
 </dd></dl>
 
-</div>
-<div class="section" id="ophyd-object-to-widget-type-cache">
+</section>
+<section id="ophyd-object-to-widget-type-cache">
 <h2>Ophyd Object to Widget Type Cache<a class="headerlink" href="#ophyd-object-to-widget-type-cache" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="typhos.cache.get_global_widget_type_cache">
@@ -941,7 +1012,7 @@ Signal.</p>
 <span class="sig-name descname"><span class="pre">describe_cache</span></span><a class="headerlink" href="#typhos.cache._GlobalWidgetTypeCache.describe_cache" title="Permalink to this definition"></a></dt>
 <dd><p>The describe cache, used for determining widget types.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#typhos.cache._GlobalDescribeCache" title="typhos.cache._GlobalDescribeCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">_GlobalDescribeCache</span></code></a></p>
 </dd>
 </dl>
@@ -953,7 +1024,7 @@ Signal.</p>
 <dd><p>The cache holding widget type information.
 Keyed on <code class="docutils literal notranslate"><span class="pre">obj</span></code>, the values are <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalWidgetInfo</span></code> tuples.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a></p>
 </dd>
 </dl>
@@ -972,13 +1043,13 @@ Keyed on <code class="docutils literal notranslate"><span class="pre">obj</span>
 returned immediately.  Otherwise, upon connection and successful
 <code class="docutils literal notranslate"><span class="pre">describe()</span></code> call, the <code class="docutils literal notranslate"><span class="pre">widgets_determined</span></code> Signal will be emitted.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>obj</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.OphydObj</span></code>) – The object to get the widget types.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>desc</strong> – If available in the cache, the information will be returned.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalWidgetInfo</span></code> or None</p>
 </dd>
 </dl>
@@ -986,8 +1057,8 @@ returned immediately.  Otherwise, upon connection and successful
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -999,7 +1070,7 @@ returned immediately.  Otherwise, upon connection and successful
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2023, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

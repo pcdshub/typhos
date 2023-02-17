@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Custom Templates &mdash; Typhos 2.4.0+2.ge17855a documentation</title>
+  <title>Custom Templates &mdash; Typhos 2.4.1.dev54+g553e3c5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
-        <script src="_static/doctr-versions-menu.js"></script>
+        <script src="_static/docs-versions-menu.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,14 +29,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> Typhos
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Typhos
           </a>
               <div class="version">
-                2.4.0+2.ge17855a
+                2.4.1.dev54+g553e3c5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -83,7 +87,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Custom Templates</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/templates.rst.txt" rel="nofollow"> View page source</a>
@@ -94,7 +98,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="custom-templates">
+  <section id="custom-templates">
 <h1>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this heading"></a></h1>
 <p>Typhos ships with a handful of built-in templates. You can see these when you
 browse the <code class="docutils literal notranslate"><span class="pre">typhos/ui/core</span></code> and <code class="docutils literal notranslate"><span class="pre">typhos/ui/devices</span></code> directories.</p>
@@ -107,13 +111,13 @@ These have been moved to pcdsdevices.ui.</p>
 of the module when launching screens. These can be done generically, to
 replace the default templates, or per-class, to replace the templates in
 specific cases.</p>
-<div class="section" id="template-creation">
+<section id="template-creation">
 <h2>Template Creation<a class="headerlink" href="#template-creation" title="Permalink to this heading"></a></h2>
 <p>Templates are <code class="docutils literal notranslate"><span class="pre">.ui</span></code> files created in qt designer. These are largely just
 normal pydm displays, with extra macro substitutions. See the
 <a class="reference external" href="https://slaclab.github.io/pydm-tutorial/action/intro_designer.html#designer" title="(in PyDM Tutorial v0.0.1)"><span class="xref std std-ref">pydm tutorial</span></a>
 for more guidance on using the designer.</p>
-<div class="section" id="template-substitutions">
+<section id="template-substitutions">
 <h3>Template Substitutions<a class="headerlink" href="#template-substitutions" title="Permalink to this heading"></a></h3>
 <p>All the information found in <code class="docutils literal notranslate"><span class="pre">happi</span></code> will be loaded as a pydm macro into the
 template. It does this by checking for attributes on the <code class="docutils literal notranslate"><span class="pre">device.md</span></code>
@@ -123,8 +127,8 @@ as the <code class="docutils literal notranslate"><span class="pre">name</span><
 <p>The upshot of this is that you can include <code class="docutils literal notranslate"><span class="pre">${name}</span></code>, <code class="docutils literal notranslate"><span class="pre">${prefix}</span></code>, and
 other keys from the happi database in your template and they will be
 filled in from the device database on load.</p>
-</div>
-<div class="section" id="template-filenames">
+</section>
+<section id="template-filenames">
 <h3>Template Filenames<a class="headerlink" href="#template-filenames" title="Permalink to this heading"></a></h3>
 <p>To replace a default template, create a template with exactly the same name.</p>
 <p>To create a template for a class, name it based on the class name
@@ -138,8 +142,8 @@ and the template type, e.g.:</p>
 use- this is why all PositionerBase subclasses use the built-in
 PositionerBase.detailed.ui template by default.</p>
 <p>In this way you can create one template for a set of related classes.</p>
-</div>
-<div class="section" id="template-discovery">
+</section>
+<section id="template-discovery">
 <h3>Template Discovery<a class="headerlink" href="#template-discovery" title="Permalink to this heading"></a></h3>
 <p>There are currently three places that typhos checks for templates.
 In order of priority:</p>
@@ -159,9 +163,9 @@ point is expecting to find a <code class="docutils literal notranslate"><span cl
 such objects at your entry point. One such example of how to do this can
 be found <a class="reference external" href="https://github.com/pcdshub/pcdsdevices/blob/cab3fe158ebc0d032fe07f03ec52ca79cda90c6e/setup.py#L21">here</a></p></li>
 </ol>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
@@ -174,7 +178,7 @@ be found <a class="reference external" href="https://github.com/pcdshub/pcdsdevi
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2023, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
