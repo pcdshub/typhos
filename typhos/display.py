@@ -1324,12 +1324,24 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         device = self.device
         display = self._display_widget
         designer = display.findChildren(widgets.TyphosDesignerMixin) or []
-        bases = display.findChildren(utils.TyphosBase) or []
+        bases = display.findChildren(utils.TyphosObject) or []
 
         for widget in set(bases + designer):
+            # No device yet or the existing device: add (or re-add) the device
+            # Some other device or channel is already here: leave it alone
             if device and hasattr(widget, 'add_device'):
-                widget.add_device(device)
+                try:
+                    has_other_device = widget.devices and device not in widget.devices
+                except AttributeError:
+                    has_other_device = False
+                try:
+                    has_other_channel = widget.channel is not None
+                except AttributeError:
+                    has_other_channel = False
+                if not has_other_device and not has_other_channel:
+                    widget.add_device(device)
 
+            # Used e.g. in TyphosDeviceDisplay to give widgets display control
             if hasattr(widget, 'set_device_display'):
                 widget.set_device_display(self)
 
