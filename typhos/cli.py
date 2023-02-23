@@ -20,7 +20,7 @@ from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
 from typhos.display import DisplayTypes, ScrollOptions
 from typhos.suite import TyphosSuite
-from typhos.utils import nullcontext
+from typhos.utils import compose_stylesheets, nullcontext
 
 logger = logging.getLogger(__name__)
 
@@ -190,15 +190,12 @@ def typhos_cli_setup(args):
     coloredlogs.install(level=level, logger=shown_logger, fmt=log_fmt)
     logger.debug("Set logging level of %r to %r", shown_logger.name, level)
 
-    # Deal with stylesheet
-    qapp = get_qapp()
-
     logger.debug("Applying stylesheet ...")
-    typhos.use_stylesheet(dark=args.dark)
-    if args.stylesheet:
-        logger.info("Loading QSS file %r ...", args.stylesheet)
-        with open(args.stylesheet) as handle:
-            qapp.setStyleSheet(handle.read())
+    compose_stylesheets(
+        dark=args.dark,
+        path=args.stylesheet,
+        widget=get_qapp(),
+    )
 
 
 def _create_happi_client(cfg):

@@ -1,6 +1,8 @@
 """
 Utility functions for typhos
 """
+from __future__ import annotations
+
 import atexit
 import collections
 import contextlib
@@ -24,7 +26,11 @@ import ophyd
 import ophyd.sim
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
+from pydm.config import STYLESHEET as PYDM_USER_STYLESHEET
+from pydm.config import STYLESHEET_INCLUDE_DEFAULT as PYDM_INCLUDE_DEFAULT
 from pydm.exception import raise_to_operator  # noqa
+from pydm.utilities.stylesheet import \
+    GLOBAL_STYLESHEET as PYDM_DEFAULT_STYLESHEET
 from pydm.widgets.base import PyDMWritableWidget
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import QSize
@@ -228,9 +234,14 @@ def clean_name(device, strip_parent=True):
     return clean_attr(name)
 
 
-def use_stylesheet(dark=False, widget=None):
+def use_stylesheet(
+    dark: bool = False,
+    widget: QtWidgets.QWidget | None = None,
+) -> None:
     """
     Use the Typhos stylesheet
+
+    This is no longer used directly in typhos in favor of compose_stylesheets.
 
     Parameters
     ----------
@@ -238,20 +249,7 @@ def use_stylesheet(dark=False, widget=None):
         Whether or not to use the QDarkStyleSheet theme. By default the light
         theme is chosen.
     """
-    # Dark Style
-    if dark:
-        import qdarkstyle
-        style = qdarkstyle.load_stylesheet_pyqt5()
-    # Light Style
-    else:
-        # Load the path to the file
-        style_path = os.path.join(ui_dir, 'style.qss')
-        if not os.path.exists(style_path):
-            raise OSError("Unable to find Typhos stylesheet in {}"
-                          "".format(style_path))
-        # Load the stylesheet from the file
-        with open(style_path) as handle:
-            style = handle.read()
+    style = typhos_style_string(dark=dark)
     if widget is None:
         widget = QtWidgets.QApplication.instance()
     # We can set Fusion style if it is an application
@@ -260,6 +258,76 @@ def use_stylesheet(dark=False, widget=None):
 
     # Set Stylesheet
     widget.setStyleSheet(style)
+
+
+def typhos_style_string(dark: bool = False) -> str:
+    """Load the typhos style string."""
+    if dark:
+        import qdarkstyle
+        return qdarkstyle.load_stylesheet_pyqt5()
+    else:
+        style_path = os.path.join(ui_dir, 'style.qss')
+        if not os.path.exists(style_path):
+            raise OSError("Unable to find Typhos stylesheet in {}"
+                          "".format(style_path))
+        with open(style_path) as handle:
+            return handle.read()
+
+
+def compose_stylesheets(
+    dark: bool = False,
+    path: str | None = None,
+    include_pydm: bool = True,
+    widget: QtWidgets.QWidget | None = None,
+) -> None:
+    """
+    Apply all the stylesheets at once.
+
+    Stylesheets applied later will override stylesheets applied earlier.
+
+    Applies stylesheets in the following order:
+    - PyDM's built-in stylesheet, if PYDM_STYLESHEET_INCLUDE_DEFAULT is set.
+    - Typhos's stylesheet (either the dark or the light variant)
+    - User stylesheets in PYDM_STYLESHEET (which behaves as a path)
+    - User stylesheet in the path argument
+    - Any existing stylesheet data on the widget
+
+    Parameters
+    ----------
+    dark : bool, optional
+        Whether or not to use the QDarkStyleSheet theme. By default the light
+        theme is chosen.
+    path : str, optional
+        A user-provided path to a stylesheet to apply.
+    include_pydm : bool, optional
+        Whether or not to use the stylesheets defined in the pydm environment
+        variables. Defaults to True.
+    widget : QWidget, optional
+        The widget to apply the stylesheet to.
+        If omitted, apply to the whole QApplication.
+    """
+    style_parts = []
+
+    if include_pydm and PYDM_INCLUDE_DEFAULT:
+        with open(PYDM_DEFAULT_STYLESHEET) as fd:
+            style_parts.append(fd.read())
+
+    style_parts.append(typhos_style_string(dark=dark))
+
+    if include_pydm and PYDM_USER_STYLESHEET:
+        for part in PYDM_USER_STYLESHEET.split(os.pathsep):
+            with open(part) as fd:
+                style_parts.append(fd.read())
+
+    if path is not None:
+        with open(path) as fd:
+            style_parts.append(fd.read())
+
+    if widget is None:
+        widget = QtWidgets.QApplication.instance()
+    style_parts.append(widget.styleSheet())
+
+    widget.setStyleSheet('\n'.join(style_parts))
 
 
 def random_color():
