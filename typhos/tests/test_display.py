@@ -152,3 +152,10 @@ def test_display_with_sig_template(display, device, qapp):
         device.setpoint.put(num)
         qapp.processEvents()
         assert display.display_widget.ui.setpoint.text() == str(num)
+
+
+def test_display_with_subdevice_templates(display, device, qapp):
+    display.force_template = str(conftest.MODULE_PATH / 'utils' / 'subdevice.ui')
+    display.add_device(device)
+    qapp.processEvents()
+    # Need to finish this test after making it easier to make templates
