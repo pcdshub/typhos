@@ -1,0 +1,687 @@
+/*################################*/
+/* Valves and Shutters*/
+/*################################*/
+
+/*#ApperatureValve - vgc*/
+
+ApertureValve #icon {
+    qproperty-penStyle: "Qt::SolidLine";
+    qproperty-penColor: black;
+    qproperty-penWidth: 2;
+}
+ApertureValve[interlocked="true"] #icon{
+    border: 2px solid black;
+    qproperty-penWidth: 2;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+ApertureValve[interlocked="false"] #icon{
+    border: 0px;
+}
+ApertureValve[state="OPEN"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+ApertureValve[state="MOVING"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: yellow;
+}
+ApertureValve[state="CLOSED"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: black;
+}
+ApertureValve[state="INVALID"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: red;
+}
+ApertureValve[state="OPEN_F"] #icon {
+    qproperty-penColor: red;
+    qproperty-brush: #00FF00;
+}
+ApertureValve[error="Vented"] #icon {
+    qproperty-interlockBrush: red;
+}
+ApertureValve[error="At Vacuum"] #icon {
+    qproperty-interlockBrush: #00FF00;
+}
+ApertureValve[error="Lost Vacuum"] #icon {
+    qproperty-interlockBrush: red;
+}
+ApertureValve[error="Ext Fault"] #icon {
+    qproperty-interlockBrush: red;
+}
+/*################################*/
+
+/* PnumaticValve - vrc, vgc (use vrc)*/
+
+PneumaticValve #icon {
+    qproperty-penStyle: "Qt::SolidLine";
+    qproperty-penColor: black;
+    qproperty-penWidth: 2;
+    qproperty-interlockBrush: #00FF00;
+}
+PneumaticValve[interlocked="true"] #icon{
+    border: 2px solid black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+PneumaticValve[interlocked="false"] #icon{
+    border: 0px;
+    qproperty-brush: #00FF00;
+}
+PneumaticValve[state="OPEN"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+PneumaticValve[state="MOVING"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: yellow;
+}
+PneumaticValve[state="CLOSED"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: black;
+}
+PneumaticValve[state="INVALID"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: red;
+}
+PneumaticValve[state="OPEN_F"] #icon {
+    qproperty-penColor: red;
+    qproperty-brush: #00FF00;
+}
+PneumaticValve[error="Vented"] #icon {
+    qproperty-interlockBrush: red;
+}
+PneumaticValve[error="Lost Vacuum"] #icon {
+   qproperty-interlockBrush: red;
+}
+PneumaticValve[error="At Vacuum"] #icon {
+   qproperty-interlockBrush: #00FF00;
+}
+PneumaticValve[error="Ext Fault"] #icon {
+    qproperty-interlockBrush: red;
+}
+
+/*################################*/
+
+/* PnumaticValveNO - vrc, vgc (use vrc)*/
+
+PneumaticValveNO #icon {
+    qproperty-penStyle: "Qt::SolidLine";
+    qproperty-penColor: black;
+    qproperty-penWidth: 2;
+    qproperty-interlockBrush: #00FF00;
+}
+PneumaticValveNO[interlocked="true"] #icon{
+    border: 2px solid black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+PneumaticValveNO[interlocked="false"] #icon{
+    border: 0px;
+    qproperty-brush: #00FF00;
+}
+PneumaticValveNO[state="OPEN"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+PneumaticValveNO[state="MOVING"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: yellow;
+}
+PneumaticValveNO[state="CLOSED"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: black;
+}
+PneumaticValveNO[state="INVALID"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: red;
+}
+PneumaticValveNO[state="OPEN_F"] #icon {
+    qproperty-penColor: red;
+    qproperty-brush: #00FF00;
+}
+PneumaticValveNO[error="Vented"] #icon {
+    qproperty-interlockBrush: red;
+}
+PneumaticValveNO[error="Lost Vacuum"] #icon {
+   qproperty-interlockBrush: red;
+}
+PneumaticValveNO[error="At Vacuum"] #icon {
+   qproperty-interlockBrush: #00FF00;
+}
+PneumaticValveNO[error="Ext Fault"] #icon {
+    qproperty-interlockBrush: red;
+}
+
+/*################################*/
+
+/* PnumaticValveDA - dual acting vgc*/
+
+PneumaticValveDA #icon {
+    qproperty-penStyle: "Qt::SolidLine";
+    qproperty-penColor: black;
+    qproperty-penWidth: 2;
+    qproperty-interlockBrush: #00FF00;
+}
+PneumaticValveDA[interlocked="true"] #icon{
+    border: 2px solid black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+PneumaticValveDA[interlocked="false"] #icon{
+    border: 0px;
+    qproperty-brush: #00FF00;
+}
+PneumaticValveDA[state="OPEN"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+PneumaticValveDA[state="MOVING"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: yellow;
+}
+PneumaticValveDA[state="CLOSED"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: black;
+}
+PneumaticValveDA[state="INVALID"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: red;
+}
+PneumaticValveDA[state="OPEN_F"] #icon {
+    qproperty-penColor: red;
+    qproperty-brush: #00FF00;
+}
+PneumaticValveDA[error="Vented"] #icon {
+    qproperty-interlockBrush: red;
+}
+PneumaticValveDA[error="Lost Vacuum"] #icon {
+   qproperty-interlockBrush: red;
+}
+PneumaticValveDA[error="At Vacuum"] #icon {
+   qproperty-interlockBrush: #00FF00;
+}
+PneumaticValveDA[error="Ext Fault"] #icon {
+    qproperty-interlockBrush: red;
+}
+
+/*###############################*/
+
+/* Fast Shutter - vfs*/
+
+FastShutter #icon {
+    qproperty-penStyle: "Qt::SolidLine";
+    qproperty-penColor: black;
+    qproperty-penWidth: 1;
+}
+FastShutter[interlocked="true"] #icon{
+    border: 2px solid black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+FastShutter[interlocked="false"] #icon{
+    border: 0px;
+    qproperty-brush: #00FF00;
+}
+FastShutter[state="OPEN"] #icon {
+    qproperty-brush: #00FF00;
+}
+FastShutter[state="MOVING"] #icon {
+    qproperty-brush: yellow;
+}
+FastShutter[state="CLOSED"] #icon {
+    qproperty-brush: black;
+}
+FastShutter[state="INVALID"] #icon {
+    qproperty-brush: red;
+}
+FastShutter[error="At Vacuum"] #icon {
+    qproperty-arrowBrush: #00FF00;
+}
+
+/*bug in lcls-twincat-vac has both `At Vacuum` and `AT Vacuum`*/
+
+FastShutter[error="AT Vacuum"] #icon {
+    qproperty-arrowBrush: #00FF00;
+}
+
+FastShutter[error="Triggered"] #icon {
+    qproperty-arrowBrush: yellow;
+}
+FastShutter[error="Vacuum Fault"] #icon {
+    qproperty-arrowBrush: red;
+}
+FastShutter[error="Close Timeout"] #icon {
+    qproperty-arrowBrush: red;
+}
+FastShutter[error="Open Timeout"] #icon {
+    qproperty-arrowBrush: red;
+}
+
+FastShutter[error="Ext Fault"] #icon {
+    qproperty-arrowBrush: red;
+}
+
+/*###############################*/
+
+/* Control Only Valve Normally Closed - vvcNC*/
+
+ControlOnlyValveNC #icon {
+    qproperty-penStyle: "Qt::SolidLine";
+    qproperty-penColor: black;
+    qproperty-penWidth: 2;
+}
+ControlOnlyValveNC[interlocked="true"] #icon{
+    border: 2px solid black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+ControlOnlyValveNC[interlocked="false"] #icon{
+    border: 0px;
+}
+ControlOnlyValveNC[state="One"] #icon {
+    qproperty-brush: #00FF00;
+}
+ControlOnlyValveNC[state="Zero"] #icon {
+    qproperty-brush: black;
+}
+ControlOnlyValveNC[state="Open"] #icon {
+    qproperty-brush:#00FF00;
+}
+ControlOnlyValveNC[state="Closed"] #icon {
+    qproperty-brush: black;
+}
+
+ControlOnlyValveNC[state="CLOSE"] #icon {
+    qproperty-penStyle: "QT::SolidLine";
+    qproperty-penColor: gray;
+    qproperty-penWidth: 2;
+	qproperty-brush: black;
+}
+
+ControlOnlyValveNC[state="OPEN"] #icon {
+    qproperty-penStyle: "QT::SolidLine";
+    qproperty-penColor: gray;
+    qproperty-penWidth: 2;
+	qproperty-brush: #00FF00;
+}
+
+
+/*##################################*/
+
+/* Control Only Valve Normally Open - vvcNO*/
+
+ControlOnlyValveNO #icon {
+    qproperty-penStyle: "Qt::SolidLine";
+    qproperty-penColor: black;
+    qproperty-penWidth: 2;
+}
+ControlOnlyValveNO[interlocked="true"] #icon{
+    border: 2px solid black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+ControlOnlyValveNO[interlocked="false"] #icon{
+    border: 0px;
+}
+ControlOnlyValveNO[state="One"] #icon {
+    qproperty-brush: #00FF00;
+}
+ControlOnlyValveNO[state="Zero"] #icon {
+    qproperty-brush: black;
+}
+ControlOnlyValveNO[state="Open"] #icon {
+    qproperty-brush:#00FF00;
+}
+ControlOnlyValveNO[state="Closed"] #icon {
+    qproperty-brush: black;
+}
+
+/*##################################*/
+
+/* Needle Valve - vcn*/
+
+NeedleValve[interlocked="true"] #icon{
+    border: 2px solid black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+NeedleValve[interlocked="false"] #icon{
+    border: 0px;
+}
+NeedleValve[state="Close"] #icon {
+   qproperty-brush: black;
+}
+NeedleValve[state="Open"] #icon {
+    qproperty-brush: #00FF00;
+}
+NeedleValve[state="PressureControl"] #icon {
+    qproperty-brush: blue;
+}
+NeedleValve[state="ManualControl"] #icon {
+    qproperty-brush: purple;
+}
+/*################################*/
+/* Pumps */
+/*################################*/
+
+/* Turbo Pump - ptm */
+
+TurboPump[interlocked="true"] #icon {
+    border: 2px solid black;
+    qproperty-penColor: black;
+}
+TurboPump[interlocked="false"] #icon {
+    border: 0px;
+}
+TurboPump[state="RUNNING"] #icon {
+    qproperty-centerBrush: #00FF00;
+    qproperty-brush: #00FF00;
+}
+TurboPump[state="STOPPING"] #icon {
+    qproperty-centerBrush: orange;
+    qproperty-brush: orange;
+}
+TurboPump[state="STARTING"] #icon {
+    qproperty-centerBrush: yellow;
+    qproperty-brush: yellow;
+}
+TurboPump[state="STOPPED"] #icon {
+    qproperty-centerBrush: gray;
+    qproperty-brush: gray;
+}
+TurboPump[state="FAULT"] #icon {
+    qproperty-centerBrush: red;
+    qproperty-brush: red;
+}
+TurboPump[error="TRUE"] #icon {
+    qproperty-penColor: #E01010;
+    qproperty-centerBrush: red;
+}
+TurboPump[error="FALSE"] #icon {
+    qproperty-penColor: black;
+}
+
+/*################################*/
+
+/* Scroll Pump - pro */
+
+ScrollPump[interlocked="true"] #icon {
+    border: 2px solid black;
+}
+ScrollPump[interlocked="false"] #icon {
+    border: 0px;
+}
+ScrollPump[state="RUNNING"] #icon {
+    qproperty-centerBrush: #00FF00;
+    qproperty-brush: #00FF00;
+}
+ScrollPump[state="STOPPING"] #icon {
+    qproperty-centerBrush: orange;
+    qproperty-brush: orange;
+}
+ScrollPump[state="STARTING"] #icon {
+    qproperty-centerBrush: yellow;
+    qproperty-brush: yellow;
+}
+ScrollPump[state="STOPPED"] #icon {
+    qproperty-centerBrush: gray;
+    qproperty-brush: gray;
+}
+ScrollPump[state="FAULT"] #icon {
+    qproperty-centerBrush: red;
+    qproperty-brush: red;
+}
+ScrollPump[error="TRUE"] #icon {
+    qproperty-centerBrush: red;
+    qproperty-penColor: #E01010;
+}
+
+ScrollPump[error="FALSE"] #icon {
+    qproperty-penColor: black;
+}
+
+/*################################*/
+
+/* Ion Pump - pip*/
+
+IonPump #pressure{
+    color: blue;
+    border: 1px solid black;
+    background-color : white;
+}
+IonPump[state="STOPPED"] #pressure{
+    color: gray;
+    border: 1px;
+}
+IonPump[error="TRUE"] #pressure{
+    color: gray;
+    border: 1px;
+}
+
+IonPump[interlocked="true"] #icon {
+    border: 2px solid black;
+    qproperty-penColor: black;
+}
+IonPump[interlocked="false"] #icon {
+    border: 0px;
+}
+IonPump[state="RUNNING"] #icon {
+    qproperty-brush: #00FF00;
+}
+IonPump[state="STOPPING"] #icon {
+    qproperty-brush: orange;
+}
+IonPump[state="STARTING"] #icon {
+    qproperty-brush: yellow;
+}
+IonPump[state="STOPPED"] #icon {
+    qproperty-brush: gray;
+}
+IonPump[state="FAULT"] #icon {
+    qproperty-brush: red;
+}
+IonPump[error="TRUE"] #icon {
+    qproperty-penColor: #E01010;
+}
+IonPump[error="FALSE"] #icon {
+    qproperty-penColor: black;
+}
+
+/*################################*/
+/* Gauges */
+/*################################*/
+
+/* Rough Gauge - gpi */
+
+
+RoughGauge #pressure{
+    color: blue;
+    border: 1px solid black;
+    background-color : white
+}
+RoughGauge[state="GaugeDisconnected"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+RoughGauge[state="Off"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+RoughGauge[state="PressInvalid"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+RoughGauge[interlocked="true"] #icon{
+    border: 2px solid black;
+    qproperty-brush: black;
+    border-top-left-radius: 9px;
+    border-top-right-radius: 9px;
+    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+}
+RoughGauge[state="Off"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: gray;
+}
+RoughGauge[state="GaugeDisconnected"] #icon {
+    qproperty-penColor: gray;
+    qproperty-brush: black;
+}
+RoughGauge[state="OoR"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: red;
+}
+RoughGauge[state="PressInvalid"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: gray;
+}
+RoughGauge[state="Valid"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+RoughGauge[state="ValidLo"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+RoughGauge[state="ValidHi"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+
+/*################################*/
+
+/* Cold Cathode - gcc */
+
+ColdCathodeGauge #pressure{
+    color: blue;
+    border: 1px solid black;
+    background-color : white
+}
+ColdCathodeGauge[state="GaugeDisconnected"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+ColdCathodeGauge[state="Off"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+ColdCathodeGauge[state="PressInvalid"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+ColdCathodeGauge[interlocked="true"] #icon {
+    border: 2px solid black;
+}
+ColdCathodeGauge[interlocked="false"] #icon {
+    border: 0px;
+}
+ColdCathodeGauge[state="Off"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: gray;
+}
+ColdCathodeGauge[state="GaugeDisconnected"] #icon {
+    qproperty-penColor: gray;
+    qproperty-brush: black;
+}
+ColdCathodeGauge[state="OoR"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: red;
+}
+ColdCathodeGauge[state="PressInvalid"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: gray;
+}
+ColdCathodeGauge[state="Starting"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: yellow;
+}
+ColdCathodeGauge[state="Valid"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+ColdCathodeGauge[state="ValidLo"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+ColdCathodeGauge[state="ValidHi"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+
+/*###################################*/
+
+/* Hot Cathode - ghc */
+
+HotCathodeGauge #pressure{
+    color: blue;
+    border: 1px solid black;
+    background-color : white
+}
+HotCathodeGauge[state="GaugeDisconnected"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+HotCathodeGauge[state="Off"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+HotCathodeGauge[state="PressInvalid"]  #pressure{
+    color: gray;
+    border: 1px;
+}
+HotCathodeGauge[interlocked="true"] #icon {
+    border: 2px solid black;
+}
+HotCathodeGauge[interlocked="false"] #icon {
+    border: 0px;
+}
+HotCathodeGauge[state="Off"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: gray;
+}
+HotCathodeGauge[state="GaugeDisconnected"] #icon {
+    qproperty-penColor: gray;
+    qproperty-brush: black;
+}
+HotCathodeGauge[state="OoR"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: red;
+}
+HotCathodeGauge[state="PressInvalid"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: gray;
+}
+HotCathodeGauge[state="Starting"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: yellow;
+}
+HotCathodeGauge[state="Valid"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+HotCathodeGauge[state="ValidLo"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}
+HotCathodeGauge[state="ValidHi"] #icon {
+    qproperty-penColor: black;
+    qproperty-brush: #00FF00;
+}

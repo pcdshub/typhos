@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import pathlib
 import tempfile
@@ -10,8 +12,12 @@ from qtpy.QtGui import QPaintEvent
 from qtpy.QtWidgets import QWidget
 
 import typhos
-from typhos.utils import (TyphosBase, clean_name, load_suite,
-                          no_device_lazy_load, saved_template, use_stylesheet)
+import typhos.utils
+from typhos.utils import (TyphosBase, clean_name, compose_stylesheets,
+                          load_suite, no_device_lazy_load, saved_template,
+                          use_stylesheet)
+
+from . import conftest
 
 
 class NestedDevice(Device):
@@ -32,7 +38,71 @@ def test_clean_name():
     assert clean_name(device.radial.phi, strip_parent=device) == 'radial phi'
 
 
-def test_stylesheet(qtbot):
+@pytest.mark.parametrize("dark", [True, False])
+@pytest.mark.parametrize("include_pydm", [True, False])
+@pytest.mark.parametrize("pydm_include_default", [True, False])
+@pytest.mark.parametrize(
+    "pydm_stylesheet",
+    [
+        "",
+        str(conftest.MODULE_PATH / "utils" / "big_stylesheet.qss"),
+        str(conftest.MODULE_PATH / "utils" / "big_stylesheet.qss")
+        + os.pathsep
+        + str(conftest.MODULE_PATH / "utils" / "big_stylesheet.qss"),
+    ],
+)
+@pytest.mark.parametrize(
+    "explicit_path",
+    [None, str(conftest.MODULE_PATH / "utils" / "tiny_stylesheet.qss")],
+)
+def test_stylesheet(
+    qtbot,
+    monkeypatch,
+    dark: bool,
+    include_pydm: bool,
+    pydm_include_default: bool,
+    pydm_stylesheet: str,
+    explicit_path: str | None,
+):
+    widget = QWidget()
+    qtbot.addWidget(widget)
+    original_stylesheet = "QPushButton { color: red }"
+    widget.setStyleSheet(original_stylesheet)
+
+    monkeypatch.setattr(typhos.utils, "PYDM_INCLUDE_DEFAULT", pydm_include_default)
+    monkeypatch.setattr(typhos.utils, "PYDM_USER_STYLESHEET", pydm_stylesheet)
+
+    compose_stylesheets(
+        dark=dark,
+        path=explicit_path,
+        include_pydm=include_pydm,
+        widget=widget,
+    )
+    new_stylesheet = widget.styleSheet()
+
+    assert original_stylesheet in new_stylesheet, "Original stylesheet was deleted"
+    if dark:
+        assert "qdarkstyle.qss" in new_stylesheet, "Dark stylesheet did not load"
+    else:
+        assert "TyphosBase" in new_stylesheet, "Typhos stylesheet did not load"
+
+    if include_pydm and pydm_include_default:
+        assert "PyDMDrawing" in new_stylesheet, "PyDM default stylesheet did not load"
+    else:
+        assert "PyDMDrawing" not in new_stylesheet, "PyDM default stylesheet loaded unexpectedly"
+
+    if include_pydm and pydm_stylesheet:
+        assert "ApertureValve" in new_stylesheet, "PyDM user stylesheet did not load"
+    else:
+        assert "ApertureValve" not in new_stylesheet, "PyDM user stylesheet loaded unexpectedly"
+
+    if explicit_path:
+        assert "tiny test stylesheet" in new_stylesheet, "Explicit user stylesheet did not load"
+    else:
+        assert "tiny test stylesheet" not in new_stylesheet, "Explicit user stylesheet loaded unexpectedly"
+
+
+def test_stylesheet_legacy(qtbot):
     widget = QWidget()
     qtbot.addWidget(widget)
     use_stylesheet(widget=widget)
