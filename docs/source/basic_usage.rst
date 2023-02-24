@@ -210,12 +210,13 @@ loaded.
 
     from ophyd.sim import motor
     from qtpy.QtWidgets import QApplication
-    import typhos
+    from typhos.suite import TyphosSuite
+    from typhos.utils import compose_stylesheet
 
     # Create our application
     app = QApplication([])
-    typhos.use_stylesheet()  # Optional
-    suite = typhos.TyphosSuite.from_device(motor)
+    compose_stylesheet()  # Optional
+    suite = TyphosSuite.from_device(motor)
 
     # Launch
     suite.show()
@@ -224,11 +225,31 @@ loaded.
 
 Using the StyleSheet
 ====================
-While it is no means a requirement, Typhos ships with two stylesheets to
-improve the look of the widgets. By default this isn't activated, but can be
-configured with :func:`typhos.use_stylesheet`. The operator can elect whether
-to use the "light" or "dark" stylesheets by using the optional ``dark``
-keyword. This method also handles setting the "Fusion" ``QStyle`` which helps
+Typhos ships with two stylesheets to improve the look and feel of the widgets.
+When invoking ``typhos`` from the CLI as normal, you can pass
+the ``--dark`` flag to use the dark stylesheet instead of the light mode,
+and a ``--stylesheet-add`` argument to use your own stylesheet in addition to Typhos's.
+If you want to completely ignore Typhos's normal stylesheet loading and use your own,
+you can pass the ``--stylesheet-override`` argument.
+
+Typhos also uses the same stylesheet environment variables as PyDM to load additional
+stylesheets. The PyDM environment variables respected here are:
+
+- ``PYDM_STYLESHEET``, a path-like variable that should contain file paths to qss
+  stylesheets if set.
+- ``PYDM_STYLESHEET_INCLUDE_DEFAULT``, which should be set to 1 to include the
+  default PyDM stylesheet or unset to not include it.
+
+The priority order for stylesheets in the case of conflicts is:
+
+1. The explicit ``styleSheet`` property on the display template
+2. The style elements from ``--stylesheet-add``
+3. User stylesheets from ``PYDM_STYLESHEET_INCLUDE_DEFAULT``
+4. Typhos's stylesheet (either the dark or the light variant)
+5. The built-in PyDM stylesheet
+
+Outside of the CLI, the stylesheets can be applied using :func:`typhos.compose_stylesheet`.
+This function also handles setting the "Fusion" ``QStyle`` which helps
 make the interface have an operating system independent look and feel.
 
 
