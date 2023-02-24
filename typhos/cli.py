@@ -129,7 +129,18 @@ parser.add_argument(
     action='store_true',
     help='Use the QDarkStyleSheet shipped with Typhos',
 )
-parser.add_argument('--stylesheet', help='Additional stylesheet options')
+parser.add_argument(
+    "--stylesheet-override", "--stylesheet",
+    help="Override all built-in stylesheets, using this stylesheet instead.",
+)
+parser.add_argument(
+    "--stylesheet-add",
+    help=(
+        "Include an additional stylesheet in the loading process. "
+        "This stylesheet will take priority over all built-in stylesheets, "
+        "but not over a template or widget's styleSheet property."
+    )
+)
 parser.add_argument(
     '--profile-modules',
     nargs='*',
@@ -190,12 +201,18 @@ def typhos_cli_setup(args):
     coloredlogs.install(level=level, logger=shown_logger, fmt=log_fmt)
     logger.debug("Set logging level of %r to %r", shown_logger.name, level)
 
+    qapp = get_qapp()
     logger.debug("Applying stylesheet ...")
-    compose_stylesheets(
-        dark=args.dark,
-        path=args.stylesheet,
-        widget=get_qapp(),
-    )
+    if args.stylesheet_override:
+        logger.info("Loading QSS file %r ...", args.stylesheet_override)
+        with open(args.stylesheet_override) as handle:
+            qapp.setStyleSheet(handle.read())
+    else:
+        compose_stylesheets(
+            dark=args.dark,
+            path=args.stylesheet_add,
+            widget=qapp,
+        )
 
 
 def _create_happi_client(cfg):
