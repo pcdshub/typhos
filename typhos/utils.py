@@ -281,9 +281,10 @@ def compose_stylesheets(
     widget: QtWidgets.QWidget | None = None,
 ) -> None:
     """
-    Apply all the stylesheets at once.
+    Apply all the stylesheets at once, along with the Fusion style.
 
     Stylesheets applied later will override stylesheets applied earlier.
+    The Fusion style can only be applied to a QApplication.
 
     Applies stylesheets in the following order:
     - PyDM's built-in stylesheet, if PYDM_STYLESHEET_INCLUDE_DEFAULT is set.
@@ -306,6 +307,9 @@ def compose_stylesheets(
         The widget to apply the stylesheet to.
         If omitted, apply to the whole QApplication.
     """
+    if isinstance(widget, QtWidgets.QApplication):
+        widget.setStyle(QtWidgets.QStyleFactory.create('Fusion'))
+
     style_parts = []
 
     if include_pydm and PYDM_INCLUDE_DEFAULT:
