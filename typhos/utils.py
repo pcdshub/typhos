@@ -308,16 +308,20 @@ def compose_stylesheets(stylesheets: Iterable[str | pathlib.Path]) -> str:
     Raises
     ------
     OSError
-        If any error is encountered while reading a file.
+        If any error is encountered while reading a file
+    TypeError
+        If the input is not a valid type
     """
     style_parts = []
     for sheet in stylesheets:
         path = pathlib.Path(sheet)
-        if path.suffix == "qss":
+        if isinstance(sheet, pathlib.Path) or path.suffix == "qss":
             with path.open() as fd:
                 style_parts.append(fd.read())
-        else:
+        elif isinstance(sheet, str):
             style_parts.append(sheet)
+        else:
+            raise TypeError(f"Invalid input {sheet} of type {type(sheet)}")
     return "\n".join(reversed(style_parts))
 
 
