@@ -8,14 +8,14 @@ import pytest
 from ophyd import Component as Cpt
 from ophyd import Device
 from qtpy.QtCore import QRect
-from qtpy.QtGui import QPaintEvent
-from qtpy.QtWidgets import QWidget
+from qtpy.QtGui import QColor, QPaintEvent, QPalette
+from qtpy.QtWidgets import QLineEdit, QWidget
 
 import typhos
 import typhos.utils
-from typhos.utils import (TyphosBase, clean_name, compose_stylesheets,
-                          load_suite, no_device_lazy_load, saved_template,
-                          use_stylesheet)
+from typhos.utils import (TyphosBase, apply_standard_stylesheets, clean_name,
+                          compose_stylesheets, load_suite, no_device_lazy_load,
+                          saved_template, use_stylesheet)
 
 from . import conftest
 
@@ -36,6 +36,52 @@ def test_clean_name():
                       strip_parent=False) == 'test radial phi'
     assert clean_name(device.radial.phi, strip_parent=True) == 'phi'
     assert clean_name(device.radial.phi, strip_parent=device) == 'radial phi'
+
+
+def test_compose_stylesheets(qtbot, qapp):
+    """
+    With conflicting sheets, first sheet given has priority
+    All non-conflicting sheets should be included
+    """
+    # Create some normal widgets
+    red_widget = QLineEdit()
+    green_widget = QLineEdit()
+    blue_widget = QLineEdit()
+    qtbot.addWidget(red_widget)
+    qtbot.addWidget(green_widget)
+    qtbot.addWidget(blue_widget)
+
+    # Test the null hypothesis
+    assert red_widget.palette().color(QPalette.Background).name() != QColor("white").name()
+    assert red_widget.palette().color(QPalette.Text).name() != QColor("red").name()
+    assert green_widget.palette().color(QPalette.Background).name() != QColor("white").name()
+    assert green_widget.palette().color(QPalette.Text).name() != QColor("green").name()
+    assert blue_widget.palette().color(QPalette.Background).name() != QColor("white").name()
+    assert blue_widget.palette().color(QPalette.Text).name() != QColor("blue").name()
+
+    # Set up some sheet combinations that set the foreground and background color
+    red_sheet = str(conftest.MODULE_PATH / "utils" / "tiny_stylesheet.qss")
+    green_sheet = "QLineEdit { color: green }"
+    blue_sheet = "QLineEdit { color: blue }"
+    other_sheet = "QLineEdit { background-color: white }"
+    red_widget.setStyleSheet(
+        compose_stylesheets([red_sheet, green_sheet, blue_sheet, other_sheet])
+    )
+    green_widget.setStyleSheet(
+        compose_stylesheets([green_sheet, red_sheet, other_sheet, blue_sheet])
+    )
+    blue_widget.setStyleSheet(
+        compose_stylesheets([blue_sheet, other_sheet, green_sheet, red_sheet])
+    )
+    qapp.processEvents()
+
+    # Each widget should have a white background and a unique foreground color
+    assert red_widget.palette().color(QPalette.Background).name() == QColor("white").name()
+    assert red_widget.palette().color(QPalette.Text).name() == QColor("red").name()
+    assert green_widget.palette().color(QPalette.Background).name() == QColor("white").name()
+    assert green_widget.palette().color(QPalette.Text).name() == QColor("green").name()
+    assert blue_widget.palette().color(QPalette.Background).name() == QColor("white").name()
+    assert blue_widget.palette().color(QPalette.Text).name() == QColor("blue").name()
 
 
 @pytest.mark.parametrize("dark", [True, False])
@@ -72,9 +118,9 @@ def test_stylesheet(
     monkeypatch.setattr(typhos.utils, "PYDM_INCLUDE_DEFAULT", pydm_include_default)
     monkeypatch.setattr(typhos.utils, "PYDM_USER_STYLESHEET", pydm_stylesheet)
 
-    compose_stylesheets(
+    apply_standard_stylesheets(
         dark=dark,
-        path=explicit_path,
+        paths=[explicit_path],
         include_pydm=include_pydm,
         widget=widget,
     )
