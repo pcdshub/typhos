@@ -315,7 +315,7 @@ def compose_stylesheets(stylesheets: Iterable[str | pathlib.Path]) -> str:
     style_parts = []
     for sheet in stylesheets:
         path = pathlib.Path(sheet)
-        if isinstance(sheet, pathlib.Path) or path.suffix == "qss":
+        if isinstance(sheet, pathlib.Path) or path.suffix == ".qss":
             with path.open() as fd:
                 style_parts.append(fd.read())
         elif isinstance(sheet, str):
