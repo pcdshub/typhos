@@ -98,8 +98,8 @@ def test_compose_stylesheets(qtbot, qapp):
     ],
 )
 @pytest.mark.parametrize(
-    "explicit_path",
-    [None, str(conftest.MODULE_PATH / "utils" / "tiny_stylesheet.qss")],
+    "explicit_paths",
+    [None, [str(conftest.MODULE_PATH / "utils" / "tiny_stylesheet.qss")]],
 )
 def test_stylesheet(
     qtbot,
@@ -108,7 +108,7 @@ def test_stylesheet(
     include_pydm: bool,
     pydm_include_default: bool,
     pydm_stylesheet: str,
-    explicit_path: str | None,
+    explicit_paths: list[str] | None,
 ):
     widget = QWidget()
     qtbot.addWidget(widget)
@@ -120,7 +120,7 @@ def test_stylesheet(
 
     apply_standard_stylesheets(
         dark=dark,
-        paths=[explicit_path],
+        paths=explicit_paths,
         include_pydm=include_pydm,
         widget=widget,
     )
@@ -142,7 +142,7 @@ def test_stylesheet(
     else:
         assert "ApertureValve" not in new_stylesheet, "PyDM user stylesheet loaded unexpectedly"
 
-    if explicit_path:
+    if explicit_paths is not None:
         assert "tiny test stylesheet" in new_stylesheet, "Explicit user stylesheet did not load"
     else:
         assert "tiny test stylesheet" not in new_stylesheet, "Explicit user stylesheet loaded unexpectedly"
