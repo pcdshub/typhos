@@ -20,7 +20,8 @@ from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
 from typhos.display import DisplayTypes, ScrollOptions
 from typhos.suite import TyphosSuite
-from typhos.utils import compose_stylesheets, nullcontext
+from typhos.utils import (apply_standard_stylesheets, compose_stylesheets,
+                          nullcontext)
 
 logger = logging.getLogger(__name__)
 
@@ -131,10 +132,12 @@ parser.add_argument(
 )
 parser.add_argument(
     "--stylesheet-override", "--stylesheet",
+    type="append",
     help="Override all built-in stylesheets, using this stylesheet instead.",
 )
 parser.add_argument(
     "--stylesheet-add",
+    type="append",
     help=(
         "Include an additional stylesheet in the loading process. "
         "This stylesheet will take priority over all built-in stylesheets, "
@@ -204,13 +207,18 @@ def typhos_cli_setup(args):
     qapp = get_qapp()
     logger.debug("Applying stylesheet ...")
     if args.stylesheet_override:
-        logger.info("Loading QSS file %r ...", args.stylesheet_override)
-        with open(args.stylesheet_override) as handle:
-            qapp.setStyleSheet(handle.read())
+        # Includes some non-stylesheet style settings
+        apply_standard_stylesheets(
+            include_pydm=False,
+            widget=qapp,
+        )
+        for filename in args.stylesheet_override:
+            logger.info("Loading QSS file %r ...", filename)
+        qapp.setStyleSheet(compose_stylesheets(args.stylesheet_override))
     else:
-        compose_stylesheets(
+        apply_standard_stylesheets(
             dark=args.dark,
-            path=args.stylesheet_add,
+            paths=args.stylesheet_add,
             widget=qapp,
         )
 

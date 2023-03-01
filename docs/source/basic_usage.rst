@@ -211,11 +211,11 @@ loaded.
     from ophyd.sim import motor
     from qtpy.QtWidgets import QApplication
     from typhos.suite import TyphosSuite
-    from typhos.utils import compose_stylesheet
+    from typhos.utils import apply_standard_stylesheets
 
     # Create our application
     app = QApplication([])
-    compose_stylesheet()  # Optional
+    apply_standard_stylesheets()  # Optional
     suite = TyphosSuite.from_device(motor)
 
     # Launch
@@ -230,7 +230,8 @@ When invoking ``typhos`` from the CLI as normal, you can pass
 the ``--dark`` flag to use the dark stylesheet instead of the light mode,
 and a ``--stylesheet-add`` argument to use your own stylesheet in addition to Typhos's.
 If you want to completely ignore Typhos's normal stylesheet loading and use your own,
-you can pass the ``--stylesheet-override`` argument.
+you can pass the ``--stylesheet-override`` argument. You can pass these arguments
+multiple times to include multiple stylesheets.
 
 Typhos also uses the same stylesheet environment variables as PyDM to load additional
 stylesheets. The PyDM environment variables respected here are:
@@ -248,7 +249,7 @@ The priority order for stylesheets in the case of conflicts is:
 4. Typhos's stylesheet (either the dark or the light variant)
 5. The built-in PyDM stylesheet
 
-Outside of the CLI, the stylesheets can be applied using :func:`typhos.compose_stylesheet`.
+Outside of the CLI, the stylesheets can be applied using :func:`typhos.apply_standard_stylesheets`.
 This function also handles setting the "Fusion" ``QStyle`` which helps
 make the interface have an operating system independent look and feel.
 
