@@ -132,12 +132,12 @@ parser.add_argument(
 )
 parser.add_argument(
     "--stylesheet-override", "--stylesheet",
-    type="append",
+    action="append",
     help="Override all built-in stylesheets, using this stylesheet instead.",
 )
 parser.add_argument(
     "--stylesheet-add",
-    type="append",
+    action="append",
     help=(
         "Include an additional stylesheet in the loading process. "
         "This stylesheet will take priority over all built-in stylesheets, "
