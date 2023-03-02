@@ -292,12 +292,13 @@ def compose_stylesheets(stylesheets: Iterable[str | pathlib.Path]) -> str:
 
     Parameters
     ----------
-    stylesheets : list of str or pathlib.Path
-        A list of the stylesheets to combine. Each element of the list
-        can either be a fully-loaded stylesheet or a full path to a
-        stylesheet. Stylesheet paths must end in the .qss suffix.
+    stylesheets : iterable of str or pathlib.Path
+        An itetable, such as a list, of the stylesheets to combine.
+        Each element can either be a fully-loaded stylesheet or a full path to
+        a stylesheet. Stylesheet paths must end in the .qss suffix.
         In the unlikely event that a string is both a valid path
-        and a valid stylesheet, it will be interpretted as a path.
+        and a valid stylesheet, it will be interpretted as a path,
+        even if no file exists at that path.
 
     Returns
     -------
@@ -334,9 +335,6 @@ def apply_standard_stylesheets(
     """
     Apply all the stylesheets at once, along with the Fusion style.
 
-    Stylesheets applied later will override stylesheets applied earlier.
-    The Fusion style can only be applied to a QApplication.
-
     Applies stylesheets with the following priority order:
     - Any existing stylesheet data on the widget
     - User stylesheets in the paths argument
@@ -344,12 +342,14 @@ def apply_standard_stylesheets(
     - Typhos's stylesheet (either the dark or the light variant)
     - PyDM's built-in stylesheet, if PYDM_STYLESHEET_INCLUDE_DEFAULT is set.
 
+    The Fusion style can only be applied to a QApplication.
+
     Parameters
     ----------
     dark : bool, optional
         Whether or not to use the QDarkStyleSheet theme. By default the light
         theme is chosen.
-    paths : str, optional
+    paths : iterable of str, optional
         User-provided paths to stylesheets to apply.
     include_pydm : bool, optional
         Whether or not to use the stylesheets defined in the pydm environment
