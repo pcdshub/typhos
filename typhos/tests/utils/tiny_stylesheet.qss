@@ -1,0 +1,2 @@
+/* tiny test stylesheet for the test */
+QLineEdit { color: red }

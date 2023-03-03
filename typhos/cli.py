@@ -20,7 +20,8 @@ from typhos.benchmark.cases import run_benchmarks
 from typhos.benchmark.profile import profiler_context
 from typhos.display import DisplayTypes, ScrollOptions
 from typhos.suite import TyphosSuite
-from typhos.utils import nullcontext
+from typhos.utils import (apply_standard_stylesheets, compose_stylesheets,
+                          nullcontext)
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +130,20 @@ parser.add_argument(
     action='store_true',
     help='Use the QDarkStyleSheet shipped with Typhos',
 )
-parser.add_argument('--stylesheet', help='Additional stylesheet options')
+parser.add_argument(
+    "--stylesheet-override", "--stylesheet",
+    action="append",
+    help="Override all built-in stylesheets, using this stylesheet instead.",
+)
+parser.add_argument(
+    "--stylesheet-add",
+    action="append",
+    help=(
+        "Include an additional stylesheet in the loading process. "
+        "This stylesheet will take priority over all built-in stylesheets, "
+        "but not over a template or widget's styleSheet property."
+    )
+)
 parser.add_argument(
     '--profile-modules',
     nargs='*',
@@ -190,15 +204,23 @@ def typhos_cli_setup(args):
     coloredlogs.install(level=level, logger=shown_logger, fmt=log_fmt)
     logger.debug("Set logging level of %r to %r", shown_logger.name, level)
 
-    # Deal with stylesheet
     qapp = get_qapp()
-
     logger.debug("Applying stylesheet ...")
-    typhos.use_stylesheet(dark=args.dark)
-    if args.stylesheet:
-        logger.info("Loading QSS file %r ...", args.stylesheet)
-        with open(args.stylesheet) as handle:
-            qapp.setStyleSheet(handle.read())
+    if args.stylesheet_override:
+        # Includes some non-stylesheet style settings
+        apply_standard_stylesheets(
+            include_pydm=False,
+            widget=qapp,
+        )
+        for filename in args.stylesheet_override:
+            logger.info("Loading QSS file %r ...", filename)
+        qapp.setStyleSheet(compose_stylesheets(args.stylesheet_override))
+    else:
+        apply_standard_stylesheets(
+            dark=args.dark,
+            paths=args.stylesheet_add,
+            widget=qapp,
+        )
 
 
 def _create_happi_client(cfg):

@@ -1,6 +1,8 @@
 """
 Utility functions for typhos
 """
+from __future__ import annotations
+
 import atexit
 import collections
 import contextlib
@@ -18,13 +20,18 @@ import re
 import threading
 import weakref
 from types import MethodType
+from typing import Iterable
 
 import entrypoints
 import ophyd
 import ophyd.sim
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
+from pydm.config import STYLESHEET as PYDM_USER_STYLESHEET
+from pydm.config import STYLESHEET_INCLUDE_DEFAULT as PYDM_INCLUDE_DEFAULT
 from pydm.exception import raise_to_operator  # noqa
+from pydm.utilities.stylesheet import \
+    GLOBAL_STYLESHEET as PYDM_DEFAULT_STYLESHEET
 from pydm.widgets.base import PyDMWritableWidget
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import QSize
@@ -228,9 +235,18 @@ def clean_name(device, strip_parent=True):
     return clean_attr(name)
 
 
-def use_stylesheet(dark=False, widget=None):
+def use_stylesheet(
+    dark: bool = False,
+    widget: QtWidgets.QWidget | None = None,
+) -> None:
     """
     Use the Typhos stylesheet
+
+    This is no longer used directly in typhos in favor of
+    apply_standard_stylesheets.
+
+    This can still be used if you want the legacy behavior of ignoring PyDM
+    environment variables. The function is unchanged.
 
     Parameters
     ----------
@@ -260,6 +276,113 @@ def use_stylesheet(dark=False, widget=None):
 
     # Set Stylesheet
     widget.setStyleSheet(style)
+
+
+def compose_stylesheets(stylesheets: Iterable[str | pathlib.Path]) -> str:
+    """
+    Combine multiple qss stylesheets into one qss stylesheet.
+
+    If two stylesheets make conflicting specifications, the one passed into
+    this function first will take priority.
+
+    This is accomplished by placing the text from the highest-priority
+    stylesheets at the bottom of the combined stylesheet. Stylesheets are
+    evaluated in order from top to bottom, and newer elements on the bottom
+    will override elements at the top.
+
+    Parameters
+    ----------
+    stylesheets : iterable of str or pathlib.Path
+        An itetable, such as a list, of the stylesheets to combine.
+        Each element can either be a fully-loaded stylesheet or a full path to
+        a stylesheet. Stylesheet paths must end in the .qss suffix.
+        In the unlikely event that a string is both a valid path
+        and a valid stylesheet, it will be interpretted as a path,
+        even if no file exists at that path.
+
+    Returns
+    -------
+    composed_style : str
+        A string suitable for passing into QWidget.setStylesheet that
+        incorporates all of the input stylesheets.
+
+    Raises
+    ------
+    OSError
+        If any error is encountered while reading a file
+    TypeError
+        If the input is not a valid type
+    """
+    style_parts = []
+    for sheet in stylesheets:
+        path = pathlib.Path(sheet)
+        if isinstance(sheet, pathlib.Path) or path.suffix == ".qss":
+            with path.open() as fd:
+                style_parts.append(fd.read())
+        elif isinstance(sheet, str):
+            style_parts.append(sheet)
+        else:
+            raise TypeError(f"Invalid input {sheet} of type {type(sheet)}")
+    return "\n".join(reversed(style_parts))
+
+
+def apply_standard_stylesheets(
+    dark: bool = False,
+    paths: Iterable[str] | None = None,
+    include_pydm: bool = True,
+    widget: QtWidgets.QWidget | None = None,
+) -> None:
+    """
+    Apply all the stylesheets at once, along with the Fusion style.
+
+    Applies stylesheets with the following priority order:
+    - Any existing stylesheet data on the widget
+    - User stylesheets in the paths argument
+    - User stylesheets in PYDM_STYLESHEET (which behaves as a path)
+    - Typhos's stylesheet (either the dark or the light variant)
+    - PyDM's built-in stylesheet, if PYDM_STYLESHEET_INCLUDE_DEFAULT is set.
+
+    The Fusion style can only be applied to a QApplication.
+
+    Parameters
+    ----------
+    dark : bool, optional
+        Whether or not to use the QDarkStyleSheet theme. By default the light
+        theme is chosen.
+    paths : iterable of str, optional
+        User-provided paths to stylesheets to apply.
+    include_pydm : bool, optional
+        Whether or not to use the stylesheets defined in the pydm environment
+        variables. Defaults to True.
+    widget : QWidget, optional
+        The widget to apply the stylesheet to.
+        If omitted, apply to the whole QApplication.
+    """
+    if isinstance(widget, QtWidgets.QApplication):
+        widget.setStyle(QtWidgets.QStyleFactory.create('Fusion'))
+
+    stylesheets = []
+
+    if widget is None:
+        widget = QtWidgets.QApplication.instance()
+    stylesheets.append(widget.styleSheet())
+
+    if paths is not None:
+        stylesheets.extend(paths)
+
+    if include_pydm and PYDM_USER_STYLESHEET:
+        stylesheets.extend(PYDM_USER_STYLESHEET.split(os.pathsep))
+
+    if dark:
+        import qdarkstyle
+        stylesheets.append(qdarkstyle.load_stylesheet_pyqt5())
+    else:
+        stylesheets.append(ui_dir / 'style.qss')
+
+    if include_pydm and PYDM_INCLUDE_DEFAULT:
+        stylesheets.append(PYDM_DEFAULT_STYLESHEET)
+
+    widget.setStyleSheet(compose_stylesheets(stylesheets))
 
 
 def random_color():
