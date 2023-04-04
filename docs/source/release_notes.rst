@@ -2,6 +2,29 @@
  Release History
 =================
 
+v2.4.1 (2023-4-4)
+=================
+
+Description
+-----------
+This is a bugfix and maintenance/CI release.
+
+Bugfixes
+--------
+- Include the normal PyDM stylesheets in the loading process.
+  Previously, this was leading to unexpected behavior.
+
+Maintenance
+-----------
+- Fix an issue related to a deleted flake8 mirror.
+- Migrate to pyproject.toml, github actions, and run pyupgrade.
+
+Contributors
+------------
+- tangkong
+- zllentz
+
+
 v2.4.0 (2022-11-4)
 ==================
 
