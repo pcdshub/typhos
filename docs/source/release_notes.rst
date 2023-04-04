@@ -2,6 +2,33 @@
  Release History
 =================
 
+v2.4.1 (2023-4-4)
+=================
+
+Description
+-----------
+This is a bugfix and maintenance/CI release.
+
+Bugfixes
+--------
+- Include the normal PyDM stylesheets in the loading process.
+  Previously, this was leading to unexpected behavior.
+
+Maintenance
+-----------
+- Fix an issue related to a deleted flake8 mirror.
+- Migrates from Travis CI to GitHub Actions for continuous integration testing, and documentation deployment.
+- Updates typhos to use setuptools-scm, replacing versioneer, as its version-string management tool of choice.
+- Syntax has been updated to Python 3.9+ via ``pyupgrade``.
+- typhos has migrated to modern ``pyproject.toml``, replacing ``setup.py``.
+- Sphinx 6.0 now supported for documentation building.
+
+Contributors
+------------
+- tangkong
+- zllentz
+
+
 v2.4.0 (2022-11-4)
 ==================
 
