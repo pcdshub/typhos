@@ -17,7 +17,11 @@ Bugfixes
 Maintenance
 -----------
 - Fix an issue related to a deleted flake8 mirror.
-- Migrate to pyproject.toml, github actions, and run pyupgrade.
+- Migrates from Travis CI to GitHub Actions for continuous integration testing, and documentation deployment.
+- Updates typhos to use setuptools-scm, replacing versioneer, as its version-string management tool of choice.
+- Syntax has been updated to Python 3.9+ via ``pyupgrade``.
+- typhos has migrated to modern ``pyproject.toml``, replacing ``setup.py``.
+- Sphinx 6.0 now supported for documentation building.
 
 Contributors
 ------------
