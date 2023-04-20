@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.utils &mdash; Typhos 2.4.1 documentation</title>
+  <title>typhos.utils &mdash; Typhos 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/docs-versions-menu.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -33,7 +33,7 @@
             Typhos
           </a>
               <div class="version">
-                2.4.1
+                3.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -110,11 +111,12 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">weakref</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">entrypoints</span>
 <span class="kn">import</span> <span class="nn">ophyd</span>
 <span class="kn">import</span> <span class="nn">ophyd.sim</span>
+<span class="kn">import</span> <span class="nn">pydm</span>
 <span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Device</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignalBase</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
 <span class="kn">from</span> <span class="nn">pydm.config</span> <span class="kn">import</span> <span class="n">STYLESHEET</span> <span class="k">as</span> <span class="n">PYDM_USER_STYLESHEET</span>
@@ -128,7 +130,7 @@
 <span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="kn">import</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QMovie</span><span class="p">,</span> <span class="n">QPainter</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QWidget</span>
 
-<span class="kn">from</span> <span class="nn">typhos</span> <span class="kn">import</span> <span class="n">plugins</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">plugins</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">happi</span>
@@ -183,6 +185,13 @@
 
 <span class="k">if</span> <span class="n">happi</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;happi is not installed; some features may be unavailable&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TyphosException">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosException">[docs]</a>
+<span class="k">class</span> <span class="nc">TyphosException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="o">...</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_display_paths</span><span class="p">():</span>
@@ -252,7 +261,9 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
 
 
-<div class="viewcode-block" id="channel_from_signal"><a class="viewcode-back" href="../../utils.html#typhos.utils.channel_from_signal">[docs]</a><span class="k">def</span> <span class="nf">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="channel_from_signal">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.channel_from_signal">[docs]</a>
+<span class="k">def</span> <span class="nf">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a PyDM address from arbitrary signal type</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -276,7 +287,10 @@
     <span class="k">return</span> <span class="n">channel_name</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;sig&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="is_signal_ro"><a class="viewcode-back" href="../../utils.html#typhos.utils.is_signal_ro">[docs]</a><span class="k">def</span> <span class="nf">is_signal_ro</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+
+<div class="viewcode-block" id="is_signal_ro">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.is_signal_ro">[docs]</a>
+<span class="k">def</span> <span class="nf">is_signal_ro</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return whether the signal is read-only, based on its class.</span>
 
@@ -286,21 +300,30 @@
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="p">(</span><span class="n">SignalRO</span><span class="p">,</span> <span class="n">EpicsSignalRO</span><span class="p">,</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">SynSignalRO</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="channel_name"><a class="viewcode-back" href="../../utils.html#typhos.utils.channel_name">[docs]</a><span class="k">def</span> <span class="nf">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;ca&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="channel_name">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.channel_name">[docs]</a>
+<span class="k">def</span> <span class="nf">channel_name</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;ca&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a valid PyDM channel from a PV name</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">protocol</span> <span class="o">+</span> <span class="s1">&#39;://&#39;</span> <span class="o">+</span> <span class="n">pv</span></div>
 
 
-<div class="viewcode-block" id="clean_attr"><a class="viewcode-back" href="../../utils.html#typhos.utils.clean_attr">[docs]</a><span class="k">def</span> <span class="nf">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
+
+<div class="viewcode-block" id="clean_attr">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.clean_attr">[docs]</a>
+<span class="k">def</span> <span class="nf">clean_attr</span><span class="p">(</span><span class="n">attr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a nicer, human readable alias from a Python attribute name</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="clean_name"><a class="viewcode-back" href="../../utils.html#typhos.utils.clean_name">[docs]</a><span class="k">def</span> <span class="nf">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="clean_name">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.clean_name">[docs]</a>
+<span class="k">def</span> <span class="nf">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a human readable name for a device</span>
 
@@ -325,7 +348,10 @@
     <span class="k">return</span> <span class="n">clean_attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="use_stylesheet"><a class="viewcode-back" href="../../utils.html#typhos.utils.use_stylesheet">[docs]</a><span class="k">def</span> <span class="nf">use_stylesheet</span><span class="p">(</span>
+
+<div class="viewcode-block" id="use_stylesheet">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.use_stylesheet">[docs]</a>
+<span class="k">def</span> <span class="nf">use_stylesheet</span><span class="p">(</span>
     <span class="n">dark</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -368,7 +394,10 @@
     <span class="n">widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">style</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="compose_stylesheets"><a class="viewcode-back" href="../../utils.html#typhos.utils.compose_stylesheets">[docs]</a><span class="k">def</span> <span class="nf">compose_stylesheets</span><span class="p">(</span><span class="n">stylesheets</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<div class="viewcode-block" id="compose_stylesheets">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.compose_stylesheets">[docs]</a>
+<span class="k">def</span> <span class="nf">compose_stylesheets</span><span class="p">(</span><span class="n">stylesheets</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Combine multiple qss stylesheets into one qss stylesheet.</span>
 
@@ -416,7 +445,10 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">style_parts</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="apply_standard_stylesheets"><a class="viewcode-back" href="../../utils.html#typhos.utils.apply_standard_stylesheets">[docs]</a><span class="k">def</span> <span class="nf">apply_standard_stylesheets</span><span class="p">(</span>
+
+<div class="viewcode-block" id="apply_standard_stylesheets">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.apply_standard_stylesheets">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_standard_stylesheets</span><span class="p">(</span>
     <span class="n">dark</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">paths</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">include_pydm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -475,14 +507,20 @@
     <span class="n">widget</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">compose_stylesheets</span><span class="p">(</span><span class="n">stylesheets</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="random_color"><a class="viewcode-back" href="../../utils.html#typhos.utils.random_color">[docs]</a><span class="k">def</span> <span class="nf">random_color</span><span class="p">():</span>
+
+<div class="viewcode-block" id="random_color">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.random_color">[docs]</a>
+<span class="k">def</span> <span class="nf">random_color</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a random hex color description&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">QColor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
                   <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
                   <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="TyphosLoading"><a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosLoading">[docs]</a><span class="k">class</span> <span class="nc">TyphosLoading</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TyphosLoading">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosLoading">[docs]</a>
+<span class="k">class</span> <span class="nc">TyphosLoading</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A QLabel with an animation for loading status.</span>
 
@@ -513,7 +551,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">setContextMenuPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DefaultContextMenu</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TyphosLoading.contextMenuEvent"><a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosLoading.contextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosLoading.contextMenuEvent">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosLoading.contextMenuEvent">[docs]</a>
+    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="n">menu</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">copy_to_clipboard</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
@@ -534,6 +574,7 @@
 
         <span class="n">menu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()))</span></div>
 
+
     <span class="k">def</span> <span class="nf">_handle_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMovie</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
@@ -547,6 +588,7 @@
     <span class="k">def</span> <span class="nf">iconSize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span> <span class="o">=</span> <span class="n">size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_animation</span><span class="o">.</span><span class="n">setScaledSize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_icon_size</span><span class="p">)</span></div>
+
 
 
 <span class="k">class</span> <span class="nc">TyphosObject</span><span class="p">:</span>
@@ -599,7 +641,9 @@
         <span class="k">return</span> <span class="n">instance</span>
 
 
-<div class="viewcode-block" id="WeakPartialMethodSlot"><a class="viewcode-back" href="../../utils.html#typhos.utils.WeakPartialMethodSlot">[docs]</a><span class="k">class</span> <span class="nc">WeakPartialMethodSlot</span><span class="p">:</span>
+<div class="viewcode-block" id="WeakPartialMethodSlot">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.WeakPartialMethodSlot">[docs]</a>
+<span class="k">class</span> <span class="nc">WeakPartialMethodSlot</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A PyQt-compatible slot for a partial method.</span>
 
@@ -684,7 +728,10 @@
         <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TyphosBase"><a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosBase">[docs]</a><span class="k">class</span> <span class="nc">TyphosBase</span><span class="p">(</span><span class="n">TyphosObject</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TyphosBase">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.TyphosBase">[docs]</a>
+<span class="k">class</span> <span class="nc">TyphosBase</span><span class="p">(</span><span class="n">TyphosObject</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base widget for all Typhos widgets that interface with devices&quot;&quot;&quot;</span>
 
     <span class="n">_weak_partials_</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">WeakPartialMethodSlot</span><span class="p">]</span>
@@ -724,7 +771,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_weak_partials_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="make_identifier"><a class="viewcode-back" href="../../utils.html#typhos.utils.make_identifier">[docs]</a><span class="k">def</span> <span class="nf">make_identifier</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+
+<div class="viewcode-block" id="make_identifier">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.make_identifier">[docs]</a>
+<span class="k">def</span> <span class="nf">make_identifier</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Make a Python string into a valid Python identifier&quot;&quot;&quot;</span>
     <span class="c1"># That was easy</span>
     <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">isidentifier</span><span class="p">():</span>
@@ -742,7 +792,10 @@
     <span class="k">return</span> <span class="n">name</span></div>
 
 
-<div class="viewcode-block" id="flatten_tree"><a class="viewcode-back" href="../../utils.html#typhos.utils.flatten_tree">[docs]</a><span class="k">def</span> <span class="nf">flatten_tree</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+
+<div class="viewcode-block" id="flatten_tree">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.flatten_tree">[docs]</a>
+<span class="k">def</span> <span class="nf">flatten_tree</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Flatten a tree of parameters&quot;&quot;&quot;</span>
     <span class="n">tree</span> <span class="o">=</span> <span class="p">[</span><span class="n">param</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">childs</span><span class="p">:</span>
@@ -750,7 +803,10 @@
     <span class="k">return</span> <span class="n">tree</span></div>
 
 
-<div class="viewcode-block" id="clear_layout"><a class="viewcode-back" href="../../utils.html#typhos.utils.clear_layout">[docs]</a><span class="k">def</span> <span class="nf">clear_layout</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
+
+<div class="viewcode-block" id="clear_layout">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.clear_layout">[docs]</a>
+<span class="k">def</span> <span class="nf">clear_layout</span><span class="p">(</span><span class="n">layout</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Clear a QLayout&quot;&quot;&quot;</span>
     <span class="k">while</span> <span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">():</span>
         <span class="n">child</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -760,7 +816,10 @@
             <span class="n">clear_layout</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">layout</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="reload_widget_stylesheet"><a class="viewcode-back" href="../../utils.html#typhos.utils.reload_widget_stylesheet">[docs]</a><span class="k">def</span> <span class="nf">reload_widget_stylesheet</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="reload_widget_stylesheet">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.reload_widget_stylesheet">[docs]</a>
+<span class="k">def</span> <span class="nf">reload_widget_stylesheet</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reload the stylesheet of the provided widget&quot;&quot;&quot;</span>
     <span class="n">widget</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">unpolish</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
     <span class="n">widget</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">polish</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
@@ -771,7 +830,10 @@
                 <span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="save_suite"><a class="viewcode-back" href="../../utils.html#typhos.utils.save_suite">[docs]</a><span class="k">def</span> <span class="nf">save_suite</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">file_or_buffer</span><span class="p">):</span>
+
+<div class="viewcode-block" id="save_suite">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.save_suite">[docs]</a>
+<span class="k">def</span> <span class="nf">save_suite</span><span class="p">(</span><span class="n">suite</span><span class="p">,</span> <span class="n">file_or_buffer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a file capable of relaunching the TyphosSuite</span>
 
@@ -792,7 +854,10 @@
     <span class="n">handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">saved_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="n">devices</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="load_suite"><a class="viewcode-back" href="../../utils.html#typhos.utils.load_suite">[docs]</a><span class="k">def</span> <span class="nf">load_suite</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="load_suite">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.load_suite">[docs]</a>
+<span class="k">def</span> <span class="nf">load_suite</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;</span>
 <span class="sd">    Load a file saved via Typhos</span>
 
@@ -822,6 +887,7 @@
         <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Imported module has no &#39;create_suite&#39; method!&quot;</span><span class="p">)</span></div>
 
 
+
 <span class="n">saved_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">import sys</span>
 <span class="s2">import typhos.cli</span>
@@ -836,7 +902,9 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="no_device_lazy_load"><a class="viewcode-back" href="../../utils.html#typhos.utils.no_device_lazy_load">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<div class="viewcode-block" id="no_device_lazy_load">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.no_device_lazy_load">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">no_device_lazy_load</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Context manager which disables the ophyd.device.Device</span>
@@ -850,13 +918,17 @@
         <span class="n">Device</span><span class="o">.</span><span class="n">lazy_wait_for_connection</span> <span class="o">=</span> <span class="n">old_val</span></div>
 
 
-<div class="viewcode-block" id="pyqt_class_from_enum"><a class="viewcode-back" href="../../utils.html#typhos.utils.pyqt_class_from_enum">[docs]</a><span class="k">def</span> <span class="nf">pyqt_class_from_enum</span><span class="p">(</span><span class="n">enum</span><span class="p">):</span>
+
+<div class="viewcode-block" id="pyqt_class_from_enum">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.pyqt_class_from_enum">[docs]</a>
+<span class="k">def</span> <span class="nf">pyqt_class_from_enum</span><span class="p">(</span><span class="n">enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Create an inheritable base class from a Python Enum, which can also be used</span>
 <span class="sd">    for Q_ENUMS.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">enum_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">enum</span><span class="p">)}</span>
     <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="p">),</span> <span class="n">enum_dict</span><span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_template_filenames_for_class</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">view_type</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">include_mro</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -877,13 +949,18 @@
             <span class="k">break</span>
 
 
-<div class="viewcode-block" id="remove_duplicate_items"><a class="viewcode-back" href="../../utils.html#typhos.utils.remove_duplicate_items">[docs]</a><span class="k">def</span> <span class="nf">remove_duplicate_items</span><span class="p">(</span><span class="n">list_</span><span class="p">):</span>
+<div class="viewcode-block" id="remove_duplicate_items">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.remove_duplicate_items">[docs]</a>
+<span class="k">def</span> <span class="nf">remove_duplicate_items</span><span class="p">(</span><span class="n">list_</span><span class="p">):</span>
     <span class="s1">&#39;Return a de-duplicated list/tuple of items in `list_`, retaining order&#39;</span>
     <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">list_</span><span class="p">)</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">list_</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">list_</span><span class="o">.</span><span class="n">index</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="is_standard_template"><a class="viewcode-back" href="../../utils.html#typhos.utils.is_standard_template">[docs]</a><span class="k">def</span> <span class="nf">is_standard_template</span><span class="p">(</span><span class="n">template</span><span class="p">):</span>
+
+<div class="viewcode-block" id="is_standard_template">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.is_standard_template">[docs]</a>
+<span class="k">def</span> <span class="nf">is_standard_template</span><span class="p">(</span><span class="n">template</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Is the template a core one provided with typhos?</span>
 
@@ -895,7 +972,10 @@
     <span class="k">return</span> <span class="n">common_path</span> <span class="o">==</span> <span class="n">ui_core_dir</span></div>
 
 
-<div class="viewcode-block" id="find_templates_for_class"><a class="viewcode-back" href="../../utils.html#typhos.utils.find_templates_for_class">[docs]</a><span class="k">def</span> <span class="nf">find_templates_for_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">view_type</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+
+<div class="viewcode-block" id="find_templates_for_class">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.find_templates_for_class">[docs]</a>
+<span class="k">def</span> <span class="nf">find_templates_for_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">view_type</span><span class="p">,</span> <span class="n">paths</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">extensions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">include_mro</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Given a class `cls` and a view type (such as &#39;detailed&#39;), search `paths`</span>
@@ -941,7 +1021,10 @@
                         <span class="k">yield</span> <span class="n">match</span></div>
 
 
-<div class="viewcode-block" id="find_file_in_paths"><a class="viewcode-back" href="../../utils.html#typhos.utils.find_file_in_paths">[docs]</a><span class="k">def</span> <span class="nf">find_file_in_paths</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="find_file_in_paths">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.find_file_in_paths">[docs]</a>
+<span class="k">def</span> <span class="nf">find_file_in_paths</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Search for filename ``filename`` in the list of paths ``paths``</span>
 
@@ -978,7 +1061,10 @@
                 <span class="k">yield</span> <span class="n">match</span></div>
 
 
-<div class="viewcode-block" id="get_device_from_fake_class"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_device_from_fake_class">[docs]</a><span class="k">def</span> <span class="nf">get_device_from_fake_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_device_from_fake_class">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.get_device_from_fake_class">[docs]</a>
+<span class="k">def</span> <span class="nf">get_device_from_fake_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the non-fake class, given a fake class</span>
 
@@ -1004,7 +1090,10 @@
     <span class="k">return</span> <span class="n">actual_class</span></div>
 
 
-<div class="viewcode-block" id="is_fake_device_class"><a class="viewcode-back" href="../../utils.html#typhos.utils.is_fake_device_class">[docs]</a><span class="k">def</span> <span class="nf">is_fake_device_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+
+<div class="viewcode-block" id="is_fake_device_class">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.is_fake_device_class">[docs]</a>
+<span class="k">def</span> <span class="nf">is_fake_device_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Is ``cls`` a fake device from :func:`ophyd.sim.make_fake_device`?</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1015,7 +1104,10 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="code_from_device_repr"><a class="viewcode-back" href="../../utils.html#typhos.utils.code_from_device_repr">[docs]</a><span class="k">def</span> <span class="nf">code_from_device_repr</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
+
+<div class="viewcode-block" id="code_from_device_repr">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.code_from_device_repr">[docs]</a>
+<span class="k">def</span> <span class="nf">code_from_device_repr</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return code to create a device from its ``repr`` information.</span>
 
@@ -1026,7 +1118,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__module__</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Device class must be in a module&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Device class must be in a module&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
     <span class="n">class_name</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
     <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -1066,7 +1158,10 @@
 <span class="s1">&#39;&#39;&#39;</span></div>
 
 
-<div class="viewcode-block" id="code_from_device"><a class="viewcode-back" href="../../utils.html#typhos.utils.code_from_device">[docs]</a><span class="k">def</span> <span class="nf">code_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
+
+<div class="viewcode-block" id="code_from_device">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.code_from_device">[docs]</a>
+<span class="k">def</span> <span class="nf">code_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate code required to load ``device`` in another process</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1084,7 +1179,10 @@
 <span class="s1">&#39;&#39;&#39;</span></div>
 
 
-<div class="viewcode-block" id="subscription_context"><a class="viewcode-back" href="../../utils.html#typhos.utils.subscription_context">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+
+<div class="viewcode-block" id="subscription_context">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.subscription_context">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">subscription_context</span><span class="p">(</span><span class="o">*</span><span class="n">objects</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    [Context manager] Subscribe to a specific event from all objects</span>
@@ -1122,7 +1220,10 @@
                 <span class="o">...</span></div>
 
 
-<div class="viewcode-block" id="get_all_signals_from_device"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_all_signals_from_device">[docs]</a><span class="k">def</span> <span class="nf">get_all_signals_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">include_lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filter_by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_all_signals_from_device">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.get_all_signals_from_device">[docs]</a>
+<span class="k">def</span> <span class="nf">get_all_signals_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">include_lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filter_by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Get all signals in a given device</span>
 
@@ -1153,7 +1254,10 @@
         <span class="k">return</span> <span class="n">_get_signals</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="subscription_context_device"><a class="viewcode-back" href="../../utils.html#typhos.utils.subscription_context_device">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+
+<div class="viewcode-block" id="subscription_context_device">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.subscription_context_device">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">subscription_context_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">event_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                                 <span class="n">include_lazy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">filter_by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
@@ -1181,6 +1285,7 @@
     <span class="k">with</span> <span class="n">subscription_context</span><span class="p">(</span><span class="o">*</span><span class="n">signals</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
                               <span class="n">event_type</span><span class="o">=</span><span class="n">event_type</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">)</span> <span class="k">as</span> <span class="n">obj_to_cid</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">obj_to_cid</span></div>
+
 
 
 <span class="k">class</span> <span class="nc">_ConnectionStatus</span><span class="p">:</span>
@@ -1268,7 +1373,9 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="connection_status_monitor"><a class="viewcode-back" href="../../utils.html#typhos.utils.connection_status_monitor">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<div class="viewcode-block" id="connection_status_monitor">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.connection_status_monitor">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">connection_status_monitor</span><span class="p">(</span><span class="o">*</span><span class="n">signals</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    [Context manager] Monitor connection status from a number of signals</span>
@@ -1297,7 +1404,10 @@
         <span class="k">yield</span> <span class="n">status</span></div>
 
 
-<div class="viewcode-block" id="DeviceConnectionMonitorThread"><a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread">[docs]</a><span class="k">class</span> <span class="nc">DeviceConnectionMonitorThread</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">):</span>
+
+<div class="viewcode-block" id="DeviceConnectionMonitorThread">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread">[docs]</a>
+<span class="k">class</span> <span class="nc">DeviceConnectionMonitorThread</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Monitor connection status in a background thread</span>
 
@@ -1326,7 +1436,9 @@
 
         <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DeviceConnectionMonitorThread.stop"><a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
+<div class="viewcode-block" id="DeviceConnectionMonitorThread.stop">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread.stop">[docs]</a>
+    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop the background thread and clean up.</span>
 
@@ -1343,21 +1455,28 @@
         <span class="k">if</span> <span class="n">wait_ms</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">msecs</span><span class="o">=</span><span class="n">wait_ms</span><span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_update</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DeviceConnectionMonitorThread.run"><a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DeviceConnectionMonitorThread.run">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.DeviceConnectionMonitorThread.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">signals</span> <span class="o">=</span> <span class="n">get_all_signals_from_device</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">include_lazy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">include_lazy</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="n">connection_status_monitor</span><span class="p">(</span><span class="o">*</span><span class="n">signals</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">):</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isInterruptionRequested</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ObjectConnectionMonitorThread"><a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread">[docs]</a><span class="k">class</span> <span class="nc">ObjectConnectionMonitorThread</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ObjectConnectionMonitorThread">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread">[docs]</a>
+<span class="k">class</span> <span class="nc">ObjectConnectionMonitorThread</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Monitor connection status in a background thread</span>
 
@@ -1380,7 +1499,9 @@
 
         <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ObjectConnectionMonitorThread.stop"><a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectConnectionMonitorThread.stop">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread.stop">[docs]</a>
+    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stop the background thread and clean up.</span>
 
@@ -1396,6 +1517,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">requestInterruption</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">wait_ms</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">msecs</span><span class="o">=</span><span class="n">wait_ms</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
@@ -1423,7 +1545,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_update</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ObjectConnectionMonitorThread.run"><a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectConnectionMonitorThread.run">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.ObjectConnectionMonitorThread.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">connection_status_monitor</span><span class="p">(</span>
@@ -1436,10 +1560,14 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_update_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">locked</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ThreadPoolWorker"><a class="viewcode-back" href="../../utils.html#typhos.utils.ThreadPoolWorker">[docs]</a><span class="k">class</span> <span class="nc">ThreadPoolWorker</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRunnable</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ThreadPoolWorker">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.ThreadPoolWorker">[docs]</a>
+<span class="k">class</span> <span class="nc">ThreadPoolWorker</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QRunnable</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Worker thread helper</span>
 
@@ -1459,13 +1587,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
-<div class="viewcode-block" id="ThreadPoolWorker.run"><a class="viewcode-back" href="../../utils.html#typhos.utils.ThreadPoolWorker.run">[docs]</a>    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="ThreadPoolWorker.run">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.ThreadPoolWorker.run">[docs]</a>
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to run </span><span class="si">%s</span><span class="s1">(*</span><span class="si">%s</span><span class="s1">, **</span><span class="si">%r</span><span class="s1">) in thread pool&#39;</span><span class="p">,</span>
-                             <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">def</span> <span class="nf">_get_top_level_components</span><span class="p">(</span><span class="n">device_cls</span><span class="p">):</span>
@@ -1473,7 +1605,27 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">device_cls</span><span class="o">.</span><span class="n">_sig_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="find_parent_with_class"><a class="viewcode-back" href="../../utils.html#typhos.utils.find_parent_with_class">[docs]</a><span class="k">def</span> <span class="nf">find_parent_with_class</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">QWidget</span><span class="p">):</span>
+<div class="viewcode-block" id="find_root_widget">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.find_root_widget">[docs]</a>
+<span class="k">def</span> <span class="nf">find_root_widget</span><span class="p">(</span><span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the root ancestor of a widget.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    widget : QWidget</span>
+<span class="sd">        The widget from which to start the search</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">widget</span>
+    <span class="k">while</span> <span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">parent</span></div>
+
+
+
+<div class="viewcode-block" id="find_parent_with_class">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.find_parent_with_class">[docs]</a>
+<span class="k">def</span> <span class="nf">find_parent_with_class</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">QWidget</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Finds the first parent of a widget that is an instance of ``klass``</span>
 
@@ -1493,7 +1645,10 @@
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="dump_grid_layout"><a class="viewcode-back" href="../../utils.html#typhos.utils.dump_grid_layout">[docs]</a><span class="k">def</span> <span class="nf">dump_grid_layout</span><span class="p">(</span><span class="n">layout</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cell_width</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+
+<div class="viewcode-block" id="dump_grid_layout">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.dump_grid_layout">[docs]</a>
+<span class="k">def</span> <span class="nf">dump_grid_layout</span><span class="p">(</span><span class="n">layout</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cell_width</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dump the layout of a :class:`QtWidgets.QGridLayout` to ``file``.</span>
 
@@ -1544,13 +1699,19 @@
         <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="nullcontext"><a class="viewcode-back" href="../../utils.html#typhos.utils.nullcontext">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+
+<div class="viewcode-block" id="nullcontext">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.nullcontext">[docs]</a>
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span> <span class="nf">nullcontext</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Stand-in for py3.7&#39;s contextlib.nullcontext&quot;&quot;&quot;</span>
     <span class="k">yield</span></div>
 
 
-<div class="viewcode-block" id="get_component"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_component">[docs]</a><span class="k">def</span> <span class="nf">get_component</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_component">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.get_component">[docs]</a>
+<span class="k">def</span> <span class="nf">get_component</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the component that made the given object.</span>
 
@@ -1570,7 +1731,10 @@
     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="n">obj</span><span class="o">.</span><span class="n">attr_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_variety_metadata"><a class="viewcode-back" href="../../utils.html#typhos.utils.get_variety_metadata">[docs]</a><span class="k">def</span> <span class="nf">get_variety_metadata</span><span class="p">(</span><span class="n">cpt</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_variety_metadata">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.get_variety_metadata">[docs]</a>
+<span class="k">def</span> <span class="nf">get_variety_metadata</span><span class="p">(</span><span class="n">cpt</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get &quot;variety&quot; metadata from a component or signal.</span>
 
@@ -1591,7 +1755,10 @@
     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cpt</span><span class="p">,</span> <span class="s1">&#39;_variety_metadata&#39;</span><span class="p">,</span> <span class="p">{})</span></div>
 
 
-<div class="viewcode-block" id="widget_to_image"><a class="viewcode-back" href="../../utils.html#typhos.utils.widget_to_image">[docs]</a><span class="k">def</span> <span class="nf">widget_to_image</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">fill_color</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">transparent</span><span class="p">):</span>
+
+<div class="viewcode-block" id="widget_to_image">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.widget_to_image">[docs]</a>
+<span class="k">def</span> <span class="nf">widget_to_image</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">fill_color</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">transparent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Paint the given widget in a new QtGui.QImage.</span>
 
@@ -1612,10 +1779,13 @@
     <span class="k">return</span> <span class="n">image</span></div>
 
 
+
 <span class="n">_connect_slots_unpatched</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="patch_connect_slots"><a class="viewcode-back" href="../../utils.html#typhos.utils.patch_connect_slots">[docs]</a><span class="k">def</span> <span class="nf">patch_connect_slots</span><span class="p">():</span>
+<div class="viewcode-block" id="patch_connect_slots">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.patch_connect_slots">[docs]</a>
+<span class="k">def</span> <span class="nf">patch_connect_slots</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Patches QtCore.QMetaObject.connectSlotsByName to catch SystemErrors.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1643,7 +1813,10 @@
     <span class="n">QtCore</span><span class="o">.</span><span class="n">QMetaObject</span><span class="o">.</span><span class="n">connectSlotsByName</span> <span class="o">=</span> <span class="n">connect_slots_patch</span></div>
 
 
-<div class="viewcode-block" id="link_signal_to_widget"><a class="viewcode-back" href="../../utils.html#typhos.utils.link_signal_to_widget">[docs]</a><span class="k">def</span> <span class="nf">link_signal_to_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+
+<div class="viewcode-block" id="link_signal_to_widget">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.link_signal_to_widget">[docs]</a>
+<span class="k">def</span> <span class="nf">link_signal_to_widget</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Registers the signal with PyDM, and sets the widget channel.</span>
 
@@ -1662,7 +1835,10 @@
             <span class="n">widget</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel_from_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="n">read</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="linked_attribute"><a class="viewcode-back" href="../../utils.html#typhos.utils.linked_attribute">[docs]</a><span class="k">def</span> <span class="nf">linked_attribute</span><span class="p">(</span><span class="n">property_attr</span><span class="p">,</span> <span class="n">widget_attr</span><span class="p">,</span> <span class="n">hide_unavailable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="linked_attribute">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.linked_attribute">[docs]</a>
+<span class="k">def</span> <span class="nf">linked_attribute</span><span class="p">(</span><span class="n">property_attr</span><span class="p">,</span> <span class="n">widget_attr</span><span class="p">,</span> <span class="n">hide_unavailable</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator which connects a device signal with a widget.</span>
 
@@ -1723,7 +1899,10 @@
     <span class="k">return</span> <span class="n">wrapper</span></div>
 
 
-<div class="viewcode-block" id="raise_window"><a class="viewcode-back" href="../../utils.html#typhos.utils.raise_window">[docs]</a><span class="k">def</span> <span class="nf">raise_window</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
+
+<div class="viewcode-block" id="raise_window">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.raise_window">[docs]</a>
+<span class="k">def</span> <span class="nf">raise_window</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Bring a widget&#39;s window into focus and on top of the window stack.</span>
 
@@ -1741,6 +1920,207 @@
     <span class="n">window</span><span class="o">.</span><span class="n">raise_</span><span class="p">()</span>
     <span class="n">window</span><span class="o">.</span><span class="n">activateWindow</span><span class="p">()</span>
     <span class="n">window</span><span class="o">.</span><span class="n">setFocus</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="FrameOnEditFilter">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.FrameOnEditFilter">[docs]</a>
+<span class="k">class</span> <span class="nc">FrameOnEditFilter</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A QLineEdit event filter for editing vs not editing style handling.</span>
+<span class="sd">    This will make the QLineEdit look like a QLabel when the user is</span>
+<span class="sd">    not editing it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="FrameOnEditFilter.eventFilter">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.FrameOnEditFilter.eventFilter">[docs]</a>
+    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">object</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Even if we install only on line edits, this can be passed a generic</span>
+        <span class="c1"># QWidget when we remove and clean up the line edit widget.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">FocusIn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_edit_style</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">FocusOut</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_no_edit_style</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="FrameOnEditFilter.set_edit_style">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.FrameOnEditFilter.set_edit_style">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">set_edit_style</span><span class="p">(</span><span class="nb">object</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a QLineEdit to the look and feel we want for editing.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        object : QLineEdit</span>
+<span class="sd">            Any line edit widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">setFrame</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">palette</span><span class="p">()</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QPalette</span><span class="o">.</span><span class="n">ColorRole</span><span class="o">.</span><span class="n">Base</span><span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;QLineEdit </span><span class="se">{{</span><span class="s2"> background: rgba(</span><span class="si">{</span><span class="n">color</span><span class="o">.</span><span class="n">red</span><span class="p">()</span><span class="si">}</span><span class="s2">,&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">color</span><span class="o">.</span><span class="n">green</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">color</span><span class="o">.</span><span class="n">blue</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">color</span><span class="o">.</span><span class="n">alpha</span><span class="p">()</span><span class="si">}</span><span class="s2">)</span><span class="se">}}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FrameOnEditFilter.set_no_edit_style">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.FrameOnEditFilter.set_no_edit_style">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">set_no_edit_style</span><span class="p">(</span><span class="nb">object</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a QLineEdit to the look and feel we want for not editing.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        object : QLineEdit</span>
+<span class="sd">            Any line edit widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">object</span><span class="o">.</span><span class="n">text</span><span class="p">():</span>
+            <span class="nb">object</span><span class="o">.</span><span class="n">setFrame</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="nb">object</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+                <span class="s2">&quot;QLineEdit { background: transparent }&quot;</span>
+            <span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="take_widget_screenshot">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.take_widget_screenshot">[docs]</a>
+<span class="k">def</span> <span class="nf">take_widget_screenshot</span><span class="p">(</span><span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Take a screenshot of the given widget, returning a QImage.&quot;&quot;&quot;</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">app</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># No apps, no screenshots!</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">primary_screen</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QScreen</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">primaryScreen</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Primary screen: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">primary_screen</span><span class="p">)</span>
+
+        <span class="n">screen</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">screen</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s2">&quot;screen&quot;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">primary_screen</span>
+        <span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Screenshot: </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">, primary screen: </span><span class="si">%s</span><span class="s2"> widget screen: </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">windowTitle</span><span class="p">(),</span>
+            <span class="n">widget</span><span class="p">,</span>
+            <span class="n">primary_screen</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">screen</span><span class="o">.</span><span class="n">grabWindow</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">winId</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="c1"># The widget may have been deleted already; do not fail in this</span>
+        <span class="c1"># scenario.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Widget </span><span class="si">%s</span><span class="s2"> screenshot failed due to: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">widget</span><span class="p">),</span> <span class="n">ex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="take_top_level_widget_screenshots">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.take_top_level_widget_screenshots">[docs]</a>
+<span class="k">def</span> <span class="nf">take_top_level_widget_screenshots</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">visible_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span>
+    <span class="nb">tuple</span><span class="p">[</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QImage</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+<span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Yield screenshots of all top-level widgets.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    visible_only : bool, optional</span>
+<span class="sd">        Only take screenshots of visible widgets.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    widget : QtWidgets.QWidget</span>
+<span class="sd">        The widget relating to the screenshot.</span>
+
+<span class="sd">    screenshot : QtGui.QImage</span>
+<span class="sd">        The screenshot image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">app</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># No apps, no screenshots!</span>
+        <span class="k">return</span>
+
+    <span class="k">for</span> <span class="n">screen_idx</span><span class="p">,</span> <span class="n">screen</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">screens</span><span class="p">(),</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Screen </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">screen_idx</span><span class="p">,</span>
+            <span class="n">screen</span><span class="p">,</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span>
+            <span class="n">screen</span><span class="o">.</span><span class="n">geometry</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">by_title</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">widget</span><span class="o">.</span><span class="n">windowTitle</span><span class="p">()</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">widget</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">should_take_screenshot</span><span class="p">(</span><span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+            <span class="n">visible</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="c1"># Widget could have been gc&#39;d in the meantime</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMenu</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Skipping QMenu for screenshots. </span><span class="si">%s</span><span class="s2"> parent=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">widget</span><span class="p">,</span>
+                <span class="n">parent</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">visible_only</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">visible</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">topLevelWidgets</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">by_title</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">should_take_screenshot</span><span class="p">(</span><span class="n">widget</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">take_widget_screenshot</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">widget</span><span class="p">,</span> <span class="n">image</span></div>
+
+
+
+<div class="viewcode-block" id="load_ui_file">
+<a class="viewcode-back" href="../../utils.html#typhos.utils.load_ui_file">[docs]</a>
+<span class="k">def</span> <span class="nf">load_ui_file</span><span class="p">(</span>
+    <span class="n">uifile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">macros</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pydm</span><span class="o">.</span><span class="n">Display</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a .ui file, perform macro substitution, then return the resulting QWidget.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    uifile : str</span>
+<span class="sd">        The path to a .ui file to load.</span>
+<span class="sd">    macros : dict, optional</span>
+<span class="sd">        A dictionary of macro variables to supply to the file to be opened.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pydm.Display</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">display</span> <span class="o">=</span> <span class="n">pydm</span><span class="o">.</span><span class="n">Display</span><span class="p">(</span><span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">display</span><span class="o">.</span><span class="n">load_ui_from_file</span><span class="p">(</span><span class="n">uifile</span><span class="p">,</span> <span class="n">macros</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">ex</span><span class="o">.</span><span class="n">pydm_display</span> <span class="o">=</span> <span class="n">display</span>
+        <span class="k">raise</span>
+
+    <span class="k">return</span> <span class="n">display</span></div>
+
 </pre></div>
 
            </div>

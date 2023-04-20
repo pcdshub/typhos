@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.cache &mdash; Typhos 2.4.1 documentation</title>
+  <title>typhos.cache &mdash; Typhos 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/docs-versions-menu.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -33,7 +33,7 @@
             Typhos
           </a>
               <div class="version">
-                2.4.1
+                3.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -111,7 +112,9 @@
 <span class="n">_GLOBAL_DISPLAY_PATH_CACHE</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="get_global_describe_cache"><a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_describe_cache">[docs]</a><span class="k">def</span> <span class="nf">get_global_describe_cache</span><span class="p">():</span>
+<div class="viewcode-block" id="get_global_describe_cache">
+<a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_describe_cache">[docs]</a>
+<span class="k">def</span> <span class="nf">get_global_describe_cache</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the _GlobalDescribeCache singleton.&quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_GLOBAL_DESCRIBE_CACHE</span>
     <span class="k">if</span> <span class="n">_GLOBAL_DESCRIBE_CACHE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -119,7 +122,10 @@
     <span class="k">return</span> <span class="n">_GLOBAL_DESCRIBE_CACHE</span></div>
 
 
-<div class="viewcode-block" id="get_global_widget_type_cache"><a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_widget_type_cache">[docs]</a><span class="k">def</span> <span class="nf">get_global_widget_type_cache</span><span class="p">():</span>
+
+<div class="viewcode-block" id="get_global_widget_type_cache">
+<a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_widget_type_cache">[docs]</a>
+<span class="k">def</span> <span class="nf">get_global_widget_type_cache</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the _GlobalWidgetTypeCache singleton.&quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_GLOBAL_WIDGET_TYPE_CACHE</span>
     <span class="k">if</span> <span class="n">_GLOBAL_WIDGET_TYPE_CACHE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -127,7 +133,10 @@
     <span class="k">return</span> <span class="n">_GLOBAL_WIDGET_TYPE_CACHE</span></div>
 
 
-<div class="viewcode-block" id="get_global_display_path_cache"><a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_display_path_cache">[docs]</a><span class="k">def</span> <span class="nf">get_global_display_path_cache</span><span class="p">():</span>
+
+<div class="viewcode-block" id="get_global_display_path_cache">
+<a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_display_path_cache">[docs]</a>
+<span class="k">def</span> <span class="nf">get_global_display_path_cache</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the _GlobalDisplayPathCache singleton.&quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_GLOBAL_DISPLAY_PATH_CACHE</span>
     <span class="k">if</span> <span class="n">_GLOBAL_DISPLAY_PATH_CACHE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -135,7 +144,10 @@
     <span class="k">return</span> <span class="n">_GLOBAL_DISPLAY_PATH_CACHE</span></div>
 
 
-<div class="viewcode-block" id="_GlobalDescribeCache"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache">[docs]</a><span class="k">class</span> <span class="nc">_GlobalDescribeCache</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+
+<div class="viewcode-block" id="_GlobalDescribeCache">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache">[docs]</a>
+<span class="k">class</span> <span class="nc">_GlobalDescribeCache</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cache of ophyd object descriptions.</span>
 
@@ -167,11 +179,14 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-<div class="viewcode-block" id="_GlobalDescribeCache.clear"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="_GlobalDescribeCache.clear">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache.clear">[docs]</a>
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the cache.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the description of ``obj``.&quot;&quot;&quot;</span>
@@ -190,13 +205,23 @@
 
 <span class="sd">        It calls describe, updates the cache, and emits a signal when done.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="p">:</span>
+            <span class="c1"># Cache was cleared before the signal was needed. Discard.</span>
+            <span class="k">return</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_describe</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Worker describe failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="c1"># The cache can be cleared externally. Don&#39;t fail if the object</span>
+                <span class="c1"># is already gone.</span>
+                <span class="o">...</span>
 
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_connection_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
@@ -214,7 +239,9 @@
             <span class="n">utils</span><span class="o">.</span><span class="n">ThreadPoolWorker</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="_GlobalDescribeCache.get"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="_GlobalDescribeCache.get">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache.get">[docs]</a>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        To access a description, call this method. If available, it will be</span>
 <span class="sd">        returned immediately.  Otherwise, upon connection and successful</span>
@@ -235,10 +262,14 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="c1"># Add the object, waiting for a connection update to determine</span>
             <span class="c1"># widget types</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">add_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">add_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="_GlobalWidgetTypeCache"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache">[docs]</a><span class="k">class</span> <span class="nc">_GlobalWidgetTypeCache</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+
+<div class="viewcode-block" id="_GlobalWidgetTypeCache">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache">[docs]</a>
+<span class="k">class</span> <span class="nc">_GlobalWidgetTypeCache</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cache of ophyd object Typhos widget types.</span>
 
@@ -269,9 +300,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">describe_cache</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_description</span><span class="p">,</span>
                                                     <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
 
-<div class="viewcode-block" id="_GlobalWidgetTypeCache.clear"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="_GlobalWidgetTypeCache.clear">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache.clear">[docs]</a>
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the cache.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
 
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_new_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">):</span>
@@ -286,7 +320,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">widgets_determined</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
-<div class="viewcode-block" id="_GlobalWidgetTypeCache.get"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="_GlobalWidgetTypeCache.get">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache.get">[docs]</a>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        To access widget types, call this method. If available, it will be</span>
 <span class="sd">        returned immediately.  Otherwise, upon connection and successful</span>
@@ -310,7 +346,9 @@
             <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">describe_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># In certain scenarios (such as testing) this might happen</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_new_description</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span></div></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_new_description</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="c1"># The default stale cached_path threshold time, in seconds:</span>
@@ -399,7 +437,9 @@
                 <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="n">pattern</span>
 
 
-<div class="viewcode-block" id="_GlobalDisplayPathCache"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache">[docs]</a><span class="k">class</span> <span class="nc">_GlobalDisplayPathCache</span><span class="p">:</span>
+<div class="viewcode-block" id="_GlobalDisplayPathCache">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache">[docs]</a>
+<span class="k">class</span> <span class="nc">_GlobalDisplayPathCache</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A cache for all configured display paths.</span>
 
@@ -413,13 +453,18 @@
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">DISPLAY_PATHS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-<div class="viewcode-block" id="_GlobalDisplayPathCache.update"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="_GlobalDisplayPathCache.update">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache.update">[docs]</a>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Force a reload of all paths in the cache.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Clearing global path cache.&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
             <span class="n">path</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="_GlobalDisplayPathCache.add_path"><a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache.add_path">[docs]</a>    <span class="k">def</span> <span class="nf">add_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="_GlobalDisplayPathCache.add_path">
+<a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache.add_path">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a path to be searched during ``glob``.</span>
 
@@ -433,7 +478,9 @@
         <span class="n">path</span> <span class="o">=</span> <span class="n">_CachedPath</span><span class="p">(</span>
             <span class="n">path</span><span class="p">,</span> <span class="n">stale_threshold</span><span class="o">=</span><span class="n">TYPHOS_DISPLAY_PATH_CACHE_TIME</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

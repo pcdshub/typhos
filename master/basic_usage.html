@@ -4,19 +4,19 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How it Works &mdash; Typhos 2.4.1 documentation</title>
+  <title>How it Works &mdash; Typhos 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
-        <script src="_static/docs-versions-menu.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -36,7 +36,7 @@
             Typhos
           </a>
               <div class="version">
-                2.4.1
+                3.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -69,6 +69,7 @@
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -105,7 +106,7 @@
            <div itemprop="articleBody">
              
   <section id="how-it-works">
-<h1>How it Works<a class="headerlink" href="#how-it-works" title="Permalink to this heading"></a></h1>
+<h1>How it Works<a class="headerlink" href="#how-it-works" title="Link to this heading"></a></h1>
 <p>Typhos has three major building blocks that combine into the final display seen
 by the operator:</p>
 <ul class="simple">
@@ -135,7 +136,7 @@ alternatively and be constructed using the <code class="docutils literal notrans
 </dd></dl>
 
 <section id="interpreting-a-device">
-<h2>Interpreting a Device<a class="headerlink" href="#interpreting-a-device" title="Permalink to this heading"></a></h2>
+<h2>Interpreting a Device<a class="headerlink" href="#interpreting-a-device" title="Link to this heading"></a></h2>
 <p>Typhos interprets the internal structure of the <code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code> to create the
 <cite>PyDM</cite> user interface, so the most intuitive way to configure the created
 display is to include components on the device itself. This also has the advantage
@@ -150,7 +151,7 @@ create any widgets:</p>
 </pre></div>
 </div>
 <section id="using-happi">
-<h3>Using Happi<a class="headerlink" href="#using-happi" title="Permalink to this heading"></a></h3>
+<h3>Using Happi<a class="headerlink" href="#using-happi" title="Link to this heading"></a></h3>
 <p>While <code class="docutils literal notranslate"><span class="pre">happi</span></code> is not a requirement for using <code class="docutils literal notranslate"><span class="pre">typhos</span></code>, it is recommended.
 For more information, visit the <a class="reference external" href="https://github.com/pcdshub/happi/">GitHub</a>
 repository. The main purpose of the package is to store information on our
@@ -190,7 +191,7 @@ configured the <code class="docutils literal notranslate"><span class="pre">$HAP
 </div>
 </section>
 <section id="signals-of-devices">
-<h3>Signals of Devices<a class="headerlink" href="#signals-of-devices" title="Permalink to this heading"></a></h3>
+<h3>Signals of Devices<a class="headerlink" href="#signals-of-devices" title="Link to this heading"></a></h3>
 <p>When making a custom screen, you can access signals associated with your device
 in several ways, in order of suggested use:</p>
 <ol class="arabic simple">
@@ -217,7 +218,7 @@ Channel Access with <code class="docutils literal notranslate"><span class="pre"
 </ol>
 </section>
 <section id="display-signals">
-<h3>Display Signals<a class="headerlink" href="#display-signals" title="Permalink to this heading"></a></h3>
+<h3>Display Signals<a class="headerlink" href="#display-signals" title="Link to this heading"></a></h3>
 <p>The first thing we’ll talk about is showing a group of signals associated with
 our <code class="docutils literal notranslate"><span class="pre">motor</span></code> object in a basic form called a
 <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a>.  Simply inspecting the device reveals a few
@@ -237,16 +238,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1680647484.2487311}),</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1695856437.8709993}),</span>
 <span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1680647484.2487297})])</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1695856437.8709984})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1680647484.2491562}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1695856437.871583}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1680647484.2491765})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1695856437.871604})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a
@@ -268,7 +269,7 @@ their importance to operation, each with a terse human-readable description of
 what the <code class="docutils literal notranslate"><span class="pre">Signal</span></code> represents.</p>
 </section>
 <section id="filling-templates">
-<h3>Filling Templates<a class="headerlink" href="#filling-templates" title="Permalink to this heading"></a></h3>
+<h3>Filling Templates<a class="headerlink" href="#filling-templates" title="Link to this heading"></a></h3>
 <p>Taking this concept further, instead of filling a single panel
 <a class="reference internal" href="display.html#typhos.TyphosDeviceDisplay" title="typhos.TyphosDeviceDisplay"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosDeviceDisplay</span></code></a> allows a template to be created with a multitude
 of widgets and panels. <code class="docutils literal notranslate"><span class="pre">Typhos</span></code> will find widgets that accept devices, but do
@@ -287,7 +288,7 @@ shown:</p>
 </section>
 </section>
 <section id="the-typhossuite">
-<h2>The TyphosSuite<a class="headerlink" href="#the-typhossuite" title="Permalink to this heading"></a></h2>
+<h2>The TyphosSuite<a class="headerlink" href="#the-typhossuite" title="Link to this heading"></a></h2>
 <p>A complete application can be made by loading the <a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSuite</span></code></a>. Below
 is the complete code from start to finish required to create the suite. Look at
 the <code class="docutils literal notranslate"><span class="pre">TyphosSuited.default_tools</span></code> to control which <code class="docutils literal notranslate"><span class="pre">typhos.tools</span></code> are
@@ -309,7 +310,7 @@ loaded.</p>
 </div>
 </section>
 <section id="using-the-stylesheet">
-<h2>Using the StyleSheet<a class="headerlink" href="#using-the-stylesheet" title="Permalink to this heading"></a></h2>
+<h2>Using the StyleSheet<a class="headerlink" href="#using-the-stylesheet" title="Link to this heading"></a></h2>
 <p>Typhos ships with two stylesheets to improve the look and feel of the widgets.
 When invoking <code class="docutils literal notranslate"><span class="pre">typhos</span></code> from the CLI as normal, you can pass
 the <code class="docutils literal notranslate"><span class="pre">--dark</span></code> flag to use the dark stylesheet instead of the light mode,
@@ -338,7 +339,7 @@ This function also handles setting the “Fusion” <code class="docutils litera
 make the interface have an operating system independent look and feel.</p>
 </section>
 <section id="using-the-documentation-widget">
-<h2>Using the Documentation Widget<a class="headerlink" href="#using-the-documentation-widget" title="Permalink to this heading"></a></h2>
+<h2>Using the Documentation Widget<a class="headerlink" href="#using-the-documentation-widget" title="Link to this heading"></a></h2>
 <p>Typhos has a built-in documentation helper, which allows for the in-line
 linking and display of a user-provided website.</p>
 <p>To inform Typhos how to load documentation specific to your facility, please
@@ -364,7 +365,7 @@ to add a header <code class="docutils literal notranslate"><span class="pre">&qu
 </ol>
 </section>
 <section id="using-the-jira-bug-reporting-widget">
-<h2>Using the Jira Bug Reporting Widget<a class="headerlink" href="#using-the-jira-bug-reporting-widget" title="Permalink to this heading"></a></h2>
+<h2>Using the Jira Bug Reporting Widget<a class="headerlink" href="#using-the-jira-bug-reporting-widget" title="Link to this heading"></a></h2>
 <p>Typhos has an optional built-in widget to generate Jira user stories/bug
 reports.</p>
 <p>A prerequisite to this support is, of course, a working Jira installation
@@ -383,7 +384,7 @@ usernames, such as <code class="docutils literal notranslate"><span class="pre">
 </ol>
 </section>
 <section id="launching-the-examples">
-<h2>Launching the Examples<a class="headerlink" href="#launching-the-examples" title="Permalink to this heading"></a></h2>
+<h2>Launching the Examples<a class="headerlink" href="#launching-the-examples" title="Link to this heading"></a></h2>
 <p>There are example screens in the <code class="docutils literal notranslate"><span class="pre">typhos.examples</span></code> submodule. After
 installing <code class="docutils literal notranslate"><span class="pre">typhos</span></code>, you can launch them as follows:</p>
 <ul class="simple">

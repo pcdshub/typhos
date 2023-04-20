@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.plugins.core &mdash; Typhos 2.4.1 documentation</title>
+  <title>typhos.plugins.core &mdash; Typhos 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/docs-versions-menu.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -33,7 +33,7 @@
             Typhos
           </a>
               <div class="version">
-                2.4.1
+                3.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../release_notes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -105,7 +106,9 @@
 <span class="n">signal_registry</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="register_signal"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.register_signal">[docs]</a><span class="k">def</span> <span class="nf">register_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+<div class="viewcode-block" id="register_signal">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.register_signal">[docs]</a>
+<span class="k">def</span> <span class="nf">register_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add a new Signal to the registry.</span>
 
@@ -147,7 +150,10 @@
         <span class="n">signal_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span></div>
 
 
-<div class="viewcode-block" id="SignalConnection"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection">[docs]</a><span class="k">class</span> <span class="nc">SignalConnection</span><span class="p">(</span><span class="n">PyDMConnection</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SignalConnection">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection">[docs]</a>
+<span class="k">class</span> <span class="nc">SignalConnection</span><span class="p">(</span><span class="n">PyDMConnection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Connection to monitor an Ophyd Signal.</span>
 
@@ -169,7 +175,9 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Create base connection</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_open</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_float</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># Collect our signal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
         <span class="c1"># Subscribe to updates from Ophyd</span>
@@ -184,7 +192,13 @@
         <span class="c1"># Add listener</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SignalConnection.cast"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.cast">[docs]</a>    <span class="k">def</span> <span class="nf">cast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__dtor__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_open</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SignalConnection.cast">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.cast">[docs]</a>
+    <span class="k">def</span> <span class="nf">cast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Cast a value to the correct Python type based on ``signal_type``.</span>
 
@@ -211,7 +225,10 @@
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span></div>
 
-<div class="viewcode-block" id="SignalConnection.put_value"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.put_value">[docs]</a>    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SignalConnection.put_value">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.put_value">[docs]</a>
+    <span class="nd">@Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="nd">@Slot</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="nd">@Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="nd">@Slot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
@@ -231,10 +248,16 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to put </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
             <span class="n">raise_to_operator</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SignalConnection.send_new_value"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.send_new_value">[docs]</a>    <span class="k">def</span> <span class="nf">send_new_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SignalConnection.send_new_value">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.send_new_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">send_new_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the UI with a new value from the Signal.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_open</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">new_value_signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">]</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -242,7 +265,10 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to update </span><span class="si">%r</span><span class="s2"> with value </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span>
                              <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SignalConnection.send_new_meta"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.send_new_meta">[docs]</a>    <span class="k">def</span> <span class="nf">send_new_meta</span><span class="p">(</span>
+
+<div class="viewcode-block" id="SignalConnection.send_new_meta">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.send_new_meta">[docs]</a>
+    <span class="k">def</span> <span class="nf">send_new_meta</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">connected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">write_access</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -263,12 +289,24 @@
 <span class="sd">        but for severity we default to NO_ALARM for UI purposes. We don&#39;t</span>
 <span class="sd">        want the UI to assume that anything is in an alarm state.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_open</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="c1"># Only emit the non-None values</span>
         <span class="k">if</span> <span class="n">connected</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">connection_state_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">connected</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">write_access</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">write_access_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">write_access</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">precision</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">precision</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Help the user a bit by replacing a clear design error</span>
+                <span class="c1"># with a sensible default</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_float</span><span class="p">:</span>
+                    <span class="c1"># Float precision at 0 is unhelpful</span>
+                    <span class="n">precision</span> <span class="o">=</span> <span class="mi">3</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Integer precision can&#39;t be negative</span>
+                    <span class="n">precision</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prec_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unit_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
@@ -280,7 +318,10 @@
             <span class="n">severity</span> <span class="o">=</span> <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">NO_ALARM</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">new_severity_signal</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">severity</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SignalConnection.add_listener"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.add_listener">[docs]</a>    <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SignalConnection.add_listener">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.add_listener">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a listener channel to this connection.</span>
 
@@ -301,6 +342,18 @@
                              <span class="s2">&quot;from signal </span><span class="si">%r</span><span class="s2"> to initialize </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
                              <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
             <span class="k">return</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal_val</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)):</span>
+            <span class="c1"># Precision is commonly omitted from non-epics signals</span>
+            <span class="c1"># Pick a sensible default for displaying floats</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_float</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1"># precision might be missing entirely</span>
+            <span class="n">signal_meta</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;precision&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="c1"># precision might be None, which is code for unset</span>
+            <span class="k">if</span> <span class="n">signal_meta</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">signal_meta</span><span class="p">[</span><span class="s2">&quot;precision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_float</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="c1"># Report new value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">(</span><span class="n">signal_val</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_new_meta</span><span class="p">(</span><span class="o">**</span><span class="n">signal_meta</span><span class="p">)</span>
@@ -315,7 +368,10 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no value_signal for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                                  <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SignalConnection.remove_listener"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.remove_listener">[docs]</a>    <span class="k">def</span> <span class="nf">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SignalConnection.remove_listener">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.remove_listener">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove a listener channel from this connection.</span>
 
@@ -335,13 +391,20 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="n">destroying</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Successfully removed </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SignalConnection.close"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SignalConnection.close">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Unsubscribe from the Ophyd signal.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value_cid</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_cid</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_cid</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="SignalPlugin"><a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalPlugin">[docs]</a><span class="k">class</span> <span class="nc">SignalPlugin</span><span class="p">(</span><span class="n">PyDMPlugin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SignalPlugin">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalPlugin">[docs]</a>
+<span class="k">class</span> <span class="nc">SignalPlugin</span><span class="p">(</span><span class="n">PyDMPlugin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin registered with PyDM to handle SignalConnection.&quot;&quot;&quot;</span>
     <span class="n">protocol</span> <span class="o">=</span> <span class="s1">&#39;sig&#39;</span>
     <span class="n">connection_class</span> <span class="o">=</span> <span class="n">SignalConnection</span>
@@ -360,7 +423,19 @@
                          <span class="n">channel</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to create a connection to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
-                             <span class="n">channel</span><span class="p">)</span></div>
+                             <span class="n">channel</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_connection</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="n">destroying</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="c1"># deleteLater() at teardown can raise; let&#39;s silence that</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;has been deleted&quot;</span><span class="p">):</span>
+                <span class="k">raise</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_connection_id</span><span class="p">(</span><span class="n">channel</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

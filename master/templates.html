@@ -4,19 +4,19 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Custom Templates &mdash; Typhos 2.4.1 documentation</title>
+  <title>Custom Templates &mdash; Typhos 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
-        <script src="_static/docs-versions-menu.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -36,7 +36,7 @@
             Typhos
           </a>
               <div class="version">
-                2.4.1
+                3.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -63,6 +63,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -99,7 +100,7 @@
            <div itemprop="articleBody">
              
   <section id="custom-templates">
-<h1>Custom Templates<a class="headerlink" href="#custom-templates" title="Permalink to this heading"></a></h1>
+<h1>Custom Templates<a class="headerlink" href="#custom-templates" title="Link to this heading"></a></h1>
 <p>Typhos ships with a handful of built-in templates. You can see these when you
 browse the <code class="docutils literal notranslate"><span class="pre">typhos/ui/core</span></code> and <code class="docutils literal notranslate"><span class="pre">typhos/ui/devices</span></code> directories.</p>
 <div class="admonition note">
@@ -112,13 +113,13 @@ of the module when launching screens. These can be done generically, to
 replace the default templates, or per-class, to replace the templates in
 specific cases.</p>
 <section id="template-creation">
-<h2>Template Creation<a class="headerlink" href="#template-creation" title="Permalink to this heading"></a></h2>
+<h2>Template Creation<a class="headerlink" href="#template-creation" title="Link to this heading"></a></h2>
 <p>Templates are <code class="docutils literal notranslate"><span class="pre">.ui</span></code> files created in qt designer. These are largely just
 normal pydm displays, with extra macro substitutions. See the
 <a class="reference external" href="https://slaclab.github.io/pydm-tutorial/action/intro_designer.html#designer" title="(in PyDM Tutorial v0.0.1)"><span class="xref std std-ref">pydm tutorial</span></a>
 for more guidance on using the designer.</p>
 <section id="template-substitutions">
-<h3>Template Substitutions<a class="headerlink" href="#template-substitutions" title="Permalink to this heading"></a></h3>
+<h3>Template Substitutions<a class="headerlink" href="#template-substitutions" title="Link to this heading"></a></h3>
 <p>All the information found in <code class="docutils literal notranslate"><span class="pre">happi</span></code> will be loaded as a pydm macro into the
 template. It does this by checking for attributes on the <code class="docutils literal notranslate"><span class="pre">device.md</span></code>
 namespace object.</p>
@@ -129,7 +130,7 @@ other keys from the happi database in your template and they will be
 filled in from the device database on load.</p>
 </section>
 <section id="template-filenames">
-<h3>Template Filenames<a class="headerlink" href="#template-filenames" title="Permalink to this heading"></a></h3>
+<h3>Template Filenames<a class="headerlink" href="#template-filenames" title="Link to this heading"></a></h3>
 <p>To replace a default template, create a template with exactly the same name.</p>
 <p>To create a template for a class, name it based on the class name
 and the template type, e.g.:</p>
@@ -144,7 +145,7 @@ PositionerBase.detailed.ui template by default.</p>
 <p>In this way you can create one template for a set of related classes.</p>
 </section>
 <section id="template-discovery">
-<h3>Template Discovery<a class="headerlink" href="#template-discovery" title="Permalink to this heading"></a></h3>
+<h3>Template Discovery<a class="headerlink" href="#template-discovery" title="Link to this heading"></a></h3>
 <p>There are currently three places that typhos checks for templates.
 In order of priority:</p>
 <ol class="arabic simple">
@@ -163,6 +164,22 @@ point is expecting to find a <code class="docutils literal notranslate"><span cl
 such objects at your entry point. One such example of how to do this can
 be found <a class="reference external" href="https://github.com/pcdshub/pcdsdevices/blob/cab3fe158ebc0d032fe07f03ec52ca79cda90c6e/setup.py#L21">here</a></p></li>
 </ol>
+<p>For top-level devices (e.g., <code class="docutils literal notranslate"><span class="pre">at2l0</span></code>), the template load priority is as
+follows:</p>
+<ul class="simple">
+<li><p>Happi-defined values (<code class="docutils literal notranslate"><span class="pre">&quot;detailed_screen&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">embedded_screen&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;engineering_screen&quot;</span></code>)</p></li>
+<li><p>Device-specific screens, if available (named as <code class="docutils literal notranslate"><span class="pre">ClassNameHere.detailed.ui</span></code>)</p></li>
+<li><p>The detailed tree, if the device has sub-devices</p></li>
+<li><p>The default templates</p></li>
+</ul>
+<p>For nested displays in a device tree, sub-device (e.g., <code class="docutils literal notranslate"><span class="pre">at2l0.blade_01</span></code>)
+template load priority is as follows:</p>
+<ul class="simple">
+<li><p>Device-specific screens, if available (named as <code class="docutils literal notranslate"><span class="pre">ClassNameHere.embedded.ui</span></code>)</p></li>
+<li><p>The detailed tree, if the device has sub-devices</p></li>
+<li><p>The default templates</p></li>
+</ul>
 </section>
 </section>
 </section>

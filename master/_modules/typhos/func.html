@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.func &mdash; Typhos 2.4.1 documentation</title>
+  <title>typhos.func &mdash; Typhos 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/docs-versions-menu.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -33,7 +33,7 @@
             Typhos
           </a>
               <div class="version">
-                2.4.1
+                3.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -530,7 +531,9 @@
         <span class="k">return</span> <span class="n">QSize</span><span class="p">(</span><span class="mi">175</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="FunctionPanel"><a class="viewcode-back" href="../../widgets.html#typhos.func.FunctionPanel">[docs]</a><span class="k">class</span> <span class="nc">FunctionPanel</span><span class="p">(</span><span class="n">TogglePanel</span><span class="p">):</span>
+<div class="viewcode-block" id="FunctionPanel">
+<a class="viewcode-back" href="../../widgets.html#typhos.func.FunctionPanel">[docs]</a>
+<span class="k">class</span> <span class="nc">FunctionPanel</span><span class="p">(</span><span class="n">TogglePanel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function Panel.</span>
 
@@ -562,7 +565,9 @@
         <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_method</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FunctionPanel.add_method"><a class="viewcode-back" href="../../widgets.html#typhos.func.FunctionPanel.add_method">[docs]</a>    <span class="k">def</span> <span class="nf">add_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="FunctionPanel.add_method">
+<a class="viewcode-back" href="../../widgets.html#typhos.func.FunctionPanel.add_method">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a :class:`.FunctionDisplay`.</span>
 
@@ -585,10 +590,14 @@
         <span class="c1"># the first added method that the panel is visible</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_contents</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">insertWidget</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">),</span>
-                                            <span class="n">widget</span><span class="p">)</span></div></div>
+                                            <span class="n">widget</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="TyphosMethodButton"><a class="viewcode-back" href="../../widgets.html#typhos.func.TyphosMethodButton">[docs]</a><span class="k">class</span> <span class="nc">TyphosMethodButton</span><span class="p">(</span><span class="n">QPushButton</span><span class="p">,</span> <span class="n">TyphosDesignerMixin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TyphosMethodButton">
+<a class="viewcode-back" href="../../widgets.html#typhos.func.TyphosMethodButton">[docs]</a>
+<span class="k">class</span> <span class="nc">TyphosMethodButton</span><span class="p">(</span><span class="n">QPushButton</span><span class="p">,</span> <span class="n">TyphosDesignerMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    QPushButton to access a method of a Device.</span>
 
@@ -607,7 +616,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
-<div class="viewcode-block" id="TyphosMethodButton.add_device"><a class="viewcode-back" href="../../widgets.html#typhos.func.TyphosMethodButton.add_device">[docs]</a>    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<div class="viewcode-block" id="TyphosMethodButton.add_device">
+<a class="viewcode-back" href="../../widgets.html#typhos.func.TyphosMethodButton.add_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new device to the widget.</span>
 
@@ -617,6 +628,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding device </span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
+
 
     <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">method_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -638,7 +650,9 @@
     <span class="k">def</span> <span class="nf">use_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_status</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="TyphosMethodButton.execute"><a class="viewcode-back" href="../../widgets.html#typhos.func.TyphosMethodButton.execute">[docs]</a>    <span class="nd">@Slot</span><span class="p">()</span>
+<div class="viewcode-block" id="TyphosMethodButton.execute">
+<a class="viewcode-back" href="../../widgets.html#typhos.func.TyphosMethodButton.execute">[docs]</a>
+    <span class="nd">@Slot</span><span class="p">()</span>
     <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the method given by ``method_name``.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
@@ -691,12 +705,17 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting TyphosStatusThread ...&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TyphosMethodButton.from_device"><a class="viewcode-back" href="../../widgets.html#typhos.func.TyphosMethodButton.from_device">[docs]</a>    <span class="nd">@classmethod</span>
+
+<div class="viewcode-block" id="TyphosMethodButton.from_device">
+<a class="viewcode-back" href="../../widgets.html#typhos.func.TyphosMethodButton.from_device">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a TyphosMethodButton from a device.&quot;&quot;&quot;</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">instance</span></div></div>
+        <span class="k">return</span> <span class="n">instance</span></div>
+</div>
+
 </pre></div>
 
            </div>
