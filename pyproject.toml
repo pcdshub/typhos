@@ -45,6 +45,9 @@ TyphosSignalPanelPlugin = "typhos.panel:TyphosSignalPanel"
 HappiPlugin = "typhos.plugins:HappiPlugin"
 SignalPlugin = "typhos.plugins:SignalPlugin"
 
+[tool.pytest.ini_options]
+addopts = "--cov=."
+
 [tool.setuptools.packages.find]
 where = [ ".",]
 include = [ "typhos*",]
@@ -59,3 +62,6 @@ file = [ "requirements.txt",]
 
 [tool.setuptools.dynamic.optional-dependencies.test]
 file = "dev-requirements.txt"
+
+[tool.setuptools.dynamic.optional-dependencies.doc]
+file = "docs-requirements.txt"

@@ -5,6 +5,7 @@ jinja2<3.1
 line_profiler
 pytest
 pytest-benchmark
+pytest-cov
 pytest-qt
 pytest-timeout
 simplejson
