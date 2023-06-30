@@ -1,4 +1,4 @@
- Release History
+Release History
 ################
 
 v2.4.1 (2023-4-4)
