@@ -2,8 +2,8 @@
 #
 
 # You can set these variables from the command line.
-SPHINXOPTS    = -W
-SPHINXBUILD   = python -msphinx
+SPHINXOPTS    =
+SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = Typhos
 SOURCEDIR     = source
 BUILDDIR      = build
