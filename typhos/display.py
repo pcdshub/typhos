@@ -21,6 +21,7 @@ from . import cache
 from . import panel as typhos_panel
 from . import utils, web, widgets
 from .jira import TyphosJiraIssueWidget
+from .notes import TyphosNotesEdit
 from .plugins.core import register_signal
 
 logger = logging.getLogger(__name__)
@@ -805,10 +806,13 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.underline.setFrameShadow(self.underline.Plain)
         self.underline.setLineWidth(10)
 
+        self.notes_edit = TyphosNotesEdit()
+
         self.grid_layout = QtWidgets.QGridLayout()
         self.grid_layout.addWidget(self.label, 0, 0)
-        self.grid_layout.addWidget(self.switcher, 0, 1, Qt.AlignRight)
-        self.grid_layout.addWidget(self.underline, 1, 0, 1, 2)
+        self.grid_layout.addWidget(self.switcher, 0, 2, Qt.AlignRight)
+        self.grid_layout.addWidget(self.notes_edit, 0, 1, Qt.AlignLeft)
+        self.grid_layout.addWidget(self.underline, 1, 0, 1, 3)
 
         self.help = TyphosHelpFrame()
         if utils.HELP_WEB_ENABLED:
@@ -878,6 +882,9 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         """Typhos hook for setting the associated device."""
         if not self.label.text():
             self.label.setText(device.name)
+
+        if not self.notes_edit.text():
+            self.notes_edit.setup_data(device.name)
 
         if self.help is not None:
             self.help.add_device(device)

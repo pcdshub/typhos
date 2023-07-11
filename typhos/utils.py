@@ -1651,3 +1651,56 @@ def raise_window(widget):
     window.raise_()
     window.activateWindow()
     window.setFocus()
+
+
+class FrameOnEditFilter(QtCore.QObject):
+    """
+    A QLineEdit event filter for editing vs not editing style handling.
+    This will make the QLineEdit look like a QLabel when the user is
+    not editing it.
+    """
+    def eventFilter(self, object: QtWidgets.QLineEdit, event: QtCore.QEvent) -> bool:
+        # Even if we install only on line edits, this can be passed a generic
+        # QWidget when we remove and clean up the line edit widget.
+        if not isinstance(object, QtWidgets.QLineEdit):
+            return False
+        if event.type() == QtCore.QEvent.FocusIn:
+            self.set_edit_style(object)
+            return False
+        if event.type() == QtCore.QEvent.FocusOut:
+            self.set_no_edit_style(object)
+            return False
+        return False
+
+    @staticmethod
+    def set_edit_style(object: QtWidgets.QLineEdit):
+        """
+        Set a QLineEdit to the look and feel we want for editing.
+        Parameters
+        ----------
+        object : QLineEdit
+            Any line edit widget.
+        """
+        object.setFrame(True)
+        color = object.palette().color(QtGui.QPalette.ColorRole.Base)
+        object.setStyleSheet(
+            f"QLineEdit {{ background: rgba({color.red()},"
+            f"{color.green()}, {color.blue()}, {color.alpha()})}}"
+        )
+        object.setReadOnly(False)
+
+    @staticmethod
+    def set_no_edit_style(object: QtWidgets.QLineEdit):
+        """
+        Set a QLineEdit to the look and feel we want for not editing.
+        Parameters
+        ----------
+        object : QLineEdit
+            Any line edit widget.
+        """
+        if object.text():
+            object.setFrame(False)
+            object.setStyleSheet(
+                "QLineEdit { background: transparent }"
+            )
+        object.setReadOnly(True)
