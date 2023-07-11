@@ -120,7 +120,7 @@ class TyphosNotesEdit(QtWidgets.QLineEdit):
 
     def update_tooltip(self) -> None:
         if self.data:
-            self.setToolTip(f"({self.data['timestamp']}):\nu{self.data['note']}")
+            self.setToolTip(f"({self.data['timestamp']}):\n{self.data['note']}")
 
     def setup_data(self, device_name: str) -> None:
         """
