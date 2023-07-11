@@ -37,6 +37,7 @@ requirements:
   - pydm >=1.16.1
   - pyqt
   - pyqtgraph
+  - pyyaml
   - qdarkstyle
   - qtawesome
   - qtconsole

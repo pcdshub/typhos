@@ -8,6 +8,7 @@ platformdirs
 PyQt5
 pydm>=1.16.1
 pyqtgraph
+pyyaml
 qdarkstyle
 qtawesome
 qtconsole
