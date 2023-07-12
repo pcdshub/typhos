@@ -45,8 +45,7 @@ def get_data_from_yaml(device_name: str, path: Path) -> Optional[Dict[str, str]]
         logger.warning(f'failed to load device notes: {ex}')
         return
 
-    if device_name in device_notes:
-        return device_notes.get(device_name, None)
+    return device_notes.get(device_name, None)
 
 
 def get_notes_data(device_name: str) -> Tuple[NotesSource, Dict[str, str]]:
