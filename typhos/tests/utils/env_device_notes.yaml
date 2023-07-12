@@ -1,0 +1,6 @@
+Syn:Motor:
+  note: env note main
+  timestamp: Tue Jul 11 15:14:00 2023
+Syn:Motor_acceleration:
+  note: env note accel
+  timestamp: Tue Jul 11 14:53:31 2023
