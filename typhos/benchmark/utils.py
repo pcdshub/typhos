@@ -167,8 +167,8 @@ def get_submodule_names(module_name):
         # This attr is missing if there are no submodules
         return submodule_names
 
-    for _, submodule_name, is_pkg in pkgutil.walk_packages(module_path):
-        if submodule_name != '__main__':
+    for info, submodule_name, is_pkg in pkgutil.walk_packages(module_path):
+        if submodule_name != '__main__' and info.path in module_path:
             full_submodule_name = module_name + '.' + submodule_name
             submodule_names.append(full_submodule_name)
             if is_pkg:
