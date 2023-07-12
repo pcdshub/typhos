@@ -14,7 +14,7 @@ from .conftest import MODULE_PATH
 
 @pytest.fixture(scope='function')
 def user_notes_path(monkeypatch, tmp_path: Path):
-    # copy user device_notes.yaml to a temp file
+    # copy user_device_notes.yaml to a temp file
     # monkeypatch platformdirs to look for device_notes.yaml
     # provide the new path for confirmation
     user_path = tmp_path / 'device_notes.yaml'
