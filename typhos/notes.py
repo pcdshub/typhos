@@ -1,5 +1,9 @@
+import getpass
 import logging
 import os
+import shutil
+import time
+import uuid
 from datetime import datetime
 from enum import IntEnum
 from pathlib import Path
@@ -96,16 +100,26 @@ def insert_into_yaml(path: Path, device_name: str, data: dict[str, str]) -> None
             device_notes = yaml.full_load(f)
     except Exception as ex:
         logger.warning(f'unable to open existing device info: {ex}')
-        return
 
     device_notes[device_name] = data
 
+    directory = os.path.dirname(path)
+    temp_path = Path(directory) / (
+        f".{getpass.getuser()}"
+        f"_{int(time.time())}"
+        f"_{str(uuid.uuid4())[:8]}"
+        f"_{os.path.basename(path)}"
+    )
     try:
-        with open(path, 'w') as f:
+        with open(temp_path, 'w') as f:
             yaml.dump(device_notes, f)
     except Exception as ex:
         logger.warning(f'unable to write device info: {ex}')
         return
+
+    if os.path.exists(path):
+        shutil.copymode(path, temp_path)
+    shutil.move(temp_path, path)
 
 
 def write_notes_data(
@@ -140,7 +154,7 @@ class TyphosNotesEdit(QtWidgets.QLineEdit):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.editingFinished.connect(self.save_note)
-        self.setPlaceholderText('...')
+        self.setPlaceholderText('no notes...')
         self.edit_filter = utils.FrameOnEditFilter(parent=self)
         self.setFrame(False)
         self.setStyleSheet("QLineEdit { background: transparent }")
@@ -153,9 +167,11 @@ class TyphosNotesEdit(QtWidgets.QLineEdit):
         self.data = {'note': '', 'timestamp': ''}
 
     def update_tooltip(self) -> None:
-        if self.notes_source is not None:
+        if self.data['note']:
             self.setToolTip(f"({self.data['timestamp']}, {self.notes_source.name}):\n"
                             f"{self.data['note']}")
+        else:
+            self.setToolTip('click to edit note')
 
     def setup_data(self, device_name: str) -> None:
         """
