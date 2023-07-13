@@ -11,7 +11,7 @@ from typing import Dict, Optional, Tuple
 
 import platformdirs
 import yaml
-from qtpy import QtWidgets
+from qtpy import QtCore, QtWidgets
 
 from typhos import utils
 
@@ -151,7 +151,7 @@ class TyphosNotesEdit(QtWidgets.QLineEdit):
     """
     A QLineEdit for storing notes for a device.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, refresh_time: float = 5.0, **kwargs):
         super().__init__(*args, **kwargs)
         self.editingFinished.connect(self.save_note)
         self.setPlaceholderText('no notes...')
@@ -160,7 +160,8 @@ class TyphosNotesEdit(QtWidgets.QLineEdit):
         self.setStyleSheet("QLineEdit { background: transparent }")
         self.setReadOnly(True)
         self.installEventFilter(self.edit_filter)
-
+        self._last_updated: float = None
+        self._refresh_time: float = refresh_time
         # to be initialized later
         self.device_name: str = None
         self.notes_source: Optional[NotesSource] = None
@@ -173,24 +174,39 @@ class TyphosNotesEdit(QtWidgets.QLineEdit):
         else:
             self.setToolTip('click to edit note')
 
-    def setup_data(self, device_name: str) -> None:
+    def setup_data(self, device_name: Optional[str] = None) -> None:
         """
         Set up the device data.  Saves the device name and initializes the notes
-        line edit.
+        line edit.  Will refresh the data if the time since the last refresh is
+        longer than `self._refresh_time`
+
+        Once initialized, this widget will not change its targeted device_name.
+        Subsequent attempts to set a new device_name will be ignored, and simply
+        refresh this widget's note
 
         The setup is split up here due to how Typhos Display initialize themselves
         first, then add the device later
 
         Parameters
         ----------
-        device_name : str
+        device_name : Optional[str]
             The device name.  Can also be a component. e.g. device_component_name
         """
-        if self.device_name:
+        # if not initialized
+        if self.device_name is None:
+            self.device_name = device_name
+
+        # if no-arg called without device being initialized
+        if self.device_name is None:
             return
 
-        self.device_name = device_name
-        self.notes_source, self.data = get_notes_data(device_name)
+        if not self._last_updated:
+            self._last_updated = time.time()
+        elif (time.time() - self._last_updated) < self._refresh_time:
+            return
+
+        self._last_updated = time.time()
+        self.notes_source, self.data = get_notes_data(self.device_name)
 
         self.setText(self.data.get('note', ''))
         self.update_tooltip()
@@ -202,3 +218,12 @@ class TyphosNotesEdit(QtWidgets.QLineEdit):
         self.data['timestamp'] = curr_time
         self.update_tooltip()
         write_notes_data(self.notes_source, self.device_name, self.data)
+
+    def event(self, event: QtCore.QEvent) -> bool:
+        """ Overload event method to update data on tooltip-request """
+        # Catch relevant events to update status tooltip
+        if event.type() in (QtCore.QEvent.ToolTip, QtCore.QEvent.Paint,
+                            QtCore.QEvent.FocusAboutToChange):
+            self.setup_data()
+
+        return super().event(event)
