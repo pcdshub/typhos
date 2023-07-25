@@ -33,9 +33,11 @@ requirements:
   - ophyd >=1.5.0
   - pcdsdevices
   - pcdsutils
+  - platformdirs
   - pydm >=1.16.1
   - pyqt
   - pyqtgraph
+  - pyyaml
   - qdarkstyle
   - qtawesome
   - qtconsole
