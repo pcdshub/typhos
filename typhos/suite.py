@@ -17,7 +17,7 @@ from qtpy import QtCore, QtGui, QtWidgets
 
 from . import utils, widgets
 from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
-from .tools import TyphosConsole, TyphosLogDisplay, TyphosTimePlot
+from .tools import TyphosLogDisplay, TyphosTimePlot
 from .utils import TyphosBase, clean_attr, clean_name, flatten_tree, save_suite
 
 logger = logging.getLogger(__name__)
@@ -238,9 +238,10 @@ class TyphosSuite(TyphosBase):
     DEFAULT_TITLE = 'Typhos Suite'
     DEFAULT_TITLE_DEVICE = 'Typhos Suite - {device.name}'
 
-    default_tools = {'Log': TyphosLogDisplay,
-                     'StripTool': TyphosTimePlot,
-                     'Console': TyphosConsole}
+    default_tools = {
+        "Log": TyphosLogDisplay,
+        "StripTool": TyphosTimePlot,
+    }
 
     def __init__(
         self,

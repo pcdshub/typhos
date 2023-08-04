@@ -22,7 +22,7 @@ from qtpy import QtGui, QtWidgets
 import typhos
 from typhos.plugins.core import signal_registry
 from typhos.plugins.happi import register_client
-from typhos.utils import SignalRO, TyphosBase
+from typhos.utils import SignalRO
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +31,6 @@ show_widgets = False
 application = None
 
 MODULE_PATH = pathlib.Path(__file__).parent
-
-
-# Patch TyphosConsole on TyphosSuite. Creation of more than one QtConsole
-# quicky in the test suite causes instabilities
-typhos.TyphosSuite.default_tools['Console'] = TyphosBase
 
 
 def pytest_addoption(parser):

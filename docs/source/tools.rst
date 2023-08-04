@@ -26,6 +26,5 @@ Tool Classes
 .. autosummary::
    :toctree: generated
 
-   TyphosConsole
    TyphosLogDisplay
    TyphosTimePlot

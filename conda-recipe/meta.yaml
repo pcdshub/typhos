@@ -40,7 +40,6 @@ requirements:
   - pyyaml
   - qdarkstyle
   - qtawesome
-  - qtconsole
   - qtpy
   - timechart >=1.2.4
   run_constrained:

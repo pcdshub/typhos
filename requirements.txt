@@ -11,6 +11,5 @@ pyqtgraph
 pyyaml
 qdarkstyle
 qtawesome
-qtconsole
 qtpy
 timechart
