@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>556</width>
-    <height>563</height>
+    <height>591</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,13 +20,6 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
-   <item>
-    <widget class="TyphosDisplayTitle" name="TyphosDisplayTitle">
-     <property name="toolTip">
-      <string/>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="TyphosPositionerWidget" name="TyphosPositionerWidget">
      <property name="sizePolicy">
@@ -124,7 +117,7 @@
             <x>0</x>
             <y>0</y>
             <width>528</width>
-            <height>215</height>
+            <height>213</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -221,8 +214,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>528</width>
+            <height>213</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -303,19 +296,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphosSignalPanel</class>
-   <extends>QWidget</extends>
-   <header>typhos.panel</header>
-  </customwidget>
-  <customwidget>
    <class>TyphosPositionerWidget</class>
    <extends>QWidget</extends>
    <header>typhos.positioner</header>
   </customwidget>
   <customwidget>
-   <class>TyphosDisplayTitle</class>
-   <extends>QFrame</extends>
-   <header>typhos.display</header>
+   <class>TyphosSignalPanel</class>
+   <extends>QWidget</extends>
+   <header>typhos.panel</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -1,7 +1,9 @@
 import logging
 import os.path
 import threading
+from typing import Optional
 
+import ophyd
 from pydm.widgets.channel import PyDMChannel
 from qtpy import QtCore, QtWidgets, uic
 
@@ -352,11 +354,15 @@ class TyphosPositionerWidget(
         Leverage information at describe to define whether to use a
         PyDMLineEdit or a PyDMEnumCombobox as setpoint widget.
         """
+        if self.device is None:
+            return
+
         try:
             setpoint_signal = getattr(self.device, self.setpoint_attribute)
             selection = setpoint_signal.enum_strs is not None
         except Exception:
             selection = False
+            setpoint_signal = None
 
         if selection:
             self.ui.set_value = widgets.NoScrollComboBox()
@@ -374,7 +380,16 @@ class TyphosPositionerWidget(
             self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
             self.ui.set_value.returnPressed.connect(self.set)
 
-        self.ui.setpoint_layout.addWidget(self.ui.set_value)
+            self.ui.user_setpoint.setVisible(False)  # TODO
+
+        self.ui.set_value.setMaximumWidth(
+            self.ui.user_setpoint.maximumWidth()
+        )
+
+        self.ui.setpoint_layout.addWidget(
+            self.ui.set_value,
+            alignment=QtCore.Qt.AlignHCenter,
+        )
 
     @property
     def device(self):
@@ -659,6 +674,33 @@ class TyphosPositionerWidget(
         else:
             text = 'invalid'
         self.ui.alarm_label.setText(text)
+
+
+class TyphosOneLinePositionerWidget(TyphosPositionerWidget):
+    ui_template = os.path.join(utils.ui_dir, "widgets", "one_line_positioner.ui")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for idx in range(self.layout().count()):
+            item = self.layout().itemAt(idx)
+            if item is self.ui.status_text_layout:
+                self.layout().takeAt(idx)
+                break
+
+        self.temp_widget = QtWidgets.QWidget()
+        self.ui.status_text_layout.setParent(self.temp_widget)
+        self.temp_widget.setVisible(False)
+
+        # TODO: ${name} / macros don't expand here
+
+    def add_device(self, device: ophyd.Device) -> None:
+        super().add_device(device)
+        device: Optional[ophyd.Device] = self.device
+        if device is not None:
+            self.ui.device_name_label.setText(device.name)
+        else:
+            self.ui.device_name_label.setText("(no device)")
 
 
 def clear_error_in_background(device):

@@ -361,6 +361,12 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         if not display:
             return base_menu
 
+        for cls in type(display.device).mro():
+            if cls.__name__ in ("BlueskyInterface", "Device"):
+                break
+
+            base_menu.addSection(cls.__name__)
+
         base_menu.addSection('Templates')
         display._generate_template_menu(base_menu)
 
@@ -991,9 +997,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     Q_ENUMS(_DisplayTypes)
     TemplateEnum = DisplayTypes  # For convenience
 
-    device_count_threshold = 0
-    signal_count_threshold = 30
-
     def __init__(
         self,
         parent: Optional[QtWidgets.QWidget] = None,
@@ -1019,6 +1022,12 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self.templates = {name: [] for name in DisplayTypes.names}
         self._display_type = normalize_display_type(display_type)
+
+        if nested and self._display_type == DisplayTypes.detailed_screen:
+            # All nested displays should be embedded by default.
+            # Based on if they have subdevices, they may become detailed
+            # during the template loading process
+            self._display_type = DisplayTypes.embedded_screen
 
         instance_templates = {
             'embedded_screen': embedded_templates or [],
@@ -1106,7 +1115,8 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if scrollable:
             self._scroll_area.setWidget(widget)
         else:
-            self.layout().addWidget(widget)
+            layout: QtWidgets.QVBoxLayout = self.layout()
+            layout.addWidget(widget, alignment=QtCore.Qt.AlignTop)
 
         self._scroll_area.setVisible(scrollable)
 
@@ -1437,7 +1447,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                              display_type, template, len(template_list))
 
             # 2. Composite heuristics, if enabled
-            if self._composite_heuristics and view == 'detailed':
+            if self._composite_heuristics:
                 if self.suggest_composite_screen(cls):
                     template_list.append(DETAILED_TREE_TEMPLATE)
 
@@ -1465,20 +1475,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         composite : bool
             If True, favor the composite screen.
         """
-        num_devices = 0
-        num_signals = 0
-        for attr, component in utils._get_top_level_components(device_cls):
-            num_devices += issubclass(component.cls, ophyd.Device)
-            num_signals += issubclass(component.cls, ophyd.Signal)
+        has_subdevices = False
+        for _, component in utils._get_top_level_components(device_cls):
+            if issubclass(component.cls, ophyd.Device):
+                has_subdevices = True
+                break
 
         specific_screens = cls._get_specific_screens(device_cls)
-        if (len(specific_screens) or
-                (num_devices <= cls.device_count_threshold and
-                 num_signals >= cls.signal_count_threshold)):
+        if len(specific_screens) or not has_subdevices:
             # 1. There's a custom screen - we probably should use them
-            # 2. There aren't many devices, so the composite display isn't
-            #    useful
-            # 3. There are many signals, which should be broken up somehow
+            # 2. There are no subdevices
             composite = False
         else:
             # 1. No custom screen, or
@@ -1486,8 +1492,8 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             composite = True
 
         logger.debug(
-            '%s screens=%s num_signals=%d num_devices=%d -> composite=%s',
-            device_cls, specific_screens, num_signals, num_devices, composite
+            '%s screens=%s has_subdevices=%s -> composite=%s',
+            device_cls, specific_screens, has_subdevices, composite
         )
         return composite
 

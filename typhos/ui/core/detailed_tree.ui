@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>395</width>
-    <height>468</height>
+    <height>93</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,6 +20,15 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="TyphosDisplayTitle" name="TyphosDisplayTitle">
      <property name="sizePolicy">
@@ -36,7 +45,7 @@
      </property>
     </widget>
    </item>
-   <item>
+   <item alignment="Qt::AlignTop">
     <widget class="TyphosCompositeSignalPanel" name="signal_panel">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -57,25 +66,12 @@
      </property>
     </widget>
    </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphosSignalPanel</class>
-   <extends>QWidget</extends>
+   <class>TyphosCompositeSignalPanel</class>
+   <extends>TyphosSignalPanel</extends>
    <header>typhos.panel</header>
   </customwidget>
   <customwidget>
@@ -84,8 +80,8 @@
    <header>typhos.display</header>
   </customwidget>
   <customwidget>
-   <class>TyphosCompositeSignalPanel</class>
-   <extends>TyphosSignalPanel</extends>
+   <class>TyphosSignalPanel</class>
+   <extends>QWidget</extends>
    <header>typhos.panel</header>
   </customwidget>
  </customwidgets>
