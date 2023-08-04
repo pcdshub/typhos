@@ -43,7 +43,7 @@ def test_suite_without_children(device, qtbot):
 def test_suite_tools(device, qtbot):
     suite = TyphosSuite.from_device(device)
     qtbot.addWidget(suite)
-    assert len(suite.tools) == 3
+    assert len(suite.tools) == len(TyphosSuite.default_tools)
     assert len(suite.tools[0].devices) == 1
 
 
