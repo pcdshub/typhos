@@ -41,6 +41,23 @@ def env_notes_path(tmp_path: Path):
     os.environ.pop(NOTES_VAR)
 
 
+def test_new_note(qtbot: QtBot, tmp_path: Path, monkeypatch):
+    monkeypatch.setattr(platformdirs, 'user_data_path',
+                        lambda: tmp_path)
+
+    user_path = tmp_path / 'device_notes.yaml'
+    assert not user_path.exists()
+
+    notes_edit = TyphosNotesEdit()
+    qtbot.addWidget(notes_edit)
+    notes_edit.setup_data('Syn:Motor')
+
+    notes_edit.setText('hello new text')
+    notes_edit.save_note()
+
+    assert user_path.exists()
+
+
 def test_note_shadowing(qtbot: QtBot, user_notes_path: Path, env_notes_path: Path):
     # user data shadows all other sources
     notes_edit = TyphosNotesEdit()

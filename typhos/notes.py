@@ -99,7 +99,9 @@ def insert_into_yaml(path: Path, device_name: str, data: dict[str, str]) -> None
         with open(path, 'r') as f:
             device_notes = yaml.full_load(f)
     except Exception as ex:
-        logger.warning(f'unable to open existing device info: {ex}')
+        logger.warning(f'Unable to open existing device info: {ex}.'
+                       'Creating new notes file.')
+        device_notes = {}
 
     device_notes[device_name] = data
 
