@@ -11,7 +11,7 @@ Features
 
 Bugfixes
 --------
-- allows new notes to be created if requested note file does not exist
+- Creates new notes file if requested note file does not exist
 
 Maintenance
 -----------
