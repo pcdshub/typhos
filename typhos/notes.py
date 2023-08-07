@@ -98,8 +98,13 @@ def insert_into_yaml(path: Path, device_name: str, data: dict[str, str]) -> None
     try:
         with open(path, 'r') as f:
             device_notes = yaml.full_load(f)
+    except FileNotFoundError:
+        logger.info(f'No existing device notes found at {path}. '
+                    'Creating new notes file.')
+        device_notes = {}
     except Exception as ex:
-        logger.warning(f'unable to open existing device info: {ex}')
+        logger.warning(f'Unable to open existing device notes, aborting: {ex}')
+        return
 
     device_notes[device_name] = data
 
