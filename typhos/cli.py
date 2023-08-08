@@ -1,4 +1,6 @@
 """This module defines the ``typhos`` command line utility"""
+from __future__ import annotations
+
 import argparse
 import ast
 import inspect
@@ -6,6 +8,8 @@ import logging
 import re
 import signal
 import sys
+import types
+import typing
 from typing import Optional
 
 import coloredlogs
@@ -24,6 +28,31 @@ from typhos.utils import (apply_standard_stylesheets, compose_stylesheets,
                           nullcontext)
 
 logger = logging.getLogger(__name__)
+
+
+class TyphosArguments(types.SimpleNamespace):
+    """Type hints for ``typhos`` CLI entrypoint arguments."""
+
+    devices: list[str]
+    layout: str
+    cols: int
+    display_type: str
+    scrollable: str
+    size: Optional[str]
+    hide_displays: bool
+    happi_cfg: Optional[str]
+    fake_device: bool
+    version: bool
+    verbose: bool
+    dark: bool
+    stylesheet_override: Optional[list[str]]
+    stylesheet_add: Optional[list[str]]
+    profile_modules: Optional[list[str]]
+    profile_output: Optional[str]
+    benchmark: Optional[list[str]]
+    exit_after: Optional[float]
+    screenshot_filename: Optional[str]
+
 
 # Argument Parser Setup
 parser = argparse.ArgumentParser(
@@ -179,6 +208,14 @@ parser.add_argument(
     help=(
         "(For profiling purposes) Exit typhos after the provided number of "
         "seconds"
+    ),
+)
+parser.add_argument(
+    '--screenshot',
+    dest="screenshot_filename",
+    help=(
+        "Save a screenshot of the generated display(s) prior to exiting to "
+        "this filename"
     ),
 )
 
@@ -484,7 +521,8 @@ def typhos_run(
     initial_size: Optional[str] = None,
     show_displays: bool = True,
     exit_after: Optional[float] = None,
-) -> QtWidgets.QMainWindow:
+    screenshot_filename: Optional[str] = None,
+) -> Optional[QtWidgets.QMainWindow]:
     """
     Run the central typhos part of typhos.
 
@@ -516,6 +554,8 @@ def typhos_run(
     show_displays : bool, optional
         If True (default), open all the included device displays.
         If False, do not open any of the displays.
+    screenshot_filename : str, optional
+        Save a screenshot to this file prior to exiting early.
 
     Returns
     -------
@@ -534,34 +574,42 @@ def typhos_run(
             scroll_option=scroll_option,
             show_displays=show_displays,
         )
-    if suite:
-        if initial_size is not None:
-            try:
-                initial_size = QtCore.QSize(
-                    *(int(opt) for opt in initial_size.split(','))
-                )
-            except TypeError as exc:
-                raise ValueError(
-                    "Invalid --size argument. Expected a two-element pair "
-                    "of comma-separated integers, e.g. --size 1000,1000"
-                ) from exc
 
-        def exit_early():
-            logger.warning(
-                "Exiting typhos early due to --exit-after=%s CLI argument.",
-                exit_after
+    if suite is None:
+        logger.debug("Suite creation failure")
+        return None
+
+    if initial_size is not None:
+        try:
+            initial_size = QtCore.QSize(
+                *(int(opt) for opt in initial_size.split(','))
             )
-            sys.exit(0)
+        except TypeError as exc:
+            raise ValueError(
+                "Invalid --size argument. Expected a two-element pair "
+                "of comma-separated integers, e.g. --size 1000,1000"
+            ) from exc
 
-        if exit_after is not None and exit_after >= 0:
-            QtCore.QTimer.singleShot(exit_after * 1000.0, exit_early)
+    def exit_early():
+        logger.warning(
+            "Exiting typhos early due to --exit-after=%s CLI argument.",
+            exit_after
+        )
 
-        return launch_suite(suite, initial_size=initial_size)
+        if screenshot_filename is not None:
+            suite.save_device_screenshots(screenshot_filename)
+
+        sys.exit(0)
+
+    if exit_after is not None and exit_after >= 0:
+        QtCore.QTimer.singleShot(exit_after * 1000.0, exit_early)
+
+    return launch_suite(suite, initial_size=initial_size)
 
 
 def typhos_cli(args):
     """Command Line Application for Typhos."""
-    args = parser.parse_args(args)
+    args = typing.cast(TyphosArguments, parser.parse_args(args))
 
     if args.version:
         print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
@@ -602,6 +650,7 @@ def typhos_cli(args):
                 initial_size=args.size,
                 show_displays=not args.hide_displays,
                 exit_after=args.exit_after,
+                screenshot_filename=args.screenshot_filename,
             )
 
         return suite
