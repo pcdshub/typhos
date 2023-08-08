@@ -314,7 +314,11 @@ class TyphosPositionerWidget(
         except Exception:
             ...
         else:
-            if low_limit < high_limit:
+            if low_limit is None or high_limit is None:
+                # Some devices may erroneously report `None` limits.
+                # TyphosPositioner will hide the limit labels in this scenario.
+                ...
+            elif low_limit < high_limit:
                 self.ui.low_limit.setText(str(low_limit))
                 self.ui.high_limit.setText(str(high_limit))
                 return
