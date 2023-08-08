@@ -1459,6 +1459,11 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                     logger.debug('Found new template %s: %s (total=%d)',
                                  display_type, filename, len(template_list))
 
+            # Ensure that the detailed tree template makes its way in for
+            # all top-level screens, if no class-specific screen exists
+            if DETAILED_TREE_TEMPLATE not in template_list and not self._nested:
+                template_list.append(DETAILED_TREE_TEMPLATE)
+
             # 4. Default templates
             template_list.extend(
                 [templ for templ in DEFAULT_TEMPLATES[display_type]
