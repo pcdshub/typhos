@@ -676,8 +676,8 @@ class TyphosPositionerWidget(
         self.ui.alarm_label.setText(text)
 
 
-class TyphosOneLinePositionerWidget(TyphosPositionerWidget):
-    ui_template = os.path.join(utils.ui_dir, "widgets", "one_line_positioner.ui")
+class TyphosPositionerRowWidget(TyphosPositionerWidget):
+    ui_template = os.path.join(utils.ui_dir, "widgets", "positioner_row.ui")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
