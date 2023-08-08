@@ -789,9 +789,10 @@ class TyphosSuite(TyphosBase):
     def save_device_screenshots(
         self,
         filename_format: str,
-    ) -> bool:
+    ) -> dict[str, str]:
         """Save screenshot(s) of devices to ``filename_format``."""
 
+        filenames = {}
         for device in self.devices:
             display = self.get_subdisplay(device)
 
@@ -801,12 +802,15 @@ class TyphosSuite(TyphosBase):
                 # This is a fallback for if/when we don't have a TyphosDisplay
                 image = utils.take_widget_screenshot(display)
 
-            if image is None:
-                logger.warning("Failed to take screenshot")
-                return False
-
             suite_title = self.windowTitle()
             widget_title = display.windowTitle()
+            if image is None:
+                logger.warning(
+                    "Failed to take screenshot of device: %s in %s",
+                    device.name, suite_title,
+                )
+                continue
+
             filename = filename_format.format(
                 suite_title=suite_title,
                 widget_title=widget_title,
@@ -818,7 +822,8 @@ class TyphosSuite(TyphosBase):
                 suite_title, widget_title, filename,
             )
             image.save(filename)
-            return True
+            filenames[device.name] = filename
+        return filenames
 
     def _get_sidebar(self, widget):
         items = {}
