@@ -213,8 +213,10 @@ parser.add_argument(
     '--screenshot',
     dest="screenshot_filename",
     help=(
-        "Save a screenshot of the generated display(s) prior to exiting to "
-        "this filename"
+        "Save screenshot(s) of all contained TyphosDeviceDisplay instances to "
+        "this filename pattern prior to exiting early. This name may contain "
+        "f-string style variables, including: suite_title, widget_title, "
+        "device, and name."
     ),
 )
 
@@ -554,7 +556,10 @@ def typhos_run(
         If True (default), open all the included device displays.
         If False, do not open any of the displays.
     screenshot_filename : str, optional
-        Save a screenshot to this file prior to exiting early.
+        Save screenshot(s) of all contained TyphosDeviceDisplay instances to
+        this filename pattern prior to exiting early. This name may contain
+        f-string style variables,  including: suite_title, widget_title,
+        device, and name.
 
     Returns
     -------
