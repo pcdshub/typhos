@@ -5,18 +5,18 @@ import pathlib
 import tempfile
 
 import pytest
+import pytestqt.qtbot
 from ophyd import Component as Cpt
 from ophyd import Device
 from qtpy.QtCore import QRect
 from qtpy.QtGui import QColor, QPaintEvent, QPalette
 from qtpy.QtWidgets import QLineEdit, QWidget
 
-import typhos
-import typhos.utils
-from typhos.utils import (TyphosBase, apply_standard_stylesheets, clean_name,
-                          compose_stylesheets, load_suite, no_device_lazy_load,
-                          saved_template, use_stylesheet)
-
+from .. import utils
+from ..suite import TyphosSuite
+from ..utils import (TyphosBase, apply_standard_stylesheets, clean_name,
+                     compose_stylesheets, load_suite, no_device_lazy_load,
+                     saved_template, use_stylesheet)
 from . import conftest
 
 
@@ -38,7 +38,7 @@ def test_clean_name():
     assert clean_name(device.radial.phi, strip_parent=device) == 'radial phi'
 
 
-def test_compose_stylesheets(qtbot, qapp):
+def test_compose_stylesheets(qtbot: pytestqt.qtbot.QtBot, qapp):
     """
     With conflicting sheets, first sheet given has priority
     All non-conflicting sheets should be included
@@ -102,7 +102,7 @@ def test_compose_stylesheets(qtbot, qapp):
     [None, [str(conftest.MODULE_PATH / "utils" / "tiny_stylesheet.qss")]],
 )
 def test_stylesheet(
-    qtbot,
+    qtbot: pytestqt.qtbot.QtBot,
     monkeypatch,
     dark: bool,
     include_pydm: bool,
@@ -115,8 +115,8 @@ def test_stylesheet(
     original_stylesheet = "QPushButton { color: red }"
     widget.setStyleSheet(original_stylesheet)
 
-    monkeypatch.setattr(typhos.utils, "PYDM_INCLUDE_DEFAULT", pydm_include_default)
-    monkeypatch.setattr(typhos.utils, "PYDM_USER_STYLESHEET", pydm_stylesheet)
+    monkeypatch.setattr(utils, "PYDM_INCLUDE_DEFAULT", pydm_include_default)
+    monkeypatch.setattr(utils, "PYDM_USER_STYLESHEET", pydm_stylesheet)
 
     apply_standard_stylesheets(
         dark=dark,
@@ -148,21 +148,21 @@ def test_stylesheet(
         assert "tiny test stylesheet" not in new_stylesheet, "Explicit user stylesheet loaded unexpectedly"
 
 
-def test_stylesheet_legacy(qtbot):
+def test_stylesheet_legacy(qtbot: pytestqt.qtbot.QtBot):
     widget = QWidget()
     qtbot.addWidget(widget)
     use_stylesheet(widget=widget)
     use_stylesheet(widget=widget, dark=True)
 
 
-def test_typhosbase_repaint_smoke(qtbot):
+def test_typhosbase_repaint_smoke(qtbot: pytestqt.qtbot.QtBot):
     tp = TyphosBase()
     qtbot.addWidget(tp)
     pe = QPaintEvent(QRect(1, 2, 3, 4))
     tp.paintEvent(pe)
 
 
-def test_load_suite(qtbot, happi_cfg):
+def test_load_suite(qtbot: pytestqt.qtbot.QtBot, happi_cfg):
     # Setup new saved file
     module = saved_template.format(devices=['test_motor'])
     module_file = str(pathlib.Path(tempfile.gettempdir()) / 'my_suite.py')
@@ -171,7 +171,7 @@ def test_load_suite(qtbot, happi_cfg):
 
     suite = load_suite(module_file, happi_cfg)
     qtbot.addWidget(suite)
-    assert isinstance(suite, typhos.TyphosSuite)
+    assert isinstance(suite, TyphosSuite)
     assert len(suite.devices) == 1
     assert suite.devices[0].name == 'test_motor'
     os.remove(module_file)
@@ -179,7 +179,7 @@ def test_load_suite(qtbot, happi_cfg):
 
 def test_load_suite_with_bad_py_file():
     with pytest.raises(AttributeError):
-        load_suite(typhos.utils.__file__)
+        load_suite(utils.__file__)
 
 
 def test_no_device_lazy_load():
@@ -257,7 +257,22 @@ def test_path_search(tmpdir, cls, view_type, create, expected):
         file = tmpdir.join(to_create)
         file.write('')
 
-    results = typhos.utils.find_templates_for_class(
+    results = utils.find_templates_for_class(
         cls, view_type, paths=[tmpdir])
 
     assert list(r.name for r in results) == expected
+
+
+def test_take_widget_screenshot(qtbot: pytestqt.qtbot.QtBot):
+    widget = QWidget()
+    qtbot.addWidget(widget)
+    image = utils.take_widget_screenshot(widget)
+    assert image is not None
+
+
+def test_take_top_level_widget_screenshots(qtbot: pytestqt.qtbot.QtBot):
+    widget = QWidget()
+    qtbot.addWidget(widget)
+    screenshots = list(utils.take_top_level_widget_screenshots(visible_only=False))
+    assert len(screenshots) >= 1
+    assert any(w is widget for w, _ in screenshots)

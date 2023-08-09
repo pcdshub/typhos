@@ -776,7 +776,6 @@ class TyphosSuite(TyphosBase):
         image = utils.take_widget_screenshot(self)
         if image is None:
             logger.warning("Failed to take screenshot")
-
             return False
 
         logger.info(
