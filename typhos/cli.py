@@ -9,7 +9,6 @@ import re
 import signal
 import sys
 import types
-import typing
 from typing import Optional
 
 import coloredlogs
@@ -609,7 +608,7 @@ def typhos_run(
 
 def typhos_cli(args):
     """Command Line Application for Typhos."""
-    args = typing.cast(TyphosArguments, parser.parse_args(args))
+    args = parser.parse_args(args, TyphosArguments())
 
     if args.version:
         print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
