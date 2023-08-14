@@ -1405,6 +1405,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self.macros = self._build_macros_from_device(device, macros=macros)
         self.load_best_template()
 
+        if not self.windowTitle():
+            self.setWindowTitle(getattr(device, "name", ""))
+
     def search_for_templates(self):
         """Search the filesystem for device-specific templates."""
         device = self.device

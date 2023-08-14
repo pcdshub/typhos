@@ -20,7 +20,7 @@ import re
 import threading
 import weakref
 from types import MethodType
-from typing import Iterable
+from typing import Generator, Iterable, Optional
 
 import entrypoints
 import ophyd
@@ -1704,3 +1704,62 @@ class FrameOnEditFilter(QtCore.QObject):
                 "QLineEdit { background: transparent }"
             )
         object.setReadOnly(True)
+
+
+def take_widget_screenshot(widget: QtWidgets.QWidget) -> Optional[QtGui.QImage]:
+    """Take a screenshot of the given widget, returning a QImage."""
+
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        # No apps, no screenshots!
+        return None
+
+    primary_screen = app.primaryScreen()
+    logger.debug("Primary screen: %s", primary_screen)
+
+    screen = (
+        widget.screen()
+        if hasattr(widget, "screen")
+        else primary_screen
+    )
+
+    logger.info("Primary screen: %s widget screen: %s", primary_screen, screen)
+    return screen.grabWindow(widget.winId())
+
+
+def take_top_level_widget_screenshots(
+    *, visible_only: bool = True,
+) -> Generator[
+    tuple[QtWidgets.QWidget, QtGui.QImage], None, None
+]:
+    """
+    Yield screenshots of all top-level widgets.
+
+    Parameters
+    ----------
+    visible_only : bool, optional
+        Only take screenshots of visible widgets.
+
+    Yields
+    ------
+    widget : QtWidgets.QWidget
+        The widget relating to the screenshot.
+
+    screenshot : QtGui.QImage
+        The screenshot image.
+    """
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        # No apps, no screenshots!
+        return
+
+    for screen_idx, screen in enumerate(app.screens(), 1):
+        logger.debug("Screen %d: %s %s", screen_idx, screen, screen.geometry())
+
+    def by_title(widget):
+        return widget.windowTitle() or str(id(widget))
+
+    for widget in sorted(app.topLevelWidgets(), key=by_title):
+        if visible_only and not widget.isVisible():
+            continue
+        yield widget, take_widget_screenshot(widget)

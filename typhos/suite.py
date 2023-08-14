@@ -384,7 +384,7 @@ class TyphosSuite(TyphosBase):
 
         Parameters
         ----------
-        display :str or Device
+        display : str or Device
             Name of screen or device
 
         Returns
@@ -766,6 +766,63 @@ class TyphosSuite(TyphosBase):
 
     # Add the template to the docstring
     save.__doc__ += textwrap.indent('\n' + utils.saved_template, '\t\t')
+
+    def save_screenshot(
+        self,
+        filename: str,
+    ) -> bool:
+        """Save a screenshot of this widget to ``filename``."""
+
+        image = utils.take_widget_screenshot(self)
+        if image is None:
+            logger.warning("Failed to take screenshot")
+            return False
+
+        logger.info(
+            "Saving screenshot of suite titled '%s' to '%s'",
+            self.windowTitle(), filename,
+        )
+        image.save(filename)
+        return True
+
+    def save_device_screenshots(
+        self,
+        filename_format: str,
+    ) -> dict[str, str]:
+        """Save screenshot(s) of devices to ``filename_format``."""
+
+        filenames = {}
+        for device in self.devices:
+            display = self.get_subdisplay(device)
+
+            if hasattr(display, "to_image"):
+                image = display.to_image()
+            else:
+                # This is a fallback for if/when we don't have a TyphosDisplay
+                image = utils.take_widget_screenshot(display)
+
+            suite_title = self.windowTitle()
+            widget_title = display.windowTitle()
+            if image is None:
+                logger.warning(
+                    "Failed to take screenshot of device: %s in %s",
+                    device.name, suite_title,
+                )
+                continue
+
+            filename = filename_format.format(
+                suite_title=suite_title,
+                widget_title=widget_title,
+                device=device,
+                name=device.name,
+            )
+            logger.info(
+                "Saving screenshot of '%s': '%s' to '%s'",
+                suite_title, widget_title, filename,
+            )
+            image.save(filename)
+            filenames[device.name] = filename
+        return filenames
 
     def _get_sidebar(self, widget):
         items = {}
