@@ -11,7 +11,7 @@ from pydm.widgets.channel import PyDMChannel
 from qtpy import QtCore, QtWidgets, uic
 
 from . import utils, widgets
-from .alarm import KindLevel, _KindLevel
+from .alarm import AlarmLevel, KindLevel, _KindLevel
 from .panel import SignalOrder, TyphosSignalPanel
 from .status import TyphosStatusThread
 
@@ -148,6 +148,14 @@ class TyphosPositionerWidget(
     _moving_attr = 'motor_is_moving'
     _error_message_attr = 'error_message'
     _min_visible_operation = 0.1
+
+    alarm_text = {
+        AlarmLevel.NO_ALARM: 'no alarm',
+        AlarmLevel.MINOR: 'minor',
+        AlarmLevel.MAJOR: 'major',
+        AlarmLevel.DISCONNECTED: 'no conn',
+        AlarmLevel.INVALID: 'invalid',
+    }
 
     def __init__(self, parent=None):
         self._moving = False
@@ -721,16 +729,10 @@ class TyphosPositionerWidget(
         Label the alarm circle with a short text bit.
         """
         alarms = self.ui.alarm_circle.AlarmLevel
-        if alarm_level == alarms.NO_ALARM:
-            text = 'no alarm'
-        elif alarm_level == alarms.MINOR:
-            text = 'minor'
-        elif alarm_level == alarms.MAJOR:
-            text = 'major'
-        elif alarm_level == alarms.DISCONNECTED:
-            text = 'no conn'
-        else:
-            text = 'invalid'
+        try:
+            text = self.alarm_text[alarm_level]
+        except KeyError:
+            text = self.alarm_text[alarms.INVALID]
         self.ui.alarm_label.setText(text)
 
     @property
@@ -790,6 +792,14 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
 class TyphosPositionerRowWidget(TyphosPositionerWidget):
     ui: _TyphosPositionerRowUI
     ui_template = os.path.join(utils.ui_dir, "widgets", "positioner_row.ui")
+
+    alarm_text = {
+        AlarmLevel.NO_ALARM: 'ok',
+        AlarmLevel.MINOR: 'minor',
+        AlarmLevel.MAJOR: 'major',
+        AlarmLevel.DISCONNECTED: 'conn',
+        AlarmLevel.INVALID: 'inv',
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
