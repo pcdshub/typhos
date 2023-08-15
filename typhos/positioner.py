@@ -914,5 +914,5 @@ def clear_error_in_background(device):
             logger.error(msg)
             logger.debug(msg, exc_info=True)
 
-    td = threading.Thread(target=inner)
+    td = threading.Thread(target=inner, daemon=True)
     td.start()
