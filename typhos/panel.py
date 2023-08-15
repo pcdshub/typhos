@@ -769,25 +769,25 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
                            doc='Show ophyd.Kind.omitted signals')
 
     @Property(str)
-    def nameFilter(self):
+    def nameFilter(self) -> str:
         """Get or set the current name filter."""
         return self._name_filter
 
     @nameFilter.setter
-    def nameFilter(self, name_filter):
+    def nameFilter(self, name_filter: str):
         if name_filter != self._name_filter:
             self._name_filter = name_filter.strip()
             self._update_panel()
 
     @Property("QStringList")
-    def omitNames(self):
+    def omitNames(self) -> list[str]:
         """Get or set the list of names to omit."""
         return self._omit_names
 
     @omitNames.setter
-    def omitNames(self, omit_names: list[str]) -> None:
+    def omitNames(self, omit_names: Optional[list[str]]) -> None:
         if omit_names != self._omit_names:
-            self._omit_names = list(omit_names)
+            self._omit_names = list(omit_names or [])
             self._update_panel()
 
     @Property("QStringList")
@@ -796,9 +796,9 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         return self._show_names
 
     @showNames.setter
-    def showNames(self, show_names: list[str]) -> None:
+    def showNames(self, show_names: Optional[list[str]]) -> None:
         if show_names != self._show_names:
-            self._show_names = list(show_names)
+            self._show_names = list(show_names or [])
             self._update_panel()
 
     @Property(SignalOrder)

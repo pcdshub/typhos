@@ -3,7 +3,8 @@ from __future__ import annotations
 import logging
 import os.path
 import threading
-from typing import Optional
+import typing
+from typing import Optional, Union
 
 import ophyd
 from pydm.widgets.channel import PyDMChannel
@@ -15,6 +16,54 @@ from .panel import SignalOrder, TyphosSignalPanel
 from .status import TyphosStatusThread
 
 logger = logging.getLogger(__name__)
+
+if typing.TYPE_CHECKING:
+    import pydm.widgets
+
+    from .alarm import TyphosAlarmRectangle
+    from .related_display import TyphosRelatedSuiteButton
+
+
+class _TyphosPositionerUI(QtWidgets.QWidget):
+    """Annotations helper for positioner.ui; not to be instantiated."""
+
+    alarm_circle: TyphosAlarmRectangle
+    alarm_label: QtWidgets.QLabel
+    alarm_layout: QtWidgets.QVBoxLayout
+    app: QtWidgets.QApplication
+    clear_error_button: QtWidgets.QPushButton
+    device_name_label: QtWidgets.QLabel
+    devices: list
+    error_label: pydm.widgets.label.PyDMLabel
+    expand_button: QtWidgets.QPushButton
+    expert_button: TyphosRelatedSuiteButton
+    high_limit: pydm.widgets.label.PyDMLabel
+    high_limit_layout: QtWidgets.QVBoxLayout
+    high_limit_switch: pydm.widgets.byte.PyDMByteIndicator
+    horizontalLayout: QtWidgets.QHBoxLayout
+    low_limit: pydm.widgets.label.PyDMLabel
+    low_limit_layout: QtWidgets.QVBoxLayout
+    low_limit_switch: pydm.widgets.byte.PyDMByteIndicator
+    moving_indicator: pydm.widgets.byte.PyDMByteIndicator
+    moving_indicator_label: QtWidgets.QLabel
+    moving_indicator_layout: QtWidgets.QVBoxLayout
+    row_frame: QtWidgets.QFrame
+    setpoint_layout: QtWidgets.QVBoxLayout
+    setpoint_outer_layout: QtWidgets.QVBoxLayout
+    status_container_widget: QtWidgets.QWidget
+    status_label: QtWidgets.QLabel
+    status_text_layout: QtWidgets.QVBoxLayout
+    stop_button: QtWidgets.QPushButton
+    tweak_layout: QtWidgets.QHBoxLayout
+    tweak_negative: QtWidgets.QToolButton
+    tweak_positive: QtWidgets.QToolButton
+    tweak_value: QtWidgets.QLineEdit
+    tweak_widget: QtWidgets.QWidget
+    user_readback: pydm.widgets.label.PyDMLabel
+    user_setpoint: pydm.widgets.line_edit.PyDMLineEdit
+
+    # Dynamically added:
+    set_value: Union[widgets.NoScrollComboBox, QtWidgets.QLineEdit]
 
 
 class TyphosPositionerWidget(
@@ -86,6 +135,7 @@ class TyphosPositionerWidget(
     QtCore.Q_ENUMS(_KindLevel)
     KindLevel = KindLevel
 
+    ui: _TyphosPositionerUI
     ui_template = os.path.join(utils.ui_dir, 'widgets', 'positioner.ui')
     _readback_attr = 'user_readback'
     _setpoint_attr = 'user_setpoint'
@@ -110,7 +160,7 @@ class TyphosPositionerWidget(
 
         super().__init__(parent=parent)
 
-        self.ui = uic.loadUi(self.ui_template, self)
+        self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
@@ -200,6 +250,7 @@ class TyphosPositionerWidget(
         if not self.device:
             return
 
+        value = None
         try:
             if isinstance(self.ui.set_value, widgets.NoScrollComboBox):
                 value = self.ui.set_value.currentText()
@@ -711,8 +762,33 @@ class TyphosPositionerWidget(
         ]
         return [sig for sig in signals if sig is not None]
 
+    def show_ui_type_hints(self):
+        """Show type hints of widgets included in the UI file."""
+        cls_attrs = set()
+        obj_attrs = set(dir(self.ui))
+        annotated = set(self.ui.__annotations__)
+        for cls in type(self.ui).mro():
+            cls_attrs |= set(dir(cls))
+        likely_from_ui = obj_attrs - cls_attrs - annotated
+        for attr in sorted(likely_from_ui):
+            try:
+                obj = getattr(self, attr, None)
+            except Exception:
+                ...
+            else:
+                if obj is not None:
+                    print(f"{attr}: {obj.__class__.__module__}.{obj.__class__.__name__}")
+
+
+class _TyphosPositionerRowUI(_TyphosPositionerUI):
+    """Annotations helper for positioner_row.ui; not to be instantiated."""
+
+    status_container_widget: QtWidgets.QFrame
+    extended_signal_panel: Optional[TyphosSignalPanel]
+
 
 class TyphosPositionerRowWidget(TyphosPositionerWidget):
+    ui: _TyphosPositionerRowUI
     ui_template = os.path.join(utils.ui_dir, "widgets", "positioner_row.ui")
 
     def __init__(self, *args, **kwargs):
@@ -724,15 +800,46 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
                 self.layout().takeAt(idx)
                 break
 
-        self.temp_widget = QtWidgets.QWidget()
-        self.ui.status_text_layout.setParent(self.temp_widget)
-        self.temp_widget.setVisible(False)
-        self._extended_signal_panel = None
-        self.ui.expand_button.clicked.connect(self._expand_panel)
+        # TODO move these out
+        self._omit_names = [
+            "motor_egu",
+            "motor_stop",
+            "motor_done_move",
+            "direction_of_travel",
+            "user_readback",
+            "user_setpoint",
+            "home_forward",  # maybe keep?
+            "home_reverse",
+        ]
+
+        self.ui.extended_signal_panel = None
+        self.ui.expand_button.clicked.connect(self._expand_layout)
+        self.ui.status_container_widget.setVisible(False)
 
         # TODO: ${name} / macros don't expand here
 
+    @QtCore.Property("QStringList")
+    def omitNames(self) -> list[str]:
+        """Get or set the list of names to omit in the expanded signal panel."""
+        return self._omit_names
+
+    @omitNames.setter
+    def omitNames(self, omit_names: list[str]) -> None:
+        if omit_names == self._omit_names:
+            return
+
+        self._omit_names = list(omit_names or [])
+        if self.ui.extended_signal_panel is not None:
+            self.ui.extended_signal_panel.omitNames = self._omit_names
+
     def get_names_to_omit(self) -> list[str]:
+        """
+        Get a list of signal names to omit in the extended panel.
+
+        Returns
+        -------
+        list[str]
+        """
         device: Optional[ophyd.Device] = self.device
         if device is None:
             return []
@@ -749,14 +856,9 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         to_omit = set(sig.name for sig in omit_signals)
 
         # TODO: move these to a Qt designable property
-        to_omit.add("motor_egu")
-        to_omit.add("motor_stop")
-        to_omit.add("motor_done_move")
-        to_omit.add("direction_of_travel")
-        to_omit.add("user_readback")
-        to_omit.add("user_setpoint")
-        to_omit.add("home_forward")  # maybe keep?
-        to_omit.add("home_reverse")
+        for name in self.omitNames:
+            to_omit.add(name)
+
         if device.name in to_omit:
             # Don't let the renamed position signal stop us from showing any
             # signals:
@@ -764,6 +866,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         return sorted(to_omit)
 
     def _create_signal_panel(self) -> Optional[TyphosSignalPanel]:
+        """Create the 'extended' TyphosSignalPanel for the device."""
         if self.device is None:
             return None
 
@@ -775,21 +878,26 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.layout().addWidget(panel)
         return panel
 
-    def _expand_panel(self) -> None:
-        if self._extended_signal_panel is None:
-            self._extended_signal_panel = self._create_signal_panel()
-            return
+    def _expand_layout(self) -> None:
+        """Toggle the expansion of the signal panel and status information."""
+        if self.ui.extended_signal_panel is None:
+            self.ui.extended_signal_panel = self._create_signal_panel()
+            to_show = True
+        else:
+            to_show = not self.ui.extended_signal_panel.isVisible()
 
-        self._extended_signal_panel.setVisible(self._extended_signal_panel.isVisible())
+        self.ui.extended_signal_panel.setVisible(to_show)
+        self.ui.status_container_widget.setVisible(to_show)
 
     def add_device(self, device: ophyd.Device) -> None:
+        """Add (or rather set) the ophyd device for this positioner."""
         super().add_device(device)
         if device is None:
             self.ui.device_name_label.setText("(no device)")
-            if self._extended_signal_panel is not None:
-                self.layout().removeWidget(self._extended_signal_panel)
-                self._extended_signal_panel.destroyLater()
-                self._extended_signal_panel = None
+            if self.ui.extended_signal_panel is not None:
+                self.layout().removeWidget(self.ui.extended_signal_panel)
+                self.ui.extended_signal_panel.destroyLater()
+                self.ui.extended_signal_panel = None
             return
 
         self.ui.device_name_label.setText(device.name)
