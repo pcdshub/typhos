@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import os.path
 import threading
@@ -9,6 +11,7 @@ from qtpy import QtCore, QtWidgets, uic
 
 from . import utils, widgets
 from .alarm import KindLevel, _KindLevel
+from .panel import SignalOrder, TyphosSignalPanel
 from .status import TyphosStatusThread
 
 logger = logging.getLogger(__name__)
@@ -679,6 +682,35 @@ class TyphosPositionerWidget(
             text = 'invalid'
         self.ui.alarm_label.setText(text)
 
+    @property
+    def all_linked_attributes(self) -> list[str]:
+        """All linked attribute names."""
+        return [
+            attr
+            for attr in (
+                self.acceleration_attribute,
+                self.error_message_attribute,
+                self.high_limit_switch_attribute,
+                self.high_limit_travel_attribute,
+                self.low_limit_switch_attribute,
+                self.low_limit_travel_attribute,
+                self.moving_attribute,
+                self.readback_attribute,
+                self.setpoint_attribute,
+                self.velocity_attribute,
+            )
+            if attr
+        ]
+
+    @property
+    def all_linked_signals(self) -> list[ophyd.Signal]:
+        """All linked signal names."""
+        signals = [
+            getattr(self.device, attr, None)
+            for attr in self.all_linked_attributes
+        ]
+        return [sig for sig in signals if sig is not None]
+
 
 class TyphosPositionerRowWidget(TyphosPositionerWidget):
     ui_template = os.path.join(utils.ui_dir, "widgets", "positioner_row.ui")
@@ -695,16 +727,72 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.temp_widget = QtWidgets.QWidget()
         self.ui.status_text_layout.setParent(self.temp_widget)
         self.temp_widget.setVisible(False)
+        self._extended_signal_panel = None
+        self.ui.expand_button.clicked.connect(self._expand_panel)
 
         # TODO: ${name} / macros don't expand here
 
+    def get_names_to_omit(self) -> list[str]:
+        device: Optional[ophyd.Device] = self.device
+        if device is None:
+            return []
+
+        omit_signals = self.all_linked_signals
+        to_keep_signals = [
+            getattr(device, attr, None)
+            for attr in (self.velocity_attribute, self.acceleration_attribute)
+        ]
+        for sig in to_keep_signals:
+            if sig in omit_signals:
+                omit_signals.remove(sig)
+
+        to_omit = set(sig.name for sig in omit_signals)
+
+        # TODO: move these to a Qt designable property
+        to_omit.add("motor_egu")
+        to_omit.add("motor_stop")
+        to_omit.add("motor_done_move")
+        to_omit.add("direction_of_travel")
+        to_omit.add("user_readback")
+        to_omit.add("user_setpoint")
+        to_omit.add("home_forward")  # maybe keep?
+        to_omit.add("home_reverse")
+        if device.name in to_omit:
+            # Don't let the renamed position signal stop us from showing any
+            # signals:
+            to_omit.remove(device.name)
+        return sorted(to_omit)
+
+    def _create_signal_panel(self) -> Optional[TyphosSignalPanel]:
+        if self.device is None:
+            return None
+
+        panel = TyphosSignalPanel()
+        panel.omitNames = self.get_names_to_omit()
+        panel.sortBy = SignalOrder.byName
+        panel.add_device(self.device)
+
+        self.ui.layout().addWidget(panel)
+        return panel
+
+    def _expand_panel(self) -> None:
+        if self._extended_signal_panel is None:
+            self._extended_signal_panel = self._create_signal_panel()
+            return
+
+        self._extended_signal_panel.setVisible(self._extended_signal_panel.isVisible())
+
     def add_device(self, device: ophyd.Device) -> None:
         super().add_device(device)
-        device: Optional[ophyd.Device] = self.device
-        if device is not None:
-            self.ui.device_name_label.setText(device.name)
-        else:
+        if device is None:
             self.ui.device_name_label.setText("(no device)")
+            if self._extended_signal_panel is not None:
+                self.layout().removeWidget(self._extended_signal_panel)
+                self._extended_signal_panel.destroyLater()
+                self._extended_signal_panel = None
+            return
+
+        self.ui.device_name_label.setText(device.name)
 
 
 def clear_error_in_background(device):

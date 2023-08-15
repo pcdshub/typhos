@@ -10,9 +10,12 @@ Container widgets:
     * :class:`TyphosCompositeSignalPanel`
 """
 
+from __future__ import annotations
+
 import functools
 import logging
 from functools import partial
+from typing import Optional
 
 import ophyd
 from ophyd import Kind
@@ -454,7 +457,16 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         return any(filter_by in item for item in items)
 
-    def _should_show(self, kind, name, *, kinds, name_filter):
+    def _should_show(
+        self,
+        kind: ophyd.Kind,
+        name: str,
+        *,
+        kinds: list[ophyd.Kind],
+        name_filter: Optional[str] = None,
+        show_names: Optional[list[str]] = None,
+        omit_names: Optional[list[str]] = None,
+    ):
         """
         Based on the filter settings, indicate if ``signal`` should be shown.
 
@@ -469,8 +481,15 @@ class SignalPanel(QtWidgets.QGridLayout):
         kinds : list of :class:`ophyd.Kind`
             Kinds that should be shown.
 
-        name_filter : str
-            Name filter text.
+        name_filter : str, optional
+            Name filter text - show only signals that match this string. This
+            is applied after the "omit_names" and "show_names" filters.
+
+        show_names : list of str, optinoal
+            Names to explicitly show.  Applied before the omit filter.
+
+        omit_names : list of str, optinoal
+            Names to explicitly omit.
 
         Returns
         -------
@@ -478,6 +497,12 @@ class SignalPanel(QtWidgets.QGridLayout):
         """
         if kind not in kinds:
             return False
+        for show_name in (show_names or []):
+            if show_name and show_name in name:
+                return True
+        for omit_name in (omit_names or []):
+            if omit_name and omit_name in name:
+                return False
         return self._apply_name_filter(name_filter, name)
 
     def _set_visible(self, signal_name, visible):
@@ -528,7 +553,13 @@ class SignalPanel(QtWidgets.QGridLayout):
             del self.signal_name_to_info[signal_name]
         self._connect_signal(signal)
 
-    def filter_signals(self, kinds, name_filter=None):
+    def filter_signals(
+        self,
+        kinds: list[ophyd.Kind],
+        name_filter: Optional[str] = None,
+        show_names: Optional[list[str]] = None,
+        omit_names: Optional[list[str]] = None,
+    ):
         """
         Filter signals based on the given kinds.
 
@@ -538,12 +569,25 @@ class SignalPanel(QtWidgets.QGridLayout):
             List of kinds to show.
 
         name_filter : str, optional
-            Additionally filter signals by name.
+            Name filter text - show only signals that match this string. This
+            is applied after the "omit_names" and "show_names" filters.
+
+        show_names : list of str, optinoal
+            Names to explicitly show.  Applied before the omit filter.
+
+        omit_names : list of str, optinoal
+            Names to explicitly omit.
         """
         for name, info in list(self.signal_name_to_info.items()):
             item = info['signal'] or info['component']
-            visible = self._should_show(item.kind, name,
-                                        kinds=kinds, name_filter=name_filter)
+            visible = self._should_show(
+                item.kind,
+                name,
+                kinds=kinds,
+                name_filter=name_filter,
+                omit_names=omit_names,
+                show_names=show_names,
+            )
             self._set_visible(name, visible)
 
         self.update()
@@ -664,6 +708,8 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         self._panel_layout = self._panel_class()
         self.setLayout(self._panel_layout)
         self._name_filter = ''
+        self._show_names = []
+        self._omit_names = []
         # Add default Kind values
         self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
         self._signal_order = SignalOrder.byKind
@@ -689,6 +735,8 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         """Get the filter settings dictionary."""
         return dict(
             name_filter=self.nameFilter,
+            omit_names=self.omitNames,
+            show_names=self.showNames,
             kinds=self.show_kinds,
         )
 
@@ -729,6 +777,28 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     def nameFilter(self, name_filter):
         if name_filter != self._name_filter:
             self._name_filter = name_filter.strip()
+            self._update_panel()
+
+    @Property("QStringList")
+    def omitNames(self):
+        """Get or set the list of names to omit."""
+        return self._omit_names
+
+    @omitNames.setter
+    def omitNames(self, omit_names: list[str]) -> None:
+        if omit_names != self._omit_names:
+            self._omit_names = list(omit_names)
+            self._update_panel()
+
+    @Property("QStringList")
+    def showNames(self) -> list[str]:
+        """Get or set the list of names to omit."""
+        return self._show_names
+
+    @showNames.setter
+    def showNames(self, show_names: list[str]) -> None:
+        if show_names != self._show_names:
+            self._show_names = list(show_names)
             self._update_panel()
 
     @Property(SignalOrder)
