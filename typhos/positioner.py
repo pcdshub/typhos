@@ -906,6 +906,19 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
 
         self.ui.device_name_label.setText(device.name)
 
+        self._fix_size_policy()
+
+    def _fix_size_policy(self) -> None:
+        """Fix size policies of dynamically-created widgets."""
+        policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        policy.setHorizontalStretch(0)
+        policy.setVerticalStretch(0)
+        policy.setHeightForWidth(
+            self.ui.set_value.sizePolicy().hasHeightForWidth()
+        )
+        self.set_value.setSizePolicy(policy)
+        self.set_value.setMaximumSize(self.ui.user_setpoint.maximumSize())
+
 
 def clear_error_in_background(device):
     def inner():
