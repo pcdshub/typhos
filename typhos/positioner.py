@@ -815,6 +815,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.extended_signal_panel = None
         self.ui.expand_button.clicked.connect(self._expand_layout)
         self.ui.status_container_widget.setVisible(False)
+        self.ui.status_label.setText("")
 
         # TODO: ${name} / macros don't expand here
 
@@ -882,6 +883,9 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         """Toggle the expansion of the signal panel and status information."""
         if self.ui.extended_signal_panel is None:
             self.ui.extended_signal_panel = self._create_signal_panel()
+            if self.ui.extended_signal_panel is None:
+                return
+
             to_show = True
         else:
             to_show = not self.ui.extended_signal_panel.isVisible()
