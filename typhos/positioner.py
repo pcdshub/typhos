@@ -787,6 +787,7 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
 
     status_container_widget: QtWidgets.QFrame
     extended_signal_panel: Optional[TyphosSignalPanel]
+    error_prefix: QtWidgets.QLabel
 
 
 class TyphosPositionerRowWidget(TyphosPositionerWidget):
@@ -802,6 +803,10 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
     }
 
     def __init__(self, *args, **kwargs):
+        self._error_message = ""
+        self._status_text = ""
+        self._alarm_level = AlarmLevel.DISCONNECTED
+
         super().__init__(*args, **kwargs)
 
         for idx in range(self.layout().count()):
@@ -824,7 +829,6 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
 
         self.ui.extended_signal_panel = None
         self.ui.expand_button.clicked.connect(self._expand_layout)
-        self.ui.status_container_widget.setVisible(False)
         self.ui.status_label.setText("")
 
         # TODO: ${name} / macros don't expand here
@@ -890,7 +894,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         return panel
 
     def _expand_layout(self) -> None:
-        """Toggle the expansion of the signal panel and status information."""
+        """Toggle the expansion of the signal panel."""
         if self.ui.extended_signal_panel is None:
             self.ui.extended_signal_panel = self._create_signal_panel()
             if self.ui.extended_signal_panel is None:
@@ -901,7 +905,11 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             to_show = not self.ui.extended_signal_panel.isVisible()
 
         self.ui.extended_signal_panel.setVisible(to_show)
-        self.ui.status_container_widget.setVisible(to_show)
+
+        if to_show:
+            self.ui.expand_button.setText('v')
+        else:
+            self.ui.expand_button.setText('>')
 
     def add_device(self, device: ophyd.Device) -> None:
         """Add (or rather set) the ophyd device for this positioner."""
@@ -915,6 +923,63 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             return
 
         self.ui.device_name_label.setText(device.name)
+
+    @utils.linked_attribute('error_message_attribute', 'ui.error_label', True)
+    def _link_error_message(self, signal, widget):
+        """Link the IOC error message with the ui element."""
+        if signal is None:
+            widget.hide()
+            self.ui.error_prefix.hide()
+        else:
+            signal.subscribe(self.new_error_message)
+
+    def new_error_message(self, value, *args, **kwargs):
+        self.update_status_visibility(error_message=value)
+
+    def _set_status_text(self, text, *, max_length=80):
+        super()._set_status_text(text, max_length=max_length)
+        self.update_status_visibility(status_text=text)
+
+    def update_alarm_text(self, alarm_level):
+        super().update_alarm_text(alarm_level=alarm_level)
+        self.update_status_visibility(alarm_level=alarm_level)
+
+    def update_status_visibility(
+        self,
+        error_message: str | None = None,
+        status_text: str | None = None,
+        alarm_level: AlarmLevel | None = None,
+    ) -> None:
+        """
+        Hide/show status and error as appropriate.
+
+        The goal here to make an illusion that there is only one label in
+        in this space when only one of the labels has text.
+
+        If both are empty, we also want to put "something" there to fill the
+        void, so we opt for a friendly message or an alarm reminder.
+        """
+        if error_message is not None:
+            self._error_message = error_message
+        if status_text is not None:
+            self._status_text = status_text
+        if alarm_level is not None:
+            self._alarm_level = alarm_level
+        error_message = error_message or self._error_message
+        status_text = status_text or self._status_text
+        alarm_level = alarm_level or self._alarm_level
+        has_status = bool(status_text)
+        has_error = bool(error_message)
+        if not has_status and not has_error:
+            # We want to fill something in, check if we have alarms
+            if alarm_level == AlarmLevel.NO_ALARM:
+                self.ui.status_label.setText('Status OK')
+            else:
+                self.ui.status_label.setText('Check alarm')
+            has_status = True
+        self.ui.status_label.setVisible(has_status)
+        self.ui.error_label.setVisible(has_error)
+        self.ui.error_prefix.setVisible(has_error)
 
 
 def clear_error_in_background(device):

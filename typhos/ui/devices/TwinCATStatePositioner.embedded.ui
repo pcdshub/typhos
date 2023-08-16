@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>872</width>
-    <height>58</height>
+    <height>228</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -73,6 +73,9 @@
      <property name="acceleration_attribute" stdset="0">
       <string/>
      </property>
+     <property name="moving_attribute" stdset="0">
+      <string>busy</string>
+     </property>
      <property name="show_expert_button" stdset="0">
       <bool>true</bool>
      </property>
@@ -82,13 +85,13 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphosPositionerRowWidget</class>
-   <extends>TyphosPositionerWidget</extends>
+   <class>TyphosPositionerWidget</class>
+   <extends>QWidget</extends>
    <header>typhos.positioner</header>
   </customwidget>
   <customwidget>
-   <class>TyphosPositionerWidget</class>
-   <extends>QWidget</extends>
+   <class>TyphosPositionerRowWidget</class>
+   <extends>TyphosPositionerWidget</extends>
    <header>typhos.positioner</header>
   </customwidget>
  </customwidgets>
