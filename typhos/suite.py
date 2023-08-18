@@ -8,7 +8,7 @@ import os
 import pathlib
 import textwrap
 from functools import partial
-from typing import Optional
+from typing import Optional, Union
 
 import ophyd
 import pcdsutils.qt
@@ -426,20 +426,29 @@ class TyphosSuite(TyphosBase):
 
     @QtCore.Slot(str)
     @QtCore.Slot(object)
-    def show_subdisplay(self, widget):
+    def show_subdisplay(
+        self,
+        widget: Union[QtWidgets.QWidget, SidebarParameter, str],
+    ) -> QtWidgets.QWidget:
         """
         Open a display in the dock system.
 
         Parameters
         ----------
-        widget: QWidget, SidebarParameter or str
+        widget : QWidget, SidebarParameter or str
             If given a ``SidebarParameter`` from the tree, the widget will be
             shown and the sidebar item update. Otherwise, the information is
             passed to :meth:`.get_subdisplay`
+
+        Returns
+        -------
+        widget : QWidget
+            The subdisplay that was shown.
         """
         # Grab true widget
         if not isinstance(widget, QtWidgets.QWidget):
             widget = self.get_subdisplay(widget)
+
         # Setup the dock
         dock = widgets.SubDisplay(self)
         # Set sidebar properly
@@ -467,8 +476,10 @@ class TyphosSuite(TyphosBase):
         self._new_template()
         if isinstance(widget, TyphosDeviceDisplay):
             widget.template_changed.connect(self._new_template)
+        return widget
 
     def _new_template(self, template: Optional[pathlib.Path] = None) -> None:
+        """Hook for when a new template is selected in a sub-display."""
         if self.parent() is not None:
             return
 
