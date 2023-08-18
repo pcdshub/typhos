@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import logging
 import os
+import pathlib
 import textwrap
 from functools import partial
+from typing import Optional
 
 import ophyd
 import pcdsutils.qt
@@ -461,6 +463,18 @@ class TyphosSuite(TyphosBase):
             self._content_frame.layout().setAlignment(
                 dock, QtCore.Qt.AlignTop
             )
+
+        self._new_template()
+        if isinstance(widget, TyphosDeviceDisplay):
+            widget.template_changed.connect(self._new_template)
+
+    def _new_template(self, template: Optional[pathlib.Path] = None) -> None:
+        if self.parent() is not None:
+            return
+
+        new_width = self.minimumSizeHint().width()
+        if self.width() < new_width:
+            self.resize(new_width, self.height())
 
     @QtCore.Slot(str)
     @QtCore.Slot(object)

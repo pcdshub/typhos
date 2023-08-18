@@ -993,6 +993,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     device_count_threshold = 0
     signal_count_threshold = 30
+    template_changed = QtCore.Signal(object)
 
     def __init__(
         self,
@@ -1287,6 +1288,16 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self._update_children()
         utils.reload_widget_stylesheet(self)
+        self.updateGeometry()
+        self.template_changed.emit(template)
+
+    def minimumSizeHint(self) -> QtCore.QSize:
+        if self._scroll_area is None:
+            return super().minimumSizeHint()
+        return QtCore.QSize(
+            self._scroll_area.viewportSizeHint().width(),
+            self.sizeHint().height(),
+        )
 
     @property
     def display_widget(self):
