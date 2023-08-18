@@ -1296,7 +1296,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             return super().minimumSizeHint()
         return QtCore.QSize(
             self._scroll_area.viewportSizeHint().width(),
-            self.sizeHint().height(),
+            super().minimumSizeHint().height(),
         )
 
     @property
