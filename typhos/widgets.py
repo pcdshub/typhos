@@ -22,7 +22,7 @@ from qtpy.QtCore import Property, QObject, QSize, Qt, Signal, Slot
 from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
                             QToolBar, QVBoxLayout, QWidget)
 
-from . import plugins, utils, variety
+from . import dynamic_font, plugins, utils, variety
 from .textedit import TyphosTextEdit  # noqa: F401
 from .tweakable import TyphosTweakable  # noqa: F401
 from .variety import use_for_variety_read, use_for_variety_write
@@ -392,6 +392,18 @@ class TyphosLabel(pydm.widgets.PyDMLabel):
         default = (self.displayFormat == DisplayFormat.Default)
         if new_unit.lower() in EXPONENTIAL_UNITS and default:
             self.displayFormat = DisplayFormat.Exponential
+
+    @Property(bool, "dynamicFontSize")
+    def dynamic_font_size(self) -> bool:
+        """Dynamically adjust the font size"""
+        return dynamic_font.is_patched(self)
+
+    @dynamic_font_size.setter
+    def dynamic_font_size(self, value: bool):
+        if value:
+            dynamic_font.patch_widget(self)
+        else:
+            dynamic_font.unpatch_widget(self)
 
 
 class TyphosSidebarItem(ParameterItem):
