@@ -71,3 +71,13 @@ QLineEdit#menu_action {
 TyphosLoading {
     color: red;
 }
+
+TyphosNotesEdit {
+    background: transparent;
+    color: black;
+}
+
+TyphosPositionerRowWidget > TyphosNotesEdit {
+    background: transparent;
+    color: black;
+}

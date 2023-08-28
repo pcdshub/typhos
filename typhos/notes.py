@@ -12,9 +12,9 @@ from typing import Dict, Optional, Tuple
 import ophyd
 import platformdirs
 import yaml
-from qtpy import QtCore, QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 
-from . import utils, widgets
+from . import utils
 
 logger = logging.getLogger(__name__)
 NOTES_VAR = "PCDS_DEVICE_NOTES"
@@ -79,7 +79,7 @@ def get_notes_data(device_name: str) -> Tuple[NotesSource, Dict[str, str]]:
     # try env var
     env_notes_path = os.environ.get(NOTES_VAR)
     if env_notes_path and Path(env_notes_path).is_file():
-        note_data = get_data_from_yaml(device_name, env_notes_path)
+        note_data = get_data_from_yaml(device_name, Path(env_notes_path))
         if note_data:
             data = note_data
             source = NotesSource.ENV
@@ -92,6 +92,12 @@ def get_notes_data(device_name: str) -> Tuple[NotesSource, Dict[str, str]]:
             data = note_data
             source = NotesSource.USER
 
+    logger.debug(
+        "Found notes for device %s from source %s: %s",
+        device_name,
+        source,
+        data,
+    )
     return source, data
 
 
@@ -149,36 +155,45 @@ def write_notes_data(
         user_data_path = platformdirs.user_data_path() / 'device_notes.yaml'
         insert_into_yaml(user_data_path, device_name, data)
     elif source == NotesSource.ENV:
-        env_data_path = Path(os.environ.get(NOTES_VAR))
-        insert_into_yaml(env_data_path, device_name, data)
+        notes_var = os.environ.get(NOTES_VAR)
+        if not notes_var:
+            raise RuntimeError(
+                f"Unable to save notes as env var {NOTES_VAR!r} was not set"
+            )
+
+        insert_into_yaml(Path(notes_var), device_name, data)
 
 
 class TyphosNotesEdit(
     QtWidgets.QLineEdit,
     utils.TyphosBase,
-    widgets.TyphosDesignerMixin,
 ):
     """
     A QLineEdit for storing notes for a device.
     """
+
+    _qt_designer_ = {
+        "group": "Typhos Widgets",
+        "is_container": False,
+    }
+
     def __init__(self, *args, refresh_time: float = 5.0, **kwargs):
         super().__init__(*args, **kwargs)
         self.editingFinished.connect(self.save_note)
         self.setPlaceholderText('no notes...')
         self.edit_filter = utils.FrameOnEditFilter(parent=self)
         self.setFrame(False)
-        self.setStyleSheet("QLineEdit { background: transparent }")
-        self.setReadOnly(True)
         self.installEventFilter(self.edit_filter)
-        self._last_updated: float = None
+        self._last_updated: Optional[float] = None
         self._refresh_time: float = refresh_time
         # to be initialized later
-        self.device_name: str = None
+        self.device_name: Optional[str] = None
         self.notes_source: Optional[NotesSource] = None
         self.data = {'note': '', 'timestamp': ''}
+        self.setPlaceholderText("Enter notes here")
 
     def update_tooltip(self) -> None:
-        if self.data['note']:
+        if self.data['note'] and self.notes_source is not None:
             self.setToolTip(f"({self.data['timestamp']}, {self.notes_source.name}):\n"
                             f"{self.data['note']}")
         else:
@@ -208,6 +223,10 @@ class TyphosNotesEdit(
         device_name : Optional[str]
             The device name.  Can also be a component. e.g. device_component_name
         """
+        if device_name is None:
+            # Ignore the "no device" scenario
+            return
+
         # if not initialized
         if self.device_name is None:
             self.device_name = device_name
@@ -216,7 +235,7 @@ class TyphosNotesEdit(
         if self.device_name is None:
             return
 
-        if not self._last_updated:
+        if self._last_updated is None:
             self._last_updated = time.time()
         elif (time.time() - self._last_updated) < self._refresh_time:
             return
@@ -228,6 +247,11 @@ class TyphosNotesEdit(
         self.update_tooltip()
 
     def save_note(self) -> None:
+        if self.notes_source is None:
+            raise RuntimeError("Unable to save notes - no source was defined")
+        if self.device_name is None:
+            raise RuntimeError("Unable to save notes - no device was set")
+
         note_text = self.text()
         curr_time = datetime.now().ctime()
         self.data['note'] = note_text
@@ -243,3 +267,8 @@ class TyphosNotesEdit(
             self.setup_data()
 
         return super().event(event)
+
+    def paintEvent(self, event: QtGui.QPaintEvent) -> None:
+        # TyphosBase paintEvent is incompatible with this widget, somehow.
+        # Avoid a super() call here for now!
+        QtWidgets.QLineEdit.paintEvent(self, event)
