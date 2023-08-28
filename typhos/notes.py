@@ -9,11 +9,12 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
+import ophyd
 import platformdirs
 import yaml
 from qtpy import QtCore, QtWidgets
 
-from typhos import utils
+from . import utils, widgets
 
 logger = logging.getLogger(__name__)
 NOTES_VAR = "PCDS_DEVICE_NOTES"
@@ -152,7 +153,11 @@ def write_notes_data(
         insert_into_yaml(env_data_path, device_name, data)
 
 
-class TyphosNotesEdit(QtWidgets.QLineEdit):
+class TyphosNotesEdit(
+    utils.TyphosBase,
+    QtWidgets.QLineEdit,
+    widgets.TyphosDesignerMixin,
+):
     """
     A QLineEdit for storing notes for a device.
     """
@@ -178,6 +183,12 @@ class TyphosNotesEdit(QtWidgets.QLineEdit):
                             f"{self.data['note']}")
         else:
             self.setToolTip('click to edit note')
+
+    def add_device(self, device: ophyd.Device) -> None:
+        super().add_device(device)
+        if device is None:
+            return
+        self.setup_data(device.name)
 
     def setup_data(self, device_name: Optional[str] = None) -> None:
         """
