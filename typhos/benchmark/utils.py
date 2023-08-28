@@ -4,15 +4,13 @@ Helpful functions that don't belong in a more specific submodule.
 import importlib
 import inspect
 import logging
-import os
 import pkgutil
-import signal
 import uuid
 from contextlib import contextmanager
 from inspect import isclass, isfunction, ismethod
-from multiprocessing import Process
+from typing import Type
 
-from ophyd.signal import EpicsSignalBase
+import ophyd
 
 logger = logging.getLogger(__name__)
 
@@ -21,67 +19,20 @@ _optional_err = ('Optional dependency caproto missing from python '
                  'environment. Cannot test server.')
 
 try:
-    from caproto.server import PVGroup, pvproperty, run
+    from caproto.tests.conftest import run_example_ioc
     has_caproto = True
 except ImportError:
     has_caproto = False
     logger.debug(_optional_err)
 
 
-def run_caproto_ioc(device_class, prefix):
-    """
-    Runs a dummy caproto IOC.
-
-    Includes all the PVs that device_class will have if instantiated with
-    prefix.
-
-    Assumes only basic :class:`ophyd.Component` instances in the class
-    definition.
-    """
-    if not has_caproto:
-        raise ImportError(_optional_err)
-
-    pvprops = {}
-    for suffix in yield_all_suffixes(device_class):
-        pvprops[suffix] = pvproperty()
-
-    DynIOC = type('DynIOC', (PVGroup,), pvprops)
-    ioc = DynIOC(prefix)
-
-    run(ioc.pvdb, module_name='caproto.asyncio.server',
-        interfaces=['0.0.0.0'])
-
-
-def yield_all_suffixes(device_class):
-    """
-    Iterates through all full pvname suffixes defined by device_class.
-
-    Assumes only basic :class:`ophyd.Component` instances in the class
-    definition.
-    """
-    for walk in device_class.walk_components():
-        if issubclass(walk.item.cls, EpicsSignalBase):
-            suffix = get_suffix(walk)
-            yield suffix
-
-
-def get_suffix(walk):
-    """
-    Returns the full pvname suffix from a ComponentWalk instance.
-
-    This means everything after the top-level device's prefix.
-    Assumes that walk is an :class:`ophyd.signal.EpicsSignalBase`
-    subclass and that it was defined using only
-    :class:`ophyd.Component` in the device ancestors tree.
-    """
-    suffix = ''
-    for cls, attr in zip(walk.ancestors, walk.dotted_name.split('.')):
-        suffix += getattr(cls, attr).suffix
-    return suffix
-
-
 @contextmanager
-def caproto_context(device_class, prefix):
+def caproto_context(
+    device_class: Type[ophyd.Device],
+    prefix: str,
+    full_test_name: str,
+    request=None,
+):
     """
     Yields a caproto process with all elements of the input device.
 
@@ -91,11 +42,13 @@ def caproto_context(device_class, prefix):
     if not has_caproto:
         raise ImportError(_optional_err)
 
-    proc = Process(target=run_caproto_ioc, args=(device_class, prefix))
-    proc.start()
+    run_example_ioc(
+        "typhos.benchmark.ioc",
+        args=[prefix, full_test_name],
+        pv_to_check="",
+        request=request,
+    )
     yield
-    if proc.is_alive():
-        os.kill(proc.pid, signal.SIGKILL)
 
 
 def random_prefix():
