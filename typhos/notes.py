@@ -154,8 +154,8 @@ def write_notes_data(
 
 
 class TyphosNotesEdit(
-    utils.TyphosBase,
     QtWidgets.QLineEdit,
+    utils.TyphosBase,
     widgets.TyphosDesignerMixin,
 ):
     """

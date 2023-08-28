@@ -38,7 +38,7 @@ from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QMovie, QPainter
 from qtpy.QtWidgets import QWidget
 
-from typhos import plugins
+from . import plugins
 
 try:
     import happi
