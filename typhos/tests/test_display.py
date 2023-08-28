@@ -60,6 +60,7 @@ def test_device_display(device, motor, qtbot):
         assert device_signals == signals_from_panel('config_panel')
 
     panel = typhos.display.TyphosDeviceDisplay.from_device(motor)
+    panel.force_template = utils.ui_dir / "core" / "detailed_screen.ui"
     qtbot.addWidget(panel)
     check_hint_panel(motor)
     check_read_panel(motor)
