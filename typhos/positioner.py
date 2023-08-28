@@ -21,6 +21,7 @@ if typing.TYPE_CHECKING:
     import pydm.widgets
 
     from .alarm import TyphosAlarmRectangle
+    from .notes import TyphosNotesEdit
     from .related_display import TyphosRelatedSuiteButton
 
 
@@ -785,6 +786,7 @@ class TyphosPositionerWidget(
 class _TyphosPositionerRowUI(_TyphosPositionerUI):
     """Annotations helper for positioner_row.ui; not to be instantiated."""
 
+    notes_edit: TyphosNotesEdit
     status_container_widget: QtWidgets.QFrame
     extended_signal_panel: Optional[TyphosSignalPanel]
     error_prefix: QtWidgets.QLabel
@@ -923,6 +925,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             return
 
         self.ui.device_name_label.setText(device.name)
+        self.ui.notes_edit.add_device(device)
 
     @utils.linked_attribute('error_message_attribute', 'ui.error_label', True)
     def _link_error_message(self, signal, widget):

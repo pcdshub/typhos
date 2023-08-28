@@ -91,7 +91,7 @@
       </widget>
      </item>
      <item alignment="Qt::AlignHCenter">
-      <widget class="TyphosNotesEdit" name="TyphosNotesEdit_2">
+      <widget class="TyphosNotesEdit" name="notes_edit">
        <property name="toolTip">
         <string/>
        </property>
