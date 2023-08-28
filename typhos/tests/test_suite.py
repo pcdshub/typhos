@@ -8,10 +8,9 @@ from pyqtgraph.parametertree import ParameterTree
 from pyqtgraph.parametertree import parameterTypes as ptypes
 from qtpy import QtWidgets
 
-from typhos.display import TyphosDeviceDisplay
-from typhos.suite import DeviceParameter, TyphosSuite
-from typhos.utils import save_suite
-
+from ..display import DisplayTypes, TyphosDeviceDisplay
+from ..suite import DeviceParameter, TyphosSuite
+from ..utils import save_suite
 from .conftest import MockDevice, show_widget
 
 
@@ -185,3 +184,24 @@ def test_suite_save_cancel_smoke(suite: TyphosSuite, monkeypatch: pytest.MonkeyP
                         'getSaveFileName',
                         lambda *args: None)
     suite.save()
+
+
+def test_suite_resize(suite: TyphosSuite, monkeypatch: pytest.MonkeyPatch):
+    display = suite.show_subdisplay(suite.devices[0].name)
+    display_min_size = display.minimumSizeHint()
+    print("Suite width:", suite.width())
+    print("Display min size", display_min_size)
+    assert suite.width() >= display_min_size.width()
+
+    fixed_height = 100
+
+    for display_type in DisplayTypes:
+        suite.resize(10, fixed_height)
+        print("\nSwitched to template", display_type)
+        print("Suite shrunk to", suite.size())
+        display.display_type = display_type
+        display_min_size = display.minimumSizeHint()
+        print("New display min size", display_min_size)
+        assert suite.width() >= display.minimumSizeHint().width()
+        print("-> Suite width", suite.width())
+        assert suite.height() == fixed_height

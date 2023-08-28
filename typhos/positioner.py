@@ -10,7 +10,7 @@ import ophyd
 from pydm.widgets.channel import PyDMChannel
 from qtpy import QtCore, QtWidgets, uic
 
-from . import utils, widgets
+from . import dynamic_font, utils, widgets
 from .alarm import AlarmLevel, KindLevel, _KindLevel
 from .panel import SignalOrder, TyphosSignalPanel
 from .status import TyphosStatusThread
@@ -180,6 +180,8 @@ class TyphosPositionerWidget(
 
         self.show_expert_button = False
         self._after_set_moving(False)
+
+        dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.01)
 
     def _clear_status_thread(self):
         """Clear a previous status thread."""
