@@ -33,7 +33,12 @@ Features
 
 Bugfixes
 --------
-- N/A
+- For devices which do not require keyword arguments to instantiate, the typhos
+  CLI will no longer require an empty dictionary.  That is, ``$ typhos
+  ophyd.sim.SynAxis[]`` is equivalent to ``$ typhos ophyd.sim.SynAxis[{}]``.
+  As before, ophyd's required "name" keyword argument is filled in by typhos by
+  default.
+
 
 Maintenance
 -----------
