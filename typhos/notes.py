@@ -191,6 +191,10 @@ class TyphosNotesEdit(
         self.notes_source: Optional[NotesSource] = None
         self.data = {'note': '', 'timestamp': ''}
         self.setPlaceholderText("Enter notes here")
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.Preferred
+        )
 
     def update_tooltip(self) -> None:
         if self.data['note'] and self.notes_source is not None:

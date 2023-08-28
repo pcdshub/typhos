@@ -968,11 +968,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         layout.
         If omitted, scroll_option is used instead.
 
-    composite_heuristics : bool, optional
-        Enable composite heuristics, which may change the suggested detailed
-        screen based on the contents of the added device.  See also
-        :meth:`.suggest_composite_screen`.
-
     embedded_templates : list, optional
         List of embedded templates to use in addition to those found on disk.
 
@@ -1003,7 +998,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         parent: Optional[QtWidgets.QWidget] = None,
         *,
         scrollable: Optional[bool] = None,
-        composite_heuristics: bool = True,
         embedded_templates: Optional[list[str]] = None,
         detailed_templates: Optional[list[str]] = None,
         engineering_templates: Optional[list[str]] = None,
@@ -1011,7 +1005,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         scroll_option: Union[ScrollOptions, str, int] = 'auto',
         nested: bool = False,
     ):
-        self._composite_heuristics = composite_heuristics
         self._current_template = None
         self._forced_template = ''
         self._macros = {}
@@ -1061,15 +1054,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 self.scroll_option = ScrollOptions.scrollbar
             else:
                 self.scroll_option = ScrollOptions.no_scroll
-
-    @Property(bool)
-    def composite_heuristics(self):
-        """Allow composite screen to be suggested first by heuristics."""
-        return self._composite_heuristics
-
-    @composite_heuristics.setter
-    def composite_heuristics(self, composite_heuristics):
-        self._composite_heuristics = bool(composite_heuristics)
 
     @Property(_ScrollOptions)
     def scroll_option(self) -> ScrollOptions:
@@ -1457,12 +1441,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 logger.debug('Adding macro template %s: %s (total=%d)',
                              display_type, template, len(template_list))
 
-            # 2. Composite heuristics, if enabled
-            if self._composite_heuristics:
-                if self.suggest_composite_screen(cls):
-                    template_list.append(DETAILED_TREE_TEMPLATE)
-
-            # 3. Templates based on class hierarchy names
+            # 2. Templates based on class hierarchy names
             filenames = utils.find_templates_for_class(cls, view, paths)
             for filename in filenames:
                 if filename not in template_list:
@@ -1470,10 +1449,11 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                     logger.debug('Found new template %s: %s (total=%d)',
                                  display_type, filename, len(template_list))
 
-            # Ensure that the detailed tree template makes its way in for
-            # all top-level screens, if no class-specific screen exists
-            if DETAILED_TREE_TEMPLATE not in template_list and not self._nested:
-                template_list.append(DETAILED_TREE_TEMPLATE)
+            # 3. Ensure that the detailed tree template makes its way in for
+            #    all top-level screens, if no class-specific screen exists
+            if DETAILED_TREE_TEMPLATE not in template_list:
+                if not self._nested or self.suggest_composite_screen(cls):
+                    template_list.append(DETAILED_TREE_TEMPLATE)
 
             # 4. Default templates
             template_list.extend(
@@ -1491,27 +1471,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         composite : bool
             If True, favor the composite screen.
         """
-        has_subdevices = False
         for _, component in utils._get_top_level_components(device_cls):
             if issubclass(component.cls, ophyd.Device):
-                has_subdevices = True
-                break
-
-        specific_screens = cls._get_specific_screens(device_cls)
-        if len(specific_screens) or not has_subdevices:
-            # 1. There's a custom screen - we probably should use them
-            # 2. There are no subdevices
-            composite = False
-        else:
-            # 1. No custom screen, or
-            # 2. Many devices or a relatively small number of signals
-            composite = True
-
-        logger.debug(
-            '%s screens=%s has_subdevices=%s -> composite=%s',
-            device_cls, specific_screens, has_subdevices, composite
-        )
-        return composite
+                return True
+        return False
 
     @classmethod
     def from_device(cls, device, template=None, macros=None, **kwargs):

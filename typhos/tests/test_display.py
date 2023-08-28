@@ -59,8 +59,7 @@ def test_device_display(device, motor, qtbot):
         device_signals = signals_from_device(device, ophyd.Kind.config)
         assert device_signals == signals_from_panel('config_panel')
 
-    panel = typhos.display.TyphosDeviceDisplay.from_device(
-        motor, composite_heuristics=False)
+    panel = typhos.display.TyphosDeviceDisplay.from_device(motor)
     qtbot.addWidget(panel)
     check_hint_panel(motor)
     check_read_panel(motor)
