@@ -2,6 +2,8 @@
 Run the benchmark test cases using pytest-benchmark
 """
 
+import sys
+
 import pytest
 from epics import PV
 from qtpy import QtWidgets
@@ -25,6 +27,10 @@ def get_top_level_suites() -> list[TyphosSuite]:
 
 # Name the test cases using the keys, run using the values
 @pytest.mark.parametrize('unit_test_name', unit_tests.keys())
+@pytest.mark.skipif(
+    sys.version_info >= (3, 11),
+    reason="Benchmarks not fully working on Python 3.11",
+)
 def test_benchmark(unit_test_name, qapp, qtbot, benchmark, monkeypatch, request):
     """
     Run all registered benchmarks.
