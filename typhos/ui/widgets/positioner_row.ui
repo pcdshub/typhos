@@ -49,7 +49,7 @@
      <property name="topMargin">
       <number>0</number>
      </property>
-     <item>
+     <item alignment="Qt::AlignLeft">
       <widget class="QLabel" name="device_name_label">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -87,6 +87,13 @@
        </property>
        <property name="indent">
         <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignHCenter">
+      <widget class="TyphosNotesEdit" name="TyphosNotesEdit_2">
+       <property name="toolTip">
+        <string/>
        </property>
       </widget>
      </item>
@@ -1231,6 +1238,11 @@ Screen</string>
    <class>TyphosAlarmRectangle</class>
    <extends>QWidget</extends>
    <header>typhos.alarm</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosNotesEdit</class>
+   <extends>QLineEdit</extends>
+   <header>typhos.notes</header>
   </customwidget>
   <customwidget>
    <class>TyphosRelatedSuiteButton</class>
