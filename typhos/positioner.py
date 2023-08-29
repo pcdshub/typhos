@@ -449,8 +449,6 @@ class TyphosPositionerWidget(
             self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
             self.ui.set_value.returnPressed.connect(self.set)
 
-            self.ui.user_setpoint.setVisible(False)  # TODO
-
         self.ui.set_value.setMaximumWidth(
             self.ui.user_setpoint.maximumWidth()
         )
@@ -985,6 +983,12 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.status_label.setVisible(has_status)
         self.ui.error_label.setVisible(has_error)
         self.ui.error_prefix.setVisible(has_error)
+
+    def _define_setpoint_widget(self):
+        super()._define_setpoint_widget()
+        if isinstance(self.ui.user_setpoint, QtWidgets.QLineEdit):
+            # Because set_value is used instead
+            self.ui.user_setpoint.setVisible(False)
 
 
 def clear_error_in_background(device):
