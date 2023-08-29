@@ -1080,23 +1080,26 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if checked != self._hide_empty:
             self._hide_empty = checked
 
+    @property
+    def _layout_in_scroll_area(self) -> bool:
+        """Layout the widget in the scroll area or not, based on settings."""
+        if self.scroll_option == ScrollOptions.auto:
+            if self.display_type == DisplayTypes.embedded_screen:
+                return False
+            return True
+        elif self.scroll_option == ScrollOptions.scrollbar:
+            return True
+        elif self.scroll_option == ScrollOptions.no_scroll:
+            return False
+        return True
+
     def _move_display_to_layout(self, widget):
         if not widget:
             return
 
         widget.setParent(None)
-        if self.scroll_option == ScrollOptions.auto:
-            if self.display_type == DisplayTypes.embedded_screen:
-                scrollable = False
-            else:
-                scrollable = True
-        elif self.scroll_option == ScrollOptions.scrollbar:
-            scrollable = True
-        elif self.scroll_option == ScrollOptions.no_scroll:
-            scrollable = False
-        else:
-            scrollable = True
 
+        scrollable = self._layout_in_scroll_area
         if scrollable:
             self._scroll_area.setWidget(widget)
         else:
@@ -1286,12 +1289,12 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self.template_changed.emit(template)
 
     def minimumSizeHint(self) -> QtCore.QSize:
-        if self._scroll_area is None:
-            return super().minimumSizeHint()
-        return QtCore.QSize(
-            self._scroll_area.viewportSizeHint().width(),
-            super().minimumSizeHint().height(),
-        )
+        if self._layout_in_scroll_area:
+            return QtCore.QSize(
+                self._scroll_area.viewportSizeHint().width(),
+                super().minimumSizeHint().height(),
+            )
+        return super().minimumSizeHint()
 
     @property
     def display_widget(self):
