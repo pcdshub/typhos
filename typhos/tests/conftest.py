@@ -1,8 +1,11 @@
+import gc
 import logging
 import os.path
 import pathlib
 import time
+import weakref
 from functools import wraps
+from typing import List
 
 import numpy as np
 import ophyd.sim
@@ -66,6 +69,81 @@ def noapp(monkeypatch):
     monkeypatch.setattr(
         pydm.exception, 'raise_to_operator', lambda *_, **__: None
     )
+
+
+def get_top_level_widgets() -> List[QtWidgets.QWidget]:
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        return []
+    return [weakref.ref(widget) for widget in app.topLevelWidgets()]
+
+
+def _dump_widgets(widgets):
+    if not widgets:
+        return
+
+    for widget in widgets:
+        try:
+            widget = widget()
+            if widget is None:
+                continue
+            widget.isVisible()
+        except RuntimeError:
+            # already deleted
+            logger.debug(f"Widget already deleted: {widget}")
+            widgets.remove(widget)
+        else:
+            logger.debug(f"Widget remains live: {widget} {widget.windowTitle()} parent={widget.parent()} name={widget.objectName()}")
+
+
+def _dereference_list(objs):
+    res = []
+    for obj in objs:
+        obj = obj()
+        if obj is not None:
+            res.append(obj)
+    return res
+
+
+@pytest.hookimpl(hookwrapper=True, trylast=True)
+def pytest_runtest_call(item):
+    starting_widgets = get_top_level_widgets()
+    if starting_widgets:
+        num_start = len(_dereference_list(starting_widgets))
+        logger.debug(f"\n\nPre test - {num_start} widgets exist:")
+        _dump_widgets(starting_widgets)
+
+    yield
+    qtbot_widgets = [ref for ref, _ in getattr(item, "qt_widgets", [])]
+    ending_widgets = get_top_level_widgets()
+
+    app = QtWidgets.QApplication.instance()
+
+    t0 = time.monotonic()
+    while time.monotonic() - t0 < 1.0 and len(_dereference_list(ending_widgets)) > 0:
+        gc.collect()
+        app.processEvents()
+
+    widgets_to_check = list(
+        weakref.ref(w) for w in
+        set(_dereference_list(ending_widgets))
+        - set(_dereference_list(starting_widgets))
+        - set(_dereference_list(qtbot_widgets))
+    )
+    _dump_widgets(widgets_to_check)
+
+    final_widgets = _dereference_list(widgets_to_check)
+    cleanup_text = f"Not all widgets were cleaned up during {item.name}: " + ", ".join(
+        sorted(
+            f"{type(widget()).__name__}: {widget().windowTitle()}"
+            for widget in _dereference_list(final_widgets)
+        )
+    )
+    failure_text = f"{item.nodeid}: {cleanup_text}"
+
+    if final_widgets:
+        logger.error(failure_text)
+    assert not final_widgets, failure_text
 
 
 @pytest.fixture(scope='session')

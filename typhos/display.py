@@ -1239,6 +1239,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         if not template:
             widget = QtWidgets.QWidget()
+            widget.setObjectName("no_template_standin")
             template = None
         else:
             template = pathlib.Path(template)
@@ -1262,10 +1263,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                     pydm.exception.raise_to_operator(ex)
                 else:
                     widget = QtWidgets.QWidget()
+                    widget.setObjectName("errored_load_standin")
                     template = None
 
         if widget:
-            widget.setObjectName('display_widget')
+            if widget.objectName():
+                widget.setObjectName(f'{widget.objectName()}_display_widget')
+            else:
+                widget.setObjectName('display_widget')
 
             if widget.layout() is None and widget.minimumSize().width() == 0:
                 # If the widget has no layout, use a fixed size for it.

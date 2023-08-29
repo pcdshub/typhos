@@ -29,6 +29,7 @@ from .conftest import RichSignal, show_widget
 def alarm(qtbot, request):
     alarm_widget = request.param()
     alarm_widget.kindLevel = alarm_widget.KindLevel.HINTED
+    print("alarm widget", alarm_widget, alarm_widget.windowTitle())
     qtbot.addWidget(alarm_widget)
     return alarm_widget
 
@@ -54,6 +55,7 @@ def alarm_add_device(alarm, device, qtbot):
 
 @show_widget
 def test_alarm_basic(alarm):
+    print("testing alarm widget", alarm)
     assert alarm.alarm_summary == AlarmLevel.DISCONNECTED
 
 
