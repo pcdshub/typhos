@@ -40,14 +40,16 @@ def test_benchmark(unit_test_name, qapp, qtbot, benchmark, monkeypatch, request)
     # Crudely permenant patch here to get around cleanup bug
     assert len(get_top_level_suites()) == 0
     PV.count = property(lambda self: 1)
-    suite = benchmark(inner_benchmark, unit_tests[unit_test_name], qtbot, request)
+    suite = benchmark(inner_benchmark, unit_test_name, qtbot, request)
     save_image(suite, 'test_benchmark_' + unit_test_name)
 
 
-def inner_benchmark(unit_test, qtbot, request):
+def inner_benchmark(unit_test_name, qtbot, request):
+    unit_test = unit_tests[unit_test_name]
     suite, context = unit_test(request)
+    suite.setWindowTitle((suite.windowTitle() or "Unset - ") + unit_test_name)
+    qtbot.add_widget(suite)
     with context:
-        qtbot.add_widget(suite)
         qtbot.wait_active(suite)
     return suite
 
