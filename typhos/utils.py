@@ -1383,6 +1383,21 @@ def _get_top_level_components(device_cls):
     return list(device_cls._sig_attrs.items())
 
 
+def find_root_widget(widget: QtWidgets.QWidget) -> QtWidgets.QWidget:
+    """
+    Finds the root ancestor of a widget.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget from which to start the search
+    """
+    parent = widget
+    while parent.parent() is not None:
+        parent = parent.parent()
+    return parent
+
+
 def find_parent_with_class(widget, cls=QWidget):
     """
     Finds the first parent of a widget that is an instance of ``klass``
@@ -1714,7 +1729,7 @@ def take_widget_screenshot(widget: QtWidgets.QWidget) -> Optional[QtGui.QImage]:
         # No apps, no screenshots!
         return None
 
-    primary_screen = app.primaryScreen()
+    primary_screen: QtGui.QScreen = app.primaryScreen()
     logger.debug("Primary screen: %s", primary_screen)
 
     screen = (
@@ -1723,7 +1738,13 @@ def take_widget_screenshot(widget: QtWidgets.QWidget) -> Optional[QtGui.QImage]:
         else primary_screen
     )
 
-    logger.info("Primary screen: %s widget screen: %s", primary_screen, screen)
+    logger.info(
+        "Screenshot: %s (%s, primary screen: %s widget screen: %s)",
+        widget.windowTitle(),
+        widget,
+        primary_screen.name(),
+        screen.name(),
+    )
     return screen.grabWindow(widget.winId())
 
 
@@ -1754,12 +1775,28 @@ def take_top_level_widget_screenshots(
         return
 
     for screen_idx, screen in enumerate(app.screens(), 1):
-        logger.debug("Screen %d: %s %s", screen_idx, screen, screen.geometry())
+        logger.debug(
+            "Screen %d: %s %s %s",
+            screen_idx,
+            screen,
+            screen.name(),
+            screen.geometry(),
+        )
 
     def by_title(widget):
         return widget.windowTitle() or str(id(widget))
 
     for widget in sorted(app.topLevelWidgets(), key=by_title):
         if visible_only and not widget.isVisible():
+            continue
+        if isinstance(widget, QtWidgets.QMenu):
+            actions = [action.text() for action in widget.actions()]
+            logger.info(
+                "Skipping QMenu for screenshots. %s parent=%s root=%r actions: %s",
+                widget,
+                widget.parent(),
+                find_root_widget(widget).windowTitle(),
+                actions
+            )
             continue
         yield widget, take_widget_screenshot(widget)

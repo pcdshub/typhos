@@ -207,6 +207,7 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     """
     def __init__(self, *args, display_format=None, **kwargs):
         self._channel = None
+        self._history_menu = None
         self._setpoint_history_count = 5
         self._setpoint_history = collections.deque(
             [], self._setpoint_history_count)
@@ -270,7 +271,8 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
         if not self._setpoint_history:
             return None
 
-        history_menu = QtWidgets.QMenu("&History")
+        history_menu = QtWidgets.QMenu("&History", self)
+        self._history_menu = history_menu
         font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
         history_menu.setFont(font)
 

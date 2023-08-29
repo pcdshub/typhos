@@ -135,11 +135,16 @@ def test_suite_embed_device_by_name(suite: TyphosSuite, device: MockDevice):
 
 
 def test_hide_embedded_display(suite: TyphosSuite, device: MockDevice):
+    print("Embedding", device.x)
     suite.embed_subdisplay(device.x)
+    print("Hiding")
     suite.hide_subdisplay(device.x)
+    print("Get subdisplay")
     display = suite.get_subdisplay(device.x)
+    print("Got subdisplay", display)
     assert suite.embedded_dock is None
     assert display.isHidden()
+    print("Done")
 
 
 def test_suite_save_util(suite: TyphosSuite, device: MockDevice):
