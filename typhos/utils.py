@@ -1729,23 +1729,29 @@ def take_widget_screenshot(widget: QtWidgets.QWidget) -> Optional[QtGui.QImage]:
         # No apps, no screenshots!
         return None
 
-    primary_screen: QtGui.QScreen = app.primaryScreen()
-    logger.debug("Primary screen: %s", primary_screen)
+    try:
+        primary_screen: QtGui.QScreen = app.primaryScreen()
+        logger.debug("Primary screen: %s", primary_screen)
 
-    screen = (
-        widget.screen()
-        if hasattr(widget, "screen")
-        else primary_screen
-    )
+        screen = (
+            widget.screen()
+            if hasattr(widget, "screen")
+            else primary_screen
+        )
 
-    logger.info(
-        "Screenshot: %s (%s, primary screen: %s widget screen: %s)",
-        widget.windowTitle(),
-        widget,
-        primary_screen.name(),
-        screen.name(),
-    )
-    return screen.grabWindow(widget.winId())
+        logger.info(
+            "Screenshot: %s (%s, primary screen: %s widget screen: %s)",
+            widget.windowTitle(),
+            widget,
+            primary_screen.name(),
+            screen.name(),
+        )
+        return screen.grabWindow(widget.winId())
+    except RuntimeError as ex:
+        # The widget may have been deleted already; do not fail in this
+        # scenario.
+        logger.debug("Widget %s screenshot failed due to: %s", type(widget), ex)
+        return None
 
 
 def take_top_level_widget_screenshots(
