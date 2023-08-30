@@ -3,13 +3,6 @@
   <h3>Automated User Interface Creation from Ophyd Devices</h3>
 </p>
 
-[![Build Status](https://travis-ci.org/pcdshub/typhos.svg?branch=master)](https://travis-ci.org/pcdshub/typhos)
-
-> **WARNING**: This package was renamed.
->
-> The last version supporting the `typhon` package name and command-line tool
-> was v0.7.0.  Please upgrade to `typhos` or pin to that version.
-
 EPICS is a flexible and powerful controls system that gives access to experimental
 information, however, the relation and meaning of process variables is often
 obscure. Many of the user interfaces for EPICS information reflect this, as
