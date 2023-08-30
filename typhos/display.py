@@ -483,15 +483,6 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             self.jira_report_button.clicked.connect(self.new_jira_widget)
             layout.addWidget(self.jira_report_button, 0, Qt.AlignRight)
 
-        for template_type in DisplayTypes.names:
-            button = TyphosDisplaySwitcherButton(template_type)
-            self.buttons[template_type] = button
-            button.template_selected.connect(self._template_selected)
-            layout.addWidget(button, 0, Qt.AlignRight)
-
-            friendly_name = template_type.replace('_', ' ')
-            button.setToolTip(f'Switch to {friendly_name}')
-
         self.config_button = TyphosDisplayConfigButton()
         layout.addWidget(self.config_button, 0, Qt.AlignRight)
         self.config_button.setToolTip('Display settings...')
