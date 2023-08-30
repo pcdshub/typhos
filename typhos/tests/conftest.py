@@ -71,32 +71,37 @@ def noapp(monkeypatch):
     )
 
 
-def get_top_level_widgets() -> List[QtWidgets.QWidget]:
+def get_top_level_widgets() -> List[weakref.ReferenceType[QtWidgets.QWidget]]:
     app = QtWidgets.QApplication.instance()
     if app is None:
         return []
     return [weakref.ref(widget) for widget in app.topLevelWidgets()]
 
 
-def _dump_widgets(widgets):
+def _dump_widgets(widgets: List[weakref.ReferenceType[QtWidgets.QWidget]]) -> None:
     if not widgets:
         return
 
     for widget in widgets:
+        widget = widget()
+        if widget is None:
+            continue
+
         try:
-            widget = widget()
-            if widget is None:
-                continue
             widget.isVisible()
         except RuntimeError:
-            # already deleted
-            logger.debug(f"Widget already deleted: {widget}")
-            widgets.remove(widget)
-        else:
-            logger.debug(f"Widget remains live: {widget} {widget.windowTitle()} parent={widget.parent()} name={widget.objectName()}")
+            # already deleted on the C/C++ side
+            continue
+
+        logger.debug(
+            f"Widget remains live: {widget} {widget.windowTitle()} "
+            f"parent={widget.parent()} name={widget.objectName()}"
+        )
 
 
-def _dereference_list(objs):
+def _dereference_list(
+    objs: List[weakref.ReferenceType[QtWidgets.QWidget]],
+) -> List[QtWidgets.QWidget]:
     res = []
     for obj in objs:
         obj = obj()
@@ -136,7 +141,7 @@ def pytest_runtest_call(item):
     cleanup_text = f"Not all widgets were cleaned up during {item.name}: " + ", ".join(
         sorted(
             f"{type(widget()).__name__}: {widget().windowTitle()}"
-            for widget in _dereference_list(final_widgets)
+            for widget in final_widgets
         )
     )
     failure_text = f"{item.nodeid}: {cleanup_text}"
