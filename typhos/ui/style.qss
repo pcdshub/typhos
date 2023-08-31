@@ -87,3 +87,7 @@ QLineEdit#menu_action {
 TyphosLoading {
     color: red;
 }
+
+TyphosDisplayConfigButton > QMenu::item:default {
+    color: darkgreen;
+}

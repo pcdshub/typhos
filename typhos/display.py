@@ -494,8 +494,7 @@ class TyphosDisplaySwitcher(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
             self.device_display.force_template = template
 
     def _templates_loaded(self, templates: Dict[str, List[pathlib.Path]]) -> None:
-        for template_type in self.buttons:
-            self.buttons[template_type].templates = templates.get(template_type, [])
+        ...
 
     def set_device_display(self, display: TyphosDeviceDisplay) -> None:
         """Typhos hook for setting the associated device display."""
@@ -1146,7 +1145,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 if filename.name.startswith(class_name_prefix):
                     yield filename
 
-    def _generate_template_menu(self, base_menu):
+    def _generate_template_menu(self, base_menu: QtWidgets.QMenu) -> None:
         """Generate the template switcher menu, adding it to ``base_menu``."""
         dev = self.device
         if dev is None:
@@ -1161,6 +1160,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             action = base_menu.addAction(str(filename))
             action.triggered.connect(switch_template)
             actions.append(action)
+
+            if self.current_template == filename:
+                base_menu.setDefaultAction(action)
 
         self._refresh_templates()
         seen = set()
@@ -1180,10 +1182,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         prefix = os.path.commonprefix(
             [action.text() for action in actions]
         )
-        if len(prefix) > 1:
+        # Arbitrary threshold: saving on a few characters is not worth it
+        if len(prefix) > 9:
             for action in actions:
                 action.setText(action.text()[len(prefix):])
-                action.setToolTip("test")
 
     def _refresh_templates(self):
         """Force an update of the display cache and look for new ui files."""
