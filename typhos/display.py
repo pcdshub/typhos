@@ -361,12 +361,6 @@ class TyphosDisplayConfigButton(TyphosToolButton):
         if not display:
             return base_menu
 
-        for cls in type(display.device).mro():
-            if cls.__name__ in ("BlueskyInterface", "Device"):
-                break
-
-            base_menu.addSection(cls.__name__)
-
         base_menu.addSection('Templates')
         display._generate_template_menu(base_menu)
 
