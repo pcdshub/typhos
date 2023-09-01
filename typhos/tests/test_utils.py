@@ -178,8 +178,10 @@ def test_load_suite(qtbot: pytestqt.qtbot.QtBot, happi_cfg):
 
 
 def test_load_suite_with_bad_py_file():
+    from . import empty_saved_suite
+
     with pytest.raises(AttributeError):
-        load_suite(utils.__file__)
+        load_suite(empty_saved_suite.__file__)
 
 
 def test_no_device_lazy_load():
