@@ -1775,7 +1775,7 @@ def take_top_level_widget_screenshots(
         if isinstance(widget, QtWidgets.QMenu):
             try:
                 logger.debug(
-                    "Skipping QMenu for screenshots. %s parent=%s root=%r",
+                    "Skipping QMenu for screenshots. %s parent=%s",
                     widget,
                     widget.parent(),
                 )
