@@ -8,7 +8,7 @@ import logging
 import os
 import pathlib
 import webbrowser
-from typing import Dict, Generator, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import ophyd
 import pcdsutils
@@ -35,6 +35,15 @@ class DisplayTypes(enum.IntEnum):
     embedded_screen = 0
     detailed_screen = 1
     engineering_screen = 2
+
+    @property
+    def friendly_name(self) -> str:
+        """A user-friendly name for the display type."""
+        return {
+            self.embedded_screen: "Embedded",
+            self.detailed_screen: "Detailed",
+            self.engineering_screen: "Engineering",
+        }[self]
 
 
 _DisplayTypes = utils.pyqt_class_from_enum(DisplayTypes)
@@ -1129,12 +1138,18 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self._scroll_area.setVisible(scrollable)
 
-    def _get_matching_templates_for_class(self, cls: type) -> Generator[pathlib.Path, None, None]:
+    def _get_matching_templates_for_class(
+        self,
+        cls: type,
+        display_type: DisplayTypes,
+    ) -> List[pathlib.Path]:
+        """Get matching templates for the given class."""
         class_name_prefix = f"{cls.__name__}."
-        for _, filenames in self.templates.items():
-            for filename in filenames:
-                if filename.name.startswith(class_name_prefix):
-                    yield filename
+        return [
+            filename
+            for filename in self.templates[display_type.name]
+            if filename.name.startswith(class_name_prefix)
+        ]
 
     def _generate_template_menu(self, base_menu: QtWidgets.QMenu) -> None:
         """Generate the template switcher menu, adding it to ``base_menu``."""
@@ -1155,18 +1170,43 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             if self.current_template == filename:
                 base_menu.setDefaultAction(action)
 
+        def add_header(label: str, icon: Optional[QtGui.QIcon] = None) -> None:
+            action = QtWidgets.QWidgetAction(base_menu)
+            label = QtWidgets.QLabel(label)
+            label.setObjectName("menu_template_section")
+            action.setDefaultWidget(label)
+            if icon is not None:
+                action.setIcon(icon)
+            base_menu.addAction(action)
+
         self._refresh_templates()
         seen = set()
-        for cls in type(dev).mro():
-            templates = set(self._get_matching_templates_for_class(cls)) - seen
-            if not templates:
-                continue
 
-            base_menu.addSection(f"{cls.__name__} screens")
-            for filename in sorted(templates):
-                add_template(filename)
+        for template_type in DisplayTypes:
+            added_header = False
+            for cls in type(dev).mro():
+                matching = self._get_matching_templates_for_class(cls, template_type)
+                templates = set(matching) - seen
+                if not templates:
+                    continue
 
-        base_menu.addSection('Typhos default screens')
+                def by_match_order(template: pathlib.Path) -> int:
+                    return matching.index(template)
+
+                if not added_header:
+                    add_header(
+                        f"{template_type.friendly_name} screens",
+                        icon=TyphosToolButton.get_icon(
+                            TyphosDisplaySwitcherButton.icons[template_type.name]
+                        ),
+                    )
+                    added_header = True
+
+                base_menu.addSection(f"{cls.__name__}")
+                for filename in sorted(templates, key=by_match_order):
+                    add_template(filename)
+
+        add_header("Typhos default screens")
         for template in DEFAULT_TEMPLATES_FLATTEN:
             add_template(template)
 
@@ -1342,7 +1382,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     def minimumSizeHint(self) -> QtCore.QSize:
         if self._layout_in_scroll_area:
             return QtCore.QSize(
-                self._scroll_area.viewportSizeHint().width(),
+                int(self._scroll_area.viewportSizeHint().width() * 1.05),
                 super().minimumSizeHint().height(),
             )
         return super().minimumSizeHint()

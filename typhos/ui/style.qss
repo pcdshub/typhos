@@ -76,6 +76,14 @@ TyphosDisplayConfigButton > QMenu::item:default {
     color: darkgreen;
 }
 
+TyphosDisplayConfigButton > QMenu::separator {
+}
+
+QLabel#menu_template_section {
+    font: bold;
+    padding: 4 4 4 4px;
+}
+
 TyphosNotesEdit {
     background: transparent;
     color: black;
