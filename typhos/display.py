@@ -962,11 +962,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         layout.
         If omitted, scroll_option is used instead.
 
-    composite_heuristics : bool, optional
-        Enable composite heuristics, which may change the suggested detailed
-        screen based on the contents of the added device.  See also
-        :meth:`.suggest_composite_screen`.
-
     embedded_templates : list, optional
         List of embedded templates to use in addition to those found on disk.
 
@@ -990,9 +985,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     # Template types and defaults
     Q_ENUMS(_DisplayTypes)
     TemplateEnum = DisplayTypes  # For convenience
-
-    device_count_threshold = 0
-    signal_count_threshold = 30
     template_changed = QtCore.Signal(object)
 
     def __init__(
@@ -1000,7 +992,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         parent: Optional[QtWidgets.QWidget] = None,
         *,
         scrollable: Optional[bool] = None,
-        composite_heuristics: bool = True,
         embedded_templates: Optional[list[str]] = None,
         detailed_templates: Optional[list[str]] = None,
         engineering_templates: Optional[list[str]] = None,
@@ -1008,7 +999,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         scroll_option: Union[ScrollOptions, str, int] = 'auto',
         nested: bool = False,
     ):
-        self._composite_heuristics = composite_heuristics
         self._current_template = None
         self._forced_template = ''
         self._macros = {}
@@ -1020,6 +1010,12 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         self.templates = {name: [] for name in DisplayTypes.names}
         self._display_type = normalize_display_type(display_type)
+
+        if nested and self._display_type == DisplayTypes.detailed_screen:
+            # All nested displays should be embedded by default.
+            # Based on if they have subdevices, they may become detailed
+            # during the template loading process
+            self._display_type = DisplayTypes.embedded_screen
 
         instance_templates = {
             'embedded_screen': embedded_templates or [],
@@ -1053,15 +1049,6 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
             else:
                 self.scroll_option = ScrollOptions.no_scroll
 
-    @Property(bool)
-    def composite_heuristics(self):
-        """Allow composite screen to be suggested first by heuristics."""
-        return self._composite_heuristics
-
-    @composite_heuristics.setter
-    def composite_heuristics(self, composite_heuristics):
-        self._composite_heuristics = bool(composite_heuristics)
-
     @Property(_ScrollOptions)
     def scroll_option(self) -> ScrollOptions:
         """Place the display in a scrollable area."""
@@ -1087,27 +1074,31 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if checked != self._hide_empty:
             self._hide_empty = checked
 
+    @property
+    def _layout_in_scroll_area(self) -> bool:
+        """Layout the widget in the scroll area or not, based on settings."""
+        if self.scroll_option == ScrollOptions.auto:
+            if self.display_type == DisplayTypes.embedded_screen:
+                return False
+            return True
+        elif self.scroll_option == ScrollOptions.scrollbar:
+            return True
+        elif self.scroll_option == ScrollOptions.no_scroll:
+            return False
+        return True
+
     def _move_display_to_layout(self, widget):
         if not widget:
             return
 
         widget.setParent(None)
-        if self.scroll_option == ScrollOptions.auto:
-            if self.display_type == DisplayTypes.embedded_screen:
-                scrollable = False
-            else:
-                scrollable = True
-        elif self.scroll_option == ScrollOptions.scrollbar:
-            scrollable = True
-        elif self.scroll_option == ScrollOptions.no_scroll:
-            scrollable = False
-        else:
-            scrollable = True
 
+        scrollable = self._layout_in_scroll_area
         if scrollable:
             self._scroll_area.setWidget(widget)
         else:
-            self.layout().addWidget(widget)
+            layout: QtWidgets.QVBoxLayout = self.layout()
+            layout.addWidget(widget, alignment=QtCore.Qt.AlignTop)
 
         self._scroll_area.setVisible(scrollable)
 
@@ -1292,12 +1283,12 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         self.template_changed.emit(template)
 
     def minimumSizeHint(self) -> QtCore.QSize:
-        if self._scroll_area is None:
-            return super().minimumSizeHint()
-        return QtCore.QSize(
-            self._scroll_area.viewportSizeHint().width(),
-            super().minimumSizeHint().height(),
-        )
+        if self._layout_in_scroll_area:
+            return QtCore.QSize(
+                self._scroll_area.viewportSizeHint().width(),
+                super().minimumSizeHint().height(),
+            )
+        return super().minimumSizeHint()
 
     @property
     def display_widget(self):
@@ -1447,18 +1438,19 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                 logger.debug('Adding macro template %s: %s (total=%d)',
                              display_type, template, len(template_list))
 
-            # 2. Composite heuristics, if enabled
-            if self._composite_heuristics and view == 'detailed':
-                if self.suggest_composite_screen(cls):
-                    template_list.append(DETAILED_TREE_TEMPLATE)
-
-            # 3. Templates based on class hierarchy names
+            # 2. Templates based on class hierarchy names
             filenames = utils.find_templates_for_class(cls, view, paths)
             for filename in filenames:
                 if filename not in template_list:
                     template_list.append(filename)
                     logger.debug('Found new template %s: %s (total=%d)',
                                  display_type, filename, len(template_list))
+
+            # 3. Ensure that the detailed tree template makes its way in for
+            #    all top-level screens, if no class-specific screen exists
+            if DETAILED_TREE_TEMPLATE not in template_list:
+                if not self._nested or self.suggest_composite_screen(cls):
+                    template_list.append(DETAILED_TREE_TEMPLATE)
 
             # 4. Default templates
             template_list.extend(
@@ -1476,31 +1468,10 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         composite : bool
             If True, favor the composite screen.
         """
-        num_devices = 0
-        num_signals = 0
-        for attr, component in utils._get_top_level_components(device_cls):
-            num_devices += issubclass(component.cls, ophyd.Device)
-            num_signals += issubclass(component.cls, ophyd.Signal)
-
-        specific_screens = cls._get_specific_screens(device_cls)
-        if (len(specific_screens) or
-                (num_devices <= cls.device_count_threshold and
-                 num_signals >= cls.signal_count_threshold)):
-            # 1. There's a custom screen - we probably should use them
-            # 2. There aren't many devices, so the composite display isn't
-            #    useful
-            # 3. There are many signals, which should be broken up somehow
-            composite = False
-        else:
-            # 1. No custom screen, or
-            # 2. Many devices or a relatively small number of signals
-            composite = True
-
-        logger.debug(
-            '%s screens=%s num_signals=%d num_devices=%d -> composite=%s',
-            device_cls, specific_screens, num_signals, num_devices, composite
-        )
-        return composite
+        for _, component in utils._get_top_level_components(device_cls):
+            if issubclass(component.cls, ophyd.Device):
+                return True
+        return False
 
     @classmethod
     def from_device(cls, device, template=None, macros=None, **kwargs):

@@ -1,15 +1,70 @@
+from __future__ import annotations
+
 import logging
 import os.path
 import threading
+import typing
+from typing import Optional, Union
 
+import ophyd
 from pydm.widgets.channel import PyDMChannel
 from qtpy import QtCore, QtWidgets, uic
 
 from . import dynamic_font, utils, widgets
-from .alarm import KindLevel, _KindLevel
+from .alarm import AlarmLevel, KindLevel, _KindLevel
+from .panel import SignalOrder, TyphosSignalPanel
 from .status import TyphosStatusThread
 
 logger = logging.getLogger(__name__)
+
+if typing.TYPE_CHECKING:
+    import pydm.widgets
+
+    from .alarm import TyphosAlarmRectangle
+    from .notes import TyphosNotesEdit
+    from .related_display import TyphosRelatedSuiteButton
+
+
+class _TyphosPositionerUI(QtWidgets.QWidget):
+    """Annotations helper for positioner.ui; not to be instantiated."""
+
+    alarm_circle: TyphosAlarmRectangle
+    alarm_label: QtWidgets.QLabel
+    alarm_layout: QtWidgets.QVBoxLayout
+    app: QtWidgets.QApplication
+    clear_error_button: QtWidgets.QPushButton
+    device_name_label: QtWidgets.QLabel
+    devices: list
+    error_label: pydm.widgets.label.PyDMLabel
+    expand_button: QtWidgets.QPushButton
+    expert_button: TyphosRelatedSuiteButton
+    high_limit: pydm.widgets.label.PyDMLabel
+    high_limit_layout: QtWidgets.QVBoxLayout
+    high_limit_switch: pydm.widgets.byte.PyDMByteIndicator
+    horizontalLayout: QtWidgets.QHBoxLayout
+    low_limit: pydm.widgets.label.PyDMLabel
+    low_limit_layout: QtWidgets.QVBoxLayout
+    low_limit_switch: pydm.widgets.byte.PyDMByteIndicator
+    moving_indicator: pydm.widgets.byte.PyDMByteIndicator
+    moving_indicator_label: QtWidgets.QLabel
+    moving_indicator_layout: QtWidgets.QVBoxLayout
+    row_frame: QtWidgets.QFrame
+    setpoint_layout: QtWidgets.QVBoxLayout
+    setpoint_outer_layout: QtWidgets.QVBoxLayout
+    status_container_widget: QtWidgets.QWidget
+    status_label: QtWidgets.QLabel
+    status_text_layout: QtWidgets.QVBoxLayout
+    stop_button: QtWidgets.QPushButton
+    tweak_layout: QtWidgets.QHBoxLayout
+    tweak_negative: QtWidgets.QToolButton
+    tweak_positive: QtWidgets.QToolButton
+    tweak_value: QtWidgets.QLineEdit
+    tweak_widget: QtWidgets.QWidget
+    user_readback: pydm.widgets.label.PyDMLabel
+    user_setpoint: pydm.widgets.line_edit.PyDMLineEdit
+
+    # Dynamically added:
+    set_value: Union[widgets.NoScrollComboBox, QtWidgets.QLineEdit]
 
 
 class TyphosPositionerWidget(
@@ -81,6 +136,7 @@ class TyphosPositionerWidget(
     QtCore.Q_ENUMS(_KindLevel)
     KindLevel = KindLevel
 
+    ui: _TyphosPositionerUI
     ui_template = os.path.join(utils.ui_dir, 'widgets', 'positioner.ui')
     _readback_attr = 'user_readback'
     _setpoint_attr = 'user_setpoint'
@@ -94,6 +150,14 @@ class TyphosPositionerWidget(
     _error_message_attr = 'error_message'
     _min_visible_operation = 0.1
 
+    alarm_text = {
+        AlarmLevel.NO_ALARM: 'no alarm',
+        AlarmLevel.MINOR: 'minor',
+        AlarmLevel.MAJOR: 'major',
+        AlarmLevel.DISCONNECTED: 'no conn',
+        AlarmLevel.INVALID: 'invalid',
+    }
+
     def __init__(self, parent=None):
         self._moving = False
         self._last_move = None
@@ -105,7 +169,7 @@ class TyphosPositionerWidget(
 
         super().__init__(parent=parent)
 
-        self.ui = uic.loadUi(self.ui_template, self)
+        self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
@@ -197,6 +261,7 @@ class TyphosPositionerWidget(
         if not self.device:
             return
 
+        value = None
         try:
             if isinstance(self.ui.set_value, widgets.NoScrollComboBox):
                 value = self.ui.set_value.currentText()
@@ -358,11 +423,15 @@ class TyphosPositionerWidget(
         Leverage information at describe to define whether to use a
         PyDMLineEdit or a PyDMEnumCombobox as setpoint widget.
         """
+        if self.device is None:
+            return
+
         try:
             setpoint_signal = getattr(self.device, self.setpoint_attribute)
             selection = setpoint_signal.enum_strs is not None
         except Exception:
             selection = False
+            setpoint_signal = None
 
         if selection:
             self.ui.set_value = widgets.NoScrollComboBox()
@@ -380,7 +449,14 @@ class TyphosPositionerWidget(
             self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
             self.ui.set_value.returnPressed.connect(self.set)
 
-        self.ui.setpoint_layout.addWidget(self.ui.set_value)
+        self.ui.set_value.setMaximumWidth(
+            self.ui.user_setpoint.maximumWidth()
+        )
+
+        self.ui.setpoint_layout.addWidget(
+            self.ui.set_value,
+            alignment=QtCore.Qt.AlignHCenter,
+        )
 
     @property
     def device(self):
@@ -654,17 +730,265 @@ class TyphosPositionerWidget(
         Label the alarm circle with a short text bit.
         """
         alarms = self.ui.alarm_circle.AlarmLevel
-        if alarm_level == alarms.NO_ALARM:
-            text = 'no alarm'
-        elif alarm_level == alarms.MINOR:
-            text = 'minor'
-        elif alarm_level == alarms.MAJOR:
-            text = 'major'
-        elif alarm_level == alarms.DISCONNECTED:
-            text = 'no conn'
-        else:
-            text = 'invalid'
+        try:
+            text = self.alarm_text[alarm_level]
+        except KeyError:
+            text = self.alarm_text[alarms.INVALID]
         self.ui.alarm_label.setText(text)
+
+    @property
+    def all_linked_attributes(self) -> list[str]:
+        """All linked attribute names."""
+        return [
+            attr
+            for attr in (
+                self.acceleration_attribute,
+                self.error_message_attribute,
+                self.high_limit_switch_attribute,
+                self.high_limit_travel_attribute,
+                self.low_limit_switch_attribute,
+                self.low_limit_travel_attribute,
+                self.moving_attribute,
+                self.readback_attribute,
+                self.setpoint_attribute,
+                self.velocity_attribute,
+            )
+            if attr
+        ]
+
+    @property
+    def all_linked_signals(self) -> list[ophyd.Signal]:
+        """All linked signal names."""
+        signals = [
+            getattr(self.device, attr, None)
+            for attr in self.all_linked_attributes
+        ]
+        return [sig for sig in signals if sig is not None]
+
+    def show_ui_type_hints(self):
+        """Show type hints of widgets included in the UI file."""
+        cls_attrs = set()
+        obj_attrs = set(dir(self.ui))
+        annotated = set(self.ui.__annotations__)
+        for cls in type(self.ui).mro():
+            cls_attrs |= set(dir(cls))
+        likely_from_ui = obj_attrs - cls_attrs - annotated
+        for attr in sorted(likely_from_ui):
+            try:
+                obj = getattr(self, attr, None)
+            except Exception:
+                ...
+            else:
+                if obj is not None:
+                    print(f"{attr}: {obj.__class__.__module__}.{obj.__class__.__name__}")
+
+
+class _TyphosPositionerRowUI(_TyphosPositionerUI):
+    """Annotations helper for positioner_row.ui; not to be instantiated."""
+
+    notes_edit: TyphosNotesEdit
+    status_container_widget: QtWidgets.QFrame
+    extended_signal_panel: Optional[TyphosSignalPanel]
+    error_prefix: QtWidgets.QLabel
+
+
+class TyphosPositionerRowWidget(TyphosPositionerWidget):
+    ui: _TyphosPositionerRowUI
+    ui_template = os.path.join(utils.ui_dir, "widgets", "positioner_row.ui")
+
+    alarm_text = {
+        AlarmLevel.NO_ALARM: 'ok',
+        AlarmLevel.MINOR: 'minor',
+        AlarmLevel.MAJOR: 'major',
+        AlarmLevel.DISCONNECTED: 'conn',
+        AlarmLevel.INVALID: 'inv',
+    }
+
+    def __init__(self, *args, **kwargs):
+        self._error_message = ""
+        self._status_text = ""
+        self._alarm_level = AlarmLevel.DISCONNECTED
+
+        super().__init__(*args, **kwargs)
+
+        for idx in range(self.layout().count()):
+            item = self.layout().itemAt(idx)
+            if item is self.ui.status_text_layout:
+                self.layout().takeAt(idx)
+                break
+
+        # TODO move these out
+        self._omit_names = [
+            "motor_egu",
+            "motor_stop",
+            "motor_done_move",
+            "direction_of_travel",
+            "user_readback",
+            "user_setpoint",
+            "home_forward",  # maybe keep?
+            "home_reverse",
+        ]
+
+        self.ui.extended_signal_panel = None
+        self.ui.expand_button.clicked.connect(self._expand_layout)
+        self.ui.status_label.setText("")
+
+        # TODO: ${name} / macros don't expand here
+
+    @QtCore.Property("QStringList")
+    def omitNames(self) -> list[str]:
+        """Get or set the list of names to omit in the expanded signal panel."""
+        return self._omit_names
+
+    @omitNames.setter
+    def omitNames(self, omit_names: list[str]) -> None:
+        if omit_names == self._omit_names:
+            return
+
+        self._omit_names = list(omit_names or [])
+        if self.ui.extended_signal_panel is not None:
+            self.ui.extended_signal_panel.omitNames = self._omit_names
+
+    def get_names_to_omit(self) -> list[str]:
+        """
+        Get a list of signal names to omit in the extended panel.
+
+        Returns
+        -------
+        list[str]
+        """
+        device: Optional[ophyd.Device] = self.device
+        if device is None:
+            return []
+
+        omit_signals = self.all_linked_signals
+        to_keep_signals = [
+            getattr(device, attr, None)
+            for attr in (self.velocity_attribute, self.acceleration_attribute)
+        ]
+        for sig in to_keep_signals:
+            if sig in omit_signals:
+                omit_signals.remove(sig)
+
+        to_omit = set(sig.name for sig in omit_signals)
+
+        # TODO: move these to a Qt designable property
+        for name in self.omitNames:
+            to_omit.add(name)
+
+        if device.name in to_omit:
+            # Don't let the renamed position signal stop us from showing any
+            # signals:
+            to_omit.remove(device.name)
+        return sorted(to_omit)
+
+    def _create_signal_panel(self) -> Optional[TyphosSignalPanel]:
+        """Create the 'extended' TyphosSignalPanel for the device."""
+        if self.device is None:
+            return None
+
+        panel = TyphosSignalPanel()
+        panel.omitNames = self.get_names_to_omit()
+        panel.sortBy = SignalOrder.byName
+        panel.add_device(self.device)
+
+        self.ui.layout().addWidget(panel)
+        return panel
+
+    def _expand_layout(self) -> None:
+        """Toggle the expansion of the signal panel."""
+        if self.ui.extended_signal_panel is None:
+            self.ui.extended_signal_panel = self._create_signal_panel()
+            if self.ui.extended_signal_panel is None:
+                return
+
+            to_show = True
+        else:
+            to_show = not self.ui.extended_signal_panel.isVisible()
+
+        self.ui.extended_signal_panel.setVisible(to_show)
+
+        if to_show:
+            self.ui.expand_button.setText('v')
+        else:
+            self.ui.expand_button.setText('>')
+
+    def add_device(self, device: ophyd.Device) -> None:
+        """Add (or rather set) the ophyd device for this positioner."""
+        super().add_device(device)
+        if device is None:
+            self.ui.device_name_label.setText("(no device)")
+            if self.ui.extended_signal_panel is not None:
+                self.layout().removeWidget(self.ui.extended_signal_panel)
+                self.ui.extended_signal_panel.destroyLater()
+                self.ui.extended_signal_panel = None
+            return
+
+        self.ui.device_name_label.setText(device.name)
+        self.ui.notes_edit.add_device(device)
+
+    @utils.linked_attribute('error_message_attribute', 'ui.error_label', True)
+    def _link_error_message(self, signal, widget):
+        """Link the IOC error message with the ui element."""
+        if signal is None:
+            widget.hide()
+            self.ui.error_prefix.hide()
+        else:
+            signal.subscribe(self.new_error_message)
+
+    def new_error_message(self, value, *args, **kwargs):
+        self.update_status_visibility(error_message=value)
+
+    def _set_status_text(self, text, *, max_length=80):
+        super()._set_status_text(text, max_length=max_length)
+        self.update_status_visibility(status_text=text)
+
+    def update_alarm_text(self, alarm_level):
+        super().update_alarm_text(alarm_level=alarm_level)
+        self.update_status_visibility(alarm_level=alarm_level)
+
+    def update_status_visibility(
+        self,
+        error_message: str | None = None,
+        status_text: str | None = None,
+        alarm_level: AlarmLevel | None = None,
+    ) -> None:
+        """
+        Hide/show status and error as appropriate.
+
+        The goal here to make an illusion that there is only one label in
+        in this space when only one of the labels has text.
+
+        If both are empty, we also want to put "something" there to fill the
+        void, so we opt for a friendly message or an alarm reminder.
+        """
+        if error_message is not None:
+            self._error_message = error_message
+        if status_text is not None:
+            self._status_text = status_text
+        if alarm_level is not None:
+            self._alarm_level = alarm_level
+        error_message = error_message or self._error_message
+        status_text = status_text or self._status_text
+        alarm_level = alarm_level or self._alarm_level
+        has_status = bool(status_text)
+        has_error = bool(error_message)
+        if not has_status and not has_error:
+            # We want to fill something in, check if we have alarms
+            if alarm_level == AlarmLevel.NO_ALARM:
+                self.ui.status_label.setText('Status OK')
+            else:
+                self.ui.status_label.setText('Check alarm')
+            has_status = True
+        self.ui.status_label.setVisible(has_status)
+        self.ui.error_label.setVisible(has_error)
+        self.ui.error_prefix.setVisible(has_error)
+
+    def _define_setpoint_widget(self):
+        super()._define_setpoint_widget()
+        if isinstance(self.ui.user_setpoint, QtWidgets.QLineEdit):
+            # Because set_value is used instead
+            self.ui.user_setpoint.setVisible(False)
 
 
 def clear_error_in_background(device):
@@ -678,5 +1002,5 @@ def clear_error_in_background(device):
             logger.error(msg)
             logger.debug(msg, exc_info=True)
 
-    td = threading.Thread(target=inner)
+    td = threading.Thread(target=inner, daemon=True)
     td.start()
