@@ -16,7 +16,9 @@ class DialogButton(SignalDialogButton):
     text = "Show Widget"
 
     def widget(self):
-        return QWidget(parent=self)
+        widget = QWidget(parent=self)
+        widget.setWindowTitle("dialog button temp widget")
+        return widget
 
 
 @pytest.fixture(scope='function')
@@ -48,18 +50,20 @@ def test_sidebar_item():
     assert item.hide_action.isEnabled()
 
 
-def test_signal_dialog_button_show(widget_button):
-    widget_button.show_dialog()
+def test_signal_dialog_button_show(qtbot, widget_button):
+    dialog = widget_button.show_dialog()
     assert widget_button.dialog is not None
     assert widget_button.dialog.isVisible()
     assert len(widget_button.children()) == 1
+    qtbot.add_widget(dialog)
 
 
-def test_signal_dialog_button_repeated_show(widget_button):
+def test_signal_dialog_button_repeated_show(qtbot, widget_button):
     widget_button.show_dialog()
     dialog = widget_button.dialog
     widget_button.show_dialog()
     assert id(dialog) == id(widget_button.dialog)
+    qtbot.add_widget(dialog)
 
 
 @pydm_version_xfail
@@ -70,6 +74,7 @@ def test_dialog_button_instances_smoke(qtbot, button_type):
     button = button_type(init_channel='ca://Pv:2')
     qtbot.addWidget(button)
     widget = button.widget()
+    qtbot.addWidget(widget)
     assert widget.parent() == button
 
 
@@ -92,3 +97,8 @@ def test_line_edit_history(qtbot, motor):
     # Smoke test menu creation
     menu = widget.widget_ctx_menu()
     qtbot.addWidget(menu)
+
+    # Force cleanup
+    widget.unitMenu.deleteLater()
+    widget.unitMenu = None
+    pydm.utilities.close_widget_connections(widget)

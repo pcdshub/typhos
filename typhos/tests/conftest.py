@@ -10,6 +10,7 @@ from typing import List
 import numpy as np
 import ophyd.sim
 import pydm
+import pydm.utilities
 import pytest
 import qtpy
 from happi import Client
@@ -146,26 +147,28 @@ def pytest_runtest_call(item):
             classname = type(widget).__name__
             title = widget.windowTitle()
             referrers = gc.get_referrers(widget)
+            desc = str(widget)
+            if isinstance(widget, QtWidgets.QMenu):
+                desc = "Menu with actions: " + ", ".join(repr(action.text()) for action in widget.actions())
         except RuntimeError:
             # OK, one last chance for gc
             final_widgets.remove(widget)
         else:
-            desc = f"{classname} {title!r} referrers={len(referrers)}: "
+            desc = f"{classname} {desc} {title!r} referrers={len(referrers)}: "
             ref_desc = []
             for ref in referrers:
                 try:
-                    ref_desc.append(str(ref)[:100])
+                    ref_desc.append(str(ref))  # [:256])
                 except Exception as ex:
                     # Everything's destructible! Yeah!
                     ref_desc.append(str(ex))
-                    ...
             cleanup_descriptions.append(
-                desc + "\n    -> ".join(ref_desc)
+                "\n".join((desc, "\n    -> ".join([""] + ref_desc)))
             )
 
     cleanup_text = (
         f"Not all widgets were cleaned up during {item.name}:\n"
-        + "\n - ".join(sorted(cleanup_descriptions))
+        + "\n".join(sorted(cleanup_descriptions))
     )
     failure_text = f"{item.nodeid}: {cleanup_text}"
 
@@ -226,6 +229,10 @@ def show_widget(func):
             widget.show()
             # Start the application
             application.exec_()
+        try:
+            pydm.utilities.close_widget_connections(widget)
+        except Exception:
+            logger.debug("Failed to close widget connections for %s", widget)
     return func_wrapper
 
 
