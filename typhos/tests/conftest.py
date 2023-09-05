@@ -145,13 +145,22 @@ def pytest_runtest_call(item):
         try:
             classname = type(widget).__name__
             title = widget.windowTitle()
-            num_referrers = len(gc.get_referrers(widget))
+            referrers = gc.get_referrers(widget)
         except RuntimeError:
             # OK, one last chance for gc
             final_widgets.remove(widget)
         else:
+            desc = f"{classname} {title!r} referrers={len(referrers)}: "
+            ref_desc = []
+            for ref in referrers:
+                try:
+                    ref_desc.append(str(ref)[:100])
+                except Exception as ex:
+                    # Everything's destructible! Yeah!
+                    ref_desc.append(str(ex))
+                    ...
             cleanup_descriptions.append(
-                f"{classname}: {title} (referrers={num_referrers})"
+                desc + "\n    -> ".join(ref_desc)
             )
 
     cleanup_text = (
