@@ -64,9 +64,9 @@ def test_device_display(device, motor, qtbot, request):
         assert device_signals == signals_from_panel('config_panel')
 
     print("Creating signal panel")
-    panel = typhos.display.TyphosDeviceDisplay.from_device(
-        motor, composite_heuristics=False)
+    panel = typhos.display.TyphosDeviceDisplay.from_device(motor)
     panel.setObjectName(panel.objectName() + request.node.nodeid)
+    panel.force_template = utils.ui_dir / "core" / "detailed_screen.ui"
     qtbot.addWidget(panel)
     check_hint_panel(motor)
     check_read_panel(motor)
@@ -115,9 +115,11 @@ def test_display_modified_templates(display, motor):
 def test_display_force_template(display, motor):
     # Check that we use the forced template
     display.add_device(motor)
-    display.force_template = display.templates['engineering_screen'][0]
-    assert display.force_template.name == 'engineering_screen.ui'
-    assert display.current_template.name == 'engineering_screen.ui'
+    to_force = display.templates['engineering_screen'][0]
+    display.force_template = to_force
+    # Top-level screens always get detailed tree if nothing else is available
+    assert display.force_template.name == to_force.name
+    assert display.current_template.name == to_force.name
 
 
 def test_display_with_channel(client, qtbot):

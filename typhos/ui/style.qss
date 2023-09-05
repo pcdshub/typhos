@@ -49,22 +49,6 @@ TyphosBase PyDMLogDisplay > QPlainTextEdit {
     font: 10px normal;
 }
 
-TyphosBase TyphosPositionerWidget[moving="true"] .QFrame {
-    border: 2px solid yellow;
-}
-
-TyphosBase TyphosPositionerWidget[moving="false"] .QFrame {
-    border: 2px solid transparent;
-}
-
-TyphosBase TyphosPositionerWidget[moving="false"][successful_move="true"] .QFrame {
-    border: 2px solid green;
-}
-
-TyphosBase TyphosPositionerWidget[moving="false"][failed_move="true"] .QFrame {
-    border: 2px solid red;
-}
-
 SignalPanelRowLabel {
     font: 12px sans-serif;
 }
@@ -86,4 +70,14 @@ QLineEdit#menu_action {
 
 TyphosLoading {
     color: red;
+}
+
+TyphosNotesEdit {
+    background: transparent;
+    color: black;
+}
+
+TyphosPositionerRowWidget > TyphosNotesEdit {
+    background: transparent;
+    color: black;
 }

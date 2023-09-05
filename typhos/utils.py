@@ -38,7 +38,7 @@ from qtpy.QtCore import QSize
 from qtpy.QtGui import QColor, QMovie, QPainter
 from qtpy.QtWidgets import QWidget
 
-from typhos import plugins
+from . import plugins
 
 try:
     import happi
@@ -1792,17 +1792,27 @@ def take_top_level_widget_screenshots(
     def by_title(widget):
         return widget.windowTitle() or str(id(widget))
 
-    for widget in sorted(app.topLevelWidgets(), key=by_title):
-        if visible_only and not widget.isVisible():
-            continue
+    def should_take_screenshot(widget: QtWidgets.QWidget) -> bool:
+        try:
+            parent = widget.parent()
+            visible = widget.isVisible()
+        except RuntimeError:
+            # Widget could have been gc'd in the meantime
+            return False
+
         if isinstance(widget, QtWidgets.QMenu):
-            actions = [action.text() for action in widget.actions()]
-            logger.info(
-                "Skipping QMenu for screenshots. %s parent=%s root=%r actions: %s",
+            logger.debug(
+                "Skipping QMenu for screenshots. %s parent=%s",
                 widget,
-                widget.parent(),
-                find_root_widget(widget).windowTitle(),
-                actions
+                parent,
             )
-            continue
-        yield widget, take_widget_screenshot(widget)
+            return False
+        if visible_only and not visible:
+            return False
+        return True
+
+    for widget in sorted(app.topLevelWidgets(), key=by_title):
+        if should_take_screenshot(widget):
+            image = take_widget_screenshot(widget)
+            if image is not None:
+                yield widget, image

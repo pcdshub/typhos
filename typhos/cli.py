@@ -17,14 +17,14 @@ from ophyd.sim import clear_fake_device, make_fake_device
 from pydm.widgets.template_repeater import FlowLayout
 from qtpy import QtCore, QtWidgets
 
-import typhos
-from typhos.app import get_qapp, launch_suite
-from typhos.benchmark.cases import run_benchmarks
-from typhos.benchmark.profile import profiler_context
-from typhos.display import DisplayTypes, ScrollOptions
-from typhos.suite import TyphosSuite
-from typhos.utils import (apply_standard_stylesheets, compose_stylesheets,
-                          nullcontext)
+from . import __version__ as typhos_version
+from . import utils
+from .app import get_qapp, launch_suite
+from .benchmark.cases import run_benchmarks
+from .benchmark.profile import profiler_context
+from .display import DisplayTypes, ScrollOptions
+from .suite import TyphosSuite
+from .utils import apply_standard_stylesheets, compose_stylesheets, nullcontext
 
 logger = logging.getLogger(__name__)
 
@@ -265,11 +265,11 @@ def _create_happi_client(cfg):
     """Create a happi client based on configuration ``cfg``."""
     import happi
 
-    import typhos.plugins.happi
+    from .plugins import happi as happi_plugin
 
-    if typhos.plugins.happi.HappiClientState.client:
+    if happi_plugin.HappiClientState.client:
         logger.debug("Using happi Client already registered with Typhos")
-        return typhos.plugins.happi.HappiClientState.client
+        return happi_plugin.HappiClientState.client
 
     logger.debug("Creating new happi Client from configuration")
     return happi.Client.from_config(cfg=cfg)
@@ -330,7 +330,7 @@ def create_suite(
         layout_obj = get_layout_from_cli(layout, cols)
         display_type_enum = get_display_type_from_cli(display_type)
         scroll_enum = get_scrollable_from_cli(scroll_option)
-        return typhos.TyphosSuite.from_devices(
+        return TyphosSuite.from_devices(
             devices,
             content_layout=layout_obj,
             default_display_type=display_type_enum,
@@ -453,7 +453,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
     devices = list()
 
     klass_regex = re.compile(
-        r'([a-zA-Z][a-zA-Z0-9\.\_]*)\[(\{.+})*[\,]*\]'  # noqa
+        r'([a-zA-Z][a-zA-Z0-9\.\_]*)\[(\{.*})*[\,]*\]'  # noqa
     )
 
     for device_name in device_names:
@@ -567,7 +567,7 @@ def typhos_run(
         The window created. This is returned after the application
         is done running. Primarily used in unit tests.
     """
-    with typhos.utils.no_device_lazy_load():
+    with utils.no_device_lazy_load():
         suite = create_suite(
             device_names,
             cfg=cfg,
@@ -616,7 +616,8 @@ def typhos_cli(args):
     args = parser.parse_args(args, TyphosArguments())
 
     if args.version:
-        print(f'Typhos: Version {typhos.__version__} from {typhos.__file__}')
+        typhos_file = sys.modules["typhos"].__file__
+        print(f'Typhos: Version {typhos_version} from {typhos_file}')
         return
 
     if any(

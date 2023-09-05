@@ -329,7 +329,6 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                     f'Updated alarm from {self.alarm_summary} to {new_alarm} '
                     f'on alarm widget with channel {self.channels()[0]}'
                 )
-
         self.alarm_summary = new_alarm
 
     def set_alarm_color(self, alarm_level):

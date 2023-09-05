@@ -75,3 +75,20 @@ custom templates:
    point is expecting to find a ``str``, ``pathlib.Path``, or ``list`` of
    such objects at your entry point. One such example of how to do this can
    be found `here <https://github.com/pcdshub/pcdsdevices/blob/cab3fe158ebc0d032fe07f03ec52ca79cda90c6e/setup.py#L21>`_
+
+
+For top-level devices (e.g., ``at2l0``), the template load priority is as
+follows:
+
+- Happi-defined values (``"detailed_screen"``, ``embedded_screen"``,
+  ``"engineering_screen"``)
+- Device-specific screens, if available (named as ``ClassNameHere.detailed.ui``)
+- The detailed tree, if the device has sub-devices
+- The default templates
+
+For nested displays in a device tree, sub-device (e.g., ``at2l0.blade_01``)
+template load priority is as follows:
+
+- Device-specific screens, if available (named as ``ClassNameHere.embedded.ui``)
+- The detailed tree, if the device has sub-devices
+- The default templates
