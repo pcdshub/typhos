@@ -89,6 +89,7 @@ def _dump_widgets(widgets: List[weakref.ReferenceType[QtWidgets.QWidget]]) -> No
 
         try:
             widget.isVisible()
+            widget.windowTitle()
         except RuntimeError:
             # already deleted on the C/C++ side
             continue
@@ -138,11 +139,24 @@ def pytest_runtest_call(item):
     _dump_widgets(widgets_to_check)
 
     final_widgets = _dereference_list(widgets_to_check)
-    cleanup_text = f"Not all widgets were cleaned up during {item.name}: " + ", ".join(
-        sorted(
-            f"{type(widget).__name__}: {widget.windowTitle()}"
-            for widget in final_widgets
-        )
+
+    cleanup_descriptions = []
+    for widget in list(final_widgets):
+        try:
+            classname = type(widget).__name__
+            title = widget.windowTitle()
+            num_referrers = len(gc.get_referrers(widget))
+        except RuntimeError:
+            # OK, one last chance for gc
+            final_widgets.remove(widget)
+        else:
+            cleanup_descriptions.append(
+                f"{classname}: {title} (referrers={num_referrers})"
+            )
+
+    cleanup_text = (
+        f"Not all widgets were cleaned up during {item.name}:\n"
+        + "\n - ".join(sorted(cleanup_descriptions))
     )
     failure_text = f"{item.nodeid}: {cleanup_text}"
 
