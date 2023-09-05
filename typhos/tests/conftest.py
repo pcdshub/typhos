@@ -140,7 +140,7 @@ def pytest_runtest_call(item):
     final_widgets = _dereference_list(widgets_to_check)
     cleanup_text = f"Not all widgets were cleaned up during {item.name}: " + ", ".join(
         sorted(
-            f"{type(widget).__name__}: {widget().windowTitle()}"
+            f"{type(widget).__name__}: {widget.windowTitle()}"
             for widget in final_widgets
         )
     )
