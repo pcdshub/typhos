@@ -106,7 +106,12 @@ class _GlobalDescribeCache(QtCore.QObject):
         except Exception as ex:
             logger.exception('Worker describe failed: %s', ex)
         finally:
-            self._in_process.remove(obj)
+            try:
+                self._in_process.remove(obj)
+            except KeyError:
+                # The cache can be cleared externally. Don't fail if the object
+                # is already gone.
+                ...
 
     @QtCore.Slot(object, bool, dict)
     def _connection_update(self, obj, connected, metadata):

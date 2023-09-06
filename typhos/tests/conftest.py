@@ -157,6 +157,9 @@ def pytest_runtest_call(item):
             desc = f"{classname} {desc} {title!r} referrers={len(referrers)}: "
             ref_desc = []
             for ref in referrers:
+                if ref is widget or ref is final_widgets:
+                    continue
+
                 try:
                     ref_desc.append(str(ref))  # [:256])
                 except Exception as ex:
