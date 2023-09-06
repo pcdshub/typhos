@@ -100,9 +100,14 @@ class _GlobalDescribeCache(QtCore.QObject):
 
         It calls describe, updates the cache, and emits a signal when done.
         """
+        if obj not in self._in_process:
+            # Cache was cleared before the signal was needed. Discard.
+            return
+
         try:
             self.cache[obj] = desc = self._describe(obj)
-            self.new_description.emit(obj, desc)
+            if obj in self._in_process:
+                self.new_description.emit(obj, desc)
         except Exception as ex:
             logger.exception('Worker describe failed: %s', ex)
         finally:
