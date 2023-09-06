@@ -95,6 +95,10 @@ if happi is None:
     logger.info("happi is not installed; some features may be unavailable")
 
 
+class TyphosException(Exception):
+    ...
+
+
 def _get_display_paths():
     """
     Get all display paths.
