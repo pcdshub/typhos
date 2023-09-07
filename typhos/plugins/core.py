@@ -282,3 +282,14 @@ class SignalPlugin(PyDMPlugin):
         except Exception:
             logger.exception("Unable to create a connection to %r",
                              channel)
+
+    def remove_connection(self, channel, destroying=False):
+        try:
+            return super().remove_connection(channel, destroying=destroying)
+        except RuntimeError as ex:
+            # deleteLater() at teardown can raise; let's silence that
+            if not str(ex).endswith("has been deleted"):
+                raise
+
+            with self.lock:
+                self.connections.pop(self.get_connection_id(channel), None)
