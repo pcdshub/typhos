@@ -276,8 +276,12 @@ def test_take_top_level_widget_screenshots(qtbot: pytestqt.qtbot.QtBot):
     widget = QWidget()
     qtbot.addWidget(widget)
     screenshots = list(utils.take_top_level_widget_screenshots(visible_only=False))
-    assert len(screenshots) >= 1
-    assert any(w is widget for w, _ in screenshots)
+    try:
+        assert len(screenshots) >= 1
+        for widget, _ in screenshots:
+            qtbot.add_widget(widget)
 
-    for widget, _ in screenshots:
-        qtbot.add_widget(widget)
+        assert any(w is widget for w, _ in screenshots)
+        # Remove any traces of references to those widgets:
+    finally:
+        screenshots.clear()
