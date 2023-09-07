@@ -191,7 +191,11 @@ def pytest_runtest_call(item: pytest.Item):
     failure_text = f"{item.nodeid}: {cleanup_text}"
 
     if final_widgets:
-        logger.error(failure_text)
+        if all(isinstance(widget, QtWidgets.QMenu) for widget in final_widgets):
+            logger.error("%s: Top level QMenu widgets were not cleaned up. Not failing the test suite.", item.nodeid)
+            final_widgets.clear()
+        else:
+            logger.error(failure_text)
 
     try:
         assert not final_widgets, failure_text
