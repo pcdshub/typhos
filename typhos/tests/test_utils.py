@@ -278,3 +278,6 @@ def test_take_top_level_widget_screenshots(qtbot: pytestqt.qtbot.QtBot):
     screenshots = list(utils.take_top_level_widget_screenshots(visible_only=False))
     assert len(screenshots) >= 1
     assert any(w is widget for w, _ in screenshots)
+
+    for widget, _ in screenshots:
+        qtbot.add_widget(widget)
