@@ -20,11 +20,12 @@ import re
 import threading
 import weakref
 from types import MethodType
-from typing import Generator, Iterable, Optional
+from typing import Dict, Generator, Iterable, Optional
 
 import entrypoints
 import ophyd
 import ophyd.sim
+import pydm
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.config import STYLESHEET as PYDM_USER_STYLESHEET
@@ -1820,3 +1821,32 @@ def take_top_level_widget_screenshots(
             image = take_widget_screenshot(widget)
             if image is not None:
                 yield widget, image
+
+
+def load_ui_file(
+    uifile: str,
+    macros: Optional[Dict[str, str]] = None,
+) -> pydm.Display:
+    """
+    Load a .ui file, perform macro substitution, then return the resulting QWidget.
+
+    Parameters
+    ----------
+    uifile : str
+        The path to a .ui file to load.
+    macros : dict, optional
+        A dictionary of macro variables to supply to the file to be opened.
+
+    Returns
+    -------
+    pydm.Display
+    """
+
+    display = pydm.Display(macros=macros)
+    try:
+        display.load_ui_from_file(uifile, macros)
+    except Exception as ex:
+        ex.pydm_display = display
+        raise
+
+    return display

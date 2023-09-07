@@ -146,7 +146,12 @@ def pytest_runtest_call(item: pytest.Item):
     for widget in list(final_widgets):
         try:
             classname = type(widget).__name__
-            title = widget.windowTitle()
+            name = widget.objectName()
+            if name in {"_typhos_test_suite_ignore_"}:
+                final_widgets.remove(widget)
+                continue
+
+            title = f"title={widget.windowTitle()} name={name}"
             referrers = gc.get_referrers(widget)
             desc = str(widget)
             if isinstance(widget, QtWidgets.QMenu):
@@ -164,11 +169,16 @@ def pytest_runtest_call(item: pytest.Item):
                     continue
 
                 try:
-                    ref_desc.append(str(ref)[:512])
+                    if isinstance(ref, list):
+                        ref_desc.append(f"list[{len(ref)}]: " + str(ref)[:512])
+                        for sub_ref in gc.get_referrers(ref):
+                            ref_desc.append(f"          --> {sub_ref}")
+                    else:
+                        ref_desc.append(str(ref)[:512])
                 except Exception as ex:
                     # Everything's destructible! Yeah!
                     ref_desc.append(f"(exception) {ex}")
-            desc = f"{classname} {desc} {title!r} referrers={num_referrers}: "
+            desc = f"{classname} {desc} {title} referrers={num_referrers}: "
             cleanup_descriptions.append(
                 "\n".join((desc, "\n    -> ".join([""] + ref_desc)))
             )
