@@ -113,7 +113,7 @@ def _dereference_list(
 
 
 @pytest.hookimpl(hookwrapper=True, trylast=True)
-def pytest_runtest_call(item):
+def pytest_runtest_call(item: pytest.Item):
     starting_widgets = get_top_level_widgets()
     if starting_widgets:
         num_start = len(_dereference_list(starting_widgets))
@@ -121,6 +121,7 @@ def pytest_runtest_call(item):
         _dump_widgets(starting_widgets)
 
     yield
+
     qtbot_widgets = [ref for ref, _ in getattr(item, "qt_widgets", [])]
     ending_widgets = get_top_level_widgets()
 
@@ -152,22 +153,26 @@ def pytest_runtest_call(item):
                 desc = "Menu with actions: " + ", ".join(repr(action.text()) for action in widget.actions())
         except RuntimeError:
             # OK, one last chance for gc
+            referrers = []
             final_widgets.remove(widget)
         else:
-            desc = f"{classname} {desc} {title!r} referrers={len(referrers)}: "
             ref_desc = []
+            num_referrers = len(referrers)
             for ref in referrers:
                 if ref is widget or ref is final_widgets:
+                    num_referrers -= 1
                     continue
 
                 try:
-                    ref_desc.append(str(ref))  # [:256])
+                    ref_desc.append(str(ref)[:512])
                 except Exception as ex:
                     # Everything's destructible! Yeah!
-                    ref_desc.append(str(ex))
+                    ref_desc.append(f"(exception) {ex}")
+            desc = f"{classname} {desc} {title!r} referrers={num_referrers}: "
             cleanup_descriptions.append(
                 "\n".join((desc, "\n    -> ".join([""] + ref_desc)))
             )
+        referrers.clear()
 
     cleanup_text = (
         f"Not all widgets were cleaned up during {item.name}:\n"
@@ -177,7 +182,15 @@ def pytest_runtest_call(item):
 
     if final_widgets:
         logger.error(failure_text)
-    assert not final_widgets, failure_text
+
+    try:
+        assert not final_widgets, failure_text
+    finally:
+        for widget in final_widgets:
+            try:
+                widget.deleteLater()
+            except RuntimeError:
+                ...
 
 
 @pytest.fixture(scope='session')
