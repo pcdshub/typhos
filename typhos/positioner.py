@@ -203,8 +203,45 @@ class TyphosPositionerWidget(
         thread.status_finished.connect(self._status_finished)
         thread.start()
 
-    def _get_timeout(self, set_position, settle_time):
-        """Use positioner's configuration to select a timeout."""
+    def _get_timeout(self, set_position: float, settle_time: float, rescale: float = 1) -> float | None:
+        """
+        Use positioner's configuration to select a timeout.
+
+        This will estimate the amount of time it will take to get to the
+        set_position. The calculation is simplified and is intended to be
+        slightly greater than the true expected move duration:
+
+        move_time ~= distance/velocity + accel_time + deccel_time
+        *(note: we assume accel_time = deccel_time)
+
+        Which is just the trapezoidal move curve, but a little bit longer.
+
+        The timeout will be:
+        timeout = settle_time + rescale * move_time
+
+        A return value of ``None`` will be used if we cannot determine the
+        velocity, which is interpreted by ophyd as "never times out".
+        If we can't determine the acceleration time, we will assume it is
+        zero.
+
+        Parameters
+        ----------
+        set_position : float
+            The position we'd like to move to.
+        settle_time : float
+            How long to wait on top of the calculated move time.
+            Note that this does not get ``rescale`` applied on top of it.
+        rescale : float
+            A scaling factor, multiplied onto the calculated move time.
+            This can be used to give some extra margin proportional to
+            the expected move time, e.g. for long moves.
+
+        Returns
+        -------
+        timeout : float or None
+            The timeout to use for this move, or None if a timeout could
+            not be calculated.
+        """
         pos_sig = getattr(self.device, self._readback_attr, None)
         vel_sig = getattr(self.device, self._velocity_attr, None)
         acc_sig = getattr(self.device, self._acceleration_attr, None)
@@ -222,7 +259,7 @@ class TyphosPositionerWidget(
         else:
             acc_time = acc_sig.get()
         # This time is always greater than the kinematic calc
-        return abs(delta/speed) + 2 * abs(acc_time) + abs(settle_time)
+        return rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time)
 
     def _set(self, value):
         """Inner `set` routine - call device.set() and monitor the status."""
@@ -234,7 +271,8 @@ class TyphosPositionerWidget(
             set_position = float(value)
 
         try:
-            timeout = self._get_timeout(set_position, 5)
+            # Always at least 5s, give 20% extra time as margin for long moves
+            timeout = self._get_timeout(set_position, settle_time=5, rescale=1.2)
         except Exception:
             # Something went wrong, just run without a timeout.
             logger.exception('Unable to estimate motor timeout.')
