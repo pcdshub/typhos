@@ -1,5 +1,26 @@
 """
-Helpful functions that don't belong in a more specific submodule.
+This is a caproto IOC used for benchmarking/profiling typhos.
+
+It's used internally by the typhos test suite, but it may also be run
+on its own.To run it outside of the test suite, use the following:
+
+```
+python -m typhos.benchmark.ioc "PV:PREFIX" (benchmark_name)
+```
+
+Where benchmark_name is one of the supported tests:
+* cube_connect
+* cube_noconnect
+* cube_soft
+* deep_connect
+* deep_noconnect
+* deep_soft
+* flat_connect
+* flat_noconnect
+* flat_soft
+* wide_connect
+* wide_noconnect
+* wide_soft
 """
 from __future__ import annotations
 
@@ -43,6 +64,15 @@ def get_suffix(walk: ophyd.device.ComponentWalk) -> str:
     return suffix
 
 
+def print_usage() -> None:
+    """Print usage of the test IOC."""
+    print(f"Usage: {sys.argv[0]} PV:PREFIX test_name")
+    print("Where test_name is one of the following:")
+    classes, _, _ = make_tests()
+    for cls in sorted(classes):
+        print(f"* {cls}")
+
+
 def run_caproto_ioc(prefix: str, test_name: str) -> None:
     """
     Runs a dummy caproto IOC.
@@ -54,7 +84,12 @@ def run_caproto_ioc(prefix: str, test_name: str) -> None:
     definition.
     """
     classes, _, _ = make_tests()
-    device_class = classes[test_name]
+    try:
+        device_class = classes[test_name]
+    except KeyError:
+        print(f"Unsupported test name provided: {test_name}", file=sys.stderr)
+        print_usage()
+        sys.exit(1)
 
     pvprops = {}
     for suffix in yield_all_suffixes(device_class):
@@ -75,4 +110,7 @@ def run_caproto_ioc(prefix: str, test_name: str) -> None:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print_usage()
+        sys.exit(1)
     run_caproto_ioc(prefix=sys.argv[1], test_name=sys.argv[2])
