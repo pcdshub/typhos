@@ -1,16 +1,23 @@
 """
 Helpful functions that don't belong in a more specific submodule.
 """
+from __future__ import annotations
+
 import importlib
 import inspect
 import logging
 import pkgutil
+import typing
 import uuid
 from contextlib import contextmanager
 from inspect import isclass, isfunction, ismethod
-from typing import Type
+from typing import Optional, Type
 
 import ophyd
+
+if typing.TYPE_CHECKING:
+    import pytest
+
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +38,7 @@ def caproto_context(
     device_class: Type[ophyd.Device],
     prefix: str,
     full_test_name: str,
-    request=None,
+    request: Optional[pytest.FixtureRequest] = None,
 ):
     """
     Yields a caproto process with all elements of the input device.

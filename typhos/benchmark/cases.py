@@ -4,9 +4,12 @@ A collection of benchmarks to run for typhos.
 These are included as standalone functions to make it easy to pass them into
 arbitrary profiling modules.
 """
+from __future__ import annotations
+
+import typing
 from collections import namedtuple
 from functools import partial
-from typing import Type
+from typing import Optional, Type
 
 import ophyd
 from ophyd.signal import EpicsSignal, Signal
@@ -16,6 +19,10 @@ from ..suite import TyphosSuite
 from ..utils import nullcontext
 from .device import make_test_device_class as make_cls
 from .utils import caproto_context, random_prefix
+
+if typing.TYPE_CHECKING:
+    import pytest
+
 
 # Define matrix of testing parameters
 Shape = namedtuple('Shape', ['num_signals', 'subdevice_layers',
@@ -36,8 +43,8 @@ def profiler_benchmark(
     cls: Type[ophyd.Device],
     start_ioc: bool,
     full_test_name: str,
-    auto_exit=True,
-    request=None,
+    auto_exit: bool = True,
+    request: Optional[pytest.FixtureRequest] = None,
 ):
     """
     Catch-all for simple profiler benchmarks.
@@ -55,7 +62,7 @@ def unittest_benchmark(
     cls: Type[ophyd.Device],
     start_ioc: bool,
     full_test_name: str,
-    request,
+    request: Optional[pytest.FixtureRequest],
 ):
     """
     Catch-all for simple pytest benchmarking.
@@ -75,7 +82,7 @@ def benchmark_context(
     cls: Type[ophyd.Device],
     prefix: str,
     full_test_name: str,
-    request,
+    request: Optional[pytest.FixtureRequest],
 ):
     """Context manager that starts an ioc, or not."""
     if start_ioc:
