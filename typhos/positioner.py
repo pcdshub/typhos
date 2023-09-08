@@ -203,7 +203,7 @@ class TyphosPositionerWidget(
         thread.status_finished.connect(self._status_finished)
         thread.start()
 
-    def _get_timeout(self, set_position, settle_time):
+    def _get_timeout(self, set_position: float, settle_time: float, rescale: float = 1) -> float | None:
         """Use positioner's configuration to select a timeout."""
         pos_sig = getattr(self.device, self._readback_attr, None)
         vel_sig = getattr(self.device, self._velocity_attr, None)
@@ -222,7 +222,7 @@ class TyphosPositionerWidget(
         else:
             acc_time = acc_sig.get()
         # This time is always greater than the kinematic calc
-        return abs(delta/speed) + 2 * abs(acc_time) + abs(settle_time)
+        return rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time)
 
     def _set(self, value):
         """Inner `set` routine - call device.set() and monitor the status."""
@@ -234,7 +234,8 @@ class TyphosPositionerWidget(
             set_position = float(value)
 
         try:
-            timeout = self._get_timeout(set_position, 5)
+            # Always at least 5s, give 20% extra time as margin for long moves
+            timeout = self._get_timeout(set_position, settle_time=5, rescale=1.2)
         except Exception:
             # Something went wrong, just run without a timeout.
             logger.exception('Unable to estimate motor timeout.')
