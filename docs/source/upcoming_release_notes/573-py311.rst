@@ -1,0 +1,44 @@
+573 py311
+#################
+
+API Changes
+-----------
+- The packaged IOC for benchmark testing is now in ``typhos.benchmark.ioc``.
+- Qt object names for displays will now be set automatically to aid in
+  debugging.
+- ``LazySubdisplay.get_subdisplay`` now provides the option to only get
+  existing widgets (by using the argument ``instantiate=False``).
+
+Features
+--------
+- Python 3.11 is now being targeted for support in typhos.
+
+Bugfixes
+--------
+- ``ophyd.Kind`` usage has been fixed for Python 3.11. Python 3.11 differs in
+  enumeration of ``IntFlag`` items, resulting in typhos only picking up
+  component kinds that were a power of 2.
+- ``multiprocessing`` is no longer used to spawn the test suite benchmarking
+  IOC, as it was problematic for Python 3.11.  The provided IOC is now spawned
+  using the same utilities provided by the caproto test suite.
+- Vendored pydm ``load_ui_file`` and modified it so we can always get our
+  ``Display`` instance back in ``TyphosDeviceDisplay``.
+- Ignore deleted qt objects on ``SignalConnection.remove_connection``, avoiding
+  teardown error tracebacks.
+- Avoid creating subdisplays during a call to ``TyphosSuite.hide_subdisplays``
+- Added a pytest hook helper to aid in finding widgets that were not cleaned
+  up.
+- Avoid failing screenshot taking when widgets are garbage collected at the
+  same time.
+- Avoid race condition in description cache if the cache is externally cleared
+  when a new description callback is received.
+
+Maintenance
+-----------
+- Avoid hundreds of warnings during line profiling profiling by intercepting
+  messages about profiling the wrapped function instead of the wrapper.
+- The setpoint history menu on ``TyphosLineEdit`` is now only created on-demand.
+
+Contributors
+------------
+- klauer
