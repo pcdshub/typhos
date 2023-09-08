@@ -4,9 +4,14 @@ A collection of benchmarks to run for typhos.
 These are included as standalone functions to make it easy to pass them into
 arbitrary profiling modules.
 """
+from __future__ import annotations
+
+import typing
 from collections import namedtuple
 from functools import partial
+from typing import Optional, Type
 
+import ophyd
 from ophyd.signal import EpicsSignal, Signal
 
 from ..app import launch_from_devices
@@ -14,6 +19,10 @@ from ..suite import TyphosSuite
 from ..utils import nullcontext
 from .device import make_test_device_class as make_cls
 from .utils import caproto_context, random_prefix
+
+if typing.TYPE_CHECKING:
+    import pytest
+
 
 # Define matrix of testing parameters
 Shape = namedtuple('Shape', ['num_signals', 'subdevice_layers',
@@ -30,7 +39,13 @@ TESTS = dict(soft=Test(Signal, False, False),
              noconnect=Test(EpicsSignal, True, False))
 
 
-def profiler_benchmark(cls, start_ioc, auto_exit=True):
+def profiler_benchmark(
+    cls: Type[ophyd.Device],
+    start_ioc: bool,
+    full_test_name: str,
+    auto_exit: bool = True,
+    request: Optional[pytest.FixtureRequest] = None,
+):
     """
     Catch-all for simple profiler benchmarks.
 
@@ -38,12 +53,17 @@ def profiler_benchmark(cls, start_ioc, auto_exit=True):
     profiler and launch a screen.
     """
     prefix = random_prefix()
-    with benchmark_context(start_ioc, cls, prefix):
+    with benchmark_context(start_ioc, cls, prefix, full_test_name, request=request):
         return launch_from_devices([cls(prefix, name='test')],
                                    auto_exit=auto_exit)
 
 
-def unittest_benchmark(cls, start_ioc):
+def unittest_benchmark(
+    cls: Type[ophyd.Device],
+    start_ioc: bool,
+    full_test_name: str,
+    request: Optional[pytest.FixtureRequest],
+):
     """
     Catch-all for simple pytest benchmarking.
 
@@ -52,15 +72,21 @@ def unittest_benchmark(cls, start_ioc):
     test instead of launching the screen ourselves.
     """
     prefix = random_prefix()
-    context = benchmark_context(start_ioc, cls, prefix)
+    context = benchmark_context(start_ioc, cls, prefix, full_test_name, request=request)
     suite = TyphosSuite.from_device(cls(prefix, name='test'))
     return suite, context
 
 
-def benchmark_context(start_ioc, cls, prefix):
+def benchmark_context(
+    start_ioc: bool,
+    cls: Type[ophyd.Device],
+    prefix: str,
+    full_test_name: str,
+    request: Optional[pytest.FixtureRequest],
+):
     """Context manager that starts an ioc, or not."""
     if start_ioc:
-        context = caproto_context(cls, prefix)
+        context = caproto_context(cls, prefix, full_test_name, request=request)
     else:
         context = nullcontext()
     return context
@@ -73,7 +99,8 @@ def make_tests():
     unit_tests = {}
     for shape_name, shape in SHAPES.items():
         for test_name, test in TESTS.items():
-            cls_name = shape_name.title() + test_name.title()
+            full_test_name = shape_name + '_' + test_name
+            cls_name = full_test_name
             cls = make_cls(name=cls_name,
                            signal_class=test.signal_class,
                            include_prefix=test.include_prefix,
@@ -82,10 +109,9 @@ def make_tests():
                            subdevice_spread=shape.subdevice_spread)
             classes[cls_name] = cls
 
-            full_test_name = shape_name + '_' + test_name
-            profiler_test = partial(profiler_benchmark, cls, test.start_ioc)
+            profiler_test = partial(profiler_benchmark, cls, test.start_ioc, full_test_name)
             profiler_tests[full_test_name] = profiler_test
-            unit_test = partial(unittest_benchmark, cls, test.start_ioc)
+            unit_test = partial(unittest_benchmark, cls, test.start_ioc, full_test_name)
             unit_tests[full_test_name] = unit_test
 
     return classes, profiler_tests, unit_tests

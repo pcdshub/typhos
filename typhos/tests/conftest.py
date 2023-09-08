@@ -1,12 +1,16 @@
+import gc
 import logging
 import os.path
 import pathlib
 import time
+import weakref
 from functools import wraps
+from typing import List
 
 import numpy as np
 import ophyd.sim
 import pydm
+import pydm.utilities
 import pytest
 import qtpy
 from happi import Client
@@ -68,6 +72,141 @@ def noapp(monkeypatch):
     )
 
 
+def get_top_level_widgets() -> List[weakref.ReferenceType[QtWidgets.QWidget]]:
+    app = QtWidgets.QApplication.instance()
+    if app is None:
+        return []
+    return [weakref.ref(widget) for widget in app.topLevelWidgets()]
+
+
+def _dump_widgets(widgets: List[weakref.ReferenceType[QtWidgets.QWidget]]) -> None:
+    if not widgets:
+        return
+
+    for widget in widgets:
+        widget = widget()
+        if widget is None:
+            continue
+
+        try:
+            widget.isVisible()
+            widget.windowTitle()
+        except RuntimeError:
+            # already deleted on the C/C++ side
+            continue
+
+        logger.debug(
+            f"Widget remains live: {widget} {widget.windowTitle()} "
+            f"parent={widget.parent()} name={widget.objectName()}"
+        )
+
+
+def _dereference_list(
+    objs: List[weakref.ReferenceType[QtWidgets.QWidget]],
+) -> List[QtWidgets.QWidget]:
+    res = []
+    for obj in objs:
+        obj = obj()
+        if obj is not None:
+            res.append(obj)
+    return res
+
+
+@pytest.hookimpl(hookwrapper=True, trylast=True)
+def pytest_runtest_call(item: pytest.Item):
+    starting_widgets = get_top_level_widgets()
+    if starting_widgets:
+        num_start = len(_dereference_list(starting_widgets))
+        logger.debug(f"\n\nPre test - {num_start} widgets exist:")
+        _dump_widgets(starting_widgets)
+
+    yield
+
+    qtbot_widgets = [ref for ref, _ in getattr(item, "qt_widgets", [])]
+    ending_widgets = get_top_level_widgets()
+
+    app = QtWidgets.QApplication.instance()
+
+    t0 = time.monotonic()
+    while time.monotonic() - t0 < 1.0 and len(_dereference_list(ending_widgets)) > 0:
+        gc.collect()
+        app.processEvents()
+
+    widgets_to_check = list(
+        weakref.ref(w) for w in
+        set(_dereference_list(ending_widgets))
+        - set(_dereference_list(starting_widgets))
+        - set(_dereference_list(qtbot_widgets))
+    )
+    _dump_widgets(widgets_to_check)
+
+    final_widgets = _dereference_list(widgets_to_check)
+
+    cleanup_descriptions = []
+    for widget in list(final_widgets):
+        try:
+            classname = type(widget).__name__
+            name = widget.objectName()
+            if name in {"_typhos_test_suite_ignore_"}:
+                final_widgets.remove(widget)
+                continue
+
+            title = f"title={widget.windowTitle()} name={name}"
+            referrers = gc.get_referrers(widget)
+            desc = str(widget)
+            if isinstance(widget, QtWidgets.QMenu):
+                desc = "Menu with actions: " + ", ".join(repr(action.text()) for action in widget.actions())
+        except RuntimeError:
+            # OK, one last chance for gc
+            referrers = []
+            final_widgets.remove(widget)
+        else:
+            ref_desc = []
+            num_referrers = len(referrers)
+            for ref in referrers:
+                if ref is widget or ref is final_widgets:
+                    num_referrers -= 1
+                    continue
+
+                try:
+                    if isinstance(ref, list):
+                        ref_desc.append(f"list[{len(ref)}]: " + str(ref)[:512])
+                        for sub_ref in gc.get_referrers(ref):
+                            ref_desc.append(f"          --> {sub_ref}")
+                    else:
+                        ref_desc.append(str(ref)[:512])
+                except Exception as ex:
+                    # Everything's destructible! Yeah!
+                    ref_desc.append(f"(exception) {ex}")
+            desc = f"{classname} {desc} {title} referrers={num_referrers}: "
+            cleanup_descriptions.append(
+                "\n".join((desc, "\n    -> ".join([""] + ref_desc)))
+            )
+        referrers.clear()
+
+    cleanup_text = (
+        f"Not all widgets were cleaned up during {item.name}:\n"
+        + "\n".join(sorted(cleanup_descriptions))
+    )
+    failure_text = f"{item.nodeid}: {cleanup_text}"
+
+    if final_widgets:
+        if all(isinstance(widget, QtWidgets.QMenu) for widget in final_widgets):
+            logger.error("%s: Top level QMenu widgets were not cleaned up. Not failing the test suite.", item.nodeid)
+            final_widgets.clear()
+        else:
+            logger.error(failure_text)
+
+    try:
+        assert not final_widgets, failure_text
+    finally:
+        for widget in final_widgets:
+            try:
+                widget.deleteLater()
+            except RuntimeError:
+                ...
+
+
 @pytest.fixture(scope='session')
 def test_images():
     return (os.path.join(os.path.dirname(__file__), 'utils/lenna.png'),
@@ -120,6 +259,10 @@ def show_widget(func):
             widget.show()
             # Start the application
             application.exec_()
+        try:
+            pydm.utilities.close_widget_connections(widget)
+        except Exception:
+            logger.debug("Failed to close widget connections for %s", widget)
     return func_wrapper
 
 

@@ -12,6 +12,7 @@ from typing import Dict, List, Optional, Union
 
 import ophyd
 import pcdsutils
+import pydm
 import pydm.display
 import pydm.exception
 import pydm.utilities
@@ -1327,6 +1328,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
         if not template:
             widget = QtWidgets.QWidget()
+            widget.setObjectName("no_template_standin")
             template = None
         else:
             template = pathlib.Path(template)
@@ -1350,10 +1352,14 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
                     pydm.exception.raise_to_operator(ex)
                 else:
                     widget = QtWidgets.QWidget()
+                    widget.setObjectName("errored_load_standin")
                     template = None
 
         if widget:
-            widget.setObjectName('display_widget')
+            if widget.objectName():
+                widget.setObjectName(f'{widget.objectName()}_display_widget')
+            else:
+                widget.setObjectName('display_widget')
 
             if widget.layout() is None and widget.minimumSize().width() == 0:
                 # If the widget has no layout, use a fixed size for it.
@@ -1420,10 +1426,18 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         """Load template from file and return the widget."""
         filename = pathlib.Path(filename)
         loader = (pydm.display.load_py_file if filename.suffix == '.py'
-                  else pydm.display.load_ui_file)
+                  else utils.load_ui_file)
 
         logger.debug('Load template using %s: %r', loader.__name__, filename)
-        return loader(str(filename), macros=self._macros)
+        try:
+            return loader(str(filename), macros=self._macros)
+        except Exception as ex:
+            display: Optional[pydm.Display] = getattr(ex, "pydm_display", None)
+            if display is not None:
+                display.setObjectName("_typhos_test_suite_ignore_")
+                display.close()
+                display.deleteLater()
+            raise
 
     def _update_children(self):
         """Notify child widgets of this device display + the device."""

@@ -216,6 +216,12 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
         if display_format is not None:
             self.displayFormat = display_format
 
+    def __dtor__(self):
+        menu = self.unitMenu
+        if menu is not None:
+            menu.deleteLater()
+        self.unitMenu = None
+
     @property
     def setpoint_history(self):
         """
@@ -296,10 +302,10 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     def widget_ctx_menu(self):
         menu = super().widget_ctx_menu()
         if self._setpoint_history_count > 0:
-            self._history_menu = self._create_history_menu()
-            if self._history_menu is not None:
+            history_menu = self._create_history_menu()
+            if history_menu is not None:
                 menu.addSeparator()
-                menu.addMenu(self._history_menu)
+                menu.addMenu(history_menu)
 
         return menu
 
@@ -573,11 +579,11 @@ class SignalDialogButton(QPushButton):
         self.channel = init_channel
         self.setIconSize(QSize(15, 15))
 
-    def widget(self, channel):
+    def widget(self):
         """Return a widget created with channel"""
         raise NotImplementedError
 
-    def show_dialog(self):
+    def show_dialog(self) -> QDialog:
         """Show the channel in a QDialog"""
         # Dialog Creation
         if not self.dialog:
@@ -599,6 +605,7 @@ class SignalDialogButton(QPushButton):
         # Show the dialog
         logger.debug("Showing QDialog for %r", self.channel)
         self.dialog.show()
+        return self.dialog
 
 
 @use_for_variety_read('array-image')

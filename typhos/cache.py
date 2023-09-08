@@ -100,13 +100,23 @@ class _GlobalDescribeCache(QtCore.QObject):
 
         It calls describe, updates the cache, and emits a signal when done.
         """
+        if obj not in self._in_process:
+            # Cache was cleared before the signal was needed. Discard.
+            return
+
         try:
             self.cache[obj] = desc = self._describe(obj)
-            self.new_description.emit(obj, desc)
+            if obj in self._in_process:
+                self.new_description.emit(obj, desc)
         except Exception as ex:
             logger.exception('Worker describe failed: %s', ex)
         finally:
-            self._in_process.remove(obj)
+            try:
+                self._in_process.remove(obj)
+            except KeyError:
+                # The cache can be cleared externally. Don't fail if the object
+                # is already gone.
+                ...
 
     @QtCore.Slot(object, bool, dict)
     def _connection_update(self, obj, connected, metadata):

@@ -43,6 +43,7 @@ def test_cli_stylesheet(qapp, qtbot, happi_cfg):
         suite = window.centralWidget()
         dev_display = suite.get_subdisplay(suite.devices[0])
         assert dev_display.force_template == 'test.ui'
+        qtbot.add_widget(dev_display)
         qapp.setStyleSheet(style)
     finally:
         os.remove('test.qss')

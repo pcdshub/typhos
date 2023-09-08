@@ -2,6 +2,7 @@
 Module using line_profiler to measure code performance and diagnose slowdowns.
 """
 import logging
+import warnings
 from contextlib import contextmanager
 
 from .utils import get_native_functions, get_submodules
@@ -68,8 +69,10 @@ def setup_profiler(module_names=None):
             native_functions = get_native_functions(module)
             functions.update(native_functions)
 
-    for function in functions:
-        profiler.add_function(function)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for function in functions:
+            profiler.add_function(function)
 
 
 def toggle_profiler(turn_on):

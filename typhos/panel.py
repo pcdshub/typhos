@@ -15,7 +15,7 @@ from __future__ import annotations
 import functools
 import logging
 from functools import partial
-from typing import Optional
+from typing import Dict, List, Optional
 
 import ophyd
 from ophyd import Kind
@@ -495,6 +495,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         -------
         should_show : bool
         """
+        kind = Kind(kind)
         if kind not in kinds:
             return False
         for show_name in (show_names or []):
@@ -689,6 +690,7 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
 
     Q_ENUMS(SignalOrder)  # Necessary for display in Designer
     SignalOrder = SignalOrder  # For convenience
+    _kinds: Dict[str, Kind]
     # From top of page to bottom
     kind_order = (Kind.hinted, Kind.normal,
                   Kind.config, Kind.omitted)
@@ -711,17 +713,22 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         self._show_names = []
         self._omit_names = []
         # Add default Kind values
-        self._kinds = dict.fromkeys([kind.name for kind in Kind], True)
+        self._kinds = {
+            "normal": True,
+            "hinted": True,
+            "config": True,
+            "omitted": True,
+        }
         self._signal_order = SignalOrder.byKind
 
         self.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
 
-    def _get_kind(self, kind):
+    def _get_kind(self, kind: str) -> ophyd.Kind:
         """Property getter for show[kind]."""
         return self._kinds[kind]
 
-    def _set_kind(self, value, kind):
+    def _set_kind(self, value: bool, kind: str) -> None:
         """Property setter for show[kind] = value."""
         # If we have a new value store it
         if value != self._kinds[kind]:
@@ -746,9 +753,9 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         self.updated.emit()
 
     @property
-    def show_kinds(self):
+    def show_kinds(self) -> List[Kind]:
         """Get a list of the :class:`ophyd.Kind` that should be shown."""
-        return [kind for kind in Kind if self._kinds[kind.name]]
+        return [Kind[kind] for kind, show in self._kinds.items() if show]
 
     # Kind Configuration pyqtProperty
     showHints = Property(bool,

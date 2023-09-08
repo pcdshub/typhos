@@ -20,11 +20,12 @@ import re
 import threading
 import weakref
 from types import MethodType
-from typing import Generator, Iterable, Optional
+from typing import Dict, Generator, Iterable, Optional
 
 import entrypoints
 import ophyd
 import ophyd.sim
+import pydm
 from ophyd import Device
 from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.config import STYLESHEET as PYDM_USER_STYLESHEET
@@ -93,6 +94,10 @@ if JIRA_TOKEN:
 
 if happi is None:
     logger.info("happi is not installed; some features may be unavailable")
+
+
+class TyphosException(Exception):
+    ...
 
 
 def _get_display_paths():
@@ -1383,6 +1388,21 @@ def _get_top_level_components(device_cls):
     return list(device_cls._sig_attrs.items())
 
 
+def find_root_widget(widget: QtWidgets.QWidget) -> QtWidgets.QWidget:
+    """
+    Finds the root ancestor of a widget.
+
+    Parameters
+    ----------
+    widget : QWidget
+        The widget from which to start the search
+    """
+    parent = widget
+    while parent.parent() is not None:
+        parent = parent.parent()
+    return parent
+
+
 def find_parent_with_class(widget, cls=QWidget):
     """
     Finds the first parent of a widget that is an instance of ``klass``
@@ -1724,7 +1744,7 @@ def take_widget_screenshot(widget: QtWidgets.QWidget) -> Optional[QtGui.QImage]:
             else primary_screen
         )
 
-        logger.debug(
+        logger.info(
             "Screenshot: %s (%s, primary screen: %s widget screen: %s)",
             widget.windowTitle(),
             widget,
@@ -1766,25 +1786,67 @@ def take_top_level_widget_screenshots(
         return
 
     for screen_idx, screen in enumerate(app.screens(), 1):
-        logger.debug("Screen %d: %s %s", screen_idx, screen, screen.geometry())
+        logger.debug(
+            "Screen %d: %s %s %s",
+            screen_idx,
+            screen,
+            screen.name(),
+            screen.geometry(),
+        )
 
     def by_title(widget):
         return widget.windowTitle() or str(id(widget))
 
-    for widget in sorted(app.topLevelWidgets(), key=by_title):
+    def should_take_screenshot(widget: QtWidgets.QWidget) -> bool:
+        try:
+            parent = widget.parent()
+            visible = widget.isVisible()
+        except RuntimeError:
+            # Widget could have been gc'd in the meantime
+            return False
+
         if isinstance(widget, QtWidgets.QMenu):
-            try:
-                logger.debug(
-                    "Skipping QMenu for screenshots. %s parent=%s",
-                    widget,
-                    widget.parent(),
-                )
-            except RuntimeError:
-                # Widget could have been gc'd in the meantime
-                pass
-        elif visible_only and not widget.isVisible():
-            ...
-        else:
+            logger.debug(
+                "Skipping QMenu for screenshots. %s parent=%s",
+                widget,
+                parent,
+            )
+            return False
+        if visible_only and not visible:
+            return False
+        return True
+
+    for widget in sorted(app.topLevelWidgets(), key=by_title):
+        if should_take_screenshot(widget):
             image = take_widget_screenshot(widget)
             if image is not None:
                 yield widget, image
+
+
+def load_ui_file(
+    uifile: str,
+    macros: Optional[Dict[str, str]] = None,
+) -> pydm.Display:
+    """
+    Load a .ui file, perform macro substitution, then return the resulting QWidget.
+
+    Parameters
+    ----------
+    uifile : str
+        The path to a .ui file to load.
+    macros : dict, optional
+        A dictionary of macro variables to supply to the file to be opened.
+
+    Returns
+    -------
+    pydm.Display
+    """
+
+    display = pydm.Display(macros=macros)
+    try:
+        display.load_ui_from_file(uifile, macros)
+    except Exception as ex:
+        ex.pydm_display = display
+        raise
+
+    return display

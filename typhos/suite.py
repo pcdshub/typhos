@@ -20,7 +20,8 @@ from qtpy import QtCore, QtGui, QtWidgets
 from . import utils, widgets
 from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
 from .tools import TyphosLogDisplay, TyphosTimePlot
-from .utils import TyphosBase, clean_attr, clean_name, flatten_tree, save_suite
+from .utils import (TyphosBase, TyphosException, clean_attr, clean_name,
+                    flatten_tree, save_suite)
 
 logger = logging.getLogger(__name__)
 # Use non-None sentinel value since None means no tools
@@ -76,6 +77,11 @@ class SidebarParameter(parametertree.Parameter):
              isinstance(device, str) and self.name() == clean_attr(device),
              )
         )
+
+
+class TyphosDisplayNotCreatedError(TyphosException):
+    """The given subdisplay has not yet been shown."""
+    ...
 
 
 class LazySubdisplay(QtWidgets.QWidget):
@@ -380,7 +386,7 @@ class TyphosSuite(TyphosBase):
         """
         self.add_lazy_subdisplay(name, tool, "Tools")
 
-    def get_subdisplay(self, display):
+    def get_subdisplay(self, display: Union[Device, str], instantiate: bool = True):
         """
         Get a subdisplay by name or contained device.
 
@@ -388,10 +394,13 @@ class TyphosSuite(TyphosBase):
         ----------
         display : str or Device
             Name of screen or device
+        instantiate : bool, optional
+            Instantiate lazy sub-displays if they do not already exist.
+            Raise otherwise.
 
         Returns
         -------
-        widget : QWidget
+        widget : QWidget or partial
             Widget that is a member of the :attr:`.ui.subdisplay`
 
         Example
@@ -420,6 +429,11 @@ class TyphosSuite(TyphosBase):
 
         subdisplay = display.value()
         if isinstance(subdisplay, partial):
+            if not instantiate:
+                raise TyphosDisplayNotCreatedError(
+                    f"Subdisplay {display} has not been created yet"
+                )
+
             subdisplay = subdisplay()
             display.setValue(subdisplay)
         return subdisplay
@@ -524,7 +538,12 @@ class TyphosSuite(TyphosBase):
             DockWidget we will close that, otherwise the widget is just hidden.
         """
         if not isinstance(widget, QtWidgets.QWidget):
-            widget = self.get_subdisplay(widget)
+            try:
+                widget = self.get_subdisplay(widget, instantiate=False)
+            except TyphosDisplayNotCreatedError:
+                logger.debug("Subdisplay was never shown; nothing to do: %s", widget)
+                return
+
         sidebar = self._get_sidebar(widget)
         if sidebar:
             for item in sidebar.items:

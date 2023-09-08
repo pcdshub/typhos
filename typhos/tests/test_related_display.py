@@ -1,6 +1,7 @@
 import logging
 
 import pytest
+import pytestqt.qtbot
 from ophyd import Component as Cpt
 from ophyd import Device, Signal
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope='function')
-def suite_button(qtbot, happi_cfg):
+def suite_button(qtbot: pytestqt.qtbot.QtBot, happi_cfg) -> TyphosRelatedSuiteButton:
     button = TyphosRelatedSuiteButton()
     button.happi_cfg = happi_cfg
     qtbot.addWidget(button)
@@ -25,7 +26,7 @@ class Dummy(Device):
     sig2 = Cpt(Signal, value='two')
 
 
-def test_create_suite_happi(qtbot, suite_button):
+def test_create_suite_happi(qtbot: pytestqt.qtbot.QtBot, suite_button: TyphosRelatedSuiteButton):
     logger.debug('Make sure we can load a suite using happi.')
     happi_names = ['test_motor', 'test_device']
     suite_button.happi_names = happi_names
@@ -36,7 +37,7 @@ def test_create_suite_happi(qtbot, suite_button):
         assert suite.get_subdisplay(name.replace('_', ' ')).device_name == name
 
 
-def test_create_suite_add_devices(qtbot, suite_button):
+def test_create_suite_add_devices(qtbot: pytestqt.qtbot.QtBot, suite_button: TyphosRelatedSuiteButton):
     logger.debug('Make sure we can load a suite using add_devices.')
     dev1 = Dummy(name='dummy1')
     dev2 = Dummy(name='dummy2')
@@ -49,7 +50,7 @@ def test_create_suite_add_devices(qtbot, suite_button):
         assert suite.get_subdisplay(device).device is device
 
 
-def test_preload(suite_button):
+def test_preload(qtbot: pytestqt.qtbot.QtBot, suite_button: TyphosRelatedSuiteButton):
     logger.debug('Make sure preload preloads.')
     dev1 = Dummy(name='dummy1')
     suite_button.add_device(dev1)
@@ -57,10 +58,11 @@ def test_preload(suite_button):
     assert suite_button._suite is None
     suite_button.preload = True
     assert isinstance(suite_button._suite, TyphosSuite)
+    qtbot.add_widget(suite_button._suite)
 
 
 @show_widget
-def test_show_suite(qtbot, suite_button):
+def test_show_suite(qtbot: pytestqt.qtbot.QtBot, suite_button: TyphosRelatedSuiteButton):
     logger.debug('Make sure no exception is raised when we show a suite.')
     dev1 = Dummy(name='dummy1')
     suite_button.add_device(dev1)
@@ -69,7 +71,7 @@ def test_show_suite(qtbot, suite_button):
     suite_button.show_suite()
 
 
-def test_suite_errors(suite_button):
+def test_suite_errors(suite_button: TyphosRelatedSuiteButton):
     logger.debug('Make sure we raise exceptions for bad inputs.')
 
     # No devices configured

@@ -79,6 +79,7 @@ class SignalConnection(PyDMConnection):
     def __init__(self, channel, address, protocol=None, parent=None):
         # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
+        self._connection_open = True
         self.signal_type = None
         # Collect our signal
         self.signal = signal_registry[address]
@@ -93,6 +94,10 @@ class SignalConnection(PyDMConnection):
         )
         # Add listener
         self.add_listener(channel)
+
+    def __dtor__(self) -> None:
+        self._connection_open = False
+        self.close()
 
     def cast(self, value):
         """
@@ -145,6 +150,9 @@ class SignalConnection(PyDMConnection):
         """
         Update the UI with a new value from the Signal.
         """
+        if not self._connection_open:
+            return
+
         try:
             value = self.cast(value)
             self.new_value_signal[self.signal_type].emit(value)
@@ -173,6 +181,9 @@ class SignalConnection(PyDMConnection):
         but for severity we default to NO_ALARM for UI purposes. We don't
         want the UI to assume that anything is in an alarm state.
         """
+        if not self._connection_open:
+            return
+
         # Only emit the non-None values
         if connected is not None:
             self.connection_state_signal.emit(connected)
@@ -271,3 +282,14 @@ class SignalPlugin(PyDMPlugin):
         except Exception:
             logger.exception("Unable to create a connection to %r",
                              channel)
+
+    def remove_connection(self, channel, destroying=False):
+        try:
+            return super().remove_connection(channel, destroying=destroying)
+        except RuntimeError as ex:
+            # deleteLater() at teardown can raise; let's silence that
+            if not str(ex).endswith("has been deleted"):
+                raise
+
+            with self.lock:
+                self.connections.pop(self.get_connection_id(channel), None)

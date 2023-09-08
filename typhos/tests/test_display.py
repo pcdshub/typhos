@@ -10,10 +10,11 @@ from .conftest import show_widget
 
 
 @pytest.fixture(scope='function')
-def display(qtbot):
+def display(request, qtbot):
     display = typhos.display.TyphosDeviceDisplay()
+    display.setObjectName(display.objectName() + request.node.nodeid)
     qtbot.addWidget(display)
-    return display
+    yield display
 
 
 @pytest.fixture(scope='function', params=[False, True])
@@ -22,12 +23,15 @@ def show_switcher(request):
 
 
 @show_widget
-def test_device_title(device, motor, show_switcher, qtbot):
-    typhos.display.TyphosDisplayTitle(show_switcher=show_switcher)
+def test_device_title(device, motor, show_switcher, qtbot, request):
+    title = typhos.display.TyphosDisplayTitle(show_switcher=show_switcher)
+    qtbot.add_widget(title)
+
+    title.setObjectName(title.objectName() + request.node.nodeid)
 
 
 @show_widget
-def test_device_display(device, motor, qtbot):
+def test_device_display(device, motor, qtbot, request):
     def signals_from_panel(panel_name):
         panel_widget = getattr(panel.display_widget, panel_name)
         return set(panel_widget.layout().signals)
@@ -59,7 +63,9 @@ def test_device_display(device, motor, qtbot):
         device_signals = signals_from_device(device, ophyd.Kind.config)
         assert device_signals == signals_from_panel('config_panel')
 
+    print("Creating signal panel")
     panel = typhos.display.TyphosDeviceDisplay.from_device(motor)
+    panel.setObjectName(panel.objectName() + request.node.nodeid)
     panel.force_template = utils.ui_dir / "core" / "detailed_screen.ui"
     qtbot.addWidget(panel)
     check_hint_panel(motor)
@@ -67,9 +73,11 @@ def test_device_display(device, motor, qtbot):
     check_config_panel(motor)
 
     device.name = 'test'
+    print("Adding a new device")
     panel.add_device(device)
     check_read_panel(device)
     check_config_panel(device)
+    print("Done, returning panel", panel)
     return panel
 
 
@@ -126,19 +134,22 @@ def test_display_with_channel(client, qtbot):
     qtbot.wait_until(device_added)
 
 
-def test_display_device_class_property(motor, display):
+def test_display_device_class_property(motor, display, qtbot):
+    qtbot.add_widget(display)
     assert display.device_class == ''
     display.add_device(motor)
     assert display.device_class == 'ophyd.sim.SynAxis'
 
 
-def test_display_device_name_property(motor, display):
+def test_display_device_name_property(motor, display, qtbot):
+    qtbot.add_widget(display)
     assert display.device_name == ''
     display.add_device(motor)
     assert display.device_name == motor.name
 
 
-def test_display_with_py_file(display, motor):
+def test_display_with_py_file(display, motor, qtbot):
+    qtbot.add_widget(display)
     py_file = str(conftest.MODULE_PATH / 'utils' / 'display.py')
     display.add_device(motor, macros={'detailed_screen': py_file})
     display.load_best_template()
@@ -146,7 +157,8 @@ def test_display_with_py_file(display, motor):
     assert getattr(display.display_widget, 'is_from_test_file', False)
 
 
-def test_display_with_sig_template(display, device, qapp):
+def test_display_with_sig_template(display, device, qapp, qtbot):
+    qtbot.add_widget(display)
     display.force_template = str(conftest.MODULE_PATH / 'utils' / 'sig.ui')
     display.add_device(device)
     qapp.processEvents()

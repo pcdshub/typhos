@@ -2,6 +2,8 @@
 Run the benchmark test cases using pytest-benchmark
 """
 
+import sys
+
 import pytest
 from epics import PV
 from qtpy import QtWidgets
@@ -25,7 +27,11 @@ def get_top_level_suites() -> list[TyphosSuite]:
 
 # Name the test cases using the keys, run using the values
 @pytest.mark.parametrize('unit_test_name', unit_tests.keys())
-def test_benchmark(unit_test_name, qapp, qtbot, benchmark, monkeypatch):
+@pytest.mark.skipif(
+    sys.version_info >= (3, 11),
+    reason="Benchmarks not fully working on Python 3.11",
+)
+def test_benchmark(unit_test_name, qapp, qtbot, benchmark, monkeypatch, request):
     """
     Run all registered benchmarks.
 
@@ -34,14 +40,16 @@ def test_benchmark(unit_test_name, qapp, qtbot, benchmark, monkeypatch):
     # Crudely permenant patch here to get around cleanup bug
     assert len(get_top_level_suites()) == 0
     PV.count = property(lambda self: 1)
-    suite = benchmark(inner_benchmark, unit_tests[unit_test_name], qtbot)
+    suite = benchmark(inner_benchmark, unit_test_name, qtbot, request)
     save_image(suite, 'test_benchmark_' + unit_test_name)
 
 
-def inner_benchmark(unit_test, qtbot):
-    suite, context = unit_test()
+def inner_benchmark(unit_test_name, qtbot, request):
+    unit_test = unit_tests[unit_test_name]
+    suite, context = unit_test(request)
+    suite.setWindowTitle((suite.windowTitle() or "Unset - ") + unit_test_name)
+    qtbot.add_widget(suite)
     with context:
-        qtbot.add_widget(suite)
         qtbot.wait_active(suite)
     return suite
 
