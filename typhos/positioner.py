@@ -476,10 +476,6 @@ class TyphosPositionerWidget(
             self.ui.set_value.addItems(setpoint_signal.enum_strs)
             # Activated signal triggers only when the user selects an option
             self.ui.set_value.activated.connect(self.set)
-            self.ui.set_value.setSizePolicy(
-                QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Fixed,
-            )
             self.ui.set_value.setMinimumContentsLength(20)
             self.ui.tweak_widget.setVisible(False)
         else:
@@ -487,14 +483,23 @@ class TyphosPositionerWidget(
             self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
             self.ui.set_value.returnPressed.connect(self.set)
 
+        self.ui.set_value.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed,
+        )
+        self.ui.set_value.setMinimumWidth(
+            self.ui.user_setpoint.minimumWidth()
+        )
         self.ui.set_value.setMaximumWidth(
             self.ui.user_setpoint.maximumWidth()
         )
-
         self.ui.setpoint_layout.addWidget(
             self.ui.set_value,
             alignment=QtCore.Qt.AlignHCenter,
         )
+        self.ui.set_value.setObjectName('set_value')
+        # Because set_value is used instead
+        self.ui.user_setpoint.setVisible(False)
 
     @property
     def device(self):
@@ -1021,12 +1026,6 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.status_label.setVisible(has_status)
         self.ui.error_label.setVisible(has_error)
         self.ui.error_prefix.setVisible(has_error)
-
-    def _define_setpoint_widget(self):
-        super()._define_setpoint_widget()
-        if isinstance(self.ui.user_setpoint, QtWidgets.QLineEdit):
-            # Because set_value is used instead
-            self.ui.user_setpoint.setVisible(False)
 
 
 def clear_error_in_background(device):
