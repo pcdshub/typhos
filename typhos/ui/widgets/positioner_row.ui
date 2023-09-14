@@ -115,6 +115,19 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="TyphosDisplaySwitcher" name="switcher">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
@@ -1258,14 +1271,19 @@ Screen</string>
    <header>typhos.alarm</header>
   </customwidget>
   <customwidget>
-   <class>TyphosNotesEdit</class>
-   <extends>QLineEdit</extends>
-   <header>typhos.notes</header>
+   <class>TyphosDisplaySwitcher</class>
+   <extends>QFrame</extends>
+   <header>typhos.display</header>
   </customwidget>
   <customwidget>
    <class>TyphosRelatedSuiteButton</class>
    <extends>QPushButton</extends>
    <header>typhos.related_display</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosNotesEdit</class>
+   <extends>QLineEdit</extends>
+   <header>typhos.notes</header>
   </customwidget>
  </customwidgets>
  <resources/>
