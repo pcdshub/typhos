@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import logging
 import os.path
 import threading
@@ -9,6 +10,8 @@ from typing import Optional, Union
 import ophyd
 from pydm.widgets.channel import PyDMChannel
 from qtpy import QtCore, QtWidgets, uic
+
+from typhos.display import TyphosDisplaySwitcher
 
 from . import dynamic_font, utils, widgets
 from .alarm import AlarmLevel, KindLevel, _KindLevel
@@ -828,6 +831,7 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
     status_container_widget: QtWidgets.QFrame
     extended_signal_panel: Optional[TyphosSignalPanel]
     error_prefix: QtWidgets.QLabel
+    switcher: TyphosDisplaySwitcher
 
 
 class TyphosPositionerRowWidget(TyphosPositionerWidget):
@@ -964,6 +968,33 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
 
         self.ui.device_name_label.setText(device.name)
         self.ui.notes_edit.add_device(device)
+        self.ui.switcher.help_toggle_button.setToolTip(self._get_tooltip())
+        self.ui.switcher.help_toggle_button.setEnabled(False)
+
+    def _get_tooltip(self):
+        """Update the tooltip based on device information."""
+        # Lifted from TyphosHelpFrame
+        tooltip = []
+        # BUG: I'm seeing two devices in `self.devices` for
+        # $ typhos --fake-device 'ophyd.EpicsMotor[{"prefix":"b"}]'
+        for device in sorted(
+            set(self.devices),
+            key=lambda dev: self.devices.index(dev)
+        ):
+            heading = device.name or type(device).__name__
+            tooltip.extend([
+                heading,
+                "-" * len(heading),
+                ""
+            ])
+
+            tooltip.append(
+                inspect.getdoc(device) or
+                inspect.getdoc(type(device)) or
+                "No docstring"
+            )
+            tooltip.append("")
+        return "\n".join(tooltip)
 
     @utils.linked_attribute('error_message_attribute', 'ui.error_label', True)
     def _link_error_message(self, signal, widget):

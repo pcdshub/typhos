@@ -116,7 +116,7 @@
       </widget>
      </item>
      <item>
-      <widget class="TyphosDisplaySwitcher" name="TyphosDisplaySwitcher">
+      <widget class="TyphosDisplaySwitcher" name="switcher">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
          <horstretch>0</horstretch>
