@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>343</width>
-    <height>212</height>
+    <width>369</width>
+    <height>277</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -319,15 +319,21 @@ Screen</string>
         <item>
          <widget class="PyDMLabel" name="user_readback">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="minimumSize">
            <size>
-            <width>0</width>
+            <width>201</width>
             <height>25</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>201</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="toolTip">
@@ -350,16 +356,31 @@ Screen</string>
           </property>
          </widget>
         </item>
-        <item>
+        <item alignment="Qt::AlignHCenter">
          <widget class="PyDMLineEdit" name="user_setpoint">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>201</width>
+            <height>25</height>
+           </size>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>0</width>
-            <height>0</height>
+            <width>201</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="toolTip">
            <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>
@@ -397,9 +418,21 @@ Screen</string>
            </item>
            <item>
             <widget class="QLineEdit" name="tweak_value">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="minimumSize">
               <size>
-               <width>60</width>
+               <width>125</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>125</width>
                <height>25</height>
               </size>
              </property>
@@ -473,7 +506,7 @@ Screen</string>
            <string/>
           </property>
           <property name="text">
-           <string>error_label</string>
+           <string/>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -719,16 +752,6 @@ Error</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TyphosAlarmCircle</class>
-   <extends>QWidget</extends>
-   <header>typhos.alarm</header>
-  </customwidget>
-  <customwidget>
-   <class>TyphosRelatedSuiteButton</class>
-   <extends>QPushButton</extends>
-   <header>typhos.related_display</header>
-  </customwidget>
-  <customwidget>
    <class>PyDMLabel</class>
    <extends>QLabel</extends>
    <header>pydm.widgets.label</header>
@@ -742,6 +765,16 @@ Error</string>
    <class>PyDMLineEdit</class>
    <extends>QLineEdit</extends>
    <header>pydm.widgets.line_edit</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosAlarmCircle</class>
+   <extends>QWidget</extends>
+   <header>typhos.alarm</header>
+  </customwidget>
+  <customwidget>
+   <class>TyphosRelatedSuiteButton</class>
+   <extends>QPushButton</extends>
+   <header>typhos.related_display</header>
   </customwidget>
  </customwidgets>
  <resources/>
