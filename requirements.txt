@@ -6,7 +6,7 @@ ophyd
 pcdsutils
 platformdirs
 PyQt5
-pydm>=1.16.1
+pydm>=1.19.1
 pyqtgraph
 pyyaml
 qdarkstyle
