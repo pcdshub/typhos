@@ -34,7 +34,7 @@ requirements:
   - pcdsdevices
   - pcdsutils
   - platformdirs
-  - pydm >=1.16.1
+  - pydm >=1.19.1
   - pyqt
   - pyqtgraph
   - pyyaml
