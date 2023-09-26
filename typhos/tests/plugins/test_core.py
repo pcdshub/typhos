@@ -85,10 +85,14 @@ def test_metadata(qapp, qtbot):
     assert widget._prec == 2
 
 
+MISSING = object()
+
+
 @pytest.mark.parametrize(
     "sig_name,value,prec,expected",
     [
-        ("no_prec_signal_float", 1.5, None, 3),
+        ("none_prec_signal_float", 1.5, None, 3),
+        ("missing_prec_signal_float", 1.5, MISSING, 3),
         ("prec_signal_float", np.float32(2.718), 4, 4),
         ("prec_signal_np_float", np.float32(3.14), 5, 5),
         ("no_prec_signal_int", 1, None, 0),
@@ -120,6 +124,12 @@ def test_precision_defaults_at_startup(
     # Create a signal and attach our listener
     if prec is None:
         sig = Signal(name=sig_name, value=value)
+    elif prec is MISSING:
+        sig = RichSignal(
+            name=sig_name,
+            value=value,
+            metadata={},
+        )
     else:
         sig = RichSignal(
             name=sig_name,
