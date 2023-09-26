@@ -23,7 +23,7 @@ file = "LICENSE.md"
 typhos = "typhos.cli:main"
 
 [tool.setuptools_scm]
-write_to = "typhos/_version.py"
+version_file = "typhos/_version.py"
 
 [project.entry-points."pydm.widget"]
 TyphosAlarmCirclePlugin = "typhos.alarm:TyphosAlarmCircle"
