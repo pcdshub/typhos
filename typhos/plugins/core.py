@@ -189,10 +189,15 @@ class SignalConnection(PyDMConnection):
             self.connection_state_signal.emit(connected)
         if write_access is not None:
             self.write_access_signal.emit(write_access)
-        if self.is_float and precision <= 0:
+        if precision <= 0:
             # Help the user a bit by replacing a clear design error
             # with a sensible default
-            precision = 3
+            if self.is_float:
+                # Float precision at 0 is unhelpful
+                precision = 3
+            else:
+                # Integer precision can't be negative
+                precision = 0
         if precision is not None:
             self.prec_signal.emit(precision)
         if units is not None:
