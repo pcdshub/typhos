@@ -235,7 +235,11 @@ class SignalConnection(PyDMConnection):
             # Precision is commonly omitted from non-epics signals
             # Pick a sensible default for displaying floats
             self.is_float = True
+            # precision might be missing entirely
             signal_meta.setdefault("precision", 3)
+            # precision might be None, which is code for unset
+            if signal_meta["precision"] is None:
+                signal_meta["precision"] = 3
         else:
             self.is_float = False
 
