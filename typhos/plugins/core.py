@@ -189,6 +189,10 @@ class SignalConnection(PyDMConnection):
             self.connection_state_signal.emit(connected)
         if write_access is not None:
             self.write_access_signal.emit(write_access)
+        if self.is_float and precision == 0:
+            # Help the user a bit by replacing a clear design error
+            # with a sensible default
+            precision = 3
         if precision is not None:
             self.prec_signal.emit(precision)
         if units is not None:
@@ -222,6 +226,14 @@ class SignalConnection(PyDMConnection):
                              "from signal %r to initialize %r",
                              self.signal.name, channel)
             return
+        if isinstance(signal_val, (float, np.floating)):
+            # Precision is commonly omitted from non-epics signals
+            # Pick a sensible default for displaying floats
+            self.is_float = True
+            signal_meta.setdefault("precision", 3)
+        else:
+            self.is_float = False
+
         # Report new value
         self.send_new_value(signal_val)
         self.send_new_meta(**signal_meta)
