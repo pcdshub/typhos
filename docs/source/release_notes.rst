@@ -1,6 +1,110 @@
 Release History
 ###############
 
+
+v3.0.0 (2023-09-27)
+===================
+
+API Breaks
+----------
+- The deprecated ``TyphosConsole`` has been removed as discussed in issue #538.
+- ``TyphosDeviceDisplay`` composite heuristics have been removed in favor of
+  simpler methods, described in the features section.
+- The packaged IOC for benchmark testing is now in ``typhos.benchmark.ioc``.
+
+Features
+--------
+- Added ``typhos --screenshot filename_pattern`` to take screenshots of typhos
+  displays prior to exiting early (in combination with ``--exit-after``).
+- Added ``TyphosSuite.save_screenshot`` which takes a screenshot of the entire
+  suite as-displayed.
+- Added ``TyphosSuite.save_device_screenshots`` which takes individual
+  screenshots of each device display in the suite and saves them to the
+  provided formatted filename.
+- ``LazySubdisplay.get_subdisplay`` now provides the option to only get
+  existing widgets (by using the argument ``instantiate=False``).
+- ``TyphosNoteEdit`` now supports ``.add_device()`` like other typhos widgets.
+  This is alongside its original ``setup_data`` API.
+- ``TyphosNoteEdit`` is now a ``TyphosBase`` object and is accessible in the Qt
+  designer.
+- Added new designable widget ``TyphosPositionerRowWidget``.  This compact
+  positioner widget makes dense motor-heavy screens much more space efficient.
+- The layout method for ``TyphosDeviceDisplay`` has changed.  For large device trees,
+  it now favors showing the compact "embedded" screens over detailed screens.  The order
+  of priority is now as follows:
+- For top-level devices (e.g., ``at2l0``), the template load priority is as follows:
+
+  * Happi-defined values (``"detailed_screen"``, ``embedded_screen"``, ``"engineering_screen"``)
+  * Device-specific screens, if available (named as ``ClassNameHere.detailed.ui``)
+  * The detailed tree, if the device has sub-devices
+  * The default templates
+
+- For nested displays in a device tree, sub-device (e.g., ``at2l0.blade_01``)
+  template load priority is as follows:
+
+  * Device-specific screens, if available (named as ``ClassNameHere.embedded.ui``)
+  * The detailed tree, if the device has sub-devices
+  * The default templates (``embedded_screen.ui``)
+
+- Increase motor timeouts proportionally for longer moves.
+- Added dynamic font sizer utility which can work with some Qt-provided widgets
+  as well as PyDM widgets.
+- Qt object names for displays will now be set automatically to aid in
+  debugging.
+
+Bugfixes
+--------
+- Fix an issue where setpoint widgets in the full positioner
+  widget had become zero-width.
+- Creates new notes file if requested note file does not exist
+- Typhos suites will now resize in width to fit device displays.
+- For devices which do not require keyword arguments to instantiate, the typhos
+  CLI will no longer require an empty dictionary.  That is, ``$ typhos
+  ophyd.sim.SynAxis[]`` is equivalent to ``$ typhos ophyd.sim.SynAxis[{}]``.
+  As before, ophyd's required "name" keyword argument is filled in by typhos by
+  default.
+- Fix an issue where ophyd signals with floats would always display with a
+  precision of 0 without special manual configuration. Floating-point signals
+  now default to a precision of 3.
+- Fix issues with running the CLI benchmarks in certain
+  conda installs, particularly python>=3.10.
+- ``ophyd.Kind`` usage has been fixed for Python 3.11. Python 3.11 differs in
+  enumeration of ``IntFlag`` items, resulting in typhos only picking up
+  component kinds that were a power of 2.
+- ``multiprocessing`` is no longer used to spawn the test suite benchmarking
+  IOC, as it was problematic for Python 3.11.  The provided IOC is now spawned
+  using the same utilities provided by the caproto test suite.
+- Vendored pydm ``load_ui_file`` and modified it so we can always get our
+  ``Display`` instance back in ``TyphosDeviceDisplay``.
+- Ignore deleted qt objects on ``SignalConnection.remove_connection``, avoiding
+  teardown error tracebacks.
+- Avoid creating subdisplays during a call to ``TyphosSuite.hide_subdisplays``
+- Added a pytest hook helper to aid in finding widgets that were not cleaned
+- Avoid failing screenshot taking when widgets are garbage collected at the
+  same time.
+- Avoid race condition in description cache if the cache is externally cleared
+  when a new description callback is received.
+- Avoid uncaught ``TypeError`` when ``None`` is present in a positioner
+  ``.limits``.
+
+Maintenance
+-----------
+- adds TyphosDisplaySwitcher to TyphosPositionerRowWidget
+- adds checklist to Pull Request Template
+- Add pre-release notes scripts
+- Update build requirements to use pip-provided extras for documentation and test builds
+- Update PyDM pin to >=1.19.1 due to Display method being used.
+- Avoid hundreds of warnings during line profiling profiling by intercepting
+  messages about profiling the wrapped function instead of the wrapper.
+- The setpoint history menu on ``TyphosLineEdit`` is now only created on-demand.
+
+Contributors
+------------
+- klauer
+- tangkong
+- zllentz
+
+
 v2.4.1 (2023-4-4)
 =================
 

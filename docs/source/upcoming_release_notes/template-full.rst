@@ -7,8 +7,8 @@ Your filename should be issuenumber-title.rst, substituting appropriately.
 Make sure to fill out any section that represents changes you have made,
 or replace the default bullet point with N/A.
 
-API Changes
------------
+API Breaks
+----------
 - List backwards-incompatible changes here.
   Changes to PVs don't count as API changes for this library,
   but changing method and component names or changing default behavior does.
