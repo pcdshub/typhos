@@ -5,28 +5,26 @@ Release History
 v3.0.0 (2023-09-27)
 ===================
 
-API Changes
------------
+API Breaks
+----------
+- The deprecated ``TyphosConsole`` has been removed as discussed in issue #538.
+- ``TyphosDeviceDisplay`` composite heuristics have been removed in favor of
+  simpler methods, described in the features section.
+- The packaged IOC for benchmark testing is now in ``typhos.benchmark.ioc``.
+
+Features
+--------
+- Added ``typhos --screenshot filename_pattern`` to take screenshots of typhos
+  displays prior to exiting early (in combination with ``--exit-after``).
 - Added ``TyphosSuite.save_screenshot`` which takes a screenshot of the entire
   suite as-displayed.
 - Added ``TyphosSuite.save_device_screenshots`` which takes individual
   screenshots of each device display in the suite and saves them to the
   provided formatted filename.
-- ``TyphosNoteEdit`` now supports ``.add_device()`` like other typhos widgets.
-  This is alongside its original ``setup_data`` API.
-- ``TyphosDeviceDisplay`` composite heuristics have been removed in favor of
-  simpler methods, described in the features section.
-- The packaged IOC for benchmark testing is now in ``typhos.benchmark.ioc``.
-- Qt object names for displays will now be set automatically to aid in
-  debugging.
 - ``LazySubdisplay.get_subdisplay`` now provides the option to only get
   existing widgets (by using the argument ``instantiate=False``).
-- The deprecated ``TyphosConsole`` has been removed as discussed in issue #538.
-
-Features
---------
-- Add ``typhos --screenshot filename_pattern`` to take screenshots of typhos
-  displays prior to exiting early (in combination with ``--exit-after``).
+- ``TyphosNoteEdit`` now supports ``.add_device()`` like other typhos widgets.
+  This is alongside its original ``setup_data`` API.
 - ``TyphosNoteEdit`` is now a ``TyphosBase`` object and is accessible in the Qt
   designer.
 - Added new designable widget ``TyphosPositionerRowWidget``.  This compact
@@ -49,16 +47,17 @@ Features
   * The default templates (``embedded_screen.ui``)
 
 - Increase motor timeouts proportionally for longer moves.
-- Python 3.11 is now being targeted for support in typhos.
 - Added dynamic font sizer utility which can work with some Qt-provided widgets
   as well as PyDM widgets.
+- Qt object names for displays will now be set automatically to aid in
+  debugging.
 
 Bugfixes
 --------
 - Fix an issue where setpoint widgets in the full positioner
   widget had become zero-width.
 - Creates new notes file if requested note file does not exist
-- typhos suites will now resize in width to fit device displays.
+- Typhos suites will now resize in width to fit device displays.
 - For devices which do not require keyword arguments to instantiate, the typhos
   CLI will no longer require an empty dictionary.  That is, ``$ typhos
   ophyd.sim.SynAxis[]`` is equivalent to ``$ typhos ophyd.sim.SynAxis[{}]``.
