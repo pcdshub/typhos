@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 import numpy as np
 import pydm.utilities
+import pytest
 from ophyd import Component as Cpt
 from ophyd import Device, Signal
+from pydm import PyDMApplication
 from pydm.widgets import PyDMLineEdit
+from pytestqt.qtbot import QtBot
 
 from typhos.plugins.core import (SignalConnection, register_signal,
                                  signal_registry)
@@ -78,6 +83,75 @@ def test_metadata(qapp, qtbot):
     assert widget.enum_strings == ('a', 'b', 'c')
     assert widget._unit == 'urad'
     assert widget._prec == 2
+
+
+MISSING = object()
+
+
+@pytest.mark.parametrize(
+    "sig_name,value,prec,expected",
+    [
+        # float: None -> 3
+        ("none_prec_signal_float", 1.5, None, 3),
+        # float: Missing -> 3
+        ("missing_prec_signal_float", 1.5, MISSING, 3),
+        # float: 4 -> 4
+        ("prec_signal_float", 2.718, 4, 4),
+        # np float: 5 -> 5
+        ("prec_signal_np_float", np.float32(3.14), 5, 5),
+        # int: None -> 0
+        ("no_prec_signal_int", 1, None, 0),
+        # int: 2 -> 2
+        ("prec_signal_int", 2, 2, 2),
+        # float: 0 -> 3
+        ("zero_prec_float", 1.618, 0, 3),
+        # float: -2 -> 3
+        ("neg_prec_float", 4.5, -2, 3),
+        # int: -30 -> 0
+        ("neg_prec_int", 5, -30, 0),
+    ],
+)
+def test_precision_defaults(
+    sig_name: str,
+    value: int | float | np.floating,
+    prec: int | None,
+    expected: int,
+    qapp: PyDMApplication,
+    qtbot: QtBot,
+):
+    """
+    Expected behavior:
+
+    - If a precision is zero, negative, or missing, use the
+      default precision of 3 for floats, 0 for ints.
+    - If a precision is valid and given, use the given precision.
+    """
+    widget = PyDMLineEdit()
+    qtbot.addWidget(widget)
+    widget.channel = f"sig://{sig_name}"
+    listener = widget.channels()[0]
+    # Create a signal and attach our listener
+    if prec is None:
+        # Use normal signal defaults, incl precision=None
+        sig = Signal(name=sig_name, value=value)
+    elif prec is MISSING:
+        # Force a fully empty metadata dict
+        sig = RichSignal(
+            name=sig_name,
+            value=value,
+            metadata={},
+        )
+    else:
+        # Specify the precision precisely
+        sig = RichSignal(
+            name=sig_name,
+            value=value,
+            metadata={"precision": prec},
+        )
+    register_signal(sig)
+    _ = SignalConnection(listener, sig_name)
+    qapp.processEvents()
+    assert widget._prec == expected
 
 
 def test_disconnection(qtbot):
