@@ -35,15 +35,19 @@ Features
   it now favors showing the compact "embedded" screens over detailed screens.  The order
   of priority is now as follows:
 - For top-level devices (e.g., ``at2l0``), the template load priority is as follows:
+
   * Happi-defined values (``"detailed_screen"``, ``embedded_screen"``, ``"engineering_screen"``)
   * Device-specific screens, if available (named as ``ClassNameHere.detailed.ui``)
   * The detailed tree, if the device has sub-devices
   * The default templates
+
 - For nested displays in a device tree, sub-device (e.g., ``at2l0.blade_01``)
   template load priority is as follows:
+
   * Device-specific screens, if available (named as ``ClassNameHere.embedded.ui``)
   * The detailed tree, if the device has sub-devices
   * The default templates (``embedded_screen.ui``)
+
 - Increase motor timeouts proportionally for longer moves.
 - Python 3.11 is now being targeted for support in typhos.
 - Added dynamic font sizer utility which can work with some Qt-provided widgets
@@ -97,7 +101,6 @@ Maintenance
 
 Contributors
 ------------
-- ZLLentz
 - klauer
 - tangkong
 - zllentz
