@@ -81,6 +81,7 @@ class SignalConnection(PyDMConnection):
         super().__init__(channel, address, protocol=protocol, parent=parent)
         self._connection_open = True
         self.signal_type = None
+        self.is_float = False
         # Collect our signal
         self.signal = signal_registry[address]
         # Subscribe to updates from Ophyd
