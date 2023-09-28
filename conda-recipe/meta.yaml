@@ -31,11 +31,10 @@ requirements:
   - numpy
   - numpydoc
   - ophyd >=1.5.0
-  - pcdsdevices
   - pcdsutils
   - platformdirs
   - pydm >=1.19.1
-  - pyqt
+  - pyqt =5
   - pyqtgraph
   - pyyaml
   - qdarkstyle
@@ -44,7 +43,6 @@ requirements:
   - timechart >=1.2.4
   run_constrained:
   - happi >=1.14.0
-  - jupyter_client <7.3.2
 
 
 
