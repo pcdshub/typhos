@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.plugins.core &mdash; Typhos 3.0.0 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <title>typhos.plugins.core &mdash; Typhos 3.0.1.dev17+g75d3e3c documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../../_static/documentation_options.js?v=e72bb7f0"></script>
         <script src="../../../_static/doctools.js?v=888ff710"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
@@ -33,7 +35,7 @@
             Typhos
           </a>
               <div class="version">
-                3.0.0
+                3.0.1.dev17+g75d3e3c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -95,6 +97,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Signal</span>
 <span class="kn">from</span> <span class="nn">ophyd.utils.epics_pvs</span> <span class="kn">import</span> <span class="n">AlarmSeverity</span><span class="p">,</span> <span class="n">_type_map</span>
 <span class="kn">from</span> <span class="nn">pydm.data_plugins.plugin</span> <span class="kn">import</span> <span class="n">PyDMConnection</span><span class="p">,</span> <span class="n">PyDMPlugin</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
@@ -179,7 +182,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_float</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># Collect our signal</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_signal</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="c1"># Subscribe to updates from Ophyd</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value_cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send_new_value</span><span class="p">,</span>
@@ -195,6 +198,30 @@
     <span class="k">def</span> <span class="nf">__dtor__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_open</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SignalConnection.find_signal">
+<a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.find_signal">[docs]</a>
+    <span class="k">def</span> <span class="nf">find_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Signal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find a signal in the registry given its address.</span>
+
+<span class="sd">        This method is intended to be overridden by subclasses that</span>
+<span class="sd">        may use a different mechanism to keep track of signals.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        address</span>
+<span class="sd">          The connection address for the signal. E.g. in</span>
+<span class="sd">          &quot;sig://sim_motor.user_readback&quot; this would be the</span>
+<span class="sd">          &quot;sim_motor.user_readback&quot; portion.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Signal</span>
+<span class="sd">          The Ophyd signal corresponding to the address.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">signal_registry</span><span class="p">[</span><span class="n">address</span><span class="p">]</span></div>
+
 
 <div class="viewcode-block" id="SignalConnection.cast">
 <a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.cast">[docs]</a>

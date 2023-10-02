@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Typhos Data Plugins for PyDM &mdash; Typhos 3.0.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Typhos Data Plugins for PyDM &mdash; Typhos 3.0.1.dev17+g75d3e3c documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="_static/documentation_options.js?v=e72bb7f0"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
@@ -36,7 +38,7 @@
             Typhos
           </a>
               <div class="version">
-                3.0.0
+                3.0.1.dev17+g75d3e3c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -70,6 +72,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#typhos.plugins.SignalConnection.add_listener"><code class="docutils literal notranslate"><span class="pre">SignalConnection.add_listener()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#typhos.plugins.SignalConnection.cast"><code class="docutils literal notranslate"><span class="pre">SignalConnection.cast()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#typhos.plugins.SignalConnection.close"><code class="docutils literal notranslate"><span class="pre">SignalConnection.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#typhos.plugins.SignalConnection.find_signal"><code class="docutils literal notranslate"><span class="pre">SignalConnection.find_signal()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#typhos.plugins.SignalConnection.put_value"><code class="docutils literal notranslate"><span class="pre">SignalConnection.put_value()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#typhos.plugins.SignalConnection.remove_listener"><code class="docutils literal notranslate"><span class="pre">SignalConnection.remove_listener()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#typhos.plugins.SignalConnection.send_new_meta"><code class="docutils literal notranslate"><span class="pre">SignalConnection.send_new_meta()</span></code></a></li>
@@ -180,6 +183,27 @@ the correct type before handing them to Ophyd Signal.</p>
 <dt class="sig sig-object py" id="typhos.plugins.SignalConnection.close">
 <span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.close" title="Link to this definition"></a></dt>
 <dd><p>Unsubscribe from the Ophyd signal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="typhos.plugins.SignalConnection.find_signal">
+<span class="sig-name descname"><span class="pre">find_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Signal</span></span></span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection.find_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.SignalConnection.find_signal" title="Link to this definition"></a></dt>
+<dd><p>Find a signal in the registry given its address.</p>
+<p>This method is intended to be overridden by subclasses that
+may use a different mechanism to keep track of signals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> – The connection address for the signal. E.g. in
+“sig://sim_motor.user_readback” this would be the
+“sim_motor.user_readback” portion.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Ophyd signal corresponding to the address.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Signal</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
