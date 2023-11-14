@@ -70,11 +70,11 @@ parser.add_argument(
 )
 parser.add_argument(
     '--layout',
-    default='horizontal',
+    default='vertical',
     help=(
         'Select a alternate layout for suites of many '
-        'devices. Valid options are "horizontal" (default), '
-        '"vertical", "grid", "flow", and any unique '
+        'devices. Valid options are "horizontal", '
+        '"vertical" (default), "grid", "flow", and any unique '
         'shortenings of those options.'
     ),
 )
@@ -89,11 +89,11 @@ parser.add_argument(
 )
 parser.add_argument(
     '--display-type',
-    default='detailed',
+    default='embedded',
     help=(
         'The kind of display to open for each device at '
-        'initial load. Valid options are "embedded", '
-        '"detailed" (default), "engineering", and any '
+        'initial load. Valid options are "embedded" (default), '
+        '"detailed", "engineering", and any '
         'unique shortenings of those options.'
     ),
 )
