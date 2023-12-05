@@ -98,7 +98,7 @@ def test_metadata_with_explicit_signal(qapp, qtbot):
     assert widget.enum_strings == ('a', 'b', 'c')
     assert widget._unit == 'urad'
     assert widget._prec == 2
-    
+
 
 MISSING = object()
 
