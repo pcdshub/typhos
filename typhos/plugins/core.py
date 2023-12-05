@@ -4,6 +4,7 @@ Module Docstring
 import logging
 
 import numpy as np
+from ophyd import Signal
 from ophyd.utils.epics_pvs import AlarmSeverity, _type_map
 from pydm.data_plugins.plugin import PyDMConnection, PyDMPlugin
 from qtpy.QtCore import Qt, Slot
@@ -69,11 +70,6 @@ class SignalConnection(PyDMConnection):
     signal will expect and emit. It is expected that this type is static
     through the execution of the application.
 
-    In most cases, the default behavior is desired: to retrieve the
-    signal from the ``signal_registry``. However if the optional
-    parameter *signal* is provided then this Signal object will be
-    used instead.
-
     Attributes
     ----------
     signal : ophyd.Signal
@@ -81,17 +77,14 @@ class SignalConnection(PyDMConnection):
     """
     supported_types = [int, float, str, np.ndarray]
 
-    def __init__(self, channel, address, protocol=None, parent=None, signal=None):
+    def __init__(self, channel, address, protocol=None, parent=None):
         # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
         self._connection_open = True
         self.signal_type = None
         self.is_float = False
         # Collect our signal
-        if signal is not None:
-            self.signal = signal
-        else:
-            self.signal = signal_registry[address]
+        self.signal = self.find_signal(address)
         # Subscribe to updates from Ophyd
         self.value_cid = self.signal.subscribe(
             self.send_new_value,
@@ -107,6 +100,27 @@ class SignalConnection(PyDMConnection):
     def __dtor__(self) -> None:
         self._connection_open = False
         self.close()
+
+    def find_signal(self, address: str) -> Signal:
+        """Find a signal in the registry given its address.
+
+        This method is intended to be overridden by subclasses that
+        may use a different mechanism to keep track of signals.
+
+        Parameters
+        ----------
+        address
+          The connection address for the signal. E.g. in
+          "sig://sim_motor.user_readback" this would be the
+          "sim_motor.user_readback" portion.
+
+        Returns
+        -------
+        Signal
+          The Ophyd signal corresponding to the address.
+
+        """
+        return signal_registry[address]
 
     def cast(self, value):
         """
