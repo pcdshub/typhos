@@ -85,6 +85,26 @@ def test_metadata(qapp, qtbot):
     assert widget._prec == 2
 
 
+def test_find_signal(qapp, qtbot):
+    widget = PyDMLineEdit()
+    qtbot.addWidget(widget)
+    widget.channel = 'sig://md_signal'
+    listener = widget.channels()[0]
+    # Override the signal getter method to test
+    sig = RichSignal(name='md_signal', value=1)
+
+    class CustomConnection(SignalConnection):
+        def find_signal(self, address):
+            return sig
+
+    _ = CustomConnection(listener, 'md_signal')
+    qapp.processEvents()
+    # Check that metadata the metadata got there
+    assert widget.enum_strings == ('a', 'b', 'c')
+    assert widget._unit == 'urad'
+    assert widget._prec == 2
+
+
 MISSING = object()
 
 

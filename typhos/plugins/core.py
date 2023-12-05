@@ -4,6 +4,7 @@ Module Docstring
 import logging
 
 import numpy as np
+from ophyd import Signal
 from ophyd.utils.epics_pvs import AlarmSeverity, _type_map
 from pydm.data_plugins.plugin import PyDMConnection, PyDMPlugin
 from qtpy.QtCore import Qt, Slot
@@ -83,7 +84,7 @@ class SignalConnection(PyDMConnection):
         self.signal_type = None
         self.is_float = False
         # Collect our signal
-        self.signal = signal_registry[address]
+        self.signal = self.find_signal(address)
         # Subscribe to updates from Ophyd
         self.value_cid = self.signal.subscribe(
             self.send_new_value,
@@ -99,6 +100,27 @@ class SignalConnection(PyDMConnection):
     def __dtor__(self) -> None:
         self._connection_open = False
         self.close()
+
+    def find_signal(self, address: str) -> Signal:
+        """Find a signal in the registry given its address.
+
+        This method is intended to be overridden by subclasses that
+        may use a different mechanism to keep track of signals.
+
+        Parameters
+        ----------
+        address
+          The connection address for the signal. E.g. in
+          "sig://sim_motor.user_readback" this would be the
+          "sim_motor.user_readback" portion.
+
+        Returns
+        -------
+        Signal
+          The Ophyd signal corresponding to the address.
+
+        """
+        return signal_registry[address]
 
     def cast(self, value):
         """
