@@ -69,6 +69,11 @@ class SignalConnection(PyDMConnection):
     signal will expect and emit. It is expected that this type is static
     through the execution of the application.
 
+    In most cases, the default behavior is desired: to retrieve the
+    signal from the ``signal_registry``. However if the optional
+    parameter *signal* is provided then this Signal object will be
+    used instead.
+
     Attributes
     ----------
     signal : ophyd.Signal
