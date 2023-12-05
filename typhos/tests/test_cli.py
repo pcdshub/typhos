@@ -1,6 +1,7 @@
 import os
 
 import pytest
+from qtpy.QtWidgets import QLabel
 
 import typhos
 from typhos.cli import typhos_cli
@@ -33,19 +34,20 @@ def test_cli_no_entry(qtbot, happi_cfg):
 
 def test_cli_stylesheet(qapp, qtbot, happi_cfg):
     with open('test.qss', 'w+') as handle:
-        handle.write(
-            "TyphosDeviceDisplay {qproperty-force_template: 'test.ui'}")
+        handle.write("QLabel {color: red}")
     try:
         style = qapp.styleSheet()
         window = typhos_cli(['test_motor', '--stylesheet', 'test.qss',
                              '--happi-cfg', happi_cfg])
         qtbot.addWidget(window)
         suite = window.centralWidget()
-        dev_display = suite.get_subdisplay(suite.devices[0])
-        assert dev_display.force_template == 'test.ui'
-        qtbot.add_widget(dev_display)
-        qapp.setStyleSheet(style)
+        qtbot.addWidget(suite)
+        some_label = suite.findChild(QLabel)
+        assert isinstance(some_label, QLabel)
+        color = some_label.palette().color(some_label.foregroundRole())
+        assert color.red() == 255
     finally:
+        qapp.setStyleSheet(style)
         os.remove('test.qss')
 
 
