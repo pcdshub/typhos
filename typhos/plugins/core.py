@@ -76,14 +76,17 @@ class SignalConnection(PyDMConnection):
     """
     supported_types = [int, float, str, np.ndarray]
 
-    def __init__(self, channel, address, protocol=None, parent=None):
+    def __init__(self, channel, address, protocol=None, parent=None, signal=None):
         # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
         self._connection_open = True
         self.signal_type = None
         self.is_float = False
         # Collect our signal
-        self.signal = signal_registry[address]
+        if signal is not None:
+            self.signal = signal
+        else:
+            self.signal = signal_registry[address]
         # Subscribe to updates from Ophyd
         self.value_cid = self.signal.subscribe(
             self.send_new_value,
