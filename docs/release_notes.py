@@ -22,7 +22,7 @@ def parse_pre_release_file(path):
     Uses empty list when no info was entered for the section.
     """
     print(f'Checking {path} for release notes.')
-    with path.open('r') as fd:
+    with path.open('r', encoding='utf-8') as fd:
         lines = fd.readlines()
 
     section_dict = defaultdict(list)
@@ -48,7 +48,7 @@ def extend_release_notes(path, version, release_notes):
     """
     Given dict mapping of section to lines, extend the release notes file.
     """
-    with path.open('r') as fd:
+    with path.open('r', encoding='utf-8') as fd:
         lines = fd.readlines()
 
     new_lines = ['\n', '\n']
@@ -71,7 +71,7 @@ def extend_release_notes(path, version, release_notes):
     print('Writing out release notes file')
     for line in new_lines:
         print(line.strip('\n'))
-    with path.open('w') as fd:
+    with path.open('w', encoding='utf-8') as fd:
         fd.writelines(output_lines)
 
 

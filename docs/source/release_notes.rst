@@ -1,6 +1,23 @@
 Release History
 ###############
 
+v3.1.0 (2023-12-05)
+===================
+
+Features
+--------
+- Add overridable ``find_signal`` method to the ``SignalConnection`` class to allow
+  the use of alternate signal registries in subclasses.
+- Updated look and feel: change the typhos suite cli defaults to
+  "embedded" displays arranged "vertically" instead of
+  "detailed" displays arranged "horizontally"
+  to more naturally match how typhos is used at present.
+
+Contributors
+------------
+- canismarko
+- zllentz
+
 
 v3.0.0 (2023-09-27)
 ===================
