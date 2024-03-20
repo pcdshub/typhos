@@ -1,6 +1,20 @@
 Release History
 ###############
 
+
+v3.1.1 (2024-04-12)
+===================
+
+Fixes
+-----
+- Change position widget limit colors from yellow off/yellow on to
+  dark gray off/orange on for better contrast.
+
+Contributors
+------------
+- zllentz
+
+
 v3.1.0 (2023-12-05)
 ===================
 
