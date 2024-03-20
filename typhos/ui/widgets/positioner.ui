@@ -128,16 +128,16 @@
             </property>
             <property name="onColor" stdset="0">
              <color>
-              <red>239</red>
-              <green>246</green>
-              <blue>20</blue>
+              <red>255</red>
+              <green>150</green>
+              <blue>0</blue>
              </color>
             </property>
             <property name="offColor" stdset="0">
              <color>
-              <red>178</red>
-              <green>188</green>
-              <blue>17</blue>
+              <red>50</red>
+              <green>50</green>
+              <blue>50</blue>
              </color>
             </property>
             <property name="showLabels" stdset="0">
@@ -595,16 +595,16 @@ Screen</string>
             </property>
             <property name="onColor" stdset="0">
              <color>
-              <red>239</red>
-              <green>246</green>
-              <blue>20</blue>
+              <red>255</red>
+              <green>150</green>
+              <blue>0</blue>
              </color>
             </property>
             <property name="offColor" stdset="0">
              <color>
-              <red>178</red>
-              <green>188</green>
-              <blue>17</blue>
+              <red>50</red>
+              <green>50</green>
+              <blue>50</blue>
              </color>
             </property>
             <property name="orientation" stdset="0">
