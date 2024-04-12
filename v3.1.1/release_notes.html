@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Release History &mdash; Typhos 3.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=796a81b5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Upcoming Changes" href="upcoming_changes.html" />
+    <link rel="prev" title="Custom Templates" href="templates.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Typhos
+          </a>
+              <div class="version">
+                3.1.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="templates.html">Custom Templates</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v3-1-1-2024-04-12">v3.1.1 (2024-04-12)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fixes">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-1-0-2023-12-05">v3.1.0 (2023-12-05)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-0-0-2023-09-27">v3.0.0 (2023-09-27)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#api-breaks">API Breaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maintenance">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-4-1-2023-4-4">v2.4.1 (2023-4-4)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-4-0-2022-11-4">v2.4.0 (2022-11-4)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-3-3-2022-10-20">v2.3.3 (2022-10-20)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-3-2-2022-07-28">v2.3.2 (2022-07-28)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-3-1-2022-05-02">v2.3.1 (2022-05-02)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-3-0-2022-03-31">v2.3.0 (2022-03-31)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id22">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-2-1-2022-02-07">v2.2.1 (2022-02-07)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id25">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-2-0-2021-11-30">v2.2.0 (2021-11-30)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id27">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#enhancements-what-s-new">Enhancements / What’s new</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id29">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id33">Maintenance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-1-0-2021-10-18">v2.1.0 (2021-10-18)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id34">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id35">Enhancements / What’s new</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id37">Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id39">Maintenance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v2-0-0-2021-08-05">v2.0.0 (2021-08-05)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id42">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id43">API Breaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id44">Enhancements / What’s New</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compatibility-fixes">Compatibility / Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docs-testing">Docs / Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-2-0-2021-07-09">v1.2.0 (2021-07-09)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id45">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id46">Enhancements / What’s New</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id47">Compatibility / Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-6-2021-04-05">v1.1.6 (2021-04-05)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id48">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id49">Compatibility / Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-5-2020-04-02">v1.1.5 (2020-04-02)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id50">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id51">Compatibility / Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-4-2020-02-26">v1.1.4 (2020-02-26)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id52">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id53">Compatibility / Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-3-2020-02-10">v1.1.3 (2020-02-10)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id54">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id55">Enhancements / What’s New</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-2-2020-12-22">v1.1.2 (2020-12-22)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id56">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id57">Compatibility / Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-1-2020-08-19">v1.1.1 (2020-08-19)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id58">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id59">Compatibility / Fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-1-0-2020-08-18">v1.1.0 (2020-08-18)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id60">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id61">Enhancements / What’s New</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id62">Compatibility / fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id63">Docs / Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-2-2020-07-01">v1.0.2 (2020-07-01)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id64">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id65">Enhancements / What’s New</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id66">Compatibility / fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-1-2020-05-20">v1.0.1 (2020-05-20)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id67">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id68">Enhancements / What’s New</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id69">Compatibility / fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v1-0-0-2020-05-18">v1.0.0 (2020-05-18)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id70">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id71">Enhancements / What’s New</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id72">Compatibility / fixes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-7-0-2020-03-09">v0.7.0 (2020-03-09)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-6-0-2020-01-09">v0.6.0 (2020-01-09)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id73">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compatibility">Compatibility</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-5-0-2019-09-18">v0.5.0 (2019-09-18)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id74">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#whats-new">What’s New</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-2-1-2018-09-28">v0.2.1 (2018-09-28)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id75">Description</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#enhancements">Enhancements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id76">Maintenance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deprecations">Deprecations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-2-0-2018-06-27">v0.2.0 (2018-06-27)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id77">Description</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id78">Enhancements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#api-changes">API Changes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id79">Deprecations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-1-0-2017-12-15">v0.1.0 (2017-12-15)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id80">Features</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="upcoming_changes.html">Upcoming Changes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Typhos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Release History</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/release_notes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="release-history">
+<h1>Release History<a class="headerlink" href="#release-history" title="Link to this heading"></a></h1>
+<section id="v3-1-1-2024-04-12">
+<h2>v3.1.1 (2024-04-12)<a class="headerlink" href="#v3-1-1-2024-04-12" title="Link to this heading"></a></h2>
+<section id="fixes">
+<h3>Fixes<a class="headerlink" href="#fixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Change position widget limit colors from yellow off/yellow on to
+dark gray off/orange on for better contrast.</p></li>
+</ul>
+</section>
+<section id="contributors">
+<h3>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>zllentz</p></li>
+</ul>
+</section>
+</section>
+<section id="v3-1-0-2023-12-05">
+<h2>v3.1.0 (2023-12-05)<a class="headerlink" href="#v3-1-0-2023-12-05" title="Link to this heading"></a></h2>
+<section id="features">
+<h3>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add overridable <code class="docutils literal notranslate"><span class="pre">find_signal</span></code> method to the <code class="docutils literal notranslate"><span class="pre">SignalConnection</span></code> class to allow
+the use of alternate signal registries in subclasses.</p></li>
+<li><p>Updated look and feel: change the typhos suite cli defaults to
+“embedded” displays arranged “vertically” instead of
+“detailed” displays arranged “horizontally”
+to more naturally match how typhos is used at present.</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Contributors<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>canismarko</p></li>
+<li><p>zllentz</p></li>
+</ul>
+</section>
+</section>
+<section id="v3-0-0-2023-09-27">
+<h2>v3.0.0 (2023-09-27)<a class="headerlink" href="#v3-0-0-2023-09-27" title="Link to this heading"></a></h2>
+<section id="api-breaks">
+<h3>API Breaks<a class="headerlink" href="#api-breaks" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The deprecated <code class="docutils literal notranslate"><span class="pre">TyphosConsole</span></code> has been removed as discussed in issue #538.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TyphosDeviceDisplay</span></code> composite heuristics have been removed in favor of
+simpler methods, described in the features section.</p></li>
+<li><p>The packaged IOC for benchmark testing is now in <code class="docutils literal notranslate"><span class="pre">typhos.benchmark.ioc</span></code>.</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Features<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">typhos</span> <span class="pre">--screenshot</span> <span class="pre">filename_pattern</span></code> to take screenshots of typhos
+displays prior to exiting early (in combination with <code class="docutils literal notranslate"><span class="pre">--exit-after</span></code>).</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">TyphosSuite.save_screenshot</span></code> which takes a screenshot of the entire
+suite as-displayed.</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">TyphosSuite.save_device_screenshots</span></code> which takes individual
+screenshots of each device display in the suite and saves them to the
+provided formatted filename.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LazySubdisplay.get_subdisplay</span></code> now provides the option to only get
+existing widgets (by using the argument <code class="docutils literal notranslate"><span class="pre">instantiate=False</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TyphosNoteEdit</span></code> now supports <code class="docutils literal notranslate"><span class="pre">.add_device()</span></code> like other typhos widgets.
+This is alongside its original <code class="docutils literal notranslate"><span class="pre">setup_data</span></code> API.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TyphosNoteEdit</span></code> is now a <code class="docutils literal notranslate"><span class="pre">TyphosBase</span></code> object and is accessible in the Qt
+designer.</p></li>
+<li><p>Added new designable widget <code class="docutils literal notranslate"><span class="pre">TyphosPositionerRowWidget</span></code>.  This compact
+positioner widget makes dense motor-heavy screens much more space efficient.</p></li>
+<li><p>The layout method for <code class="docutils literal notranslate"><span class="pre">TyphosDeviceDisplay</span></code> has changed.  For large device trees,
+it now favors showing the compact “embedded” screens over detailed screens.  The order
+of priority is now as follows:</p></li>
+<li><p>For top-level devices (e.g., <code class="docutils literal notranslate"><span class="pre">at2l0</span></code>), the template load priority is as follows:</p>
+<ul>
+<li><p>Happi-defined values (<code class="docutils literal notranslate"><span class="pre">&quot;detailed_screen&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">embedded_screen&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;engineering_screen&quot;</span></code>)</p></li>
+<li><p>Device-specific screens, if available (named as <code class="docutils literal notranslate"><span class="pre">ClassNameHere.detailed.ui</span></code>)</p></li>
+<li><p>The detailed tree, if the device has sub-devices</p></li>
+<li><p>The default templates</p></li>
+</ul>
+</li>
+<li><p>For nested displays in a device tree, sub-device (e.g., <code class="docutils literal notranslate"><span class="pre">at2l0.blade_01</span></code>)
+template load priority is as follows:</p>
+<ul>
+<li><p>Device-specific screens, if available (named as <code class="docutils literal notranslate"><span class="pre">ClassNameHere.embedded.ui</span></code>)</p></li>
+<li><p>The detailed tree, if the device has sub-devices</p></li>
+<li><p>The default templates (<code class="docutils literal notranslate"><span class="pre">embedded_screen.ui</span></code>)</p></li>
+</ul>
+</li>
+<li><p>Increase motor timeouts proportionally for longer moves.</p></li>
+<li><p>Added dynamic font sizer utility which can work with some Qt-provided widgets
+as well as PyDM widgets.</p></li>
+<li><p>Qt object names for displays will now be set automatically to aid in
+debugging.</p></li>
+</ul>
+</section>
+<section id="bugfixes">
+<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix an issue where setpoint widgets in the full positioner
+widget had become zero-width.</p></li>
+<li><p>Creates new notes file if requested note file does not exist</p></li>
+<li><p>Typhos suites will now resize in width to fit device displays.</p></li>
+<li><p>For devices which do not require keyword arguments to instantiate, the typhos
+CLI will no longer require an empty dictionary.  That is, <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">typhos</span>
+<span class="pre">ophyd.sim.SynAxis[]</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">typhos</span> <span class="pre">ophyd.sim.SynAxis[{}]</span></code>.
+As before, ophyd’s required “name” keyword argument is filled in by typhos by
+default.</p></li>
+<li><p>Fix an issue where ophyd signals with floats would always display with a
+precision of 0 without special manual configuration. Floating-point signals
+now default to a precision of 3.</p></li>
+<li><p>Fix issues with running the CLI benchmarks in certain
+conda installs, particularly python&gt;=3.10.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ophyd.Kind</span></code> usage has been fixed for Python 3.11. Python 3.11 differs in
+enumeration of <code class="docutils literal notranslate"><span class="pre">IntFlag</span></code> items, resulting in typhos only picking up
+component kinds that were a power of 2.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> is no longer used to spawn the test suite benchmarking
+IOC, as it was problematic for Python 3.11.  The provided IOC is now spawned
+using the same utilities provided by the caproto test suite.</p></li>
+<li><p>Vendored pydm <code class="docutils literal notranslate"><span class="pre">load_ui_file</span></code> and modified it so we can always get our
+<code class="docutils literal notranslate"><span class="pre">Display</span></code> instance back in <code class="docutils literal notranslate"><span class="pre">TyphosDeviceDisplay</span></code>.</p></li>
+<li><p>Ignore deleted qt objects on <code class="docutils literal notranslate"><span class="pre">SignalConnection.remove_connection</span></code>, avoiding
+teardown error tracebacks.</p></li>
+<li><p>Avoid creating subdisplays during a call to <code class="docutils literal notranslate"><span class="pre">TyphosSuite.hide_subdisplays</span></code></p></li>
+<li><p>Added a pytest hook helper to aid in finding widgets that were not cleaned</p></li>
+<li><p>Avoid failing screenshot taking when widgets are garbage collected at the
+same time.</p></li>
+<li><p>Avoid race condition in description cache if the cache is externally cleared
+when a new description callback is received.</p></li>
+<li><p>Avoid uncaught <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> when <code class="docutils literal notranslate"><span class="pre">None</span></code> is present in a positioner
+<code class="docutils literal notranslate"><span class="pre">.limits</span></code>.</p></li>
+</ul>
+</section>
+<section id="maintenance">
+<h3>Maintenance<a class="headerlink" href="#maintenance" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>adds TyphosDisplaySwitcher to TyphosPositionerRowWidget</p></li>
+<li><p>adds checklist to Pull Request Template</p></li>
+<li><p>Add pre-release notes scripts</p></li>
+<li><p>Update build requirements to use pip-provided extras for documentation and test builds</p></li>
+<li><p>Update PyDM pin to &gt;=1.19.1 due to Display method being used.</p></li>
+<li><p>Avoid hundreds of warnings during line profiling profiling by intercepting
+messages about profiling the wrapped function instead of the wrapper.</p></li>
+<li><p>The setpoint history menu on <code class="docutils literal notranslate"><span class="pre">TyphosLineEdit</span></code> is now only created on-demand.</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Contributors<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>klauer</p></li>
+<li><p>tangkong</p></li>
+<li><p>zllentz</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-4-1-2023-4-4">
+<h2>v2.4.1 (2023-4-4)<a class="headerlink" href="#v2-4-1-2023-4-4" title="Link to this heading"></a></h2>
+<section id="description">
+<h3>Description<a class="headerlink" href="#description" title="Link to this heading"></a></h3>
+<p>This is a bugfix and maintenance/CI release.</p>
+</section>
+<section id="id4">
+<h3>Bugfixes<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Include the normal PyDM stylesheets in the loading process.
+Previously, this was leading to unexpected behavior.</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>Maintenance<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix an issue related to a deleted flake8 mirror.</p></li>
+<li><p>Migrates from Travis CI to GitHub Actions for continuous integration testing, and documentation deployment.</p></li>
+<li><p>Updates typhos to use setuptools-scm, replacing versioneer, as its version-string management tool of choice.</p></li>
+<li><p>Syntax has been updated to Python 3.9+ via <code class="docutils literal notranslate"><span class="pre">pyupgrade</span></code>.</p></li>
+<li><p>typhos has migrated to modern <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, replacing <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>.</p></li>
+<li><p>Sphinx 6.0 now supported for documentation building.</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>Contributors<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>tangkong</p></li>
+<li><p>zllentz</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-4-0-2022-11-4">
+<h2>v2.4.0 (2022-11-4)<a class="headerlink" href="#v2-4-0-2022-11-4" title="Link to this heading"></a></h2>
+<section id="id7">
+<h3>Description<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>This is a small release with features for improving the usage
+and configurability of the <code class="docutils literal notranslate"><span class="pre">PositionerWidget</span></code>.</p>
+</section>
+<section id="id8">
+<h3>Features<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Report errors raised during the execution of positioner
+<code class="docutils literal notranslate"><span class="pre">set</span></code> commands in the positioner widget instead of in a pop-up.
+This makes it easier to keep track of which positioner widget
+is associated with which error and makes it less likely that the
+message will be missed or lost on large monitors.</p></li>
+<li><p>Add a designer property to <code class="docutils literal notranslate"><span class="pre">PositionerWidget</span></code>, <code class="docutils literal notranslate"><span class="pre">alarmKindLevel</span></code>,
+to configure the enclosed alarm widget’s <code class="docutils literal notranslate"><span class="pre">kindLevel</span></code> property in
+designer. This was previously only configurable in code.</p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>Contributors<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>zllentz</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-3-3-2022-10-20">
+<h2>v2.3.3 (2022-10-20)<a class="headerlink" href="#v2-3-3-2022-10-20" title="Link to this heading"></a></h2>
+<section id="id10">
+<h3>Description<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<p>This is a small release with bugfixes and maintenance.</p>
+</section>
+<section id="id11">
+<h3>Bugfixes<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Do not wait for lazy signals when creating a SignalPanel.
+This was causing long setup times in some applications.</p></li>
+<li><p>Call stop with success=True in the positioner widget to avoid causing
+our own UnknownStatusError, which was then displayed to the user.</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3>Maintenance<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add cleanup for background threads.</p></li>
+<li><p>Add replacement for functools.partial usage in methods as
+this was preventing TyphosSuite from getting garbage collected.</p></li>
+<li><p>Removes custom designer widget plugin,
+instead relying on PyDM’s own mechanism</p></li>
+<li><p>Use pydm’s data plugin entrypoint to include the sig and happi channels.</p></li>
+<li><p>Prevent TyphosStatusThread objects from being orphaned.</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3>Contributors<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>klauer</p></li>
+<li><p>tangkong</p></li>
+<li><p>zllentz</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-3-2-2022-07-28">
+<h2>v2.3.2 (2022-07-28)<a class="headerlink" href="#v2-3-2-2022-07-28" title="Link to this heading"></a></h2>
+<section id="id14">
+<h3>Description<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p>This is a bugfix and maintenance release.</p>
+</section>
+<section id="id15">
+<h3>Fixes<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix various instances of clipping in the positioner widget.</p></li>
+<li><p>Show Python documentation when no web help is available.</p></li>
+<li><p>Fix issues with suite sidebar width.</p></li>
+<li><p>Lazy load all tools to improve performance.</p></li>
+<li><p>Fix the profiler to also profile class methods.</p></li>
+<li><p>Use cached paths for finding class templates.</p></li>
+<li><p>Properly handle various deprecations and deprecation warnings.</p></li>
+<li><p>Fix usage of deprecated methods in happi (optional dependency).</p></li>
+</ul>
+</section>
+<section id="id16">
+<h3>Maintenance<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Log “unable to add device” without the traceback, which was previously unhelpful.</p></li>
+<li><p>Pin pyqt at 5.12 for test suite incompatibility in newer versions.</p></li>
+<li><p>Ensure that test.qss test suite artifact is cleaned up properly.</p></li>
+<li><p>Fix the broken test suite.</p></li>
+<li><p>Pin jinja2 at &lt;3.1 in CI builds for sphinx &lt;4.0.0 compatibility</p></li>
+</ul>
+</section>
+<section id="id17">
+<h3>Contributors<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>anleslac</p></li>
+<li><p>klauer</p></li>
+<li><p>zllentz</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-3-1-2022-05-02">
+<h2>v2.3.1 (2022-05-02)<a class="headerlink" href="#v2-3-1-2022-05-02" title="Link to this heading"></a></h2>
+<section id="id18">
+<h3>Description<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<p>This is a small bugfix release.</p>
+</section>
+<section id="id19">
+<h3>Fixes<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix an issue where the configuration menu would be defunct for
+custom template screens.</p></li>
+</ul>
+</section>
+<section id="id20">
+<h3>Maintenance<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add some additional documentation about sig:// and cli usage.</p></li>
+<li><p>Configure and satisfy the repository’s own pre-commit checks.</p></li>
+<li><p>Update versioneer install to current latest.</p></li>
+</ul>
+</section>
+<section id="id21">
+<h3>Contributors<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>klauer</p></li>
+<li><p>zllentz</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-3-0-2022-03-31">
+<h2>v2.3.0 (2022-03-31)<a class="headerlink" href="#v2-3-0-2022-03-31" title="Link to this heading"></a></h2>
+<section id="id22">
+<h3>Description<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<p>This is a small release with fixes and features that were implemented
+last month.</p>
+</section>
+<section id="id23">
+<h3>Features<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add the option to hide displays in the suite at launch,
+rather than automatically showing all of them.</p></li>
+<li><p>Allow the sig:// protocol to be used in typhos templates by
+automatically registering all of a device’s signals at launch.</p></li>
+</ul>
+</section>
+<section id="id24">
+<h3>Fixes<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix an issue where an assumption about the nature of EpicsSignal
+object was breaking when using PytmcSignal objects from pcdsdevices.</p></li>
+<li><p>Make a workaround for a C++ wrapped exception that could happen
+in specific orders of loading and unloading typhos alarm widgets.</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-2-1-2022-02-07">
+<h2>v2.2.1 (2022-02-07)<a class="headerlink" href="#v2-2-1-2022-02-07" title="Link to this heading"></a></h2>
+<section id="id25">
+<h3>Description<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<p>This is a small bugfix release that was deployed as a hotfix
+to avoid accidental moves.</p>
+</section>
+<section id="id26">
+<h3>Fixes<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Disable scroll wheel interaction with positioner combo boxes.
+This created a situation where operators were accidentally
+requesting moves while trying to scroll past the control box.
+This was previously fixed for the typhos combo boxes found on
+the various automatically generated panels in v1.1.0, but not
+for the positioner combo boxes.</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-2-0-2021-11-30">
+<h2>v2.2.0 (2021-11-30)<a class="headerlink" href="#v2-2-0-2021-11-30" title="Link to this heading"></a></h2>
+<section id="id27">
+<h3>Description<a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
+<p>This is a feature and bugfix release to extend the customizability of
+typhos suites and launcher scrips, to fix various issues in control
+layer and enum handling, and to do some necessary CI maintenance.</p>
+</section>
+<section id="enhancements-what-s-new">
+<h3>Enhancements / What’s new<a class="headerlink" href="#enhancements-what-s-new" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Add suite options for layouts, display types, scrollbars, and
+starting window size. These are all also available as CLI arguments,
+with the intention of augmenting typhos suite launcher scripts.
+Here are some examples:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--layout</span> <span class="pre">grid</span> <span class="pre">--cols</span> <span class="pre">3</span></code>: lays out the device displays in a 3-column
+grid</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--layout</span> <span class="pre">flow</span></code>: lays out the device displays in a grid that adjusts
+dynamically as the window is resized.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--display-type</span> <span class="pre">embed</span></code>: starts all device displays in their embedded
+state</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--size</span> <span class="pre">1000,1000</span></code>: sets a starting size of 1000 width, 1000 height for
+the suite window.</p></li>
+</ul>
+<p>See <a class="reference external" href="https://github.com/pcdshub/typhos/pull/450">#450</a></p>
+</li>
+</ul>
+</section>
+<section id="id29">
+<h3>Fixes<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Respect ophyd signal enum_strs and metadata updates. Previously, these were
+ignored, but these can update during the lifetime of a screen and should be
+used. (<a class="reference external" href="https://github.com/pcdshub/typhos/pull/459">#459</a>)</p></li>
+<li><p>Identify signals that use non-EPICS control layers and handle them
+appropriately. Previously, these would be misidentified as EPICS signals
+and handled using the ca:// PyDM plugin, which was not correct.
+(<a class="reference external" href="https://github.com/pcdshub/typhos/pull/463">#463</a>)</p></li>
+<li><p>Fix an issue where get_native_methods could fail. This was not observed
+in the field, but it broke the test suite.
+(<a class="reference external" href="https://github.com/pcdshub/typhos/pull/464">#464</a>)</p></li>
+</ul>
+</section>
+<section id="id33">
+<h3>Maintenance<a class="headerlink" href="#id33" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix various issues related to the test suite stability.</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-1-0-2021-10-18">
+<h2>v2.1.0 (2021-10-18)<a class="headerlink" href="#v2-1-0-2021-10-18" title="Link to this heading"></a></h2>
+<section id="id34">
+<h3>Description<a class="headerlink" href="#id34" title="Link to this heading"></a></h3>
+<p>This is a minor feature release of typhos.</p>
+</section>
+<section id="id35">
+<h3>Enhancements / What’s new<a class="headerlink" href="#id35" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Added option to pop out documentation frame
+(<a class="reference external" href="https://github.com/pcdshub/typhos/pull/458">#458</a>)</p></li>
+</ul>
+</section>
+<section id="id37">
+<h3>Fixes<a class="headerlink" href="#id37" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fixed authorization headers on Typhos help widget redirect
+(<a class="reference external" href="https://github.com/pcdshub/typhos/pull/457">#457</a>)</p>
+<ul>
+<li><p>This allows for the latest Confluence to work with Personal
+Access Tokens while navigating through the page</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id39">
+<h3>Maintenance<a class="headerlink" href="#id39" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Reduced javascript log message spam from the web view widget
+(part of <a class="reference external" href="https://github.com/pcdshub/typhos/pull/457">#457</a>)</p></li>
+<li><p>Reduced log message spam from variety metadata handling
+(part of <a class="reference external" href="https://github.com/pcdshub/typhos/pull/457">#457</a>)</p></li>
+<li><p>Fixed compatibility with pyqtgraph v0.12.3</p></li>
+<li><p>Web-related widgets are now in a new submodule <cite>typhos.web</cite>.</p></li>
+</ul>
+</section>
+</section>
+<section id="v2-0-0-2021-08-05">
+<h2>v2.0.0 (2021-08-05)<a class="headerlink" href="#v2-0-0-2021-08-05" title="Link to this heading"></a></h2>
+<section id="id42">
+<h3>Description<a class="headerlink" href="#id42" title="Link to this heading"></a></h3>
+<p>This is a feature update with backwards-incompatible changes, namely the
+removal and relocation of the LCLS typhos templates.</p>
+</section>
+<section id="id43">
+<h3>API Breaks<a class="headerlink" href="#id43" title="Link to this heading"></a></h3>
+<p>All device templates except for the <code class="docutils literal notranslate"><span class="pre">PositionerBase</span></code> template have been
+moved from typhos to pcdsdevices, which is where their device classes
+are defined. This will break LCLS environments that update typhos without
+also updating pcdsdevices, but will not affect environments outside of LCLS.</p>
+</section>
+<section id="id44">
+<h3>Enhancements / What’s New<a class="headerlink" href="#id44" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add the <code class="docutils literal notranslate"><span class="pre">TyphosRelatedSuiteButton</span></code>, a <code class="docutils literal notranslate"><span class="pre">QPushButton</span></code> that will open a device’s
+typhos screen. This can be included in embedded widgets or placed on
+traditional hand-crafted pydm screens as a quick way to open the typhos
+expert screen.</p></li>
+<li><p>Add the typhos help widget, which is a new addition to the display switcher
+that is found in all built-in typhos templates. Check out the <code class="docutils literal notranslate"><span class="pre">?</span></code> button!
+See the docs for information on how to configure this.
+The main features implemented here are:</p>
+<ul>
+<li><p>View the class docstring from inside the typhos window</p></li>
+<li><p>Open site-specific web documentation in a browser</p></li>
+<li><p>Report bugs directly from the typhos screen</p></li>
+</ul>
+</li>
+<li><p>Expand the <code class="docutils literal notranslate"><span class="pre">PositionerWidget</span></code> with aesthetic updates and more features:</p>
+<ul>
+<li><p>Show driver-specific error messages from the IOC</p></li>
+<li><p>Add a “clear error” button that can be linked to IOC-specific error
+reset routines by adding a <code class="docutils literal notranslate"><span class="pre">clear_error</span></code> method to your positioner
+class. This will also clear status errors returned from the positioner’s
+set routine from the display.</p></li>
+<li><p>Add a moving/done_moving indicator (for <code class="docutils literal notranslate"><span class="pre">EpicsMotor</span></code>, uses the <code class="docutils literal notranslate"><span class="pre">.MOVN</span></code> field)</p></li>
+<li><p>Add an optional <code class="docutils literal notranslate"><span class="pre">TyphosRelatedSuite</span></code> button</p></li>
+<li><p>Allow the <code class="docutils literal notranslate"><span class="pre">stop</span></code> button to be removed if the <code class="docutils literal notranslate"><span class="pre">stop</span></code> method is missing or
+otherwise raises an <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> on access</p></li>
+<li><p>Add an alarm indicator</p></li>
+</ul>
+</li>
+<li><p>Add the <code class="docutils literal notranslate"><span class="pre">typhos.ui</span></code> entry point. This allows a module to notify typhos that
+it should check specified directories for custom typhos templates. To be
+used by typhos, the entry point should load a <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, or <code class="docutils literal notranslate"><span class="pre">list</span></code>
+of such objects.</p></li>
+<li><p>Move the examples submodule into the <code class="docutils literal notranslate"><span class="pre">typhos.examples</span></code> submodule, so we can
+launch the examples by way of e.g. <code class="docutils literal notranslate"><span class="pre">typhos</span> <span class="pre">-m</span> <span class="pre">typhos.examples.positioner</span></code>.</p></li>
+<li><p>For the alarm indicator widgets, allow the pen width, pen color, and
+pen style to be customized.</p></li>
+</ul>
+</section>
+<section id="compatibility-fixes">
+<h3>Compatibility / Fixes<a class="headerlink" href="#compatibility-fixes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Find a better fix for the issue where the positioner combobox widget would
+put to the PV on startup and on IOC reboot
+(see <code class="docutils literal notranslate"><span class="pre">v1.1.0</span></code> note about a hacky workaround).</p></li>
+<li><p>Fix the issue where the positioner combobox widget could not be used to
+move to the last position selected.</p></li>
+<li><p>Fix an issue where a positioner status that was marked as failed immediately
+would show as an unknown error, even if it had an associated exception
+with useful error text.</p></li>
+</ul>
+</section>
+<section id="docs-testing">
+<h3>Docs / Testing<a class="headerlink" href="#docs-testing" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add documentation for all features included in this update</p></li>
+<li><p>Add documentation for how to create custom <code class="docutils literal notranslate"><span class="pre">typhos</span></code> templates</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-2-0-2021-07-09">
+<h2>v1.2.0 (2021-07-09)<a class="headerlink" href="#v1-2-0-2021-07-09" title="Link to this heading"></a></h2>
+<section id="id45">
+<h3>Description<a class="headerlink" href="#id45" title="Link to this heading"></a></h3>
+<p>This is a feature update intended for use in lucid, but it may also be useful
+elsewhere.</p>
+</section>
+<section id="id46">
+<h3>Enhancements / What’s New<a class="headerlink" href="#id46" title="Link to this heading"></a></h3>
+<p>Add a handful of new widgets for indicating device alarm state. These will
+change color based on the most severe alarm found among the device’s signals.
+Their shapes correlate with the available shapes of PyDMDrawingWidget:</p>
+<ul class="simple">
+<li><p>TyphosAlarmCircle</p></li>
+<li><p>TyphosAlarmRectangle</p></li>
+<li><p>TyphosAlarmTriangle</p></li>
+<li><p>TyphosAlarmEllipse</p></li>
+<li><p>TyphosAlarmPolygon</p></li>
+</ul>
+</section>
+<section id="id47">
+<h3>Compatibility / Fixes<a class="headerlink" href="#id47" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add a sigint handler to avoid annoying behavior when closing with Ctrl-C on
+macOS.</p></li>
+<li><p>Increase some timeouts to improve unit test consistency.</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-1-6-2021-04-05">
+<h2>v1.1.6 (2021-04-05)<a class="headerlink" href="#v1-1-6-2021-04-05" title="Link to this heading"></a></h2>
+<section id="id48">
+<h3>Description<a class="headerlink" href="#id48" title="Link to this heading"></a></h3>
+<p>This is maintenance/compatibility release for pydm v1.11.0.</p>
+</section>
+<section id="id49">
+<h3>Compatibility / Fixes<a class="headerlink" href="#id49" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Internal fixes regarding error handling and input sanitization.
+Some subtle issues cropped up here in the update to pydm v1.11.0.</p></li>
+<li><p>Fix issue where the test suite would freeze when pydm displays
+an exception to the user.</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-1-5-2020-04-02">
+<h2>v1.1.5 (2020-04-02)<a class="headerlink" href="#v1-1-5-2020-04-02" title="Link to this heading"></a></h2>
+<section id="id50">
+<h3>Description<a class="headerlink" href="#id50" title="Link to this heading"></a></h3>
+<p>This is a maintenance release</p>
+</section>
+<section id="id51">
+<h3>Compatibility / Fixes<a class="headerlink" href="#id51" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix an issue where certain data files were not included in the package
+build.</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-1-4-2020-02-26">
+<h2>v1.1.4 (2020-02-26)<a class="headerlink" href="#v1-1-4-2020-02-26" title="Link to this heading"></a></h2>
+<section id="id52">
+<h3>Description<a class="headerlink" href="#id52" title="Link to this heading"></a></h3>
+<p>This is a bugfix release</p>
+</section>
+<section id="id53">
+<h3>Compatibility / Fixes<a class="headerlink" href="#id53" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix returning issue where certain devices could fail to load with a
+“dictionary changed during iteration” error.</p></li>
+<li><p>Fix issue where the documentation was not building properly.</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-1-3-2020-02-10">
+<h2>v1.1.3 (2020-02-10)<a class="headerlink" href="#v1-1-3-2020-02-10" title="Link to this heading"></a></h2>
+<section id="id54">
+<h3>Description<a class="headerlink" href="#id54" title="Link to this heading"></a></h3>
+<p>This is a minor screen inclusion release.</p>
+</section>
+<section id="id55">
+<h3>Enhancements / What’s New<a class="headerlink" href="#id55" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add a screen for AT1K4. This, and similar screens, should be moved out of
+typhos and into an LCLS-specific landing-zone, but this is not ready yet.</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-1-2-2020-12-22">
+<h2>v1.1.2 (2020-12-22)<a class="headerlink" href="#v1-1-2-2020-12-22" title="Link to this heading"></a></h2>
+<section id="id56">
+<h3>Description<a class="headerlink" href="#id56" title="Link to this heading"></a></h3>
+<p>This is a minor bugfix release.</p>
+</section>
+<section id="id57">
+<h3>Compatibility / Fixes<a class="headerlink" href="#id57" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix issue where <code class="docutils literal notranslate"><span class="pre">SignalRO</span></code> from <code class="docutils literal notranslate"><span class="pre">ophyd</span></code> was not showing as read-only.</p></li>
+<li><p>Update the AT2L0 screen to not have a redundant calculation dialog as per
+request.</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-1-1-2020-08-19">
+<h2>v1.1.1 (2020-08-19)<a class="headerlink" href="#v1-1-1-2020-08-19" title="Link to this heading"></a></h2>
+<section id="id58">
+<h3>Description<a class="headerlink" href="#id58" title="Link to this heading"></a></h3>
+<p>This is a bugfix release. Please use this instead of v1.1.0.</p>
+</section>
+<section id="id59">
+<h3>Compatibility / Fixes<a class="headerlink" href="#id59" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix issue with ui files not being included in the manifest</p></li>
+<li><p>Fix issue with profiler failing on tests submodule</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-1-0-2020-08-18">
+<h2>v1.1.0 (2020-08-18)<a class="headerlink" href="#v1-1-0-2020-08-18" title="Link to this heading"></a></h2>
+<section id="id60">
+<h3>Description<a class="headerlink" href="#id60" title="Link to this heading"></a></h3>
+<p>This is a big release with many fixes and features.</p>
+</section>
+<section id="id61">
+<h3>Enhancements / What’s New<a class="headerlink" href="#id61" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Make Typhos aware of variety metadata and assign appropriate widgets based
+on the variety metadata assigned in pcdsdevices.</p></li>
+<li><p>Split templates into three categories: core, devices, and widgets.
+Core templates are the main typhos display templates, e.g. detailed_tree.
+Devices templates are templates tailored for specific device classes.
+Widgets templates define special typhos widgets like tweakable, positioner,
+etc.</p></li>
+<li><p>Add attenuator calculator screens. These may be moved to another repo in a
+future release.</p></li>
+<li><p>Add information to loading widgets indicating timeout details.</p></li>
+</ul>
+</section>
+<section id="id62">
+<h3>Compatibility / fixes<a class="headerlink" href="#id62" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Fix issue with comboboxes being set on mouse scroll.</p></li>
+<li><p>Allow loading classes from cli with numbers in the name.</p></li>
+<li><p>Fix issue with legacy codepath used in lightpath.</p></li>
+<li><p>Fix issue with widget UnboundLocalError.</p></li>
+<li><p>Hacky workaround for issue with newer versions of Python.</p></li>
+<li><p>Hacky workaround for issue where positioner widget puts on startup.</p></li>
+<li><p>Fix issue with unset _channel member.</p></li>
+<li><p>Fix issue with typhos creating and installing a tests package separate
+from the main typhos package.</p></li>
+</ul>
+</section>
+<section id="id63">
+<h3>Docs / Testing<a class="headerlink" href="#id63" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Add variety testing IOC.</p></li>
+<li><p>Add doctr_versions_menu extension to properly render version menu.</p></li>
+<li><p>Fix issues with failing benchmark tests</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-0-2-2020-07-01">
+<h2>v1.0.2 (2020-07-01)<a class="headerlink" href="#v1-0-2-2020-07-01" title="Link to this heading"></a></h2>
+<section id="id64">
+<h3>Description<a class="headerlink" href="#id64" title="Link to this heading"></a></h3>
+<p>A bug fix and package maintenance release.</p>
+</section>
+<section id="id65">
+<h3>Enhancements / What’s New<a class="headerlink" href="#id65" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>PositionerWidget moves set their timeouts based on expected
+velocity and acceleration, rather than a flat 10 seconds.</p></li>
+</ul>
+</section>
+<section id="id66">
+<h3>Compatibility / fixes<a class="headerlink" href="#id66" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Ensure that widgets with no layout or minimum size are still displayed.</p></li>
+<li><p>Update local conda recipe to match conda-forge.</p></li>
+<li><p>Update CI to used shared configurations.</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-0-1-2020-05-20">
+<h2>v1.0.1 (2020-05-20)<a class="headerlink" href="#v1-0-1-2020-05-20" title="Link to this heading"></a></h2>
+<section id="id67">
+<h3>Description<a class="headerlink" href="#id67" title="Link to this heading"></a></h3>
+<p>A bug fix release with a minor addition.</p>
+</section>
+<section id="id68">
+<h3>Enhancements / What’s New<a class="headerlink" href="#id68" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>TyphosLoading now takes in a timeout value to switch the animation
+with a text message stating that the operation timed-out after X
+seconds.</p></li>
+</ul>
+</section>
+<section id="id69">
+<h3>Compatibility / fixes<a class="headerlink" href="#id69" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Combobox widgets were appearing when switching or refreshing templates.</p></li>
+</ul>
+</section>
+</section>
+<section id="v1-0-0-2020-05-18">
+<h2>v1.0.0 (2020-05-18)<a class="headerlink" href="#v1-0-0-2020-05-18" title="Link to this heading"></a></h2>
+<section id="id70">
+<h3>Description<a class="headerlink" href="#id70" title="Link to this heading"></a></h3>
+<p>A major new feature release with added views for complex devices and
+simplified configurability.</p>
+<p>As planned, the deprecated import name <code class="docutils literal notranslate"><span class="pre">typhon</span></code> and the <code class="docutils literal notranslate"><span class="pre">typhon</span></code>
+command-line tool have been removed.</p>
+</section>
+<section id="id71">
+<h3>Enhancements / What’s New<a class="headerlink" href="#id71" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Panels: New <code class="docutils literal notranslate"><span class="pre">TyphosCompositeSignalPanel</span></code>, which composes multiple
+<code class="docutils literal notranslate"><span class="pre">TyphosDisplay</span></code>s in a tree-like view.</p></li>
+<li><p>Benchmarking: new profiling tools accessible in the command-line
+<code class="docutils literal notranslate"><span class="pre">typhos</span></code> tool, allowing for per-line profiling of standardized
+devices. (<code class="docutils literal notranslate"><span class="pre">--benchmark</span></code>)</p></li>
+<li><p>Template discovery: templates are discovered based on screen macros
+and class inheritance structure, with the fallback of built-in
+templates.</p></li>
+<li><p>New command-line options for testing with mock devices
+(<code class="docutils literal notranslate"><span class="pre">--fake-device</span></code>).</p></li>
+<li><p>Performance: Major performance improvements by way of background
+threading of signal description determination, display path caching,
+and connection status monitoring to reduce GUI thread blocking.</p></li>
+<li><p>Display: Adds a “display switcher” tool for easy access to different
+screen types.</p></li>
+<li><p>Display: Adds a “configuration” button to displays.</p></li>
+<li><p>Filtering: Filter panel contents by kinds.</p></li>
+<li><p>Filtering: Filter panel contents by signal names.</p></li>
+<li><p>Setpoint history: a history of previous setpoints has been added to
+the context menu in <code class="docutils literal notranslate"><span class="pre">TyphosLineEdit</span></code>.</p></li>
+<li><p>Positioner widgets have been redesigned to be less magical and more fault-
+tolerant.  Adds designable properties that allow for specification of
+attribute names.</p></li>
+<li><p>Anything that inherits from <code class="docutils literal notranslate"><span class="pre">PositionerBase</span></code> will have the template as an
+option (<code class="docutils literal notranslate"><span class="pre">EpicsMotor</span></code>, <code class="docutils literal notranslate"><span class="pre">PCDSMotorBase</span></code>, etc.)</p></li>
+<li><p>Reworked default templates to remove the <code class="docutils literal notranslate"><span class="pre">miscellaneous</span></code> panel.  Omitted
+signals may still be shown by way of panel context menus or configuration
+menus.</p></li>
+</ul>
+</section>
+<section id="id72">
+<h3>Compatibility / fixes<a class="headerlink" href="#id72" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Python 3.8 is now being included in the test suite.</p></li>
+<li><p>Happi is now completely optional.</p></li>
+<li><p>Popped-out widgets such as plots will persist even when the parent
+display is closed.</p></li>
+<li><p>Font sizes should be more consistent on various DPI displays.</p></li>
+<li><p>Module <code class="docutils literal notranslate"><span class="pre">typhos.signal</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">typhos.panel</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TyphosTimePlot</span></code> no longer automatically adds signals to the plot.</p></li>
+<li><p>Removed internally-used <code class="docutils literal notranslate"><span class="pre">typhos.utils.grab_kind</span></code>.</p></li>
+<li><p>OSX layout of <code class="docutils literal notranslate"><span class="pre">TyphosSuite</span></code> should be improved using the unified title and
+toolbar.</p></li>
+</ul>
+</section>
+</section>
+<section id="v0-7-0-2020-03-09">
+<h2>v0.7.0 (2020-03-09)<a class="headerlink" href="#v0-7-0-2020-03-09" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix docs deployment</p></li>
+<li><p>Add “loading in progress” gif</p></li>
+<li><p>Fix sorting of signals</p></li>
+<li><p>Automatically choose exponential format based on engineering units</p></li>
+<li><p>Fix lazy loading in ophyd 1.4</p></li>
+<li><p>Save images of widgets when running tests</p></li>
+<li><p>Add a new “PopBar” which pops in the device tree in the suite</p></li>
+<li><p>Clean up the codebase - sort all imports + fix style</p></li>
+<li><p>Relocate SignalRO to a single spot</p></li>
+</ul>
+</section>
+<section id="v0-6-0-2020-01-09">
+<h2>v0.6.0 (2020-01-09)<a class="headerlink" href="#v0-6-0-2020-01-09" title="Link to this heading"></a></h2>
+<section id="id73">
+<h3>Description<a class="headerlink" href="#id73" title="Link to this heading"></a></h3>
+<p>This release is dedicated to the renaming of the package from <code class="docutils literal notranslate"><span class="pre">Typhon</span></code>
+to <code class="docutils literal notranslate"><span class="pre">Typhos</span></code>. The main reason for the renaming is a naming conflict at
+PyPI that is now addressed.</p>
+</section>
+<section id="compatibility">
+<h3>Compatibility<a class="headerlink" href="#compatibility" title="Link to this heading"></a></h3>
+<p>This release is still compatible and will throw some DeprecationWarnings
+when <code class="docutils literal notranslate"><span class="pre">typhon</span></code> is used. The only incompatible piece is for Qt
+Stylesheets. You will need to add the <code class="docutils literal notranslate"><span class="pre">typhos</span></code> equivalents to your
+custom stylesheets if you ever created one.</p>
+<p><strong>This is the first release with the backwards compatibility for typhon.
+In two releases time it will be removed.</strong></p>
+</section>
+</section>
+<section id="v0-5-0-2019-09-18">
+<h2>v0.5.0 (2019-09-18)<a class="headerlink" href="#v0-5-0-2019-09-18" title="Link to this heading"></a></h2>
+<section id="id74">
+<h3>Description<a class="headerlink" href="#id74" title="Link to this heading"></a></h3>
+<p>It was a long time since the latest release of <code class="docutils literal notranslate"><span class="pre">Typhon</span></code>. It is time
+for a new one. Next releases will have again the beautiful and
+descriptive messages for enhancements, bug fixes and etc.</p>
+</section>
+<section id="whats-new">
+<h3>What’s New<a class="headerlink" href="#whats-new" title="Link to this heading"></a></h3>
+<p>A lot.</p>
+</section>
+</section>
+<section id="v0-2-1-2018-09-28">
+<h2>v0.2.1 (2018-09-28)<a class="headerlink" href="#v0-2-1-2018-09-28" title="Link to this heading"></a></h2>
+<section id="id75">
+<h3>Description<a class="headerlink" href="#id75" title="Link to this heading"></a></h3>
+<p>This is a minor release of the <code class="docutils literal notranslate"><span class="pre">Typhon</span></code> library. No major features
+were added, but instead the library was made more stable and utilitarian
+for use in other programs. This includes making sure that any calls to a
+signal’s values or metadata are capable of handling disconnections. It
+also moves some of the methods that were hidden in larger classes or
+functions into smaller, more useful methods.</p>
+<section id="enhancements">
+<h4>Enhancements<a class="headerlink" href="#enhancements" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SignalPlugin</span></code> now transmits all the metadata that is guaranteed to
+be present from the base <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object. This includes
+<code class="docutils literal notranslate"><span class="pre">enum_strs</span></code>, <code class="docutils literal notranslate"><span class="pre">precision</span></code>, and <code class="docutils literal notranslate"><span class="pre">units</span></code>
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/92">#92</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> now has an optional argument <code class="docutils literal notranslate"><span class="pre">children</span></code>. This
+makes it possible to ignore a <code class="docutils literal notranslate"><span class="pre">Device</span></code> components when creating the
+display (<a class="reference external" href="https://github.com/pcdshub/typhos/issues/96">#96</a>)</p></li>
+<li><p>The following utility functions have been created to ensure that a
+uniform approach is taken for<code class="docutils literal notranslate"><span class="pre">Device</span></code> introspection:
+<code class="docutils literal notranslate"><span class="pre">is_signal_ro</span></code>, <code class="docutils literal notranslate"><span class="pre">grab_hints</span></code>
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/98">#98</a>)</p></li>
+</ul>
+</section>
+<section id="id76">
+<h4>Maintenance<a class="headerlink" href="#id76" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>Catch exceptions when requesting information from a <code class="docutils literal notranslate"><span class="pre">Signal</span></code> in
+case of disconnection, e.t.c
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/91">#91</a>,
+<a class="reference external" href="https://github.com/pcdshub/typhos/issues/92">#92</a>)</p></li>
+<li><p>The library now imports entirely from the <code class="docutils literal notranslate"><span class="pre">qtpy</span></code> compatibility
+layer (<a class="reference external" href="https://github.com/pcdshub/typhos/issues/94">#94</a>)</p></li>
+</ul>
+</section>
+<section id="deprecations">
+<h4>Deprecations<a class="headerlink" href="#deprecations" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">title</span></code> command in <code class="docutils literal notranslate"><span class="pre">SignalPanel</span></code> was no longer used. It is
+still accepted in this release, but will dropped in the next major
+release (<a class="reference external" href="https://github.com/pcdshub/typhos/issues/90">#90</a>)</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="v0-2-0-2018-06-27">
+<h2>v0.2.0 (2018-06-27)<a class="headerlink" href="#v0-2-0-2018-06-27" title="Link to this heading"></a></h2>
+<section id="id77">
+<h3>Description<a class="headerlink" href="#id77" title="Link to this heading"></a></h3>
+<p>This <code class="docutils literal notranslate"><span class="pre">Typhon</span></code> release marks the transition from prototype to a stable
+library. There was a variety of API breaks and deprecations after
+<code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code> as many of the names and functions were not future-proof.</p>
+<section id="id78">
+<h4>Enhancements<a class="headerlink" href="#id78" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Typhon</span></code> is now available on the <code class="docutils literal notranslate"><span class="pre">pcds-tag</span></code> Anaconda channel
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/45">#45</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Typhon</span></code> now installs a special data plugin for <code class="docutils literal notranslate"><span class="pre">PyDM</span></code> called
+<code class="docutils literal notranslate"><span class="pre">SignalPlugin</span></code>. This uses the generic <code class="docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> methods to
+communicate information to PyDM widgets.
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/63">#63</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Typhon</span></code> now supports two different stylesheets a “light” and
+“dark” mode. These are not activated by default, but instead can be
+accessed via <code class="docutils literal notranslate"><span class="pre">use_stylesheet</span></code> function
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/61">#61</a>,
+<a class="reference external" href="https://github.com/pcdshub/typhos/issues/89">#89</a>)</p></li>
+<li><p>There is now a sidebar to the <code class="docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> that makes adding
+devices and tools easier. The <code class="docutils literal notranslate"><span class="pre">add_subdisplay</span></code> function still works
+but it is preferable to use the more specific <code class="docutils literal notranslate"><span class="pre">add_tool</span></code> and
+<code class="docutils literal notranslate"><span class="pre">add_subdevice</span></code>.
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/61">#61</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Typhon</span></code> will automaticaly create a <code class="docutils literal notranslate"><span class="pre">PyDMLogDisplay</span></code> to show the
+output of the <code class="docutils literal notranslate"><span class="pre">logging.Logger</span></code> object attached to each
+<code class="docutils literal notranslate"><span class="pre">ophyd.Device</span></code>
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/70">#70</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Typhon</span></code> now creates a <code class="docutils literal notranslate"><span class="pre">PyDMTimePlot</span></code> with the “hinted”
+attributes of the Device. This can be configured at runtime to have
+fewer or more signals
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/73">#73</a>)</p></li>
+</ul>
+</section>
+<section id="api-changes">
+<h4>API Changes<a class="headerlink" href="#api-changes" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>All of the <code class="docutils literal notranslate"><span class="pre">Panel</span></code> objects have been moved to different files.
+<code class="docutils literal notranslate"><span class="pre">SignalPanel</span></code> now resides in <code class="docutils literal notranslate"><span class="pre">typhon.signal</span></code> while the base
+<code class="docutils literal notranslate"><span class="pre">Panel</span></code> that is no longer used to display signals is in the generic
+<code class="docutils literal notranslate"><span class="pre">typhon.widgets</span></code> renamed as <code class="docutils literal notranslate"><span class="pre">TogglePanel</span></code>
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/50">#50</a>)</p></li>
+</ul>
+</section>
+<section id="id79">
+<h4>Deprecations<a class="headerlink" href="#id79" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">RotatingImage</span></code> has been removed as it is no longer used by the
+library (<a class="reference external" href="https://github.com/pcdshub/typhos/issues/58">#58</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ComponentButton</span></code> has been removed as it is no longer used by the
+library(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/58">#58</a>)</p></li>
+<li><p>The base <code class="docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> no longer has a plot. The
+<code class="docutils literal notranslate"><span class="pre">add_pv_to_plot</span></code> function has been completely removed.
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/58">#58</a>)</p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h4>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TyphonDisplay</span></code> requires <code class="docutils literal notranslate"><span class="pre">ophyd</span> <span class="pre">&gt;=</span> <span class="pre">1.2.0</span></code>. The <code class="docutils literal notranslate"><span class="pre">PyDMLogDisplay</span></code>
+tool is attached to the <code class="docutils literal notranslate"><span class="pre">Device.log</span></code> that is now present on all
+<code class="docutils literal notranslate"><span class="pre">ophyd</span></code> devices.
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/53">#53</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pydm</span> <span class="pre">&gt;=</span> <span class="pre">1.2.0</span></code> due to various bug fixes and widget additions
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/63">#63</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">QDarkStyleSheet</span></code> is now included in the recipe to provide dark
+stylesheet support.
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/89">#89</a>)</p></li>
+</ul>
+</section>
+<section id="bug-fixes">
+<h4>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SignalPanel</span></code> previously did not account for the fact that <code class="docutils literal notranslate"><span class="pre">read</span></code>
+and <code class="docutils literal notranslate"><span class="pre">configuration</span></code> attributes could be devices themselves
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/42">#42</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SignalPanel</span></code> no longer assumes that all signals are
+<code class="docutils literal notranslate"><span class="pre">EpicsSignal</span></code> objects
+(<a class="reference external" href="https://github.com/pcdshub/typhos/issues/71">#71</a>)</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="v0-1-0-2017-12-15">
+<h2>v0.1.0 (2017-12-15)<a class="headerlink" href="#v0-1-0-2017-12-15" title="Link to this heading"></a></h2>
+<p>The initial release of Typhon. This serves as a proof of concept for the
+automation of PyDM screen building as informed by the structure of an
+Ophyd Device.</p>
+<section id="id80">
+<h3>Features<a class="headerlink" href="#id80" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Generate a full <code class="docutils literal notranslate"><span class="pre">DeviceDisplay</span></code> with all of the device signals and
+sub-devices available</p></li>
+<li><p>Include methods from the ophyd Device in the User Interface,
+automatically parse the arguments to make a widget representation of
+the function</p></li>
+<li><p>Include <code class="docutils literal notranslate"><span class="pre">png</span></code> images associated with devices and sub-devices</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="templates.html" class="btn btn-neutral float-left" title="Custom Templates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="upcoming_changes.html" class="btn btn-neutral float-right" title="Upcoming Changes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

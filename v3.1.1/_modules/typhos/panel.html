@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>typhos.panel &mdash; Typhos 3.1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=796a81b5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Typhos
+          </a>
+              <div class="version">
+                3.1.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html#cache-utilities">Cache Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">typhos.panel</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for typhos.panel</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Layouts and container widgets that show a &quot;panel&quot; of signals.</span>
+
+<span class="sd">Layouts:</span>
+<span class="sd">    * :class:`SignalPanel`</span>
+<span class="sd">    * :class:`CompositeSignalPanel`</span>
+
+<span class="sd">Container widgets:</span>
+<span class="sd">    * :class:`TyphosSignalPanel`</span>
+<span class="sd">    * :class:`TyphosCompositeSignalPanel`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">ophyd</span>
+<span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Kind</span>
+<span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">Property</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.cache</span> <span class="kn">import</span> <span class="n">get_global_widget_type_cache</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">TyphosBase</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">SignalWidgetInfo</span><span class="p">,</span> <span class="n">TyphosDesignerMixin</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">SignalOrder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Options for sorting signals.</span>
+
+<span class="sd">    This can be used as a base class for subclasses of</span>
+<span class="sd">    :class:`QtWidgets.QWidget`, allowing this to be used in</span>
+<span class="sd">    :class:`QtCore.Property` and therefore in the Qt designer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">byKind</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">byName</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="n">DEFAULT_KIND_ORDER</span> <span class="o">=</span> <span class="p">(</span><span class="n">Kind</span><span class="o">.</span><span class="n">hinted</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">omitted</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_component_sorter</span><span class="p">(</span><span class="n">signal_order</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">kind_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a sorting function for :class:`ophyd.device.ComponentWalk` entries.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signal_order : SignalOrder</span>
+<span class="sd">        Order for signals.</span>
+
+<span class="sd">    kind_order : list, optional</span>
+<span class="sd">        Order for Kinds, defaulting to ``DEFAULT_KIND_ORDER``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kind_order</span> <span class="o">=</span> <span class="n">kind_order</span> <span class="ow">or</span> <span class="n">DEFAULT_KIND_ORDER</span>
+
+    <span class="k">def</span> <span class="nf">kind_sorter</span><span class="p">(</span><span class="n">walk</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort by kind.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">kind_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">walk</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">kind</span><span class="p">),</span> <span class="n">walk</span><span class="o">.</span><span class="n">dotted_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">name_sorter</span><span class="p">(</span><span class="n">walk</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort by name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">walk</span><span class="o">.</span><span class="n">dotted_name</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">SignalOrder</span><span class="o">.</span><span class="n">byKind</span><span class="p">:</span> <span class="n">kind_sorter</span><span class="p">,</span>
+            <span class="n">SignalOrder</span><span class="o">.</span><span class="n">byName</span><span class="p">:</span> <span class="n">name_sorter</span>
+            <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">signal_order</span><span class="p">,</span> <span class="n">name_sorter</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">SignalPanelRowLabel</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A row label for a signal panel.</span>
+
+<span class="sd">    This subclass does not contain any special functionality currently, but</span>
+<span class="sd">    remains a special class for ease of stylesheet configuration and label</span>
+<span class="sd">    disambiguation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="SignalPanel">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel">[docs]</a>
+<span class="k">class</span> <span class="nc">SignalPanel</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGridLayout</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic panel layout for :class:`ophyd.Signal` and other ophyd objects.</span>
+
+<span class="sd">    This panel does not support hierarchical display of signals; rather, it</span>
+<span class="sd">    flattens a device hierarchy showing all signals in the same area.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    signals : OrderedDict, optional</span>
+<span class="sd">        Signals to include in the panel.</span>
+<span class="sd">        Parent of panel.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    loading_complete : QtCore.Signal</span>
+<span class="sd">        A signal indicating that loading of the panel has completed.</span>
+
+<span class="sd">    NUM_COLS : int</span>
+<span class="sd">        The number of columns in the layout.</span>
+
+<span class="sd">    COL_LABEL  : int</span>
+<span class="sd">        The column number for the row label.</span>
+
+<span class="sd">    COL_READBACK : int</span>
+<span class="sd">        The column number for the readback widget.</span>
+
+<span class="sd">    COL_SETPOINT : int</span>
+<span class="sd">        The column number for the setpoint widget.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`CompositeSignalPanel`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">NUM_COLS</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">COL_LABEL</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">COL_READBACK</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">COL_SETPOINT</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="n">loading_complete</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_row_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Make sure setpoint/readback share space evenly</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setColumnStretch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">COL_READBACK</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setColumnStretch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">COL_SETPOINT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">get_global_widget_type_cache</span><span class="p">()</span><span class="o">.</span><span class="n">widgets_determined</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_got_signal_widget_info</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">signals</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">signals</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all instantiated signals, omitting components.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        signals : dict</span>
+<span class="sd">            With the form: ``{signal_name: signal}``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;signal&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;signal&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">visible_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all signals visible according to filters, omitting components.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        signals : dict</span>
+<span class="sd">            With the form: ``{signal_name: signal}``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;signal&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;signal&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;visible&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+    <span class="n">visible_elements</span> <span class="o">=</span> <span class="n">visible_signals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">row_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of filled-in rows.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_count</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">SignalWidgetInfo</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_got_signal_widget_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Slot: Received information on how to make widgets for ``obj``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        obj : ophyd.OphydObj</span>
+<span class="sd">            The object that corresponds to the given widget information.</span>
+
+<span class="sd">        info : SignalWidgetInfo</span>
+<span class="sd">            The associated widget information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sig_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">sig_info</span><span class="p">[</span><span class="s1">&#39;widget_info&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Only add widgets on the first callback</span>
+            <span class="c1"># TODO: debug why multiple calls happen</span>
+            <span class="k">return</span>
+
+        <span class="n">sig_info</span><span class="p">[</span><span class="s1">&#39;widget_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">sig_info</span><span class="p">[</span><span class="s1">&#39;row&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Remove the &#39;loading...&#39; animation if it&#39;s there</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemAtPosition</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">COL_SETPOINT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+            <span class="n">val_widget</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val_widget</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">TyphosLoading</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">val_widget</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+
+        <span class="n">widgets</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">read_cls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">read_cls</span><span class="p">(</span><span class="o">**</span><span class="n">info</span><span class="o">.</span><span class="n">read_kwargs</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">write_cls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">write_cls</span><span class="p">(</span><span class="o">**</span><span class="n">info</span><span class="o">.</span><span class="n">write_kwargs</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_row</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">widgets</span><span class="p">)</span>
+
+        <span class="n">visible</span> <span class="o">=</span> <span class="n">sig_info</span><span class="p">[</span><span class="s1">&#39;visible&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="n">widgets</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">widget</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+
+        <span class="n">signal_pairs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">sig_info</span><span class="p">[</span><span class="s1">&#39;widget_info&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+               <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">sig_info</span> <span class="ow">in</span> <span class="n">signal_pairs</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loading_complete</span><span class="o">.</span><span class="n">emit</span><span class="p">([</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">signal_pairs</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_create_row_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">tooltip</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a row label (i.e., the one used to display the name).&quot;&quot;&quot;</span>
+        <span class="n">label_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_text_from_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">SignalPanelRowLabel</span><span class="p">(</span><span class="n">label_text</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">dotted_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">label</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">label</span>
+
+<div class="viewcode-block" id="SignalPanel.add_signal">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.add_signal">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a signal to the panel.</span>
+
+<span class="sd">        The type of widget control that is drawn is dependent on</span>
+<span class="sd">        :attr:`_read_pv`, and :attr:`_write_pv`. attributes.</span>
+
+<span class="sd">        If widget information for the given signal is available in the global</span>
+<span class="sd">        cache, the widgets will be created immediately.  Otherwise, a row will</span>
+<span class="sd">        be reserved and widgets created upon signal connection and background</span>
+<span class="sd">        description callback.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal : EpicsSignal, EpicsSignalRO</span>
+<span class="sd">            Signal to create a widget.</span>
+
+<span class="sd">        name : str, optional</span>
+<span class="sd">            The name to be used for the row label.  This defaults to</span>
+<span class="sd">            ``signal.name``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        row : int</span>
+<span class="sd">            Row number that the signal information was added to in the</span>
+<span class="sd">            `SignalPanel.layout()``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding signal </span><span class="si">%s</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_row_label</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tooltip</span><span class="p">)</span>
+        <span class="n">loading</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">TyphosLoading</span><span class="p">(</span>
+            <span class="n">timeout_message</span><span class="o">=</span><span class="s1">&#39;Connection timed out.&#39;</span>
+        <span class="p">)</span>
+
+        <span class="n">loading_tooltip</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Connecting to:&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">({</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;setpoint_pvname&#39;</span><span class="p">,</span> <span class="s1">&#39;pvname&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="p">})</span>
+        <span class="n">loading</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">loading_tooltip</span><span class="p">))</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">loading</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">[</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span>
+            <span class="n">signal</span><span class="o">=</span><span class="n">signal</span><span class="p">,</span>
+            <span class="n">component</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">widget_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">create_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">row</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_connect_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate widgets for the given signal using the global cache.&quot;&quot;&quot;</span>
+        <span class="n">monitor</span> <span class="o">=</span> <span class="n">get_global_widget_type_cache</span><span class="p">()</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_got_signal_widget_info</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="c1"># else: - this will happen during a callback</span>
+
+    <span class="k">def</span> <span class="nf">_add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a component which may be instantiated later.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.Device</span>
+<span class="sd">            The parent device for the component.</span>
+
+<span class="sd">        attr : str</span>
+<span class="sd">            The attribute name of the component.</span>
+
+<span class="sd">        dotted_name : str</span>
+<span class="sd">            The full dotted name of the component.</span>
+
+<span class="sd">        component : ophyd.Component</span>
+<span class="sd">            The component itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dotted_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding component </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">)</span>
+
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_row_label</span><span class="p">(</span>
+            <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="n">component</span><span class="o">.</span><span class="n">doc</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># utils.TyphosLoading())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">[</span><span class="n">dotted_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span>
+            <span class="n">signal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">widget_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span>
+            <span class="n">create_signal</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="nb">getattr</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">),</span>
+            <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">row</span>
+
+<div class="viewcode-block" id="SignalPanel.label_text_from_attribute">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.label_text_from_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">label_text_from_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get label text for a given attribute.</span>
+
+<span class="sd">        For a basic signal panel, use the full dotted name.  This is because</span>
+<span class="sd">        this panel flattens the device hierarchy, and using only the last</span>
+<span class="sd">        attribute name may lead to ambiguity or name clashes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dotted_name</span></div>
+
+
+<div class="viewcode-block" id="SignalPanel.add_row">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.add_row">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">widgets</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add ``widgets`` to the next row.</span>
+
+<span class="sd">        If fewer than ``NUM_COLS`` widgets are given, the last widget will be</span>
+<span class="sd">        adjusted automatically to span the remaining columns.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        *widgets</span>
+<span class="sd">            List of :class:`QtWidgets.QWidget`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        row : int</span>
+<span class="sd">            The row number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_row_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_row_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">widgets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_row</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">widgets</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">row</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_update_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">widgets</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update ``row`` to contain ``widgets``.</span>
+
+<span class="sd">        If fewer widgets than ``NUM_COLS`` are given, the last widget will be</span>
+<span class="sd">        adjusted automatically to span the remaining columns.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        row : int</span>
+<span class="sd">            The row number.</span>
+
+<span class="sd">        widgets : list of :class:`QtWidgets.QWidget`</span>
+<span class="sd">            If ``None`` is found, the cell will be skipped.</span>
+
+<span class="sd">        **kwargs</span>
+<span class="sd">            Passed into ``addWidget``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">widgets</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">last_widget</span> <span class="o">=</span> <span class="n">widgets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">last_widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Column-span the last widget over the remaining columns:</span>
+            <span class="n">last_column</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">widgets</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">colspan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">NUM_COLS</span> <span class="o">-</span> <span class="n">last_column</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">last_widget</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">last_column</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">colspan</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SignalPanel.add_pv">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.add_pv">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_pv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_pv</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">write_pv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a row, given PV names.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ---------</span>
+<span class="sd">        read_pv : str</span>
+<span class="sd">            The readback PV name.</span>
+
+<span class="sd">        name : str</span>
+<span class="sd">            Name of signal to display.</span>
+
+<span class="sd">        write_pv : str, optional</span>
+<span class="sd">            The setpoint PV name.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        row : int</span>
+<span class="sd">            Row number that the signal information was added to in the</span>
+<span class="sd">            `SignalPanel.layout()``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding PV </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Configure optional write PV settings</span>
+        <span class="k">if</span> <span class="n">write_pv</span><span class="p">:</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">EpicsSignal</span><span class="p">(</span><span class="n">read_pv</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">write_pv</span><span class="o">=</span><span class="n">write_pv</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">EpicsSignalRO</span><span class="p">(</span><span class="n">read_pv</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_apply_name_filter</span><span class="p">(</span><span class="n">filter_by</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply the name filter.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filter_by : str</span>
+<span class="sd">            The name filter text.</span>
+
+<span class="sd">        *items</span>
+<span class="sd">            A list of strings to check for matches with.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">filter_by</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">filter_by</span> <span class="ow">in</span> <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_should_show</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Kind</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">kinds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ophyd</span><span class="o">.</span><span class="n">Kind</span><span class="p">],</span>
+        <span class="n">name_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">show_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">omit_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Based on the filter settings, indicate if ``signal`` should be shown.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kind : ophyd.Kind</span>
+<span class="sd">            The kind of the signal.</span>
+
+<span class="sd">        name : str</span>
+<span class="sd">            The name of the signal.</span>
+
+<span class="sd">        kinds : list of :class:`ophyd.Kind`</span>
+<span class="sd">            Kinds that should be shown.</span>
+
+<span class="sd">        name_filter : str, optional</span>
+<span class="sd">            Name filter text - show only signals that match this string. This</span>
+<span class="sd">            is applied after the &quot;omit_names&quot; and &quot;show_names&quot; filters.</span>
+
+<span class="sd">        show_names : list of str, optinoal</span>
+<span class="sd">            Names to explicitly show.  Applied before the omit filter.</span>
+
+<span class="sd">        omit_names : list of str, optinoal</span>
+<span class="sd">            Names to explicitly omit.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        should_show : bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">Kind</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kinds</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">show_name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">show_names</span> <span class="ow">or</span> <span class="p">[]):</span>
+            <span class="k">if</span> <span class="n">show_name</span> <span class="ow">and</span> <span class="n">show_name</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">omit_name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">omit_names</span> <span class="ow">or</span> <span class="p">[]):</span>
+            <span class="k">if</span> <span class="n">omit_name</span> <span class="ow">and</span> <span class="n">omit_name</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_name_filter</span><span class="p">(</span><span class="n">name_filter</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">visible</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the visibility of ``signal_name`` to ``visible``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal_name : str</span>
+<span class="sd">            The signal name to change the visibility of.</span>
+
+<span class="sd">        visible : bool</span>
+<span class="sd">            Change the visibility of the row to this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">[</span><span class="n">signal_name</span><span class="p">]</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;visible&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;row&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NUM_COLS</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemAtPosition</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                <span class="n">widget</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">widget</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">visible</span> <span class="ow">or</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;signal&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Create the signal if we&#39;re displaying it for the first time.</span>
+        <span class="n">create_func</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;create_signal&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">create_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># A signal we shouldn&#39;t try to create again</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">info</span><span class="p">[</span><span class="s1">&#39;signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">=</span> <span class="n">create_func</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to create signal </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+            <span class="c1"># Stop it from another attempt</span>
+            <span class="n">info</span><span class="p">[</span><span class="s1">&#39;create_signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Instantiating a not-yet-created signal from a &#39;</span>
+                     <span class="s1">&#39;component: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">signal_name</span><span class="p">:</span>
+            <span class="c1"># This is, for better or worse, possible; does not support the case</span>
+            <span class="c1"># of changing the name after __init__</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">[</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="p">[</span><span class="n">signal_name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SignalPanel.filter_signals">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.filter_signals">[docs]</a>
+    <span class="k">def</span> <span class="nf">filter_signals</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">kinds</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ophyd</span><span class="o">.</span><span class="n">Kind</span><span class="p">],</span>
+        <span class="n">name_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">show_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">omit_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Filter signals based on the given kinds.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kinds : list of :class:`ophyd.Kind`</span>
+<span class="sd">            List of kinds to show.</span>
+
+<span class="sd">        name_filter : str, optional</span>
+<span class="sd">            Name filter text - show only signals that match this string. This</span>
+<span class="sd">            is applied after the &quot;omit_names&quot; and &quot;show_names&quot; filters.</span>
+
+<span class="sd">        show_names : list of str, optinoal</span>
+<span class="sd">            Names to explicitly show.  Applied before the omit filter.</span>
+
+<span class="sd">        omit_names : list of str, optinoal</span>
+<span class="sd">            Names to explicitly omit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;signal&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;component&#39;</span><span class="p">]</span>
+            <span class="n">visible</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_show</span><span class="p">(</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span>
+                <span class="n">name</span><span class="p">,</span>
+                <span class="n">kinds</span><span class="o">=</span><span class="n">kinds</span><span class="p">,</span>
+                <span class="n">name_filter</span><span class="o">=</span><span class="n">name_filter</span><span class="p">,</span>
+                <span class="n">omit_names</span><span class="o">=</span><span class="n">omit_names</span><span class="p">,</span>
+                <span class="n">show_names</span><span class="o">=</span><span class="n">show_names</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_visible</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">visible</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+        <span class="c1"># utils.dump_grid_layout(self)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_filter_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current filter settings from the owner widget.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">filter_settings</span>
+
+<div class="viewcode-block" id="SignalPanel.add_device">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.add_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="n">sorter</span> <span class="o">=</span> <span class="n">_get_component_sorter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">sortBy</span><span class="p">)</span>
+        <span class="n">non_devices</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">walk</span>
+            <span class="k">for</span> <span class="n">walk</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">walk_components</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="n">sorter</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">walk</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">cls</span><span class="p">,</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Device</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">walk</span> <span class="ow">in</span> <span class="n">non_devices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_add_signal</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">walk</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">attr</span><span class="p">,</span> <span class="n">walk</span><span class="o">.</span><span class="n">dotted_name</span><span class="p">,</span>
+                                   <span class="n">walk</span><span class="o">.</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSizeConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SetMinimumSize</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_maybe_add_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        With the filter settings, add either the signal or a component stub.</span>
+
+<span class="sd">        If the component does not match the current filter settings, a</span>
+<span class="sd">        stub will be added that can be filled in later should the filter</span>
+<span class="sd">        settings change.</span>
+
+<span class="sd">        If the component matches the current filter settings, it will be</span>
+<span class="sd">        instantiated and widgets will be added when the signal is connected.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.Device</span>
+<span class="sd">            The device owner.</span>
+
+<span class="sd">        attr : str</span>
+<span class="sd">            The signal&#39;s attribute name.</span>
+
+<span class="sd">        dotted_name : str</span>
+<span class="sd">            The signal&#39;s dotted name.</span>
+
+<span class="sd">        component : ophyd.Component</span>
+<span class="sd">            The component class used to generate the instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">lazy</span><span class="p">:</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">kind</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Failed to get signal </span><span class="si">%r</span><span class="s1"> from device </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                               <span class="n">dotted_name</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">kind</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">kind</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_should_show</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_filter_settings</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">do_not_wait_for_lazy_connection</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
+                    <span class="n">signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Failed to get signal </span><span class="si">%r</span><span class="s1"> from device </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
+                               <span class="n">dotted_name</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span> <span class="n">tooltip</span><span class="o">=</span><span class="n">component</span><span class="o">.</span><span class="n">doc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_component</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SignalPanel.clear">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.SignalPanel.clear">[docs]</a>
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the SignalPanel.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing layout </span><span class="si">%r</span><span class="s2"> ...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">clear_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_name_to_info</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TyphosSignalPanel">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel">[docs]</a>
+<span class="k">class</span> <span class="nc">TyphosSignalPanel</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">TyphosDesignerMixin</span><span class="p">,</span> <span class="n">SignalOrder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Panel of Signals for a given device, using :class:`SignalPanel`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : QtWidgets.QWidget, optional</span>
+<span class="sd">        The parent widget.</span>
+
+<span class="sd">    init_channel : str, optional</span>
+<span class="sd">        The PyDM channel with which to initialize the widget.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">SignalOrder</span><span class="p">)</span>  <span class="c1"># Necessary for display in Designer</span>
+    <span class="n">SignalOrder</span> <span class="o">=</span> <span class="n">SignalOrder</span>  <span class="c1"># For convenience</span>
+    <span class="n">_kinds</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Kind</span><span class="p">]</span>
+    <span class="c1"># From top of page to bottom</span>
+    <span class="n">kind_order</span> <span class="o">=</span> <span class="p">(</span><span class="n">Kind</span><span class="o">.</span><span class="n">hinted</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
+                  <span class="n">Kind</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">omitted</span><span class="p">)</span>
+    <span class="n">_panel_class</span> <span class="o">=</span> <span class="n">SignalPanel</span>
+    <span class="n">updated</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+
+    <span class="n">_kind_to_property</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;hinted&#39;</span><span class="p">:</span> <span class="s1">&#39;showHints&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;normal&#39;</span><span class="p">:</span> <span class="s1">&#39;showNormal&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;config&#39;</span><span class="p">:</span> <span class="s1">&#39;showConfig&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;omitted&#39;</span><span class="p">:</span> <span class="s1">&#39;showOmitted&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># Create a SignalPanel layout to be modified later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_panel_layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_panel_class</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_panel_layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name_filter</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_omit_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Add default Kind values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;normal&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;hinted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;omitted&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span> <span class="o">=</span> <span class="n">SignalOrder</span><span class="o">.</span><span class="n">byKind</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setContextMenuPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DefaultContextMenu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contextMenuEvent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_context_menu</span>
+
+    <span class="k">def</span> <span class="nf">_get_kind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Kind</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property getter for show[kind].&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_set_kind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Property setter for show[kind] = value.&quot;&quot;&quot;</span>
+        <span class="c1"># If we have a new value store it</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]:</span>
+            <span class="c1"># Store it internally</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="c1"># Remodify the layout for the new Kind</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filter_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the filter settings dictionary.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">name_filter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nameFilter</span><span class="p">,</span>
+            <span class="n">omit_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">omitNames</span><span class="p">,</span>
+            <span class="n">show_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">showNames</span><span class="p">,</span>
+            <span class="n">kinds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_kinds</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply filters and emit the update signal.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_panel_layout</span><span class="o">.</span><span class="n">filter_signals</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">show_kinds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Kind</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a list of the :class:`ophyd.Kind` that should be shown.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Kind</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">show</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">show</span><span class="p">]</span>
+
+    <span class="c1"># Kind Configuration pyqtProperty</span>
+    <span class="n">showHints</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
+                         <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;hinted&#39;</span><span class="p">),</span>
+                         <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;hinted&#39;</span><span class="p">),</span>
+                         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Show ophyd.Kind.hinted signals&#39;</span><span class="p">)</span>
+    <span class="n">showNormal</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
+                          <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">),</span>
+                          <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">),</span>
+                          <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Show ophyd.Kind.normal signals&#39;</span><span class="p">)</span>
+    <span class="n">showConfig</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
+                          <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;config&#39;</span><span class="p">),</span>
+                          <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;config&#39;</span><span class="p">),</span>
+                          <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Show ophyd.Kind.config signals&#39;</span><span class="p">)</span>
+    <span class="n">showOmitted</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span>
+                           <span class="n">partial</span><span class="p">(</span><span class="n">_get_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;omitted&#39;</span><span class="p">),</span>
+                           <span class="n">partial</span><span class="p">(</span><span class="n">_set_kind</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;omitted&#39;</span><span class="p">),</span>
+                           <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Show ophyd.Kind.omitted signals&#39;</span><span class="p">)</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">nameFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the current name filter.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_filter</span>
+
+    <span class="nd">@nameFilter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">nameFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_filter</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name_filter</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name_filter</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_name_filter</span> <span class="o">=</span> <span class="n">name_filter</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="s2">&quot;QStringList&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">omitNames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the list of names to omit.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omit_names</span>
+
+    <span class="nd">@omitNames</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">omitNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">omit_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">omit_names</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_omit_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_omit_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">omit_names</span> <span class="ow">or</span> <span class="p">[])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="s2">&quot;QStringList&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">showNames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the list of names to omit.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_names</span>
+
+    <span class="nd">@showNames</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">showNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">show_names</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">show_names</span> <span class="ow">or</span> <span class="p">[])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span>
+
+    <span class="nd">@Property</span><span class="p">(</span><span class="n">SignalOrder</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">sortBy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get or set the order that the signals will be placed in layout.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span>
+
+    <span class="nd">@sortBy</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">sortBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_signal_order</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TyphosSignalPanel.add_device">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.add_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># Configure the layout for the new device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_panel_layout</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TyphosSignalPanel.set_device_display">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.set_device_display">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_device_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for when the TyphosDeviceDisplay is associated.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">display</span></div>
+
+
+<div class="viewcode-block" id="TyphosSignalPanel.generate_context_menu">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.generate_context_menu">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_context_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a context menu for this TyphosSignalPanel.&quot;&quot;&quot;</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMenu</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">addSection</span><span class="p">(</span><span class="s1">&#39;Kinds&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">property_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind_to_property</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">def</span> <span class="nf">selected</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">property_name</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+
+            <span class="n">action</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;Show &amp;&#39;</span> <span class="o">+</span> <span class="n">kind</span><span class="p">)</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">))</span>
+            <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">menu</span></div>
+
+
+<div class="viewcode-block" id="TyphosSignalPanel.open_context_menu">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.open_context_menu">[docs]</a>
+    <span class="k">def</span> <span class="nf">open_context_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ev</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Open a context menu when the Default Context Menu is requested.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ev : QEvent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_context_menu</span><span class="p">()</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">pos</span><span class="p">()))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CompositeSignalPanel">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.CompositeSignalPanel">[docs]</a>
+<span class="k">class</span> <span class="nc">CompositeSignalPanel</span><span class="p">(</span><span class="n">SignalPanel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Composite panel layout for :class:`ophyd.Signal` and other ophyd objects.</span>
+
+<span class="sd">    Contrasted to :class:`SignalPanel`, this class retains the hierarchy built</span>
+<span class="sd">    into an :class:`ophyd.Device` hierarchy.  Individual signals mix in with</span>
+<span class="sd">    sub-device displays, which may or may not have custom screens.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    loading_complete : QtCore.Signal</span>
+<span class="sd">        A signal indicating that loading of the panel has completed.</span>
+
+<span class="sd">    NUM_COLS : int</span>
+<span class="sd">        The number of columns in the layout.</span>
+
+<span class="sd">    COL_LABEL  : int</span>
+<span class="sd">        The column number for the row label.</span>
+
+<span class="sd">    COL_READBACK : int</span>
+<span class="sd">        The column number for the readback widget.</span>
+
+<span class="sd">    COL_SETPOINT : int</span>
+<span class="sd">        The column number for the setpoint widget.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_qt_designer_</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;Typhos Widgets&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;is_container&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">signals</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_containers</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="CompositeSignalPanel.label_text_from_attribute">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.CompositeSignalPanel.label_text_from_attribute">[docs]</a>
+    <span class="k">def</span> <span class="nf">label_text_from_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">dotted_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get label text for a given attribute.&quot;&quot;&quot;</span>
+        <span class="c1"># For a hierarchical signal panel, use only the attribute name.</span>
+        <span class="k">return</span> <span class="n">attr</span></div>
+
+
+<div class="viewcode-block" id="CompositeSignalPanel.add_sub_device">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.CompositeSignalPanel.add_sub_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_sub_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a sub-device to the next row.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : ophyd.Device</span>
+<span class="sd">            The device to add.</span>
+
+<span class="sd">        name : str</span>
+<span class="sd">            The name/label to go with the device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> adding sub-device: </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                     <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">device</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">container</span> <span class="o">=</span> <span class="n">display</span><span class="o">.</span><span class="n">TyphosDeviceDisplay</span><span class="p">(</span>
+            <span class="n">scrollable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">nested</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_containers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">container</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">container</span><span class="p">)</span>
+        <span class="n">container</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CompositeSignalPanel.add_device">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.CompositeSignalPanel.add_device">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: note that this does not call super</span>
+        <span class="c1"># super().add_device(device)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> signals from device: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                     <span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">_get_top_level_components</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">device</span><span class="p">)):</span>
+            <span class="n">dotted_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">cls</span><span class="p">,</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Device</span><span class="p">):</span>
+                <span class="n">sub_device</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_sub_device</span><span class="p">(</span><span class="n">sub_device</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">dotted_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_add_signal</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">visible_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all visible signals and components.&quot;&quot;&quot;</span>
+        <span class="n">sigs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visible_signals</span>
+        <span class="n">containers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">cont</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">cont</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_containers</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">cont</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">sigs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">containers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sigs</span></div>
+
+
+
+<div class="viewcode-block" id="TyphosCompositeSignalPanel">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosCompositeSignalPanel">[docs]</a>
+<span class="k">class</span> <span class="nc">TyphosCompositeSignalPanel</span><span class="p">(</span><span class="n">TyphosSignalPanel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Hierarchical panel for a device, using :class:`CompositeSignalPanel`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parent : QtWidgets.QWidget, optional</span>
+<span class="sd">        The parent widget.</span>
+
+<span class="sd">    init_channel : str, optional</span>
+<span class="sd">        The PyDM channel with which to initialize the widget.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_panel_class</span> <span class="o">=</span> <span class="n">CompositeSignalPanel</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
