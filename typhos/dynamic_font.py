@@ -119,7 +119,7 @@ def patch_widget(
         maximum font size. Content margin settings determine the content
         rectangle, and this padding is applied as a percentage on top of that.
     """
-    def paintEvent(event: QtGui.QPaintEvent) -> None:
+    def resizeEvent(event: QtGui.QResizeEvent) -> None:
         font = widget.font()
         font_size = get_widget_maximum_font_size(
             widget, widget.text(),
@@ -129,27 +129,27 @@ def patch_widget(
         if abs(font.pointSizeF() - font_size) > 0.1:
             font.setPointSizeF(font_size)
             widget.setFont(font)
-        return orig_paint_event(event)
+        return orig_resize_event(event)
 
     def minimumSizeHint() -> QtCore.QSize:
-        # Do not give any size hint as it it changes during paintEvent
+        # Do not give any size hint as it it changes during resizeEvent
         return QtWidgets.QWidget.minimumSizeHint(widget)
 
     def sizeHint() -> QtCore.QSize:
-        # Do not give any size hint as it it changes during paintEvent
+        # Do not give any size hint as it it changes during resizeEvent
         return QtWidgets.QWidget.sizeHint(widget)
 
-    if hasattr(widget.paintEvent, "_patched_methods_"):
+    if hasattr(widget.resizeEvent, "_patched_methods_"):
         return
 
-    orig_paint_event = widget.paintEvent
+    orig_resize_event = widget.resizeEvent
 
-    paintEvent._patched_methods_ = (
-        widget.paintEvent,
+    resizeEvent._patched_methods_ = (
+        widget.resizeEvent,
         widget.sizeHint,
         widget.minimumSizeHint,
     )
-    widget.paintEvent = paintEvent
+    widget.resizeEvent = resizeEvent
     widget.sizeHint = sizeHint
     widget.minimumSizeHint = minimumSizeHint
 
@@ -163,14 +163,14 @@ def unpatch_widget(widget: QtWidgets.QWidget) -> None:
     widget : QtWidgets.QWidget
         The widget to unpatch.
     """
-    if not hasattr(widget.paintEvent, "_patched_methods_"):
+    if not hasattr(widget.resizeEvent, "_patched_methods_"):
         return
 
     (
-        widget.paintEvent,
+        widget.resizeEvent,
         widget.sizeHint,
         widget.minimumSizeHint,
-    ) = widget.paintEvent._patched_methods_
+    ) = widget.resizeEvent._patched_methods_
 
 
 def is_patched(widget: QtWidgets.QWidget) -> bool:
@@ -187,4 +187,4 @@ def is_patched(widget: QtWidgets.QWidget) -> bool:
     bool
         True if the widget has been patched.
     """
-    return hasattr(widget.paintEvent, "_patched_methods_")
+    return hasattr(widget.resizeEvent, "_patched_methods_")
