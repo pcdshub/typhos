@@ -1,13 +1,21 @@
+from __future__ import annotations
+
+import enum
 import logging
 import time
 
-from qtpy.QtCore import QThread, Signal
+from ophyd.status import Status
+from ophyd.utils import (StatusTimeoutError, UnknownStatusFailure,
+                         WaitTimeoutError)
+from qtpy.QtCore import QObject, QThread, Signal
 
 logger = logging.getLogger(__name__)
 
 
-class GenericStatusFailure(Exception):
-    """A stand-in for a status value of ``False`` with no detailed info."""
+class TyphosStatusResult(enum.Enum):
+    success = enum.auto()
+    failure = enum.auto()
+    timeout = enum.auto()
 
 
 class TyphosStatusThread(QThread):
@@ -42,40 +50,84 @@ class TyphosStatusThread(QThread):
 
     """
     status_started = Signal()
-    status_finished = Signal(object)
+    status_timeout = Signal()
+    status_finished = Signal(TyphosStatusResult)
+    error_message = Signal(str)
+    status_exc = Signal(object)
 
-    def __init__(self, status, start_delay=0., timeout=10.0, parent=None):
+    def __init__(
+        self,
+        status: Status,
+        error_context: str = "Status",
+        timeout_calc: str = "",
+        start_delay: float = 0.,
+        timeout: float = 10.0,
+        parent: QObject | None = None,
+    ):
         super().__init__(parent=parent)
         self.status = status
+        self.error_context = error_context
+        self.timeout_calc = timeout_calc
         self.start_delay = start_delay
         self.timeout = timeout
 
-    def run(self):
+    def run(self) -> None:
         """Monitor status object status and emit signals."""
         # Don't do anything if we are handed a finished status
         if self.status.done:
             logger.debug("Status already completed.")
-            self._wait_and_emit_finished()
+            self.wait_and_emit_finished()
             return
 
         # Wait to emit to avoid too much flashing
         time.sleep(self.start_delay)
         self.status_started.emit()
-        self._wait_and_emit_finished()
+        self.wait_and_emit_finished()
 
-    def _wait_and_emit_finished(self):
-        try:
-            self.status.wait(timeout=self.timeout)
-        except TimeoutError as ex:
-            # May be a WaitTimeoutError or a StatusTimeoutError
-            logger.error("%s: Status %r did not complete in %s seconds",
-                         type(ex).__name__, self.status, self.timeout)
-            finished_value = ex
-        except Exception as ex:
-            logger.exception('Status wait failed')
-            finished_value = ex
+    def wait_and_emit_finished(self) -> None:
+        result = self.wait_and_get_result(use_timeout=True)
+        if result == TyphosStatusResult.timeout:
+            result = self.wait_and_get_result(use_timeout=False)
+        logger.debug("Emitting finished: %r", result)
+        self.status_finished.emit(result)
+
+    def wait_and_get_result(self, use_timeout: bool) -> TyphosStatusResult:
+        if use_timeout:
+            timeout = self.timeout
         else:
-            finished_value = self.status.success or GenericStatusFailure()
-
-        logger.debug("Emitting finished: %r", finished_value)
-        self.status_finished.emit(finished_value)
+            timeout = None
+        try:
+            self.status.wait(timeout=timeout)
+        except WaitTimeoutError as ex:
+            # Status doesn't have a timeout, but this thread does
+            errmsg = f"{self.error_context} taking longer than expected, > {timeout}s"
+            if self.timeout_calc:
+                errmsg += f": {self.timeout_calc}"
+            logger.debug(errmsg)
+            self.error_message.emit(errmsg)
+            self.status_timeout.emit()
+            self.status_exc.emit(ex)
+            return TyphosStatusResult.timeout
+        except StatusTimeoutError as ex:
+            # Status has an intrinsic timeout, and it's failing now
+            errmsg = f"{self.error_context} failed with timeout, > {self.status.timeout}s"
+            logger.debug(errmsg)
+            self.error_message.emit(errmsg)
+            self.status_exc.emit(ex)
+            return TyphosStatusResult.failure
+        except UnknownStatusFailure as ex:
+            # Status has failed, but no reason was given.
+            errmsg = f"{self.error_context} failed with no reason given."
+            logger.debug(errmsg)
+            self.error_message.emit(errmsg)
+            self.status_exc.emit(ex)
+            return TyphosStatusResult.failure
+        except Exception as ex:
+            # There is some other status failure, and it has a specific exception.
+            logger.debug("Status failed", exc_info=True)
+            self.error_message.emit(str(ex))
+            self.status_exc.emit(ex)
+            return TyphosStatusResult.failure
+        else:
+            # This is only reachable if the status wait succeeds
+            return TyphosStatusResult.success

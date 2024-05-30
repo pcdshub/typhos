@@ -10,6 +10,7 @@ from ophyd.utils.errors import LimitError, UnknownStatusFailure
 
 from typhos.alarm import KindLevel
 from typhos.positioner import TyphosPositionerWidget
+from typhos.status import TyphosStatusResult
 from typhos.utils import SignalRO
 
 from .conftest import RichSignal, show_widget
@@ -158,7 +159,7 @@ def test_positioner_widget_last_move(motor_widget):
     motor, widget = motor_widget
     assert not widget.successful_move
     assert not widget.failed_move
-    widget._status_finished(True)
+    widget._status_finished(TyphosStatusResult.success)
     assert widget.successful_move
     assert not widget.failed_move
     widget._status_finished(Exception())

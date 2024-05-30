@@ -16,7 +16,7 @@ from typhos.display import TyphosDisplaySwitcher
 from . import dynamic_font, utils, widgets
 from .alarm import AlarmLevel, KindLevel, _KindLevel
 from .panel import SignalOrder, TyphosSignalPanel
-from .status import TyphosStatusThread
+from .status import TyphosStatusResult, TyphosStatusThread
 
 logger = logging.getLogger(__name__)
 
@@ -195,18 +195,32 @@ class TyphosPositionerWidget(
         self._status_thread.disconnect()
         self._status_thread = None
 
-    def _start_status_thread(self, status, timeout):
+    def _start_status_thread(
+        self,
+        status: ophyd.StatusBase,
+        timeout: float,
+        timeout_desc: str,
+    ) -> None:
         """Start the status monitoring thread for the given status object."""
         self._status_thread = thread = TyphosStatusThread(
-            status, start_delay=self._min_visible_operation,
+            status,
+            error_context="Move",
+            timeout_calc=timeout_desc,
+            start_delay=self._min_visible_operation,
             timeout=timeout,
             parent=self,
         )
-        thread.status_started.connect(self.move_changed)
+        thread.status_started.connect(self._move_started)
         thread.status_finished.connect(self._status_finished)
+        thread.error_message.connect(self._set_status_text)
         thread.start()
 
-    def _get_timeout(self, set_position: float, settle_time: float, rescale: float = 1) -> float | None:
+    def _get_timeout(
+        self,
+        set_position: float,
+        settle_time: float,
+        rescale: float = 1,
+    ) -> tuple[float | None, str]:
         """
         Use positioner's configuration to select a timeout.
 
@@ -250,19 +264,22 @@ class TyphosPositionerWidget(
         acc_sig = getattr(self.device, self._acceleration_attr, None)
         # Not enough info == no timeout
         if pos_sig is None or vel_sig is None:
-            return None
+            return (None, "no timeout, missing info")
         delta = pos_sig.get() - set_position
         speed = vel_sig.get()
         # Bad speed == no timeout
         if speed == 0:
-            return None
+            return (None, "no timeout, speed == 0")
         # Bad acceleration == ignore acceleration
         if acc_sig is None:
             acc_time = 0
         else:
             acc_time = acc_sig.get()
         # This time is always greater than the kinematic calc
-        return rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time)
+        return (
+            rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time),
+            "dist {delta} / velo {speed} + 2 * acc_time {acc_time} + margin",
+        )
 
     def _set(self, value):
         """Inner `set` routine - call device.set() and monitor the status."""
@@ -275,7 +292,7 @@ class TyphosPositionerWidget(
 
         try:
             # Always at least 5s, give 20% extra time as margin for long moves
-            timeout = self._get_timeout(set_position, settle_time=5, rescale=1.2)
+            timeout, desc = self._get_timeout(set_position, settle_time=5, rescale=1.2)
         except Exception:
             # Something went wrong, just run without a timeout.
             logger.exception('Unable to estimate motor timeout.')
@@ -290,7 +307,7 @@ class TyphosPositionerWidget(
             self._status_finished(exc)
         else:
             # Send timeout through thread because status timeout stops the move
-            self._start_status_thread(status, timeout)
+            self._start_status_thread(status, timeout, desc)
 
     @QtCore.Slot(int)
     def combo_set(self, index):
@@ -719,12 +736,13 @@ class TyphosPositionerWidget(
         if kind_level != self.alarmKindLevel:
             self.ui.alarm_circle.kindLevel = kind_level
 
-    def move_changed(self):
+    def _move_started(self) -> None:
         """Called when a move is begun"""
         logger.debug("Begin showing move in TyphosPositionerWidget")
         self.moving = True
+        self.err_is_timeout = False
 
-    def _set_status_text(self, text, *, max_length=60):
+    def _set_status_text(self, text: str, *, max_length: int = 60) -> None:
         """Set the status text label to ``text``."""
         if len(text) >= max_length:
             self.ui.status_label.setToolTip(text)
@@ -734,18 +752,22 @@ class TyphosPositionerWidget(
 
         self.ui.status_label.setText(text)
 
-    def _status_finished(self, result):
+    def _status_finished(self, result: TyphosStatusResult | Exception) -> None:
         """Called when a move is complete."""
+        success = False
         if isinstance(result, Exception):
-            text = f'<b>{result.__class__.__name__}</b> {result}'
-        else:
-            text = ''
-
-        self._set_status_text(text)
-
-        success = not isinstance(result, Exception)
-        logger.debug("Completed move in TyphosPositionerWidget (result=%r)",
-                     result)
+            # Calling set or move completely broke
+            self._set_status_text(f"<b>{result.__class__.__name__}</b> {result}")
+        elif result == TyphosStatusResult.success:
+            # Clear the status display of any lingering timeout text
+            self._set_status_text("")
+            success = True
+        # Other cases: keep the existing status text, whatever it is.
+        # This covers any case where the move started, but had an error during the move.
+        logger.debug(
+            "Completed move in TyphosPositionerWidget (result=%r)",
+            result,
+        )
         self._last_move = success
         self.moving = False
 
