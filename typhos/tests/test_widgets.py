@@ -74,7 +74,6 @@ def test_dialog_button_instances_smoke(qtbot, button_type):
     button = button_type(init_channel='ca://Pv:2')
     qtbot.addWidget(button)
     widget = button.widget()
-    return  # do we still fail wildly if we stop here?
     qtbot.addWidget(widget)
     assert widget.parent() == button
 

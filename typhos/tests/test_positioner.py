@@ -52,9 +52,9 @@ def motor_widget(qtbot):
 
 
 def test_positioner_widget_no_limits(qtbot, motor):
-    return  # does it segfault if we stop here?
     setwidget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(setwidget)
+    return  # does it segfault if we stop here?
     for widget in ('low_limit', 'low_limit_switch',
                    'high_limit', 'high_limit_switch'):
         assert getattr(setwidget.ui, widget).isHidden()
