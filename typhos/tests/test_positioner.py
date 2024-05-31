@@ -61,8 +61,8 @@ def test_positioner_widget_no_limits(qtbot, motor):
 
 def test_positioner_widget_fixed_limits(qtbot, motor):
     motor.limits = (-10, 10)
-    return  # does it segfault if we stop here?
     widget = TyphosPositionerWidget.from_device(motor)
+    return  # does it segfault if we stop here?
     qtbot.addWidget(widget)
     assert widget.ui.low_limit.text() == '-10'
     assert widget.ui.high_limit.text() == '10'
