@@ -859,6 +859,7 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
     notes_edit: TyphosNotesEdit
     status_container_widget: QtWidgets.QFrame
     extended_signal_panel: Optional[TyphosSignalPanel]
+    status_error_prefix: QtWidgets.QLabel
     error_prefix: QtWidgets.QLabel
     switcher: TyphosDisplaySwitcher
 
@@ -1057,8 +1058,10 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         The goal here to make an illusion that there is only one label in
         in this space when only one of the labels has text.
 
-        If both are empty, we also want to put "something" there to fill the
+        If both are empty, we want to put "something" there to fill the
         void, so we opt for a friendly message or an alarm reminder.
+
+        If both are populated, we want to do some best-effort deduplication.
         """
         if error_message is not None:
             self._error_message = error_message
@@ -1078,7 +1081,14 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             else:
                 self.ui.status_label.setText('Check alarm')
             has_status = True
+        has_status_error = False
+        if has_status and has_error:
+            # We want to avoid having duplicate information (low effort try)
+            if error_message in status_text:
+                has_error = False
+                has_status_error = True
         self.ui.status_label.setVisible(has_status)
+        self.ui.status_error_prefix.setVisible(has_status_error)
         self.ui.error_label.setVisible(has_error)
         self.ui.error_prefix.setVisible(has_error)
 
