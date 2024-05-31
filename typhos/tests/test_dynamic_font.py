@@ -60,7 +60,6 @@ def test_patching(
 
 
 def test_wide_label(
-    qapp: QtWidgets.QApplication,
     qtbot: pytestqt.qtbot.QtBot,
 ):
     """
@@ -76,6 +75,9 @@ def test_wide_label(
 
     patch_widget(widget)
     widget.setFixedSize(162, 34)
-    for _ in range(3):
-        qapp.processEvents()
+    event = QtGui.QResizeEvent(
+        QtCore.QSize(162, 34),
+        widget.size(),
+    )
+    widget.resizeEvent(event)
     assert widget.font().pointSizeF() == get_widget_maximum_font_size(widget, widget.text())
