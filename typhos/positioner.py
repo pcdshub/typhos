@@ -173,6 +173,7 @@ class TyphosPositionerWidget(
         super().__init__(parent=parent)
 
         # self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
+        self.ui = uic.loadUi(self.ui_template, self)
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
