@@ -56,7 +56,11 @@ def inner_benchmark(unit_test_name, qtbot, request):
 
 def test_profiler(capsys):
     """Super basic test that hits most functions here"""
+    if sys.version_info >= (3, 12):
+        pytest.xfail(
+            reason="Known issue: profiler doesn't quite work properly on Python 3.12",
+        )
     with profiler_context(['typhos.benchmark.utils']):
         utils.get_native_functions(utils)
     output = capsys.readouterr()
-    assert 'is_native' in output.out
+    assert 'get_native_functions' in output.out

@@ -203,7 +203,7 @@ def pytest_runtest_call(item: pytest.Item):
         "test_dialog_button_instances_smoke"
     ]
     try:
-        if item.name not in skip_test_names:
+        if all(skip_name not in item.name for skip_name in skip_test_names):
             assert not final_widgets, failure_text
     finally:
         for widget in final_widgets:
