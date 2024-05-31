@@ -6,7 +6,8 @@ from qtpy import QtCore, QtGui, QtWidgets
 
 from typhos.tests import conftest
 
-from ..dynamic_font import is_patched, patch_widget, unpatch_widget
+from ..dynamic_font import (get_widget_maximum_font_size, is_patched,
+                            patch_widget, unpatch_widget)
 
 
 @pytest.mark.parametrize(
@@ -56,3 +57,25 @@ def test_patching(
         widget,
         f"{request.node.name}_{cls.__name__}_dynamic_font_size",
     )
+
+
+def test_wide_label(
+    qapp: QtWidgets.QApplication,
+    qtbot: pytestqt.qtbot.QtBot,
+):
+    """
+    Replicate the wide label text in RIXS that clips
+    """
+    widget = QtWidgets.QLabel()
+    qtbot.add_widget(widget)
+    widget.setText("143252.468 urad")
+    font = widget.font()
+    font.setPointSizeF(16.0)
+    widget.setFont(font)
+    assert widget.font().pointSizeF() == 16.0
+
+    patch_widget(widget)
+    widget.setFixedSize(162.36, 34.65)
+    for _ in range(3):
+        qapp.processEvents()
+    assert widget.font().pointSizeF() == get_widget_maximum_font_size(widget, widget.text())
