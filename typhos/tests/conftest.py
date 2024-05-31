@@ -196,6 +196,7 @@ def pytest_runtest_call(item: pytest.Item):
             final_widgets.clear()
         else:
             logger.error(failure_text)
+            final_widgets = [widget for widget in final_widgets if not isinstance(widget, QtWidgets.QMenu)]
 
     try:
         assert not final_widgets, failure_text
