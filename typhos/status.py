@@ -100,9 +100,9 @@ class TyphosStatusThread(QThread):
             self.status.wait(timeout=timeout)
         except WaitTimeoutError as ex:
             # Status doesn't have a timeout, but this thread does
-            errmsg = f"{self.error_context} taking longer than expected, > {timeout}s"
+            errmsg = f"{self.error_context} taking longer than expected, >{timeout:.2f}s"
             if self.timeout_calc:
-                errmsg += f": {self.timeout_calc}"
+                errmsg += f", calculated as {self.timeout_calc}"
             logger.debug(errmsg)
             self.error_message.emit(errmsg)
             self.status_timeout.emit()
@@ -110,7 +110,7 @@ class TyphosStatusThread(QThread):
             return TyphosStatusResult.timeout
         except StatusTimeoutError as ex:
             # Status has an intrinsic timeout, and it's failing now
-            errmsg = f"{self.error_context} failed with timeout, > {self.status.timeout}s"
+            errmsg = f"{self.error_context} failed with timeout, >{self.status.timeout:.2f}s"
             logger.debug(errmsg)
             self.error_message.emit(errmsg)
             self.status_exc.emit(ex)

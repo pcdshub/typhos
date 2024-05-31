@@ -275,10 +275,11 @@ class TyphosPositionerWidget(
             acc_time = 0
         else:
             acc_time = acc_sig.get()
+        units = pos_sig.metadata.get("units", "egu")
         # This time is always greater than the kinematic calc
         return (
             rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time),
-            "dist {delta} / velo {speed} + 2 * acc_time {acc_time} + margin",
+            f"{rescale}*({abs(delta):.2f}{units}/{speed:.2f}{units}/s) + 2*{acc_time:.2f}s + {settle_time}s",
         )
 
     def _set(self, value):
@@ -742,14 +743,15 @@ class TyphosPositionerWidget(
         self.moving = True
         self.err_is_timeout = False
 
-    def _set_status_text(self, text: str, *, max_length: int = 60) -> None:
+    def _set_status_text(self, text: str, *, max_length: int | None = 60) -> None:
         """Set the status text label to ``text``."""
-        if len(text) >= max_length:
+        if max_length is None:
+            self.ui.status_label.setToolTip(text)
+        elif len(text) >= max_length:
             self.ui.status_label.setToolTip(text)
             text = text[:max_length] + '...'
         else:
             self.ui.status_label.setToolTip('')
-
         self.ui.status_label.setText(text)
 
     def _status_finished(self, result: TyphosStatusResult | Exception) -> None:
@@ -1035,7 +1037,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
     def new_error_message(self, value, *args, **kwargs):
         self.update_status_visibility(error_message=value)
 
-    def _set_status_text(self, text, *, max_length=80):
+    def _set_status_text(self, text, *, max_length=None):
         super()._set_status_text(text, max_length=max_length)
         self.update_status_visibility(status_text=text)
 
