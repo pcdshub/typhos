@@ -183,8 +183,6 @@ def pytest_runtest_call(item: pytest.Item):
                 "\n".join((desc, "\n    -> ".join([""] + ref_desc)))
             )
         referrers.clear()
-    # Clear reference to iteration variable
-    widget = None
 
     cleanup_text = (
         f"Not all widgets were cleaned up during {item.name}:\n"
@@ -213,16 +211,6 @@ def pytest_runtest_call(item: pytest.Item):
                 widget.deleteLater()
             except RuntimeError:
                 ...
-    if final_widgets:
-        # Remove reference to widgets
-        final_widgets = None
-        app = QtWidgets.QApplication.instance()
-        # Try to prod the garbage collector
-        app.processEvents()
-        gc.collect()
-        app.processEvents()
-    # One more for the road to enter next test with clean event queue
-    app.processEvents()
 
 
 @pytest.fixture(scope='session')
