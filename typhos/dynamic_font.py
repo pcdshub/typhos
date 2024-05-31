@@ -3,9 +3,12 @@ Dynamic font size helper utilities:
 
 Dynamically set widget font size based on its current size.
 """
+import logging
 
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import QRectF, Qt
+
+logger = logging.getLogger(__name__)
 
 
 def get_widget_maximum_font_size(
@@ -119,7 +122,7 @@ def patch_widget(
         maximum font size. Content margin settings determine the content
         rectangle, and this padding is applied as a percentage on top of that.
     """
-    def resizeEvent(event: QtGui.QResizeEvent) -> None:
+    def set_font_size() -> None:
         font = widget.font()
         font_size = get_widget_maximum_font_size(
             widget, widget.text(),
@@ -129,6 +132,9 @@ def patch_widget(
         if abs(font.pointSizeF() - font_size) > 0.1:
             font.setPointSizeF(font_size)
             widget.setFont(font)
+
+    def resizeEvent(event: QtGui.QResizeEvent) -> None:
+        set_font_size()
         return orig_resize_event(event)
 
     def minimumSizeHint() -> QtCore.QSize:
@@ -152,6 +158,7 @@ def patch_widget(
     widget.resizeEvent = resizeEvent
     widget.sizeHint = sizeHint
     widget.minimumSizeHint = minimumSizeHint
+    set_font_size()
 
 
 def unpatch_widget(widget: QtWidgets.QWidget) -> None:

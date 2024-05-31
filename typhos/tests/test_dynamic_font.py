@@ -75,7 +75,7 @@ def test_wide_label(
     assert widget.font().pointSizeF() == 16.0
 
     patch_widget(widget)
-    widget.setFixedSize(162.36, 34.65)
+    widget.setFixedSize(162, 34)
     for _ in range(3):
         qapp.processEvents()
     assert widget.font().pointSizeF() == get_widget_maximum_font_size(widget, widget.text())
