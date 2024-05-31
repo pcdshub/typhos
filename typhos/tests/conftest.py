@@ -114,10 +114,25 @@ def _dereference_list(
 
 @pytest.hookimpl(hookwrapper=True, trylast=True)
 def pytest_runtest_call(item: pytest.Item):
+    # Try to start with a clean slate if the previous test failed to do so
+    starting_widgets = get_top_level_widgets()
+    if starting_widgets:
+        for widget in starting_widgets:
+            # This is unnecessarily paranoid
+            try:
+                widget.deleteLater()
+            except RuntimeError:
+                ...
+        application = QtWidgets.QApplication.instance()
+        application.processEvents()
+        time.sleep(0.1)
+        application.processEvents()
+
+    # We tried to get rid of them, but if they're still here...
     starting_widgets = get_top_level_widgets()
     if starting_widgets:
         num_start = len(_dereference_list(starting_widgets))
-        logger.debug(f"\n\nPre test - {num_start} widgets exist:")
+        logger.debug(f"\n\nPre test - {num_start} widgets exist before {item.name}:")
         _dump_widgets(starting_widgets)
 
     yield
