@@ -59,4 +59,4 @@ def test_profiler(capsys):
     with profiler_context(['typhos.benchmark.utils']):
         utils.get_native_functions(utils)
     output = capsys.readouterr()
-    assert 'get_native_functions' in output.out
+    assert 'is_native' in output.out
