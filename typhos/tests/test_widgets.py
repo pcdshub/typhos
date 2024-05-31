@@ -66,7 +66,6 @@ def test_signal_dialog_button_repeated_show(qtbot, widget_button):
     qtbot.add_widget(dialog)
 
 
-@pytest.mark.skip(reason="Check if pyqtgraph is segfaulting")
 @pydm_version_xfail
 @pytest.mark.parametrize('button_type', [WaveformDialogButton,
                                          ImageDialogButton],
@@ -74,6 +73,7 @@ def test_signal_dialog_button_repeated_show(qtbot, widget_button):
 def test_dialog_button_instances_smoke(qtbot, button_type):
     button = button_type(init_channel='ca://Pv:2')
     qtbot.addWidget(button)
+    return  # do we still fail wildly if we stop here?
     widget = button.widget()
     qtbot.addWidget(widget)
     assert widget.parent() == button

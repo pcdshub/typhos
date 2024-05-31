@@ -59,8 +59,8 @@ def test_positioner_widget_no_limits(qtbot, motor):
         assert getattr(setwidget.ui, widget).isHidden()
 
 
-@pytest.mark.skip(reason="temporary, is this segfaulting for reals?")
 def test_positioner_widget_fixed_limits(qtbot, motor):
+    return  # does it segfault if we stop here?
     motor.limits = (-10, 10)
     widget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(widget)
@@ -89,7 +89,7 @@ def test_positioner_widget_readback(motor_widget):
 def test_positioner_widget_stop(motor_widget):
     motor, widget = motor_widget
     widget.stop()
-    assert motor.stop.called_with(success=True)
+    motor.stop.assert_called_with(success=True)
 
 
 class NoMoveSoftPos(SoftPositioner, Device):
