@@ -181,7 +181,7 @@ class TyphosPositionerWidget(
         # self.ui.alarm_circle.kindLevel = self.ui.alarm_circle.NORMAL
         # self.ui.alarm_circle.alarm_changed.connect(self.update_alarm_text)
 
-        # self.show_expert_button = False
+        self.show_expert_button = False
         # self._after_set_moving(False)
 
         # dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.01)
