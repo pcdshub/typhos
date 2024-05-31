@@ -117,12 +117,13 @@ def pytest_runtest_call(item: pytest.Item):
     # Try to start with a clean slate if the previous test failed to do so
     starting_widgets = get_top_level_widgets()
     if starting_widgets:
-        for widget in starting_widgets:
+        for widget in _dereference_list(starting_widgets):
             # This is unnecessarily paranoid
             try:
                 widget.deleteLater()
             except RuntimeError:
                 ...
+        widget = None
         application = QtWidgets.QApplication.instance()
         application.processEvents()
         time.sleep(0.1)
