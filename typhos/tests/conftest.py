@@ -325,6 +325,7 @@ class RandomSignal(SynPeriodicSignal):
     def __init__(self, *args, **kwargs):
         super().__init__(func=lambda: np.random.uniform(0, 100),
                          period=10, period_jitter=4, **kwargs)
+        self.start_simulation()
 
 
 class MockDevice(Device):
