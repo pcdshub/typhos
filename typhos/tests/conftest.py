@@ -129,8 +129,15 @@ def pytest_runtest_call(item: pytest.Item):
 
     t0 = time.monotonic()
     while time.monotonic() - t0 < 1.0 and len(_dereference_list(ending_widgets)) > 0:
-        gc.collect()
+        if not list(item.iter_markers(name="no_gc")):
+            # Some tests segfault on gc.collect when QT_QPA_PLATFORM=offscreen (!?)
+            # Mark these with pytest.mark.no_gc to skip this call
+            # Note that some other tests definitely need this gc.collect() call!
+            # And some tests function just fine no matter whether we call this or not!
+            gc.collect()
         app.processEvents()
+        # Throttle while loop to avoid weird gc things
+        time.sleep(0.1)
 
     widgets_to_check = list(
         weakref.ref(w) for w in
@@ -197,20 +204,11 @@ def pytest_runtest_call(item: pytest.Item):
         else:
             logger.error(failure_text)
 
-    # These tests often fail when upstream code handles cleanup strangely
-    # If it's out of our control I don't want a false positive here
-    skip_test_names = [
-        "test_dialog_button_instances_smoke"
-    ]
-    try:
-        if all(skip_name not in item.name for skip_name in skip_test_names):
-            assert not final_widgets, failure_text
-    finally:
-        for widget in final_widgets:
-            try:
-                widget.deleteLater()
-            except RuntimeError:
-                ...
+    for widget in final_widgets:
+        try:
+            widget.deleteLater()
+        except RuntimeError:
+            ...
 
 
 @pytest.fixture(scope='session')

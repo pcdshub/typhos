@@ -51,6 +51,7 @@ def motor_widget(qtbot):
         widget._status_thread.wait()
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_no_limits(qtbot, motor):
     setwidget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(setwidget)
@@ -59,6 +60,7 @@ def test_positioner_widget_no_limits(qtbot, motor):
         assert getattr(setwidget.ui, widget).isHidden()
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_fixed_limits(qtbot, motor):
     motor.limits = (-10, 10)
     widget = TyphosPositionerWidget.from_device(motor)
@@ -69,6 +71,7 @@ def test_positioner_widget_fixed_limits(qtbot, motor):
 
 @show_widget
 @pytest.mark.skip()
+@pytest.mark.no_gc
 def test_positioner_widget_with_signal_limits(motor_widget):
     motor, widget = motor_widget
     # Check limit switches
@@ -80,11 +83,13 @@ def test_positioner_widget_with_signal_limits(motor_widget):
     return widget
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_readback(motor_widget):
     motor, widget = motor_widget
     assert motor.readback.name in widget.ui.user_readback.channel
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_stop(motor_widget):
     motor, widget = motor_widget
     widget.stop()
@@ -103,6 +108,7 @@ class NoMoveSoftPos(SoftPositioner, Device):
         ...
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_stop_no_error(motor_widget):
     _, widget = motor_widget
     motor = NoMoveSoftPos(name='motor')
@@ -120,6 +126,7 @@ def test_positioner_widget_stop_no_error(motor_widget):
     status.wait(timeout=1)
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_set(motor_widget):
     motor, widget = motor_widget
     # Check motion
@@ -128,6 +135,7 @@ def test_positioner_widget_set(motor_widget):
     assert motor.position == 4
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_positive_tweak(motor_widget):
     motor, widget = motor_widget
     widget.ui.tweak_value.setText('1')
@@ -136,6 +144,7 @@ def test_positioner_widget_positive_tweak(motor_widget):
     assert motor.position == 1
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_negative_tweak(motor_widget):
     motor, widget = motor_widget
     widget.ui.tweak_value.setText('1')
@@ -144,6 +153,7 @@ def test_positioner_widget_negative_tweak(motor_widget):
     assert motor.position == -1
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_moving_property(motor_widget, qtbot):
     motor, widget = motor_widget
     assert not widget.moving
@@ -154,6 +164,7 @@ def test_positioner_widget_moving_property(motor_widget, qtbot):
     qtbot.waitUntil(lambda: not widget.moving, timeout=1000)
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_last_move(motor_widget):
     motor, widget = motor_widget
     assert not widget.successful_move
@@ -166,6 +177,7 @@ def test_positioner_widget_last_move(motor_widget):
     assert widget.failed_move
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_moving_text_changes(motor_widget, qtbot):
     motor, widget = motor_widget
 
@@ -184,6 +196,7 @@ def test_positioner_widget_moving_text_changes(motor_widget, qtbot):
     assert end_text == start_text
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_alarm_text_changes(motor_widget, qtbot):
     motor, widget = motor_widget
     alarm_texts = []
@@ -216,6 +229,7 @@ def test_positioner_widget_alarm_text_changes(motor_widget, qtbot):
         assert alarm_texts.count(text) == 1
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_alarm_kind_level(motor_widget, qtbot):
     motor, widget = motor_widget
     # Alarm widget has its own tests
@@ -227,12 +241,14 @@ def test_positioner_widget_alarm_kind_level(motor_widget, qtbot):
         assert widget.ui.alarm_circle.kindLevel == kind_level
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_clear_error(motor_widget, qtbot):
     motor, widget = motor_widget
     widget.clear_error()
     qtbot.waitUntil(lambda: motor.clear_error.called, timeout=500)
 
 
+@pytest.mark.no_gc
 def test_positioner_widget_move_error(motor_widget, qtbot):
     motor, widget = motor_widget
     bad_position = motor.high_limit.get() + 1
