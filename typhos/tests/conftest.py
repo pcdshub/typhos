@@ -204,11 +204,14 @@ def pytest_runtest_call(item: pytest.Item):
         else:
             logger.error(failure_text)
 
-    for widget in final_widgets:
-        try:
-            widget.deleteLater()
-        except RuntimeError:
-            ...
+    try:
+        assert not final_widgets, failure_text
+    finally:
+        for widget in final_widgets:
+            try:
+                widget.deleteLater()
+            except RuntimeError:
+                ...
 
 
 @pytest.fixture(scope='session')
