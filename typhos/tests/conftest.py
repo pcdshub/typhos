@@ -205,7 +205,11 @@ def pytest_runtest_call(item: pytest.Item):
             logger.error(failure_text)
 
     try:
-        assert not final_widgets, failure_text
+        if not list(item.iter_markers(name="no_cleanup_check")):
+            # Pyqtgraph stopped cleaning up properly and I can't do anything about it
+            # Rather than disable this check entirely, allow specific tests to skip it
+            # Use @pytest.mark.no_cleanup_check to skip
+            assert not final_widgets, failure_text
     finally:
         for widget in final_widgets:
             try:
