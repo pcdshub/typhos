@@ -279,10 +279,15 @@ class TyphosPositionerWidget(
             acc_time = acc_sig.get()
         units = pos_sig.metadata.get("units", "egu")
         # This time is always greater than the kinematic calc
+        dist = abs(delta)
+        speed = abs(speed)
+        mult = rescale
         return (
-            math.ceil(rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time)),
-            (f"{rescale}*({abs(delta):.2f}{units}/{speed:.2f}{units}/s) + "
-             f"2*{acc_time:.2f}s + {settle_time}s, rounded up"),
+            math.ceil(rescale * (delta/speed + 2 * abs(acc_time)) + abs(settle_time)),
+            ("an upper bound on the expected time based on the speed, distance traveled, "
+             "and acceleration time. Numerically, this is "
+             f"{mult=}*({dist=:.2f}{units}/{speed=:.2f}{units}/s) + "
+             f"2*{acc_time=:.2f}s + {settle_time=}s, rounded up."),
         )
 
     def _set(self, value):
@@ -786,15 +791,17 @@ class TyphosPositionerWidget(
         elif isinstance(message, str):
             text = message
             tooltip = ""
-        if max_length is None or len(text) < max_length:
-            self.ui.status_label.setToolTip(tooltip)
-        else:
+        if max_length is not None and len(text) >= max_length:
             if tooltip:
-                self.ui.status_label.setToolTip(f"{text}: {tooltip}")
+                tooltip = f"{text}: {tooltip}"
             else:
-                self.ui.status_label.setToolTip(f"{text}")
+                tooltip = text
             text = message.text[:max_length] + '...'
         self.ui.status_label.setText(text)
+        if tooltip and "\n" not in tooltip:
+            # Force rich text, qt auto line wraps if it detects rich text
+            tooltip = f"<html><head/><body><p>{tooltip}</p></body></html>"
+        self.ui.status_label.setToolTip(tooltip)
         return text
 
     def _status_finished(self, result: TyphosStatusResult | Exception) -> None:

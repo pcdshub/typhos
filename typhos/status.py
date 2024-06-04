@@ -110,7 +110,7 @@ class TyphosStatusThread(QThread):
             # Status doesn't have a timeout, but this thread does
             errmsg = f"{self.error_context} taking longer than expected, >{timeout}s"
             if self.timeout_calc:
-                tooltip = f"calculated as {self.timeout_calc}"
+                tooltip = f"Calculated as {self.timeout_calc}"
             else:
                 tooltip = ""
             self.error_message.emit(
