@@ -278,12 +278,13 @@ class TyphosPositionerWidget(
         else:
             acc_time = acc_sig.get()
         units = pos_sig.metadata.get("units", "egu")
-        # This time is always greater than the kinematic calc
+        # Some friendly names for the f-string tooltip reporting
         dist = abs(delta)
         speed = abs(speed)
         mult = rescale
+        # This time is always greater than the kinematic calc
         return (
-            math.ceil(rescale * (delta/speed + 2 * abs(acc_time)) + abs(settle_time)),
+            math.ceil(rescale * (dist/speed + 2 * abs(acc_time)) + abs(settle_time)),
             ("an upper bound on the expected time based on the speed, distance traveled, "
              "and acceleration time. Numerically, this is "
              f"{mult=}*({dist=:.2f}{units}/{speed=:.2f}{units}/s) + "
