@@ -13,7 +13,7 @@ tests that allocate qt widgets.
 Things to Know for Test Writers
 -------------------------------
 
-- Always use the ``qtbot`` fixture (from the ``pytest-``qt package)
+- Always use the ``qtbot`` fixture (from the ``pytest-qt`` package)
 - Always call ``qtbot.add_widget(widget)`` on any widget you create in your test.
   This helps clean up your widget after the test is complete.
 - Use the ``qapp`` fixture and call ``qapp.processEvents()`` if you need "something"
