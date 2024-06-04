@@ -67,6 +67,7 @@ def test_signal_dialog_button_repeated_show(qtbot, widget_button):
 
 
 @pydm_version_xfail
+@pytest.mark.no_cleanup_check
 @pytest.mark.parametrize('button_type', [WaveformDialogButton,
                                          ImageDialogButton],
                          ids=['Waveform', 'Image'])

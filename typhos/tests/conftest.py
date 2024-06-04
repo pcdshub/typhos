@@ -117,7 +117,7 @@ def pytest_runtest_call(item: pytest.Item):
     starting_widgets = get_top_level_widgets()
     if starting_widgets:
         num_start = len(_dereference_list(starting_widgets))
-        logger.debug(f"\n\nPre test - {num_start} widgets exist:")
+        logger.debug(f"\n\nPre test - {num_start} widgets exist before {item.name}:")
         _dump_widgets(starting_widgets)
 
     yield
@@ -129,8 +129,15 @@ def pytest_runtest_call(item: pytest.Item):
 
     t0 = time.monotonic()
     while time.monotonic() - t0 < 1.0 and len(_dereference_list(ending_widgets)) > 0:
-        gc.collect()
+        if not list(item.iter_markers(name="no_gc")):
+            # Some tests segfault on gc.collect when QT_QPA_PLATFORM=offscreen (!?)
+            # Mark these with pytest.mark.no_gc to skip this call
+            # Note that some other tests definitely need this gc.collect() call!
+            # And some tests function just fine no matter whether we call this or not!
+            gc.collect()
         app.processEvents()
+        # Throttle while loop to avoid weird gc things
+        time.sleep(0.1)
 
     widgets_to_check = list(
         weakref.ref(w) for w in
@@ -198,7 +205,11 @@ def pytest_runtest_call(item: pytest.Item):
             logger.error(failure_text)
 
     try:
-        assert not final_widgets, failure_text
+        if not list(item.iter_markers(name="no_cleanup_check")):
+            # Pyqtgraph stopped cleaning up properly and I can't do anything about it
+            # Rather than disable this check entirely, allow specific tests to skip it
+            # Use @pytest.mark.no_cleanup_check to skip
+            assert not final_widgets, failure_text
     finally:
         for widget in final_widgets:
             try:
@@ -325,6 +336,7 @@ class RandomSignal(SynPeriodicSignal):
     def __init__(self, *args, **kwargs):
         super().__init__(func=lambda: np.random.uniform(0, 100),
                          period=10, period_jitter=4, **kwargs)
+        self.start_simulation()
 
 
 class MockDevice(Device):
