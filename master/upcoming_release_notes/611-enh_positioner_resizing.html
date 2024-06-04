@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IssueNumber Title &mdash; Typhos 3.1.2.dev58+g079aa85 documentation</title>
+  <title>611 enh_positioner_resizing &mdash; Typhos 3.1.2.dev58+g079aa85 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -21,7 +21,9 @@
         <script src="../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="615 maint_fix_ci" href="615-maint_fix_ci.html" />
+    <link rel="prev" title="607 tst_fix_ci_saga" href="607-tst_fix_ci_saga.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,7 +49,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../save.html">Saving and Loading</a></li>
@@ -55,7 +57,22 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../upcoming_changes.html">Upcoming Changes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../upcoming_changes.html">Upcoming Changes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="604-perf_resize_text.html">604 perf_resize_text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="606-enh_wait_status.html">606 enh_wait_status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="607-tst_fix_ci_saga.html">607 tst_fix_ci_saga</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">611 enh_positioner_resizing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#api-breaks">API Breaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maintenance">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="615-maint_fix_ci.html">615 maint_fix_ci</a></li>
+<li class="toctree-l2"><a class="reference internal" href="616-fix_enum_handling.html">616 fix_enum_handling</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -82,9 +99,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">IssueNumber Title</li>
+          <li class="breadcrumb-item"><a href="../upcoming_changes.html">Upcoming Changes</a></li>
+      <li class="breadcrumb-item active">611 enh_positioner_resizing</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/upcoming_release_notes/template-full.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/upcoming_release_notes/611-enh_positioner_resizing.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -92,48 +110,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="issuenumber-title">
-<h1>IssueNumber Title<a class="headerlink" href="#issuenumber-title" title="Link to this heading"></a></h1>
-<p>Update the title above with your issue number and a 1-2 word title.
-Your filename should be issuenumber-title.rst, substituting appropriately.</p>
-<p>Make sure to fill out any section that represents changes you have made,
-or replace the default bullet point with N/A.</p>
+  <section id="enh-positioner-resizing">
+<h1>611 enh_positioner_resizing<a class="headerlink" href="#enh-positioner-resizing" title="Link to this heading"></a></h1>
 <section id="api-breaks">
 <h2>API Breaks<a class="headerlink" href="#api-breaks" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>List backwards-incompatible changes here.
-Changes to PVs don’t count as API changes for this library,
-but changing method and component names or changing default behavior does.</p></li>
+<li><p>N/A</p></li>
 </ul>
 </section>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>List new updates that add utility to many classes,
-provide a new base classes, add options to helper methods, etc.</p></li>
+<li><p>Rework the design, sizing, and font scaling of the positioner row widget to address
+concerns about readability and poor use of space for positioners that don’t need
+all of the widget components.</p></li>
+<li><p>Implement dynamic resizing in all directions for positioner row widgets.</p></li>
 </ul>
 </section>
 <section id="bugfixes">
 <h2>Bugfixes<a class="headerlink" href="#bugfixes" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>List bug fixes that are not covered in the above sections.</p></li>
+<li><p>Fix various issues that cause font clipping for specific motors using the positioner row widget.</p></li>
 </ul>
 </section>
 <section id="maintenance">
 <h2>Maintenance<a class="headerlink" href="#maintenance" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>List anything else. The intent is to accumulate changes
-that the average user does not need to worry about.</p></li>
+<li><p>N/A</p></li>
 </ul>
 </section>
 <section id="contributors">
 <h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p>List your github username and anyone else who made significant
-code or conceptual contributions to the PR. You don’t need to
-add reviewers unless their suggestions lead to large rewrites.
-These will be used in the release notes to give credit and to
-notify you when your code is being tagged.</p></li>
+<li><p>zllentz</p></li>
 </ul>
 </section>
 </section>
@@ -141,7 +150,10 @@ notify you when your code is being tagged.</p></li>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="607-tst_fix_ci_saga.html" class="btn btn-neutral float-left" title="607 tst_fix_ci_saga" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="615-maint_fix_ci.html" class="btn btn-neutral float-right" title="615 maint_fix_ci" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
