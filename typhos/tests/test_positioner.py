@@ -1,3 +1,13 @@
+"""
+Module for testing the positioner widgets
+
+Note the heavy usage of @pytest.mark.no_gc here:
+On Python 3.10+ these tests can cause segmentation faults if we manually
+(redundantly) call upon the garbage collector in conftest.
+
+Any test that uses a positioner widget needs to have this mark.
+This is not yet fully understood.
+"""
 from unittest.mock import Mock
 
 import pytest
