@@ -18,7 +18,7 @@ Things to Know for Test Writers
   This helps clean up your widget after the test is complete.
 - Use the ``qapp`` fixture and call ``qapp.processEvents()`` if you need "something"
   in the qt world to happen.
-- Use the ``noapp`` feature if you need to test code that calls ``qapp.exec_()`` or
+- Use the ``noapp`` fixture if you need to test code that calls ``qapp.exec_()`` or
   ``qapp.exit()``. Calling this code with no fixture will break the test suite for
   all future tests than need the ``qapp``.
 - If your test is segfaulting, try using the ``@pytest.mark.no_gc`` decorator
