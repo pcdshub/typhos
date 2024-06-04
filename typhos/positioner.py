@@ -750,7 +750,6 @@ class TyphosPositionerWidget(
         """Called when a move is begun"""
         logger.debug("Begin showing move in TyphosPositionerWidget")
         self.moving = True
-        self.err_is_timeout = False
 
     def _set_status_text(
         self,
