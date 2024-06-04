@@ -31,10 +31,29 @@ class TyphosStatusThread(QThread):
     Thread which monitors an ophyd Status object and emits start/stop signals.
 
     The ``status_started`` signal may be emitted after ``start_delay`` seconds,
-    unless the status has already completed.
+    unless the status has already completed, in which case it will not be
+    emitted.
 
-    The ``status_finished`` signal is guaranteed to be emitted with a status
-    boolean indicating success or failure, or timeout.
+    The ``status_timeout`` signal will be emitted if the status starts and the
+    timeout supplied to the ``TyphosStatusThread`` expires. This is distinct
+    from an internal timeout from a status object, which is an error.
+    The ``status_timeout`` is advisory rather than perscriptive and does not
+    necessarily indicate a severe problem. If you want a status to be marked
+    as failing after a timeout, pass the timeout to the status's constructor.
+
+    The ``status_finished`` signal is guaranteed to be emitted after the status
+    completes or fails, with a ``TyphosStatusResult`` enum set to
+    ``success`` or to ``failure``.
+
+    The ``error_message`` signal emits some information that could be useful
+    for a GUI to display an error. This is a ``TyphosStatusMessage`` which
+    contains a short error under ``.text`` and a longer message under
+    ``.tooltip``, intended for e.g. a label and its mouseover tooltip text.
+    This will not be emitted if the status succeeds.
+
+    The ``status_exc`` signal emits the literal exception object from a
+    status failure. This will not be emitted if the status succeeds.
+    This can be useful for customizing what to do in the case of failure.
 
     Parameters
     ----------
