@@ -33,13 +33,17 @@ def test_patching(
     )
     print("Starting font size", original_font_size)
 
-    event = QtGui.QPaintEvent(QtCore.QRect(0, 0, widget.width(), widget.height()))
+    old_size = widget.size()
+    event = QtGui.QResizeEvent(
+        QtCore.QSize(old_size.width() * 2, old_size.height() * 2),
+        old_size,
+    )
 
     assert not is_patched(widget)
     patch_widget(widget)
     assert is_patched(widget)
 
-    widget.paintEvent(event)
+    widget.resizeEvent(event)
     new_font_size = widget.font().pointSizeF()
     print("Patched font size", new_font_size)
     assert original_font_size != new_font_size
