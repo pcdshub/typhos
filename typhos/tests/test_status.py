@@ -86,7 +86,7 @@ def test_status_thread_wait_timeout(qtbot, listener, thread, status):
     qtbot.waitUntil(lambda: listener.timeout.called, timeout=2000)
     msg, = listener.err_msg.call_args[0]
     exc, = listener.exc.call_args[0]
-    assert "taking longer than expected" in msg
+    assert "taking longer than expected" in msg.text
     assert isinstance(exc, WaitTimeoutError)
     assert not listener.finished.called
     # and now we should be able to finish
@@ -111,7 +111,7 @@ def test_status_thread_status_timeout(qtbot, listener, thread):
     msg, = listener.err_msg.call_args[0]
     exc, = listener.exc.call_args[0]
     assert res == TyphosStatusResult.failure
-    assert "failed with timeout" in msg
+    assert "failed with timeout" in msg.text
     assert isinstance(exc, StatusTimeoutError)
     assert not listener.timeout.called
 
@@ -130,7 +130,7 @@ def test_status_thread_unk_failure(qtbot, listener, status, thread):
     msg, = listener.err_msg.call_args[0]
     exc, = listener.exc.call_args[0]
     assert res == TyphosStatusResult.failure
-    assert "failed with no reason" in msg
+    assert "failed with no reason" in msg.text
     assert isinstance(exc, UnknownStatusFailure)
     assert not listener.timeout.called
 
@@ -149,7 +149,7 @@ def test_status_thread_specific_failure(qtbot, listener, status, thread):
     msg, = listener.err_msg.call_args[0]
     exc, = listener.exc.call_args[0]
     assert res == TyphosStatusResult.failure
-    assert "test_error" in msg
+    assert "test_error" in msg.text
     assert not isinstance(exc, WaitTimeoutError)
     assert not isinstance(exc, StatusTimeoutError)
     assert not isinstance(exc, UnknownStatusFailure)
