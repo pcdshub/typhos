@@ -1145,7 +1145,7 @@ Screen</string>
                </size>
               </property>
               <property name="styleSheet">
-               <string notr="true">color: black; background-color: none;   border-radius: 0px;</string>
+               <string notr="true">QLabel { color: black; background-color: none;   border-radius: 0px; }</string>
               </property>
               <property name="text">
                <string> (Status label)</string>
