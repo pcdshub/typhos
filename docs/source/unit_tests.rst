@@ -28,7 +28,7 @@ Things to Know for Test Writers
 - If an external package's widgets (and none of ours) are showing up in the
   widget cleanup check (also in the ``pytest_runtest_call`` hook), try using
   the ``@pytest.mark.no_cleanup_check`` decorator. If these come from ``typhos``
-  it's fairly important to fix the issue, but if they come from external
+  it's fairly important to fix the issue, but if they come from an external
   package it's hard to do something about it.
 
 
@@ -44,3 +44,5 @@ on the same architecture:
   ``export QT_QPA_PLUGIN=offscreen``.
 - Cloud builds use the latest versions of packages, which may differ from the ones
   you have installed locally.
+- Ideally, the test suite should pass both on local hardware with the default
+  qpa plugin and also on the cloud.
