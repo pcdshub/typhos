@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import logging
+import math
 import os.path
 import threading
 import typing
@@ -220,7 +221,7 @@ class TyphosPositionerWidget(
         set_position: float,
         settle_time: float,
         rescale: float = 1,
-    ) -> tuple[float | None, str]:
+    ) -> tuple[int | None, str]:
         """
         Use positioner's configuration to select a timeout.
 
@@ -255,9 +256,10 @@ class TyphosPositionerWidget(
 
         Returns
         -------
-        timeout : float or None
+        timeout : tuple[int or None, str]
             The timeout to use for this move, or None if a timeout could
-            not be calculated.
+            not be calculated, bundled with an explanation on how it
+            was calculated.
         """
         pos_sig = getattr(self.device, self._readback_attr, None)
         vel_sig = getattr(self.device, self._velocity_attr, None)
@@ -278,8 +280,9 @@ class TyphosPositionerWidget(
         units = pos_sig.metadata.get("units", "egu")
         # This time is always greater than the kinematic calc
         return (
-            rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time),
-            f"{rescale}*({abs(delta):.2f}{units}/{speed:.2f}{units}/s) + 2*{acc_time:.2f}s + {settle_time}s",
+            math.ceil(rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time)),
+            (f"{rescale}*({abs(delta):.2f}{units}/{speed:.2f}{units}/s) + "
+             f"2*{acc_time:.2f}s + {settle_time}s, rounded up"),
         )
 
     def _set(self, value):
