@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.panel &mdash; Typhos 3.1.1 documentation</title>
+  <title>typhos.panel &mdash; Typhos 3.1.2.dev63+g730c3b7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -14,8 +14,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=796a81b5"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=6dac2bad"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Typhos
           </a>
               <div class="version">
-                3.1.1
+                3.1.2.dev63+g730c3b7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -64,6 +64,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html#cache-utilities">Cache Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../unit_tests.html">Unit Test Quirks</a></li>
 </ul>
 
         </div>
@@ -113,7 +114,7 @@
 <span class="kn">import</span> <span class="nn">ophyd</span>
 <span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Kind</span>
 <span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignal</span><span class="p">,</span> <span class="n">EpicsSignalRO</span>
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
 <span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">Property</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">utils</span>
@@ -843,6 +844,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setContextMenuPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DefaultContextMenu</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">contextMenuEvent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_context_menu</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">nested_panel</span> <span class="o">=</span> <span class="kc">False</span>
+
     <span class="k">def</span> <span class="nf">_get_kind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Kind</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Property getter for show[kind].&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kinds</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
@@ -943,10 +946,17 @@
     <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Typhos hook for adding a new device.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nested_panel</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="c1"># Configure the layout for the new device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_panel_layout</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_panel</span><span class="p">()</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">TyphosSignalPanel</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nested_panel</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="TyphosSignalPanel.set_device_display">
@@ -985,6 +995,37 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">menu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_context_menu</span><span class="p">()</span>
         <span class="n">menu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">pos</span><span class="p">()))</span></div>
+
+
+    <span class="k">def</span> <span class="nf">maybe_fix_parent_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nested_panel</span><span class="p">:</span>
+            <span class="c1"># force this widget&#39;s containers to give it enough space!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">minimumSizeHint</span><span class="p">()</span><span class="o">.</span><span class="n">height</span><span class="p">())</span>
+
+<div class="viewcode-block" id="TyphosSignalPanel.resizeEvent">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.resizeEvent">[docs]</a>
+    <span class="k">def</span> <span class="nf">resizeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QResizeEvent</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fix the parent container&#39;s size whenever our size changes.</span>
+
+<span class="sd">        This also runs when we add or filter rows.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maybe_fix_parent_size</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">resizeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TyphosSignalPanel.setVisible">
+<a class="viewcode-back" href="../../widgets.html#typhos.panel.TyphosSignalPanel.setVisible">[docs]</a>
+    <span class="k">def</span> <span class="nf">setVisible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fix the parent container&#39;s size whenever we switch visibility.</span>
+
+<span class="sd">        This also runs when we toggle a row visibility using the title</span>
+<span class="sd">        and when all signal rows get filtered all at once.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rval</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maybe_fix_parent_size</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">rval</span></div>
 </div>
 
 

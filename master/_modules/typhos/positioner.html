@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.positioner &mdash; Typhos 3.1.1 documentation</title>
+  <title>typhos.positioner &mdash; Typhos 3.1.2.dev63+g730c3b7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -14,8 +14,8 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=796a81b5"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/documentation_options.js?v=6dac2bad"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -35,7 +35,7 @@
             Typhos
           </a>
               <div class="version">
-                3.1.1
+                3.1.2.dev63+g730c3b7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -64,6 +64,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Data Plugins for PyDM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html#cache-utilities">Cache Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../unit_tests.html">Unit Test Quirks</a></li>
 </ul>
 
         </div>
@@ -95,6 +96,7 @@
 
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">typing</span>
@@ -102,14 +104,14 @@
 
 <span class="kn">import</span> <span class="nn">ophyd</span>
 <span class="kn">from</span> <span class="nn">pydm.widgets.channel</span> <span class="kn">import</span> <span class="n">PyDMChannel</span>
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">uic</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">uic</span>
 
 <span class="kn">from</span> <span class="nn">typhos.display</span> <span class="kn">import</span> <span class="n">TyphosDisplaySwitcher</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">dynamic_font</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">widgets</span>
 <span class="kn">from</span> <span class="nn">.alarm</span> <span class="kn">import</span> <span class="n">AlarmLevel</span><span class="p">,</span> <span class="n">KindLevel</span><span class="p">,</span> <span class="n">_KindLevel</span>
 <span class="kn">from</span> <span class="nn">.panel</span> <span class="kn">import</span> <span class="n">SignalOrder</span><span class="p">,</span> <span class="n">TyphosSignalPanel</span>
-<span class="kn">from</span> <span class="nn">.status</span> <span class="kn">import</span> <span class="n">TyphosStatusThread</span>
+<span class="kn">from</span> <span class="nn">.status</span> <span class="kn">import</span> <span class="n">TyphosStatusMessage</span><span class="p">,</span> <span class="n">TyphosStatusResult</span><span class="p">,</span> <span class="n">TyphosStatusThread</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -265,6 +267,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_moving_channel</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_lowlim</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_lowtrav</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_highlim</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_hightrav</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">_TyphosPositionerUI</span><span class="p">,</span> <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui_template</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
@@ -279,7 +286,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">show_expert_button</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_after_set_moving</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">user_readback</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">user_readback</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_clear_status_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear a previous status thread.&quot;&quot;&quot;</span>
@@ -290,18 +297,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_start_status_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_start_status_thread</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">status</span><span class="p">:</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">StatusBase</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">timeout_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Start the status monitoring thread for the given status object.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status_thread</span> <span class="o">=</span> <span class="n">thread</span> <span class="o">=</span> <span class="n">TyphosStatusThread</span><span class="p">(</span>
-            <span class="n">status</span><span class="p">,</span> <span class="n">start_delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_visible_operation</span><span class="p">,</span>
+            <span class="n">status</span><span class="p">,</span>
+            <span class="n">error_context</span><span class="o">=</span><span class="s2">&quot;Move&quot;</span><span class="p">,</span>
+            <span class="n">timeout_calc</span><span class="o">=</span><span class="n">timeout_desc</span><span class="p">,</span>
+            <span class="n">start_delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_min_visible_operation</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
             <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">thread</span><span class="o">.</span><span class="n">status_started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">move_changed</span><span class="p">)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">status_started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_move_started</span><span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">status_finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_status_finished</span><span class="p">)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">error_message</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_status_text</span><span class="p">)</span>
         <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_get_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">set_position</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">settle_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">rescale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_get_timeout</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">set_position</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">settle_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">rescale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use positioner&#39;s configuration to select a timeout.</span>
 
@@ -336,28 +357,40 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        timeout : float or None</span>
+<span class="sd">        timeout : tuple[int or None, str]</span>
 <span class="sd">            The timeout to use for this move, or None if a timeout could</span>
-<span class="sd">            not be calculated.</span>
+<span class="sd">            not be calculated, bundled with an explanation on how it</span>
+<span class="sd">            was calculated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pos_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readback_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">vel_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">acc_sig</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acceleration_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="c1"># Not enough info == no timeout</span>
         <span class="k">if</span> <span class="n">pos_sig</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">vel_sig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;no timeout, missing info&quot;</span><span class="p">)</span>
         <span class="n">delta</span> <span class="o">=</span> <span class="n">pos_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="o">-</span> <span class="n">set_position</span>
         <span class="n">speed</span> <span class="o">=</span> <span class="n">vel_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="c1"># Bad speed == no timeout</span>
         <span class="k">if</span> <span class="n">speed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;no timeout, speed == 0&quot;</span><span class="p">)</span>
         <span class="c1"># Bad acceleration == ignore acceleration</span>
         <span class="k">if</span> <span class="n">acc_sig</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">acc_time</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">acc_time</span> <span class="o">=</span> <span class="n">acc_sig</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">pos_sig</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="s2">&quot;egu&quot;</span><span class="p">)</span>
+        <span class="c1"># Some friendly names for the f-string tooltip reporting</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+        <span class="n">speed</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+        <span class="n">mult</span> <span class="o">=</span> <span class="n">rescale</span>
         <span class="c1"># This time is always greater than the kinematic calc</span>
-        <span class="k">return</span> <span class="n">rescale</span> <span class="o">*</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">delta</span><span class="o">/</span><span class="n">speed</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">acc_time</span><span class="p">))</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">settle_time</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">rescale</span> <span class="o">*</span> <span class="p">(</span><span class="n">dist</span><span class="o">/</span><span class="n">speed</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">acc_time</span><span class="p">))</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">settle_time</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">&quot;an upper bound on the expected time based on the speed, distance traveled, &quot;</span>
+             <span class="s2">&quot;and acceleration time. Numerically, this is &quot;</span>
+             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mult</span><span class="si">=}</span><span class="s2">*(</span><span class="si">{</span><span class="n">dist</span><span class="si">=:</span><span class="s2">.2f</span><span class="si">}{</span><span class="n">units</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">speed</span><span class="si">=:</span><span class="s2">.2f</span><span class="si">}{</span><span class="n">units</span><span class="si">}</span><span class="s2">/s) + &quot;</span>
+             <span class="sa">f</span><span class="s2">&quot;2*</span><span class="si">{</span><span class="n">acc_time</span><span class="si">=:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s + </span><span class="si">{</span><span class="n">settle_time</span><span class="si">=}</span><span class="s2">s, rounded up.&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Inner `set` routine - call device.set() and monitor the status.&quot;&quot;&quot;</span>
@@ -370,7 +403,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Always at least 5s, give 20% extra time as margin for long moves</span>
-            <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timeout</span><span class="p">(</span><span class="n">set_position</span><span class="p">,</span> <span class="n">settle_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+            <span class="n">timeout</span><span class="p">,</span> <span class="n">desc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timeout</span><span class="p">(</span><span class="n">set_position</span><span class="p">,</span> <span class="n">settle_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="c1"># Something went wrong, just run without a timeout.</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Unable to estimate motor timeout.&#39;</span><span class="p">)</span>
@@ -385,7 +418,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_status_finished</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Send timeout through thread because status timeout stops the move</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_status_thread</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_status_thread</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
 
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">combo_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
@@ -479,8 +512,7 @@
         <span class="c1"># It also controls whether or not we have a red box on the widget</span>
         <span class="c1"># False = Red, True = Green, None = no box (in motion is yellow)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">reload_widget_stylesheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cascade</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
     <span class="k">def</span> <span class="nf">_get_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -508,6 +540,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Link the positioner lower limit switch with the ui element.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_lowlim</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;high_limit_switch_attribute&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;ui.high_limit_switch&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -515,6 +548,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Link the positioner high limit switch with the ui element.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_highlim</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;low_limit_travel_attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;ui.low_limit&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_link_low_travel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
@@ -547,6 +581,8 @@
         <span class="c1"># If not found or invalid, hide them:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">low_limit</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">high_limit</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_lowtrav</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_hightrav</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@utils</span><span class="o">.</span><span class="n">linked_attribute</span><span class="p">(</span><span class="s1">&#39;moving_attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;ui.moving_indicator&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_link_moving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
@@ -599,10 +635,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span>
-            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">,</span>
-            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">user_setpoint</span><span class="o">.</span><span class="n">sizePolicy</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">user_setpoint</span><span class="o">.</span><span class="n">minimumWidth</span><span class="p">()</span>
         <span class="p">)</span>
@@ -835,36 +868,80 @@
         <span class="k">if</span> <span class="n">kind_level</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarmKindLevel</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_circle</span><span class="o">.</span><span class="n">kindLevel</span> <span class="o">=</span> <span class="n">kind_level</span>
 
-<div class="viewcode-block" id="TyphosPositionerWidget.move_changed">
-<a class="viewcode-back" href="../../widgets.html#typhos.TyphosPositionerWidget.move_changed">[docs]</a>
-    <span class="k">def</span> <span class="nf">move_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_move_started</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when a move is begun&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Begin showing move in TyphosPositionerWidget&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">True</span>
 
+    <span class="k">def</span> <span class="nf">_set_status_text</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">message</span><span class="p">:</span> <span class="n">TyphosStatusMessage</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the status text label to the contents of ``message``.</span>
 
-    <span class="k">def</span> <span class="nf">_set_status_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the status text label to ``text``.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_length</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[:</span><span class="n">max_length</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="sd">        Message is either a simple string or a dataclass that</span>
+<span class="sd">        has a separate entry for the text and for the tooltip.</span>
 
+<span class="sd">        Simple strings or empty string tooltips will result in</span>
+<span class="sd">        a widget with no tooltip, unless the message is longer</span>
+<span class="sd">        than the max length.</span>
+
+<span class="sd">        Messages that are longer than the max length will be</span>
+<span class="sd">        truncated and also included in the tooltip.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        message : TyphosStatusMessage or str</span>
+<span class="sd">            The message to include in the status text.</span>
+<span class="sd">        max_length : int or None, optional</span>
+<span class="sd">            The maximum length for the status text before it gets</span>
+<span class="sd">            truncated and moved to the tooltip. If this is manually</span>
+<span class="sd">            set to ``None``, there will be no limit.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        text : str</span>
+<span class="sd">            The text that is displayed in the status label, which</span>
+<span class="sd">            may be truncated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">TyphosStatusMessage</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">text</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">tooltip</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">message</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">max_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_length</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tooltip</span><span class="p">:</span>
+                <span class="n">tooltip</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">tooltip</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tooltip</span> <span class="o">=</span> <span class="n">text</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="n">max_length</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tooltip</span> <span class="ow">and</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tooltip</span><span class="p">:</span>
+            <span class="c1"># Force rich text, qt auto line wraps if it detects rich text</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;</span><span class="si">{</span><span class="n">tooltip</span><span class="si">}</span><span class="s2">&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span>
 
-    <span class="k">def</span> <span class="nf">_status_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_status_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">TyphosStatusResult</span> <span class="o">|</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Called when a move is complete.&quot;&quot;&quot;</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;b&gt;</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&lt;/b&gt; </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_status_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-
-        <span class="n">success</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Completed move in TyphosPositionerWidget (result=</span><span class="si">%r</span><span class="s2">)&quot;</span><span class="p">,</span>
-                     <span class="n">result</span><span class="p">)</span>
+            <span class="c1"># Calling set or move completely broke</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_status_text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;b&gt;</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&lt;/b&gt; </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="n">TyphosStatusResult</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="c1"># Clear the status display of any lingering timeout text</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_status_text</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Other cases: keep the existing status text, whatever it is.</span>
+        <span class="c1"># This covers any case where the move started, but had an error during the move.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Completed move in TyphosPositionerWidget (result=</span><span class="si">%r</span><span class="s2">)&quot;</span><span class="p">,</span>
+            <span class="n">result</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_move</span> <span class="o">=</span> <span class="n">success</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">moving</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -959,10 +1036,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Annotations helper for positioner_row.ui; not to be instantiated.&quot;&quot;&quot;</span>
 
     <span class="n">notes_edit</span><span class="p">:</span> <span class="n">TyphosNotesEdit</span>
-    <span class="n">status_container_widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span>
-    <span class="n">extended_signal_panel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TyphosSignalPanel</span><span class="p">]</span>
-    <span class="n">error_prefix</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span>
+    <span class="n">status_container_widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span>
+    <span class="n">extended_signal_panel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RowDetails</span><span class="p">]</span>
     <span class="n">switcher</span><span class="p">:</span> <span class="n">TyphosDisplaySwitcher</span>
+    <span class="n">status_text_layout</span><span class="p">:</span> <span class="kc">None</span>  <span class="c1"># Row UI doesn&#39;t use status_text_layout</span>
+    <span class="n">low_limit_widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span>
+    <span class="n">high_limit_widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span>
+    <span class="n">setpoint_widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span>
 
 
 <span class="k">class</span> <span class="nc">TyphosPositionerRowWidget</span><span class="p">(</span><span class="n">TyphosPositionerWidget</span><span class="p">):</span>
@@ -983,12 +1063,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_alarm_level</span> <span class="o">=</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">DISCONNECTED</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()):</span>
-            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_text_layout</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">takeAt</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-                <span class="k">break</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">low_limit</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">high_limit</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">device_name_label</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">notes_edit</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">alarm_label</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">moving_indicator_label</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">stop_button</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expert_button</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">clear_error_button</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
         <span class="c1"># TODO move these out</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_omit_names</span> <span class="o">=</span> <span class="p">[</span>
@@ -1037,7 +1120,12 @@
         <span class="n">omit_signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_linked_signals</span>
         <span class="n">to_keep_signals</span> <span class="o">=</span> <span class="p">[</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity_attribute</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceleration_attribute</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">velocity_attribute</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">acceleration_attribute</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">high_limit_travel_attribute</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">low_limit_travel_attribute</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">to_keep_signals</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">omit_signals</span><span class="p">:</span>
@@ -1060,13 +1148,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">panel</span> <span class="o">=</span> <span class="n">TyphosSignalPanel</span><span class="p">()</span>
-        <span class="n">panel</span><span class="o">.</span><span class="n">omitNames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_names_to_omit</span><span class="p">()</span>
-        <span class="n">panel</span><span class="o">.</span><span class="n">sortBy</span> <span class="o">=</span> <span class="n">SignalOrder</span><span class="o">.</span><span class="n">byName</span>
-        <span class="n">panel</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">panel</span>
+        <span class="k">return</span> <span class="n">RowDetails</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Window</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_expand_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Toggle the expansion of the signal panel.&quot;&quot;&quot;</span>
@@ -1074,17 +1156,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">extended_signal_panel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_signal_panel</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">extended_signal_panel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span>
-
             <span class="n">to_show</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">to_show</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">extended_signal_panel</span><span class="o">.</span><span class="n">isVisible</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">extended_signal_panel</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">to_show</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">to_show</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expand_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expand_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add (or rather set) the ophyd device for this positioner.&quot;&quot;&quot;</span>
@@ -1101,6 +1177,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">notes_edit</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_tooltip</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">((</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_lowlim</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_highlim</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_lowtrav</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_hightrav</span><span class="p">,</span>
+        <span class="p">)):</span>
+            <span class="c1"># Hide the limit sections</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">low_limit_widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">high_limit_widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the tooltip based on device information.&quot;&quot;&quot;</span>
@@ -1132,16 +1218,34 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Link the IOC error message with the ui element.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">widget</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">error_prefix</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">signal</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_error_message</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">new_error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_status_visibility</span><span class="p">(</span><span class="n">error_message</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_status_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_status_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_define_setpoint_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_define_setpoint_widget</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QComboBox</span><span class="p">):</span>
+            <span class="c1"># Pad extra to avoid intersecting drop-down arrow</span>
+            <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.18</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="c1"># Consume the vertical space left by the missing tweak widgets</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="o">.</span><span class="n">setMinimumHeight</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">user_setpoint</span><span class="o">.</span><span class="n">minimumHeight</span><span class="p">()</span>
+                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">tweak_value</span><span class="o">.</span><span class="n">minimumHeight</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dynamic_font</span><span class="o">.</span><span class="n">patch_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">set_value</span><span class="p">,</span> <span class="n">pad_percent</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_status_text</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">message</span><span class="p">:</span> <span class="n">TyphosStatusMessage</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_status_text</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_status_visibility</span><span class="p">(</span><span class="n">status_text</span><span class="o">=</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span>
 
     <span class="k">def</span> <span class="nf">update_alarm_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_level</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update_alarm_text</span><span class="p">(</span><span class="n">alarm_level</span><span class="o">=</span><span class="n">alarm_level</span><span class="p">)</span>
@@ -1159,8 +1263,10 @@
 <span class="sd">        The goal here to make an illusion that there is only one label in</span>
 <span class="sd">        in this space when only one of the labels has text.</span>
 
-<span class="sd">        If both are empty, we also want to put &quot;something&quot; there to fill the</span>
+<span class="sd">        If both are empty, we want to put &quot;something&quot; there to fill the</span>
 <span class="sd">        void, so we opt for a friendly message or an alarm reminder.</span>
+
+<span class="sd">        If both are populated, we want to do some best-effort deduplication.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">error_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span> <span class="o">=</span> <span class="n">error_message</span>
@@ -1180,9 +1286,12 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;Check alarm&#39;</span><span class="p">)</span>
             <span class="n">has_status</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">has_status</span> <span class="ow">and</span> <span class="n">has_error</span><span class="p">:</span>
+            <span class="c1"># We want to avoid having duplicate information (low effort try)</span>
+            <span class="k">if</span> <span class="n">error_message</span> <span class="ow">in</span> <span class="n">status_text</span><span class="p">:</span>
+                <span class="n">has_error</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">status_label</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">has_status</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">error_label</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">has_error</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">error_prefix</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">has_error</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">clear_error_in_background</span><span class="p">(</span><span class="n">device</span><span class="p">):</span>
@@ -1198,6 +1307,109 @@
 
     <span class="n">td</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">inner</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">td</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">RowDetails</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Container class for floating window with positioner row&#39;s basic config info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">row</span><span class="p">:</span> <span class="n">TyphosPositionerRowWidget</span>
+    <span class="n">resize_timer</span><span class="p">:</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">TyphosPositionerRowWidget</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">row</span> <span class="o">=</span> <span class="n">row</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">device_name_label</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="n">font</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">font</span><span class="p">()</span>
+        <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="n">font</span><span class="o">.</span><span class="n">pointSize</span><span class="p">()</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setMaximumHeight</span><span class="p">(</span>
+            <span class="n">QtGui</span><span class="o">.</span><span class="n">QFontMetrics</span><span class="p">(</span><span class="n">font</span><span class="p">)</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">text</span><span class="p">())</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span> <span class="o">=</span> <span class="n">TyphosSignalPanel</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">omitNames</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get_names_to_omit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">sortBy</span> <span class="o">=</span> <span class="n">SignalOrder</span><span class="o">.</span><span class="n">byName</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_area</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_area</span><span class="o">.</span><span class="n">setFrameStyle</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">NoFrame</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_area</span><span class="o">.</span><span class="n">setVerticalScrollBarPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAsNeeded</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_area</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAlwaysOff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_area</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_area</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scroll_area</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QTimer</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fix_scroll_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">setInterval</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">setSingleShot</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_panel_min_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">minimumWidth</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_resize_width</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_done</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">hideEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHideEvent</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        After hide, update button text, even if we were hidden via clicking the &quot;x&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expand_button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">hideEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">showEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QShowEvent</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Before show, update button text and move window to just under button.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">button</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">expand_button</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
+            <span class="n">button</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span>
+                <span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">(</span>
+                    <span class="n">button</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span>
+                    <span class="n">button</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="n">button</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+                    <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_TitleBarHeight</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">resize_done</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">showEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fix_scroll_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Slot that ensures the panel gets enough space in the scroll area.</span>
+
+<span class="sd">        The panel, when created, has smaller sizing information than it does</span>
+<span class="sd">        a few moments after being shown for the first time. This might</span>
+<span class="sd">        update several times before settling down.</span>
+
+<span class="sd">        We want to watch for this resize and set the scroll area width such</span>
+<span class="sd">        that there&#39;s enough room to see the widget at its minimum size.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">minimumWidth</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_panel_min_width</span><span class="p">:</span>
+            <span class="c1"># No change</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_resize_width</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">minimumWidth</span><span class="p">():</span>
+            <span class="c1"># We are not stable yet</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_resize_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">minimumWidth</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resize_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Make sure the panel has enough space to exist!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scroll_area</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">panel</span><span class="o">.</span><span class="n">minimumWidth</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_ScrollBarExtent</span><span class="p">)</span>
+            <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_ScrollView_ScrollBarOverlap</span><span class="p">)</span>
+            <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">pixelMetric</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">PM_ScrollView_ScrollBarSpacing</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize_done</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 
            </div>

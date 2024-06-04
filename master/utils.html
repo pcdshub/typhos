@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utility Functions &mdash; Typhos 3.1.1 documentation</title>
+  <title>Utility Functions &mdash; Typhos 3.1.2.dev63+g730c3b7 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,13 +15,14 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=796a81b5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/documentation_options.js?v=6dac2bad"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Unit Test Quirks" href="unit_tests.html" />
     <link rel="prev" title="Typhos Data Plugins for PyDM" href="plugins.html" /> 
 </head>
 
@@ -37,7 +38,7 @@
             Typhos
           </a>
               <div class="version">
-                3.1.1
+                3.1.2.dev63+g730c3b7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -180,6 +181,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="unit_tests.html">Unit Test Quirks</a></li>
 </ul>
 
         </div>
@@ -399,7 +401,7 @@ and replace it with a default timeout message.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.utils.WeakPartialMethodSlot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">WeakPartialMethodSlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_owner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyqtSignal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#WeakPartialMethodSlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.WeakPartialMethodSlot" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.utils.</span></span><span class="sig-name descname"><span class="pre">WeakPartialMethodSlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_owner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pyqtSignal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MethodType</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/utils.html#WeakPartialMethodSlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.utils.WeakPartialMethodSlot" title="Link to this definition"></a></dt>
 <dd><p>A PyQt-compatible slot for a partial method.</p>
 <p>This utility handles deleting the connection when the method class instance
 gets garbage collected. This avoids cycles in the garbage collector
@@ -469,7 +471,7 @@ If omitted, apply to the whole QApplication.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>device</strong> (<em>ophyd.Device</em>) – </p></li>
+<li><p><strong>device</strong> (<em>ophyd.Device</em>)</p></li>
 <li><p><strong>strip_parent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> or </em><em>Device</em>) – Remove the parent name of the device from name. If strip_parent is
 True, the name of the direct parent of the device is stripped. If a
 device is provided the name of that device is used. This allows
@@ -497,7 +499,7 @@ specification for removal at any point of the device schema</p></li>
 <dd><p>Return code to create a device from its <code class="docutils literal notranslate"><span class="pre">repr</span></code> information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>device</strong> (<em>ophyd.Device</em>) – </p>
+<dd class="field-odd"><p><strong>device</strong> (<em>ophyd.Device</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -731,7 +733,7 @@ introspection in the ophyd library. Until that day we need to check classes</p>
 <dd><p>Is the template a core one provided with typhos?</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><em>pathlib.Path</em></a>) – </p>
+<dd class="field-odd"><p><strong>template</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><em>pathlib.Path</em></a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -882,7 +884,7 @@ good behavior on as many systems as possible.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>suite</strong> (<a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite"><em>TyphosSuite</em></a>) – </p></li>
+<li><p><strong>suite</strong> (<a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite"><em>TyphosSuite</em></a>)</p></li>
 <li><p><strong>file_or_buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> or </em><em>file-like</em>) – Either a path to the file or a handle that supports <code class="docutils literal notranslate"><span class="pre">write</span></code></p></li>
 </ul>
 </dd>
@@ -1164,6 +1166,7 @@ returned immediately.  Otherwise, upon connection and successful
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="plugins.html" class="btn btn-neutral float-left" title="Typhos Data Plugins for PyDM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unit_tests.html" class="btn btn-neutral float-right" title="Unit Test Quirks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

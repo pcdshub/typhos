@@ -2,6 +2,53 @@ Release History
 ###############
 
 
+v4.0.0 (2024-08-20)
+===================
+
+API Breaks
+----------
+- ``TyphosStatusThread`` now has a dramatically different signal API.
+  This is an improved version but if you were using this class take note
+  of the changes.  Key member signals are:
+  - ``TyphosStatusThread.status_started``
+  - ``TyphosStatusThread.status_timeout``
+  - ``TyphosStatusThread.status_finished``
+  - ``TyphosStatusThread.error_message``
+  - ``TyphosStatusThread.status_exc``
+
+Features
+--------
+- Rework the design, sizing, and font scaling of the positioner row widget to address
+  concerns about readability and poor use of space for positioners that don't need
+  all of the widget components.
+- Implement dynamic resizing in all directions for positioner row widgets.
+- Make the timeout messages friendlier and more accurate when the
+  timeouts come from the ``TyphosPositionerWidget``.
+- Make error messages in general (including status timeouts) clearer
+  when they come from the positioner device class controlled by the
+  ``TyphosPositionerWidget``.
+
+Bugfixes
+--------
+- Fix an issue where the row positioner widget's resizing would peg the cpu to 100%
+- Fix various issues that cause font clipping for specific motors using the positioner row widget.
+- Fix various issues with enum handling in the SignalPlugin.
+
+Maintenance
+-----------
+- Fix issues with cloud-only CI failures and segfaults.
+- unpin jinja, sphinx no longer incompatible
+- Refactor ``TyphosStatusThread`` to facilitate timeout message changes.
+- In dev/test requirements, pin pcdsdevices to current latest to fix the CI builds.
+
+Contributors
+------------
+- canismarko
+- tangkong
+- zllentz
+
+
+
 v3.1.1 (2024-04-12)
 ===================
 
