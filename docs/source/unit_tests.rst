@@ -22,8 +22,8 @@ Things to Know for Test Writers
   ``qapp.exit()``. Calling this code with no fixture will break the test suite for
   all future tests than need the ``qapp``.
 - If your test is segfaulting, try using the ``@pytest.mark.no_gc`` decorator
-  to skip the manual garbage collection step from the pytest_runtest_call hook
-  in conftest.py. In some cases (e.g. the positioner widgets) this is an ill-timed
+  to skip the manual garbage collection step from the ``pytest_runtest_call`` hook
+  in ``conftest.py``. In some cases (e.g. the positioner widgets) this is an ill-timed
   redundant call.
 - If an external package's widgets (and none of ours) are showing up in the
   widget cleanup check (also in the ``pytest_runtest_call`` hook), try using
