@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import pytest
 import pytestqt.qtbot
+from ophyd.sim import SynAxis
+from pydm.widgets.label import PyDMLabel
 from qtpy import QtCore, QtGui, QtWidgets
 
+from typhos.positioner import TyphosPositionerRowWidget
 from typhos.tests import conftest
 
 from ..dynamic_font import (get_widget_maximum_font_size, is_patched,
@@ -15,6 +18,7 @@ from ..dynamic_font import (get_widget_maximum_font_size, is_patched,
     [
         QtWidgets.QLabel,
         QtWidgets.QPushButton,
+        PyDMLabel,
     ]
 )
 def test_patching(
@@ -81,3 +85,35 @@ def test_wide_label(
     )
     widget.resizeEvent(event)
     assert widget.font().pointSizeF() == get_widget_maximum_font_size(widget, widget.text())
+
+
+def test_positioner_label(
+    qapp: QtWidgets.QApplication,
+    qtbot: pytestqt.qtbot.QtBot,
+    motor: SynAxis,
+):
+    """
+    Literally try the positioner label that causes issues
+    """
+    pos = 143252
+    units = "urad"
+
+    widget = TyphosPositionerRowWidget()
+    qtbot.add_widget(widget)
+    widget.readback_attribute = "readback"
+    widget.add_device(motor)
+    qapp.processEvents()
+
+    motor.readback._metadata["units"] = units
+    motor.readback._metadata["precision"] = 3
+    motor.readback._run_metadata_callbacks()
+    motor.velocity.put(10000000)
+    motor.set(pos).wait(timeout=1.0)
+    qapp.processEvents()
+
+    expected_text = f"{pos:.3f} {units}"
+    expected_size = get_widget_maximum_font_size(widget.user_readback, expected_text)
+    actual_text = widget.user_readback.text()
+    actual_size = widget.user_readback.font().pointSizeF()
+    assert expected_text == actual_text
+    assert expected_size == actual_size
