@@ -56,3 +56,4 @@ Related Projects
     widgets.rst
     plugins.rst
     utils.rst
+    unit_tests.rst
