@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import dataclasses
 import enum
 import logging
 import time
+import traceback
 
 from ophyd.status import Status
 from ophyd.utils import (StatusTimeoutError, UnknownStatusFailure,
@@ -16,6 +18,12 @@ class TyphosStatusResult(enum.Enum):
     success = enum.auto()
     failure = enum.auto()
     timeout = enum.auto()
+
+
+@dataclasses.dataclass
+class TyphosStatusMessage:
+    text: str
+    tooltip: str
 
 
 class TyphosStatusThread(QThread):
@@ -52,7 +60,7 @@ class TyphosStatusThread(QThread):
     status_started = Signal()
     status_timeout = Signal()
     status_finished = Signal(TyphosStatusResult)
-    error_message = Signal(str)
+    error_message = Signal(TyphosStatusMessage)
     status_exc = Signal(object)
 
     def __init__(
@@ -100,11 +108,18 @@ class TyphosStatusThread(QThread):
             self.status.wait(timeout=timeout)
         except WaitTimeoutError as ex:
             # Status doesn't have a timeout, but this thread does
-            errmsg = f"{self.error_context} taking longer than expected, >{timeout:.2f}s"
+            errmsg = f"{self.error_context} taking longer than expected, >{timeout}s"
             if self.timeout_calc:
-                errmsg += f", calculated as {self.timeout_calc}"
-            logger.debug(errmsg)
-            self.error_message.emit(errmsg)
+                tooltip = f"calculated as {self.timeout_calc}"
+            else:
+                tooltip = ""
+            self.error_message.emit(
+                TyphosStatusMessage(
+                    text=errmsg,
+                    tooltip=tooltip,
+                )
+            )
+            logger.debug(f"{errmsg}, {tooltip}")
             self.status_timeout.emit()
             self.status_exc.emit(ex)
             return TyphosStatusResult.timeout
@@ -112,20 +127,35 @@ class TyphosStatusThread(QThread):
             # Status has an intrinsic timeout, and it's failing now
             errmsg = f"{self.error_context} failed with timeout, >{self.status.timeout:.2f}s"
             logger.debug(errmsg)
-            self.error_message.emit(errmsg)
+            self.error_message.emit(
+                TyphosStatusMessage(
+                    text=errmsg,
+                    tooltip="",
+                )
+            )
             self.status_exc.emit(ex)
             return TyphosStatusResult.failure
         except UnknownStatusFailure as ex:
             # Status has failed, but no reason was given.
             errmsg = f"{self.error_context} failed with no reason given."
             logger.debug(errmsg)
-            self.error_message.emit(errmsg)
+            self.error_message.emit(
+                TyphosStatusMessage(
+                    text=errmsg,
+                    tooltip="",
+                )
+            )
             self.status_exc.emit(ex)
             return TyphosStatusResult.failure
         except Exception as ex:
             # There is some other status failure, and it has a specific exception.
             logger.debug("Status failed", exc_info=True)
-            self.error_message.emit(str(ex))
+            self.error_message.emit(
+                TyphosStatusMessage(
+                    text=str(ex),
+                    tooltip=traceback.format_exc(),
+                )
+            )
             self.status_exc.emit(ex)
             return TyphosStatusResult.failure
         else:

@@ -16,7 +16,7 @@ from typhos.display import TyphosDisplaySwitcher
 from . import dynamic_font, utils, widgets
 from .alarm import AlarmLevel, KindLevel, _KindLevel
 from .panel import SignalOrder, TyphosSignalPanel
-from .status import TyphosStatusResult, TyphosStatusThread
+from .status import TyphosStatusMessage, TyphosStatusResult, TyphosStatusThread
 
 logger = logging.getLogger(__name__)
 
@@ -743,16 +743,56 @@ class TyphosPositionerWidget(
         self.moving = True
         self.err_is_timeout = False
 
-    def _set_status_text(self, text: str, *, max_length: int | None = 60) -> None:
-        """Set the status text label to ``text``."""
-        if max_length is None:
-            self.ui.status_label.setToolTip(text)
-        elif len(text) >= max_length:
-            self.ui.status_label.setToolTip(text)
-            text = text[:max_length] + '...'
+    def _set_status_text(
+        self,
+        message: TyphosStatusMessage | str,
+        *,
+        max_length: int | None = 60,
+    ) -> str:
+        """
+        Set the status text label to the contents of ``message``.
+
+        Message is either a simple string or a dataclass that
+        has a separate entry for the text and for the tooltip.
+
+        Simple strings or empty string tooltips will result in
+        a widget with no tooltip, unless the message is longer
+        than the max length.
+
+        Messages that are longer than the max length will be
+        truncated and also included in the tooltip.
+
+        Parameters
+        ----------
+        message : TyphosStatusMessage or str
+            The message to include in the status text.
+        max_length : int or None, optional
+            The maximum length for the status text before it gets
+            truncated and moved to the tooltip. If this is manually
+            set to ``None``, there will be no limit.
+
+        Returns
+        -------
+        text : str
+            The text that is displayed in the status label, which
+            may be truncated.
+        """
+        if isinstance(message, TyphosStatusMessage):
+            text = message.text
+            tooltip = message.tooltip
+        elif isinstance(message, str):
+            text = message
+            tooltip = ""
+        if max_length is None or len(text) < max_length:
+            self.ui.status_label.setToolTip(tooltip)
         else:
-            self.ui.status_label.setToolTip('')
+            if tooltip:
+                self.ui.status_label.setToolTip(f"{text}: {tooltip}")
+            else:
+                self.ui.status_label.setToolTip(f"{text}")
+            text = message.text[:max_length] + '...'
         self.ui.status_label.setText(text)
+        return text
 
     def _status_finished(self, result: TyphosStatusResult | Exception) -> None:
         """Called when a move is complete."""
@@ -1038,9 +1078,15 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
     def new_error_message(self, value, *args, **kwargs):
         self.update_status_visibility(error_message=value)
 
-    def _set_status_text(self, text, *, max_length=None):
-        super()._set_status_text(text, max_length=max_length)
+    def _set_status_text(
+        self,
+        message: TyphosStatusMessage | str,
+        *,
+        max_length: int | None = None,
+    ) -> str:
+        text = super()._set_status_text(message, max_length=max_length)
         self.update_status_visibility(status_text=text)
+        return text
 
     def update_alarm_text(self, alarm_level):
         super().update_alarm_text(alarm_level=alarm_level)
