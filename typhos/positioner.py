@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import logging
+import math
 import os.path
 import threading
 import typing
@@ -16,7 +17,7 @@ from typhos.display import TyphosDisplaySwitcher
 from . import dynamic_font, utils, widgets
 from .alarm import AlarmLevel, KindLevel, _KindLevel
 from .panel import SignalOrder, TyphosSignalPanel
-from .status import TyphosStatusThread
+from .status import TyphosStatusMessage, TyphosStatusResult, TyphosStatusThread
 
 logger = logging.getLogger(__name__)
 
@@ -195,18 +196,32 @@ class TyphosPositionerWidget(
         self._status_thread.disconnect()
         self._status_thread = None
 
-    def _start_status_thread(self, status, timeout):
+    def _start_status_thread(
+        self,
+        status: ophyd.StatusBase,
+        timeout: float,
+        timeout_desc: str,
+    ) -> None:
         """Start the status monitoring thread for the given status object."""
         self._status_thread = thread = TyphosStatusThread(
-            status, start_delay=self._min_visible_operation,
+            status,
+            error_context="Move",
+            timeout_calc=timeout_desc,
+            start_delay=self._min_visible_operation,
             timeout=timeout,
             parent=self,
         )
-        thread.status_started.connect(self.move_changed)
+        thread.status_started.connect(self._move_started)
         thread.status_finished.connect(self._status_finished)
+        thread.error_message.connect(self._set_status_text)
         thread.start()
 
-    def _get_timeout(self, set_position: float, settle_time: float, rescale: float = 1) -> float | None:
+    def _get_timeout(
+        self,
+        set_position: float,
+        settle_time: float,
+        rescale: float = 1,
+    ) -> tuple[int | None, str]:
         """
         Use positioner's configuration to select a timeout.
 
@@ -241,28 +256,40 @@ class TyphosPositionerWidget(
 
         Returns
         -------
-        timeout : float or None
+        timeout : tuple[int or None, str]
             The timeout to use for this move, or None if a timeout could
-            not be calculated.
+            not be calculated, bundled with an explanation on how it
+            was calculated.
         """
         pos_sig = getattr(self.device, self._readback_attr, None)
         vel_sig = getattr(self.device, self._velocity_attr, None)
         acc_sig = getattr(self.device, self._acceleration_attr, None)
         # Not enough info == no timeout
         if pos_sig is None or vel_sig is None:
-            return None
+            return (None, "no timeout, missing info")
         delta = pos_sig.get() - set_position
         speed = vel_sig.get()
         # Bad speed == no timeout
         if speed == 0:
-            return None
+            return (None, "no timeout, speed == 0")
         # Bad acceleration == ignore acceleration
         if acc_sig is None:
             acc_time = 0
         else:
             acc_time = acc_sig.get()
+        units = pos_sig.metadata.get("units", "egu")
+        # Some friendly names for the f-string tooltip reporting
+        dist = abs(delta)
+        speed = abs(speed)
+        mult = rescale
         # This time is always greater than the kinematic calc
-        return rescale * (abs(delta/speed) + 2 * abs(acc_time)) + abs(settle_time)
+        return (
+            math.ceil(rescale * (dist/speed + 2 * abs(acc_time)) + abs(settle_time)),
+            ("an upper bound on the expected time based on the speed, distance traveled, "
+             "and acceleration time. Numerically, this is "
+             f"{mult=}*({dist=:.2f}{units}/{speed=:.2f}{units}/s) + "
+             f"2*{acc_time=:.2f}s + {settle_time=}s, rounded up."),
+        )
 
     def _set(self, value):
         """Inner `set` routine - call device.set() and monitor the status."""
@@ -275,7 +302,7 @@ class TyphosPositionerWidget(
 
         try:
             # Always at least 5s, give 20% extra time as margin for long moves
-            timeout = self._get_timeout(set_position, settle_time=5, rescale=1.2)
+            timeout, desc = self._get_timeout(set_position, settle_time=5, rescale=1.2)
         except Exception:
             # Something went wrong, just run without a timeout.
             logger.exception('Unable to estimate motor timeout.')
@@ -290,7 +317,7 @@ class TyphosPositionerWidget(
             self._status_finished(exc)
         else:
             # Send timeout through thread because status timeout stops the move
-            self._start_status_thread(status, timeout)
+            self._start_status_thread(status, timeout, desc)
 
     @QtCore.Slot(int)
     def combo_set(self, index):
@@ -719,33 +746,80 @@ class TyphosPositionerWidget(
         if kind_level != self.alarmKindLevel:
             self.ui.alarm_circle.kindLevel = kind_level
 
-    def move_changed(self):
+    def _move_started(self) -> None:
         """Called when a move is begun"""
         logger.debug("Begin showing move in TyphosPositionerWidget")
         self.moving = True
 
-    def _set_status_text(self, text, *, max_length=60):
-        """Set the status text label to ``text``."""
-        if len(text) >= max_length:
-            self.ui.status_label.setToolTip(text)
-            text = text[:max_length] + '...'
-        else:
-            self.ui.status_label.setToolTip('')
+    def _set_status_text(
+        self,
+        message: TyphosStatusMessage | str,
+        *,
+        max_length: int | None = 60,
+    ) -> str:
+        """
+        Set the status text label to the contents of ``message``.
 
+        Message is either a simple string or a dataclass that
+        has a separate entry for the text and for the tooltip.
+
+        Simple strings or empty string tooltips will result in
+        a widget with no tooltip, unless the message is longer
+        than the max length.
+
+        Messages that are longer than the max length will be
+        truncated and also included in the tooltip.
+
+        Parameters
+        ----------
+        message : TyphosStatusMessage or str
+            The message to include in the status text.
+        max_length : int or None, optional
+            The maximum length for the status text before it gets
+            truncated and moved to the tooltip. If this is manually
+            set to ``None``, there will be no limit.
+
+        Returns
+        -------
+        text : str
+            The text that is displayed in the status label, which
+            may be truncated.
+        """
+        if isinstance(message, TyphosStatusMessage):
+            text = message.text
+            tooltip = message.tooltip
+        elif isinstance(message, str):
+            text = message
+            tooltip = ""
+        if max_length is not None and len(text) >= max_length:
+            if tooltip:
+                tooltip = f"{text}: {tooltip}"
+            else:
+                tooltip = text
+            text = message.text[:max_length] + '...'
         self.ui.status_label.setText(text)
+        if tooltip and "\n" not in tooltip:
+            # Force rich text, qt auto line wraps if it detects rich text
+            tooltip = f"<html><head/><body><p>{tooltip}</p></body></html>"
+        self.ui.status_label.setToolTip(tooltip)
+        return text
 
-    def _status_finished(self, result):
+    def _status_finished(self, result: TyphosStatusResult | Exception) -> None:
         """Called when a move is complete."""
+        success = False
         if isinstance(result, Exception):
-            text = f'<b>{result.__class__.__name__}</b> {result}'
-        else:
-            text = ''
-
-        self._set_status_text(text)
-
-        success = not isinstance(result, Exception)
-        logger.debug("Completed move in TyphosPositionerWidget (result=%r)",
-                     result)
+            # Calling set or move completely broke
+            self._set_status_text(f"<b>{result.__class__.__name__}</b> {result}")
+        elif result == TyphosStatusResult.success:
+            # Clear the status display of any lingering timeout text
+            self._set_status_text("")
+            success = True
+        # Other cases: keep the existing status text, whatever it is.
+        # This covers any case where the move started, but had an error during the move.
+        logger.debug(
+            "Completed move in TyphosPositionerWidget (result=%r)",
+            result,
+        )
         self._last_move = success
         self.moving = False
 
@@ -835,6 +909,7 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
     notes_edit: TyphosNotesEdit
     status_container_widget: QtWidgets.QFrame
     extended_signal_panel: Optional[TyphosSignalPanel]
+    status_error_prefix: QtWidgets.QLabel
     error_prefix: QtWidgets.QLabel
     switcher: TyphosDisplaySwitcher
 
@@ -1013,9 +1088,15 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
     def new_error_message(self, value, *args, **kwargs):
         self.update_status_visibility(error_message=value)
 
-    def _set_status_text(self, text, *, max_length=80):
-        super()._set_status_text(text, max_length=max_length)
+    def _set_status_text(
+        self,
+        message: TyphosStatusMessage | str,
+        *,
+        max_length: int | None = None,
+    ) -> str:
+        text = super()._set_status_text(message, max_length=max_length)
         self.update_status_visibility(status_text=text)
+        return text
 
     def update_alarm_text(self, alarm_level):
         super().update_alarm_text(alarm_level=alarm_level)
@@ -1033,8 +1114,10 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         The goal here to make an illusion that there is only one label in
         in this space when only one of the labels has text.
 
-        If both are empty, we also want to put "something" there to fill the
+        If both are empty, we want to put "something" there to fill the
         void, so we opt for a friendly message or an alarm reminder.
+
+        If both are populated, we want to do some best-effort deduplication.
         """
         if error_message is not None:
             self._error_message = error_message
@@ -1054,7 +1137,14 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             else:
                 self.ui.status_label.setText('Check alarm')
             has_status = True
+        has_status_error = False
+        if has_status and has_error:
+            # We want to avoid having duplicate information (low effort try)
+            if error_message in status_text:
+                has_error = False
+                has_status_error = True
         self.ui.status_label.setVisible(has_status)
+        self.ui.status_error_prefix.setVisible(has_status_error)
         self.ui.error_label.setVisible(has_error)
         self.ui.error_prefix.setVisible(has_error)
 
