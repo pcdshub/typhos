@@ -5,6 +5,7 @@ Dynamically set widget font size based on its current size.
 """
 from __future__ import annotations
 
+import functools
 import logging
 
 from qtpy import QtGui, QtWidgets
@@ -132,11 +133,13 @@ def patch_widget(
     """
     def set_font_size() -> None:
         font = widget.font()
-        font_size = get_widget_maximum_font_size(
-            widget, widget.text(),
-            pad_width=widget.width() * pad_percent,
-            pad_height=widget.height() * pad_percent,
+        font_size = get_max_font_size_cached(
+            widget.text(),
+            widget.width(),
+            widget.height(),
         )
+        # 0.1 = avoid meaningless resizes
+        # 0.00001 = snap to min/max
         delta = 0.1
         if max_size is not None and font_size > max_size:
             font_size = max_size
@@ -147,6 +150,17 @@ def patch_widget(
         if abs(font.pointSizeF() - font_size) > delta:
             font.setPointSizeF(font_size)
             widget.setFont(font)
+
+    # Cache and reuse results per widget
+    # Low effort and not exhaustive, but reduces the usage of the big loop
+    @functools.lru_cache
+    def get_max_font_size_cached(text: str, width: int, height: int) -> float:
+        return get_widget_maximum_font_size(
+            widget,
+            text,
+            pad_width=width * pad_percent,
+            pad_height=height * pad_percent,
+        )
 
     def resizeEvent(event: QtGui.QResizeEvent) -> None:
         set_font_size()
