@@ -87,6 +87,7 @@ def test_wide_label(
     assert widget.font().pointSizeF() == get_widget_maximum_font_size(widget, widget.text())
 
 
+@pytest.mark.no_gc
 def test_positioner_label(
     qapp: QtWidgets.QApplication,
     qtbot: pytestqt.qtbot.QtBot,
