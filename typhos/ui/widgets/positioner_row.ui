@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>720</width>
-    <height>160</height>
+    <height>162</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -416,7 +416,7 @@
            <string/>
           </property>
           <property name="styleSheet">
-           <string notr="true">font: 16pt</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>user_readback</string>
@@ -532,7 +532,7 @@
            <string/>
           </property>
           <property name="styleSheet">
-           <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
+           <string notr="true">background-color: None; color: None;</string>
           </property>
           <property name="text">
            <string/>
@@ -834,7 +834,7 @@
            <string/>
           </property>
           <property name="styleSheet">
-           <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
+           <string notr="true">background-color: None; color: None;</string>
           </property>
           <property name="text">
            <string/>

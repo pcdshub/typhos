@@ -185,7 +185,7 @@ class TyphosPositionerWidget(
         self.show_expert_button = False
         self._after_set_moving(False)
 
-        dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.01)
+        dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.05, min_size=6)
 
     def _clear_status_thread(self):
         """Clear a previous status thread."""
@@ -932,6 +932,8 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self._alarm_level = AlarmLevel.DISCONNECTED
 
         super().__init__(*args, **kwargs)
+        dynamic_font.patch_widget(self.ui.low_limit, pad_percent=0.01, max_size=12, min_size=4)
+        dynamic_font.patch_widget(self.ui.high_limit, pad_percent=0.01, max_size=12, min_size=4)
 
         for idx in range(self.layout().count()):
             item = self.layout().itemAt(idx)

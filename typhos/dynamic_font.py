@@ -3,9 +3,11 @@ Dynamic font size helper utilities:
 
 Dynamically set widget font size based on its current size.
 """
+from __future__ import annotations
+
 import logging
 
-from qtpy import QtCore, QtGui, QtWidgets
+from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import QRectF, Qt
 
 logger = logging.getLogger(__name__)
@@ -109,6 +111,8 @@ def patch_widget(
     widget: QtWidgets.QWidget,
     *,
     pad_percent: float = 0.0,
+    max_size: float | None = None,
+    min_size: float | None = None,
 ) -> None:
     """
     Patch the widget to dynamically change its font.
@@ -121,6 +125,10 @@ def patch_widget(
         The normalized padding percentage (0.0 - 1.0) to use in determining the
         maximum font size. Content margin settings determine the content
         rectangle, and this padding is applied as a percentage on top of that.
+    max_size : float or None, optional
+        The maximum font point size we're allowed to apply to the widget.
+    min_size : float or None, optional
+        The minimum font point size we're allowed to apply to the widget.
     """
     def set_font_size() -> None:
         font = widget.font()
@@ -129,7 +137,14 @@ def patch_widget(
             pad_width=widget.width() * pad_percent,
             pad_height=widget.height() * pad_percent,
         )
-        if abs(font.pointSizeF() - font_size) > 0.1:
+        delta = 0.1
+        if max_size is not None and font_size > max_size:
+            font_size = max_size
+            delta = 0.00001
+        if min_size is not None and font_size < min_size:
+            font_size = min_size
+            delta = 0.00001
+        if abs(font.pointSizeF() - font_size) > delta:
             font.setPointSizeF(font_size)
             widget.setFont(font)
 
@@ -137,27 +152,24 @@ def patch_widget(
         set_font_size()
         return orig_resize_event(event)
 
-    def minimumSizeHint() -> QtCore.QSize:
-        # Do not give any size hint as it it changes during resizeEvent
-        return QtWidgets.QWidget.minimumSizeHint(widget)
-
-    def sizeHint() -> QtCore.QSize:
-        # Do not give any size hint as it it changes during resizeEvent
-        return QtWidgets.QWidget.sizeHint(widget)
+    def setText(*args, **kwargs) -> None:
+        # Re-evaluate the text size when the text changes too
+        rval = orig_set_text(*args, **kwargs)
+        set_font_size()
+        return rval
 
     if hasattr(widget.resizeEvent, "_patched_methods_"):
         return
 
     orig_resize_event = widget.resizeEvent
+    orig_set_text = widget.setText
 
     resizeEvent._patched_methods_ = (
         widget.resizeEvent,
-        widget.sizeHint,
-        widget.minimumSizeHint,
+        widget.setText
     )
     widget.resizeEvent = resizeEvent
-    widget.sizeHint = sizeHint
-    widget.minimumSizeHint = minimumSizeHint
+    widget.setText = setText
     set_font_size()
 
 
