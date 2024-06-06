@@ -171,6 +171,11 @@ class TyphosPositionerWidget(
         self._initialized = False
         self._moving_channel = None
 
+        self._show_lowlim = True
+        self._show_lowtrav = True
+        self._show_highlim = True
+        self._show_hightrav = True
+
         super().__init__(parent=parent)
 
         self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
@@ -185,7 +190,7 @@ class TyphosPositionerWidget(
         self.show_expert_button = False
         self._after_set_moving(False)
 
-        dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.05, min_size=6)
+        dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.05, min_size=4)
 
     def _clear_status_thread(self):
         """Clear a previous status thread."""
@@ -421,6 +426,7 @@ class TyphosPositionerWidget(
         """Link the positioner lower limit switch with the ui element."""
         if signal is None:
             widget.hide()
+            self._show_lowlim = False
 
     @utils.linked_attribute('high_limit_switch_attribute',
                             'ui.high_limit_switch', True)
@@ -428,6 +434,7 @@ class TyphosPositionerWidget(
         """Link the positioner high limit switch with the ui element."""
         if signal is None:
             widget.hide()
+            self._show_highlim = False
 
     @utils.linked_attribute('low_limit_travel_attribute', 'ui.low_limit', True)
     def _link_low_travel(self, signal, widget):
@@ -460,6 +467,8 @@ class TyphosPositionerWidget(
         # If not found or invalid, hide them:
         self.ui.low_limit.hide()
         self.ui.high_limit.hide()
+        self._show_lowtrav = False
+        self._show_hightrav = False
 
     @utils.linked_attribute('moving_attribute', 'ui.moving_indicator', True)
     def _link_moving(self, signal, widget):
@@ -917,6 +926,9 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
     status_error_prefix: QtWidgets.QLabel
     error_prefix: QtWidgets.QLabel
     switcher: TyphosDisplaySwitcher
+    high_limit_frame: QtWidgets.QFrame
+    low_limit_frame: QtWidgets.QFrame
+    setpoint_frame: QtWidgets.QFrame
 
 
 class TyphosPositionerRowWidget(TyphosPositionerWidget):
@@ -1062,6 +1074,26 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.notes_edit.add_device(device)
         self.ui.switcher.help_toggle_button.setToolTip(self._get_tooltip())
         self.ui.switcher.help_toggle_button.setEnabled(False)
+
+        if not any((
+            self._show_lowlim,
+            self._show_highlim,
+            self._show_lowtrav,
+            self._show_hightrav,
+        )):
+            # Hide the limit sections and expand the setpoint widget
+            # Typically a combobox
+            self.ui.low_limit_frame.hide()
+            self.ui.high_limit_frame.hide()
+            low_policy = self.ui.low_limit_frame.sizePolicy()
+            high_policy = self.ui.high_limit_frame.sizePolicy()
+            setpoint_policy = self.ui.setpoint_frame.sizePolicy()
+            setpoint_policy.setHorizontalStretch(
+                setpoint_policy.horizontalStretch()
+                + low_policy.horizontalStretch()
+                + high_policy.horizontalStretch()
+            )
+            self.ui.setpoint_frame.setSizePolicy(setpoint_policy)
 
     def _get_tooltip(self):
         """Update the tooltip based on device information."""
