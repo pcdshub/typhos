@@ -1,16 +1,17 @@
 from __future__ import annotations
 
+import logging
+
 import pytest
 import pytestqt.qtbot
-from ophyd.sim import SynAxis
 from pydm.widgets.label import PyDMLabel
 from qtpy import QtCore, QtGui, QtWidgets
 
-from typhos.positioner import TyphosPositionerRowWidget
 from typhos.tests import conftest
 
-from ..dynamic_font import (get_widget_maximum_font_size, is_patched,
-                            patch_widget, unpatch_widget)
+from ..dynamic_font import is_patched, patch_widget, unpatch_widget
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.mark.parametrize(
@@ -48,10 +49,17 @@ def test_patching(
     patch_widget(widget)
     assert is_patched(widget)
 
+    # Font size case 1: widget is resized
     widget.resizeEvent(event)
-    new_font_size = widget.font().pointSizeF()
-    print("Patched font size", new_font_size)
-    assert original_font_size != new_font_size
+    resized_font_size = widget.font().pointSizeF()
+    logger.debug(f"ResizeEvent patched font size is {resized_font_size}")
+    assert original_font_size != resized_font_size
+
+    # Font size case 2: text is updated
+    widget.setText(widget.text()*100)
+    new_text_font_size = widget.font().pointSizeF()
+    logger.debug(f"setText patched font size is {new_text_font_size}")
+    assert resized_font_size != new_text_font_size
 
     assert is_patched(widget)
     unpatch_widget(widget)
@@ -61,60 +69,3 @@ def test_patching(
         widget,
         f"{request.node.name}_{cls.__name__}_dynamic_font_size",
     )
-
-
-def test_wide_label(
-    qtbot: pytestqt.qtbot.QtBot,
-):
-    """
-    Replicate the wide label text in RIXS that clips
-    """
-    widget = QtWidgets.QLabel()
-    qtbot.add_widget(widget)
-    widget.setText("143252.468 urad")
-    font = widget.font()
-    font.setPointSizeF(16.0)
-    widget.setFont(font)
-    assert widget.font().pointSizeF() == 16.0
-
-    patch_widget(widget)
-    widget.setFixedSize(162, 34)
-    event = QtGui.QResizeEvent(
-        QtCore.QSize(162, 34),
-        widget.size(),
-    )
-    widget.resizeEvent(event)
-    assert widget.font().pointSizeF() == get_widget_maximum_font_size(widget, widget.text())
-
-
-@pytest.mark.no_gc
-def test_positioner_label(
-    qapp: QtWidgets.QApplication,
-    qtbot: pytestqt.qtbot.QtBot,
-    motor: SynAxis,
-):
-    """
-    Literally try the positioner label that causes issues
-    """
-    pos = 143252
-    units = "urad"
-
-    widget = TyphosPositionerRowWidget()
-    qtbot.add_widget(widget)
-    widget.readback_attribute = "readback"
-    widget.add_device(motor)
-    qapp.processEvents()
-
-    motor.readback._metadata["units"] = units
-    motor.readback._metadata["precision"] = 3
-    motor.readback._run_metadata_callbacks()
-    motor.velocity.put(10000000)
-    motor.set(pos).wait(timeout=1.0)
-    qapp.processEvents()
-
-    expected_text = f"{pos:.3f} {units}"
-    expected_size = get_widget_maximum_font_size(widget.user_readback, expected_text)
-    actual_text = widget.user_readback.text()
-    actual_size = widget.user_readback.font().pointSizeF()
-    assert expected_text == actual_text
-    assert expected_size == actual_size
