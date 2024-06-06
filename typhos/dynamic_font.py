@@ -136,7 +136,34 @@ def patch_widget(
             f"Widget named {widget.objectName()} has a fixed size from its "
             "stylesheet, and cannot be resized dynamically."
         )
+    if isinstance(widget, QtWidgets.QComboBox):
+        return patch_combo_widget(
+            widget=widget,
+            pad_percent=pad_percent,
+            max_size=max_size,
+            min_size=min_size,
+        )
+    elif hasattr(widget, "setText") and hasattr(widget, "text"):
+        return patch_text_widget(
+            widget=widget,
+            pad_percent=pad_percent,
+            max_size=max_size,
+            min_size=min_size,
+        )
+    else:
+        raise TypeError(f"Dynamic font not supported for {widget}")
 
+
+def patch_text_widget(
+    widget: QtWidgets.QLabel | QtWidgets.QLineEdit,
+    *,
+    pad_percent: float = 0.0,
+    max_size: float | None = None,
+    min_size: float | None = None,
+):
+    """
+    Specific patching for widgets with text() and setText() methods
+    """
     def set_font_size() -> None:
         font = widget.font()
         font_size = get_max_font_size_cached(
@@ -193,6 +220,72 @@ def patch_widget(
     set_font_size()
 
 
+def patch_combo_widget(
+    widget: QtWidgets.QComboBox,
+    *,
+    pad_percent: float = 0.0,
+    max_size: float | None = None,
+    min_size: float | None = None,
+):
+    """
+    Specific patching for combobox widgets
+    """
+    def set_font_size() -> None:
+        font = widget.font()
+        combo_options = [
+            widget.itemText(index) for index in range(widget.count())
+        ]
+        font_sizes = [
+            get_max_font_size_cached(
+                text,
+                widget.height(),
+                widget.width(),
+            )
+            for text in combo_options
+        ]
+        font_size = min(font_sizes)
+        # 0.1 = avoid meaningless resizes
+        # 0.00001 = snap to min/max
+        delta = 0.1
+        if max_size is not None and font_size > max_size:
+            font_size = max_size
+            delta = 0.00001
+        if min_size is not None and font_size < min_size:
+            font_size = min_size
+            delta = 0.00001
+        if abs(font.pointSizeF() - font_size) > delta:
+            font.setPointSizeF(font_size)
+            widget.setFont(font)
+
+    # Cache and reuse results per widget
+    # Low effort and not exhaustive, but reduces the usage of the big loop
+    @functools.lru_cache
+    def get_max_font_size_cached(text: str, width: int, height: int) -> float:
+        return get_widget_maximum_font_size(
+            widget,
+            text,
+            pad_width=width * pad_percent,
+            pad_height=height * pad_percent,
+        )
+
+    def resizeEvent(event: QtGui.QResizeEvent) -> None:
+        set_font_size()
+        return orig_resize_event(event)
+
+    # TODO: figure out best way to resize font when combo options change
+
+    if hasattr(widget.resizeEvent, "_patched_methods_"):
+        return
+
+    orig_resize_event = widget.resizeEvent
+
+    resizeEvent._patched_methods_ = (
+        widget.resizeEvent,
+    )
+    widget.resizeEvent = resizeEvent
+    set_font_size()
+
+
 def unpatch_widget(widget: QtWidgets.QWidget) -> None:
     """
     Remove dynamic font size patch from the widget, if previously applied.
@@ -204,10 +297,28 @@ def unpatch_widget(widget: QtWidgets.QWidget) -> None:
     """
     if not hasattr(widget.resizeEvent, "_patched_methods_"):
         return
+    if isinstance(widget, QtWidgets.QComboBox):
+        return unpatch_combo_widget(
+            widget=widget,
+        )
+    elif hasattr(widget, "setText") and hasattr(widget, "text"):
+        return unpatch_text_widget(
+            widget=widget,
+        )
+    else:
+        raise TypeError("Somehow, we have a patched widget that is unpatchable.")
 
+
+def unpatch_text_widget(widget: QtWidgets.QLabel | QtWidgets.QLineEdit):
     (
         widget.resizeEvent,
         widget.setText,
+    ) = widget.resizeEvent._patched_methods_
+
+
+def unpatch_combo_widget(widget: QtWidgets.QComboBox):
+    (
+        widget.resizeEvent,
     ) = widget.resizeEvent._patched_methods_
 
 

@@ -392,13 +392,13 @@
           <property name="minimumSize">
            <size>
             <width>150</width>
-            <height>55</height>
+            <height>50</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>55</height>
+            <height>50</height>
            </size>
           </property>
           <property name="font">
@@ -595,13 +595,13 @@
             <number>0</number>
            </property>
            <property name="leftMargin">
-            <number>25</number>
+            <number>0</number>
            </property>
            <property name="topMargin">
             <number>0</number>
            </property>
            <property name="rightMargin">
-            <number>25</number>
+            <number>0</number>
            </property>
            <item>
             <widget class="PyDMLineEdit" name="user_setpoint">
@@ -1017,7 +1017,7 @@ Screen</string>
       </property>
       <item>
        <layout class="QHBoxLayout" name="clear_error_layout">
-        <item>
+        <item alignment="Qt::AlignTop">
          <widget class="QPushButton" name="expand_button">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -1205,7 +1205,7 @@ Screen</string>
           </item>
          </layout>
         </item>
-        <item>
+        <item alignment="Qt::AlignTop">
          <widget class="QPushButton" name="clear_error_button">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

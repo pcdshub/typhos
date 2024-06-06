@@ -508,6 +508,15 @@ class TyphosPositionerWidget(
             self.ui.set_value.activated.connect(self.set)
             self.ui.set_value.setMinimumContentsLength(20)
             self.ui.tweak_widget.setVisible(False)
+            # Consume the space left by removing the tweak widget
+            self.ui.set_value.setMinimumHeight(
+                self.ui.user_setpoint.minimumHeight()
+                + self.ui.tweak_value.minimumHeight()
+            )
+            self.ui.set_value.setMaximumHeight(
+                self.ui.user_setpoint.maximumHeight()
+                + self.ui.tweak_value.maximumHeight()
+            )
         else:
             self.ui.set_value = QtWidgets.QLineEdit()
             self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
@@ -985,7 +994,12 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         omit_signals = self.all_linked_signals
         to_keep_signals = [
             getattr(device, attr, None)
-            for attr in (self.velocity_attribute, self.acceleration_attribute)
+            for attr in (
+                self.velocity_attribute,
+                self.acceleration_attribute,
+                self.high_limit_travel_attribute,
+                self.low_limit_travel_attribute,
+            )
         ]
         for sig in to_keep_signals:
             if sig in omit_signals:
@@ -1086,6 +1100,14 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
 
     def new_error_message(self, value, *args, **kwargs):
         self.update_status_visibility(error_message=value)
+
+    def _define_setpoint_widget(self):
+        super()._define_setpoint_widget()
+        if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+            # Pad extra to avoid intersecting drop-down arrow
+            dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.18, min_size=4)
+        else:
+            dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.1, min_size=4)
 
     def _set_status_text(
         self,
