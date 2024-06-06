@@ -201,8 +201,7 @@ def unpatch_widget(widget: QtWidgets.QWidget) -> None:
 
     (
         widget.resizeEvent,
-        widget.sizeHint,
-        widget.minimumSizeHint,
+        widget.setText,
     ) = widget.resizeEvent._patched_methods_
 
 
