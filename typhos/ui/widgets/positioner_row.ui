@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>720</width>
+    <width>824</width>
     <height>162</height>
    </rect>
   </property>
@@ -150,7 +150,7 @@
        <height>64</height>
       </size>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,4,1,2,1,0,0">
       <property name="spacing">
        <number>3</number>
       </property>
@@ -392,13 +392,13 @@
           <property name="minimumSize">
            <size>
             <width>150</width>
-            <height>35</height>
+            <height>55</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>35</height>
+            <height>55</height>
            </size>
           </property>
           <property name="font">
@@ -503,10 +503,10 @@
           </property>
          </widget>
         </item>
-        <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+        <item alignment="Qt::AlignVCenter">
          <widget class="PyDMLabel" name="low_limit">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -519,7 +519,7 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>16777215</width>
             <height>25</height>
            </size>
           </property>
@@ -551,34 +551,12 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QWidget" name="widget" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
        <widget class="QFrame" name="setpoint_frame">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -591,7 +569,7 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>150</width>
+          <width>16777215</width>
           <height>16777215</height>
          </size>
         </property>
@@ -617,15 +595,15 @@
             <number>0</number>
            </property>
            <property name="leftMargin">
-            <number>0</number>
+            <number>25</number>
            </property>
            <property name="topMargin">
             <number>0</number>
            </property>
            <property name="rightMargin">
-            <number>0</number>
+            <number>25</number>
            </property>
-           <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+           <item>
             <widget class="PyDMLineEdit" name="user_setpoint">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -636,13 +614,13 @@
              <property name="minimumSize">
               <size>
                <width>100</width>
-               <height>25</height>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>100</width>
-               <height>25</height>
+               <width>16777215</width>
+               <height>30</height>
               </size>
              </property>
              <property name="toolTip">
@@ -694,6 +672,12 @@
             </item>
             <item>
              <widget class="QLineEdit" name="tweak_value">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>100</width>
@@ -702,7 +686,7 @@
               </property>
               <property name="maximumSize">
                <size>
-                <width>100</width>
+                <width>16777215</width>
                 <height>25</height>
                </size>
               </property>
@@ -732,6 +716,9 @@
       </item>
       <item>
        <layout class="QVBoxLayout" name="high_limit_layout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
         <property name="topMargin">
          <number>0</number>
         </property>
@@ -808,7 +795,7 @@
         <item alignment="Qt::AlignVCenter">
          <widget class="PyDMLabel" name="high_limit">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -821,7 +808,7 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>16777215</width>
             <height>25</height>
            </size>
           </property>
@@ -850,28 +837,6 @@
           </property>
           <property name="alarmSensitiveBorder" stdset="0">
            <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="widget_3" native="true">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
           </property>
          </widget>
         </item>
@@ -1251,13 +1216,13 @@ Screen</string>
           <property name="minimumSize">
            <size>
             <width>143</width>
-            <height>42</height>
+            <height>25</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>143</width>
-            <height>42</height>
+            <height>25</height>
            </size>
           </property>
           <property name="font">

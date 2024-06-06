@@ -513,10 +513,7 @@ class TyphosPositionerWidget(
             self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
             self.ui.set_value.returnPressed.connect(self.set)
 
-        self.ui.set_value.setSizePolicy(
-            QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed,
-        )
+        self.ui.set_value.setSizePolicy(self.ui.user_setpoint.sizePolicy())
         self.ui.set_value.setMinimumWidth(
             self.ui.user_setpoint.minimumWidth()
         )
