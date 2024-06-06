@@ -516,15 +516,6 @@ class TyphosPositionerWidget(
             self.ui.set_value.activated.connect(self.set)
             self.ui.set_value.setMinimumContentsLength(20)
             self.ui.tweak_widget.setVisible(False)
-            # Consume the space left by removing the tweak widget
-            self.ui.set_value.setMinimumHeight(
-                self.ui.user_setpoint.minimumHeight()
-                + self.ui.tweak_value.minimumHeight()
-            )
-            self.ui.set_value.setMaximumHeight(
-                self.ui.user_setpoint.maximumHeight()
-                + self.ui.tweak_value.maximumHeight()
-            )
         else:
             self.ui.set_value = QtWidgets.QLineEdit()
             self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
@@ -1081,7 +1072,8 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             self._show_lowtrav,
             self._show_hightrav,
         )):
-            # Hide the limit sections and expand the setpoint widget
+            # Hide the limit sections
+            # Expand the setpoint widget horizontally
             # Typically a combobox
             self.ui.low_limit_frame.hide()
             self.ui.high_limit_frame.hide()
@@ -1094,6 +1086,12 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
                 + high_policy.horizontalStretch()
             )
             self.ui.setpoint_frame.setSizePolicy(setpoint_policy)
+            self.ui.set_value.setMinimumWidth(
+                self.ui.set_value.minimumWidth()
+                + self.ui.low_limit.minimumWidth()
+                + self.ui.high_limit.minimumWidth()
+                + 2 * self.ui.row_frame.layout().spacing()
+            )
 
     def _get_tooltip(self):
         """Update the tooltip based on device information."""
@@ -1137,6 +1135,15 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         if isinstance(self.ui.set_value, QtWidgets.QComboBox):
             # Pad extra to avoid intersecting drop-down arrow
             dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.18, min_size=4)
+            # Consume the vertical space left by the missing tweak widgets
+            self.ui.set_value.setMinimumHeight(
+                self.ui.user_setpoint.minimumHeight()
+                + self.ui.tweak_value.minimumHeight()
+            )
+            self.ui.set_value.setMaximumHeight(
+                self.ui.user_setpoint.maximumHeight()
+                + self.ui.tweak_value.maximumHeight()
+            )
         else:
             dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.1, min_size=4)
 
