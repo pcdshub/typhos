@@ -131,6 +131,12 @@ def patch_widget(
     min_size : float or None, optional
         The minimum font point size we're allowed to apply to the widget.
     """
+    if "font-size" in widget.styleSheet():
+        logger.warning(
+            f"Widget named {widget.objectName()} has a fixed size from its "
+            "stylesheet, and cannot be resized dynamically."
+        )
+
     def set_font_size() -> None:
         font = widget.font()
         font_size = get_max_font_size_cached(
