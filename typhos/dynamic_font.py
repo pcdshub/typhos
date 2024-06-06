@@ -213,7 +213,7 @@ def patch_text_widget(
 
     resizeEvent._patched_methods_ = (
         widget.resizeEvent,
-        widget.setText
+        widget.setText,
     )
     widget.resizeEvent = resizeEvent
     widget.setText = setText
@@ -238,8 +238,8 @@ def patch_combo_widget(
         font_sizes = [
             get_max_font_size_cached(
                 text,
-                widget.height(),
                 widget.width(),
+                widget.height(),
             )
             for text in combo_options
         ]
@@ -298,13 +298,9 @@ def unpatch_widget(widget: QtWidgets.QWidget) -> None:
     if not hasattr(widget.resizeEvent, "_patched_methods_"):
         return
     if isinstance(widget, QtWidgets.QComboBox):
-        return unpatch_combo_widget(
-            widget=widget,
-        )
+        return unpatch_combo_widget(widget)
     elif hasattr(widget, "setText") and hasattr(widget, "text"):
-        return unpatch_text_widget(
-            widget=widget,
-        )
+        return unpatch_text_widget(widget)
     else:
         raise TypeError("Somehow, we have a patched widget that is unpatchable.")
 

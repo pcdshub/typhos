@@ -395,7 +395,6 @@ class TyphosPositionerWidget(
         # False = Red, True = Green, None = no box (in motion is yellow)
         if not self._last_move:
             self._last_move = None
-        utils.reload_widget_stylesheet(self, cascade=True)
 
     def _get_position(self):
         if not self._readback:
