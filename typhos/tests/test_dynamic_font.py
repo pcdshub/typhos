@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
     [
         QtWidgets.QLabel,
         QtWidgets.QPushButton,
+        QtWidgets.QComboBox,
         PyDMLabel,
     ]
 )
@@ -28,7 +29,10 @@ def test_patching(
     qtbot: pytestqt.qtbot.QtBot,
 ) -> None:
     widget = cls()
-    widget.setText("Test\ntext")
+    if isinstance(widget, QtWidgets.QComboBox):
+        widget.addItems(["test", "text"])
+    else:
+        widget.setText("Test\ntext")
     widget.setFixedSize(500, 500)
     qtbot.add_widget(widget)
 
@@ -55,11 +59,12 @@ def test_patching(
     logger.debug(f"ResizeEvent patched font size is {resized_font_size}")
     assert original_font_size != resized_font_size
 
-    # Font size case 2: text is updated
-    widget.setText(widget.text()*100)
-    new_text_font_size = widget.font().pointSizeF()
-    logger.debug(f"setText patched font size is {new_text_font_size}")
-    assert resized_font_size != new_text_font_size
+    # Font size case 2: text is updated (not supported in combobox yet)
+    if not isinstance(widget, QtWidgets.QComboBox):
+        widget.setText(widget.text()*100)
+        new_text_font_size = widget.font().pointSizeF()
+        logger.debug(f"setText patched font size is {new_text_font_size}")
+        assert resized_font_size != new_text_font_size
 
     assert is_patched(widget)
     unpatch_widget(widget)
