@@ -912,14 +912,13 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
     """Annotations helper for positioner_row.ui; not to be instantiated."""
 
     notes_edit: TyphosNotesEdit
-    status_container_widget: QtWidgets.QFrame
+    status_container_widget: QtWidgets.QWidget
     extended_signal_panel: Optional[TyphosSignalPanel]
-    status_error_prefix: QtWidgets.QLabel
-    error_prefix: QtWidgets.QLabel
     switcher: TyphosDisplaySwitcher
-    high_limit_frame: QtWidgets.QFrame
-    low_limit_frame: QtWidgets.QFrame
-    setpoint_frame: QtWidgets.QFrame
+    status_text_layout: None  # Row UI doesn't use status_text_layout
+    low_limit_widget: QtWidgets.QWidget
+    high_limit_widget: QtWidgets.QWidget
+    setpoint_widget: QtWidgets.QWidget
 
 
 class TyphosPositionerRowWidget(TyphosPositionerWidget):
@@ -942,12 +941,19 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         super().__init__(*args, **kwargs)
         dynamic_font.patch_widget(self.ui.low_limit, pad_percent=0.01, max_size=12, min_size=4)
         dynamic_font.patch_widget(self.ui.high_limit, pad_percent=0.01, max_size=12, min_size=4)
+        dynamic_font.patch_widget(self.ui.device_name_label, pad_percent=0.01, min_size=4)
+        dynamic_font.patch_widget(self.ui.notes_edit, pad_percent=0.01, min_size=4)
+        dynamic_font.patch_widget(self.ui.alarm_label, pad_percent=0.01, min_size=4)
+        dynamic_font.patch_widget(self.ui.moving_indicator_label, pad_percent=0.01, min_size=4)
+        dynamic_font.patch_widget(self.ui.stop_button, pad_percent=0.4, min_size=4)
+        dynamic_font.patch_widget(self.ui.expert_button, pad_percent=0.3, min_size=4)
+        dynamic_font.patch_widget(self.ui.clear_error_button, pad_percent=0.3, min_size=4)
 
-        for idx in range(self.layout().count()):
-            item = self.layout().itemAt(idx)
-            if item is self.ui.status_text_layout:
-                self.layout().takeAt(idx)
-                break
+        # for idx in range(self.layout().count()):
+        #     item = self.layout().itemAt(idx)
+        #     if item is self.ui.status_text_layout:
+        #         self.layout().takeAt(idx)
+        #         break
 
         # TODO move these out
         self._omit_names = [
@@ -964,6 +970,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.extended_signal_panel = None
         self.ui.expand_button.clicked.connect(self._expand_layout)
         self.ui.status_label.setText("")
+        self._pre_signal_panel_min_height = self.minimumHeight()
 
         # TODO: ${name} / macros don't expand here
 
@@ -1036,9 +1043,9 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         """Toggle the expansion of the signal panel."""
         if self.ui.extended_signal_panel is None:
             self.ui.extended_signal_panel = self._create_signal_panel()
+            self._extended_signal_panel_height = self.ui.extended_signal_panel.height()
             if self.ui.extended_signal_panel is None:
                 return
-
             to_show = True
         else:
             to_show = not self.ui.extended_signal_panel.isVisible()
@@ -1047,8 +1054,13 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
 
         if to_show:
             self.ui.expand_button.setText('v')
+            self.setMinimumHeight(
+                self._pre_signal_panel_min_height
+                + self._extended_signal_panel_height
+            )
         else:
             self.ui.expand_button.setText('>')
+            self.setMinimumHeight(self._pre_signal_panel_min_height)
 
     def add_device(self, device: ophyd.Device) -> None:
         """Add (or rather set) the ophyd device for this positioner."""
@@ -1073,25 +1085,28 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             self._show_hightrav,
         )):
             # Hide the limit sections
-            # Expand the setpoint widget horizontally
-            # Typically a combobox
-            self.ui.low_limit_frame.hide()
-            self.ui.high_limit_frame.hide()
-            low_policy = self.ui.low_limit_frame.sizePolicy()
-            high_policy = self.ui.high_limit_frame.sizePolicy()
-            setpoint_policy = self.ui.setpoint_frame.sizePolicy()
-            setpoint_policy.setHorizontalStretch(
-                setpoint_policy.horizontalStretch()
-                + low_policy.horizontalStretch()
-                + high_policy.horizontalStretch()
-            )
-            self.ui.setpoint_frame.setSizePolicy(setpoint_policy)
-            self.ui.set_value.setMinimumWidth(
-                self.ui.set_value.minimumWidth()
-                + self.ui.low_limit.minimumWidth()
-                + self.ui.high_limit.minimumWidth()
-                + 2 * self.ui.row_frame.layout().spacing()
-            )
+            self.ui.low_limit_widget.hide()
+            self.ui.high_limit_widget.hide()
+
+        """
+        # Trying to get the tweak widget to resize...
+        if isinstance(self.ui.set_value, QtWidgets.QLineEdit):
+            # Keep font sizing consistent among set/tweak widgets
+            def setFont(font: QtGui.QFont):
+                self.ui.tweak_value.setFont(font)
+                self.ui.tweak_negative.setFont(font)
+                self.ui.tweak_positive.setFont(font)
+                return orig_set_font(font)
+            orig_set_font = self.ui.set_value.setFont
+            self.ui.set_value.setFont = setFont
+            # The tweak entry widget has trouble changing its size, do it manually
+            def resizeEvent(event: QtGui.QResizeEvent):
+                rval = orig_resize(event)
+                self.ui.tweak_value.setMinimumHeight(event.size().height() // 2 - 1)
+                return rval
+            orig_resize = self.ui.setpoint_widget.resizeEvent
+            self.ui.setpoint_widget.resizeEvent = resizeEvent
+        """
 
     def _get_tooltip(self):
         """Update the tooltip based on device information."""
@@ -1123,7 +1138,6 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         """Link the IOC error message with the ui element."""
         if signal is None:
             widget.hide()
-            self.ui.error_prefix.hide()
         else:
             signal.subscribe(self.new_error_message)
 
@@ -1139,10 +1153,6 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             self.ui.set_value.setMinimumHeight(
                 self.ui.user_setpoint.minimumHeight()
                 + self.ui.tweak_value.minimumHeight()
-            )
-            self.ui.set_value.setMaximumHeight(
-                self.ui.user_setpoint.maximumHeight()
-                + self.ui.tweak_value.maximumHeight()
             )
         else:
             dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.1, min_size=4)
@@ -1196,16 +1206,12 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             else:
                 self.ui.status_label.setText('Check alarm')
             has_status = True
-        has_status_error = False
         if has_status and has_error:
             # We want to avoid having duplicate information (low effort try)
             if error_message in status_text:
                 has_error = False
-                has_status_error = True
         self.ui.status_label.setVisible(has_status)
-        self.ui.status_error_prefix.setVisible(has_status_error)
         self.ui.error_label.setVisible(has_error)
-        self.ui.error_prefix.setVisible(has_error)
 
 
 def clear_error_in_background(device):
