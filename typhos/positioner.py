@@ -10,7 +10,7 @@ from typing import Optional, Union
 
 import ophyd
 from pydm.widgets.channel import PyDMChannel
-from qtpy import QtCore, QtWidgets, uic
+from qtpy import QtCore, QtGui, QtWidgets, uic
 
 from typhos.display import TyphosDisplaySwitcher
 
@@ -913,7 +913,7 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
 
     notes_edit: TyphosNotesEdit
     status_container_widget: QtWidgets.QWidget
-    extended_signal_panel: Optional[TyphosSignalPanel]
+    extended_signal_panel: Optional[RowDetails]
     switcher: TyphosDisplaySwitcher
     status_text_layout: None  # Row UI doesn't use status_text_layout
     low_limit_widget: QtWidgets.QWidget
@@ -949,12 +949,6 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         dynamic_font.patch_widget(self.ui.expert_button, pad_percent=0.3, min_size=4)
         dynamic_font.patch_widget(self.ui.clear_error_button, pad_percent=0.3, min_size=4)
 
-        # for idx in range(self.layout().count()):
-        #     item = self.layout().itemAt(idx)
-        #     if item is self.ui.status_text_layout:
-        #         self.layout().takeAt(idx)
-        #         break
-
         # TODO move these out
         self._omit_names = [
             "motor_egu",
@@ -970,7 +964,6 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.extended_signal_panel = None
         self.ui.expand_button.clicked.connect(self._expand_layout)
         self.ui.status_label.setText("")
-        self._pre_signal_panel_min_height = self.minimumHeight()
 
         # TODO: ${name} / macros don't expand here
 
@@ -1031,19 +1024,12 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         if self.device is None:
             return None
 
-        panel = TyphosSignalPanel()
-        panel.omitNames = self.get_names_to_omit()
-        panel.sortBy = SignalOrder.byName
-        panel.add_device(self.device)
-
-        self.ui.layout().addWidget(panel)
-        return panel
+        return RowDetails(row=self)
 
     def _expand_layout(self) -> None:
         """Toggle the expansion of the signal panel."""
         if self.ui.extended_signal_panel is None:
             self.ui.extended_signal_panel = self._create_signal_panel()
-            self._extended_signal_panel_height = self.ui.extended_signal_panel.height()
             if self.ui.extended_signal_panel is None:
                 return
             to_show = True
@@ -1051,16 +1037,6 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             to_show = not self.ui.extended_signal_panel.isVisible()
 
         self.ui.extended_signal_panel.setVisible(to_show)
-
-        if to_show:
-            self.ui.expand_button.setText('v')
-            self.setMinimumHeight(
-                self._pre_signal_panel_min_height
-                + self._extended_signal_panel_height
-            )
-        else:
-            self.ui.expand_button.setText('>')
-            self.setMinimumHeight(self._pre_signal_panel_min_height)
 
     def add_device(self, device: ophyd.Device) -> None:
         """Add (or rather set) the ophyd device for this positioner."""
@@ -1087,26 +1063,6 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             # Hide the limit sections
             self.ui.low_limit_widget.hide()
             self.ui.high_limit_widget.hide()
-
-        """
-        # Trying to get the tweak widget to resize...
-        if isinstance(self.ui.set_value, QtWidgets.QLineEdit):
-            # Keep font sizing consistent among set/tweak widgets
-            def setFont(font: QtGui.QFont):
-                self.ui.tweak_value.setFont(font)
-                self.ui.tweak_negative.setFont(font)
-                self.ui.tweak_positive.setFont(font)
-                return orig_set_font(font)
-            orig_set_font = self.ui.set_value.setFont
-            self.ui.set_value.setFont = setFont
-            # The tweak entry widget has trouble changing its size, do it manually
-            def resizeEvent(event: QtGui.QResizeEvent):
-                rval = orig_resize(event)
-                self.ui.tweak_value.setMinimumHeight(event.size().height() // 2 - 1)
-                return rval
-            orig_resize = self.ui.setpoint_widget.resizeEvent
-            self.ui.setpoint_widget.resizeEvent = resizeEvent
-        """
 
     def _get_tooltip(self):
         """Update the tooltip based on device information."""
@@ -1227,3 +1183,59 @@ def clear_error_in_background(device):
 
     td = threading.Thread(target=inner, daemon=True)
     td.start()
+
+
+class RowDetails(QtWidgets.QWidget):
+    """
+    Container class for floating window with positioner row's basic config info.
+    """
+    row: TyphosPositionerRowWidget
+
+    def __init__(self, row: TyphosPositionerRowWidget, parent: QtWidgets.QWidget | None = None):
+        super().__init__(parent=parent)
+        self.row = row
+
+        self.label = QtWidgets.QLabel(parent=self)
+        self.label.setText(row.ui.device_name_label.text())
+        font = self.label.font()
+        font.setPointSize(font.pointSize() + 4)
+        self.label.setFont(font)
+        self.label.setMaximumHeight(
+            QtGui.QFontMetrics(font).boundingRect(self.label.text()).height()
+        )
+
+        self.panel = TyphosSignalPanel(parent=self)
+        self.panel.omitNames = row.get_names_to_omit()
+        self.panel.sortBy = SignalOrder.byName
+        self.panel.add_device(row.device)
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.panel)
+
+        self.setLayout(layout)
+
+    def hideEvent(self, event: QtGui.QHideEvent):
+        """
+        After hide, update button text, even if we were hidden via clicking the "x".
+        """
+        self.row.ui.expand_button.setText('>')
+        return super().hideEvent(event)
+
+    def showEvent(self, event: QtGui.QShowEvent):
+        """
+        Before show, update button text and move window to just under button.
+        """
+        button = self.row.ui.expand_button
+        button.setText('v')
+        self.move(
+            button.mapToGlobal(
+                QtCore.QPoint(
+                    button.pos().x(),
+                    button.pos().y() + button.height()
+                    + self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight),
+                )
+            )
+        )
+
+        return super().showEvent(event)
