@@ -1190,12 +1190,13 @@ class RowDetails(QtWidgets.QWidget):
     Container class for floating window with positioner row's basic config info.
     """
     row: TyphosPositionerRowWidget
+    resize_timer: QtCore.QTimer
 
     def __init__(self, row: TyphosPositionerRowWidget, parent: QtWidgets.QWidget | None = None):
         super().__init__(parent=parent)
         self.row = row
 
-        self.label = QtWidgets.QLabel(parent=self)
+        self.label = QtWidgets.QLabel()
         self.label.setText(row.ui.device_name_label.text())
         font = self.label.font()
         font.setPointSize(font.pointSize() + 4)
@@ -1204,16 +1205,31 @@ class RowDetails(QtWidgets.QWidget):
             QtGui.QFontMetrics(font).boundingRect(self.label.text()).height()
         )
 
-        self.panel = TyphosSignalPanel(parent=self)
+        self.panel = TyphosSignalPanel()
         self.panel.omitNames = row.get_names_to_omit()
         self.panel.sortBy = SignalOrder.byName
         self.panel.add_device(row.device)
 
+        self.scroll_area = QtWidgets.QScrollArea()
+        self.scroll_area.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        self.scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self.panel)
+
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.label)
-        layout.addWidget(self.panel)
+        layout.addWidget(self.scroll_area)
 
         self.setLayout(layout)
+        self.resize_timer = QtCore.QTimer(parent=self)
+        self.resize_timer.timeout.connect(self.fix_scroll_size)
+        self.resize_timer.setInterval(1)
+        self.resize_timer.setSingleShot(True)
+
+        self.original_panel_min_width = self.panel.minimumWidth()
+        self.last_resize_width = 0
+        self.resize_done = False
 
     def hideEvent(self, event: QtGui.QHideEvent):
         """
@@ -1237,5 +1253,36 @@ class RowDetails(QtWidgets.QWidget):
                 )
             )
         )
-
+        if not self.resize_done:
+            self.resize_timer.start()
         return super().showEvent(event)
+
+    def fix_scroll_size(self):
+        """
+        Slot that ensures the panel gets enough space in the scroll area.
+
+        The panel, when created, has smaller sizing information than it does
+        a few moments after being shown for the first time. This might
+        update several times before settling down.
+
+        We want to watch for this resize and set the scroll area width such
+        that there's enough room to see the widget at its minimum size.
+        """
+        if self.panel.minimumWidth() <= self.original_panel_min_width:
+            # No change
+            self.resize_timer.start()
+            return
+        elif self.last_resize_width != self.panel.minimumWidth():
+            # We are not stable yet
+            self.last_resize_width = self.panel.minimumWidth()
+            self.resize_timer.start()
+            return
+
+        # Make sure the panel has enough space to exist!
+        self.scroll_area.setMinimumWidth(
+            self.panel.minimumWidth()
+            + self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent)
+            + 2 * self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollView_ScrollBarOverlap)
+            + 2 * self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollView_ScrollBarSpacing)
+        )
+        self.resize_done = True
