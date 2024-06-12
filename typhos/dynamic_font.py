@@ -118,6 +118,15 @@ def patch_widget(
     """
     Patch the widget to dynamically change its font.
 
+    This picks between patch_text_widget and patch_combo_widget as appropriate.
+
+    Depending on which is chosen, different methods may be patched to ensure
+    that the widget will always have the maximum size font that fits within
+    the bounding box.
+
+    Regardless of which method is chosen, the font will be dynamically
+    resized for the first time before this function returns.
+
     Parameters
     ----------
     widget : QtWidgets.QWidget
@@ -162,7 +171,13 @@ def patch_text_widget(
     min_size: float | None = None,
 ):
     """
-    Specific patching for widgets with text() and setText() methods
+    Specific patching for widgets with text() and setText() methods.
+
+    This replaces resizeEvent and setText methods with versions that will
+    set the font size to the maximum fitting value when the widget is
+    resized or the text is updated.
+
+    The text is immediately resized for the first time during this function call.
     """
     def set_font_size() -> None:
         font = widget.font()
@@ -228,7 +243,13 @@ def patch_combo_widget(
     min_size: float | None = None,
 ):
     """
-    Specific patching for combobox widgets
+    Specific patching for combobox widgets.
+
+    This replaces resizeEvent with a version that will
+    set the font size to the maximum fitting value
+    when the widget is resized.
+
+    The text is immediately resized for the first time during this function call.
     """
     def set_font_size() -> None:
         font = widget.font()
