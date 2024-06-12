@@ -1024,7 +1024,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         if self.device is None:
             return None
 
-        return RowDetails(row=self)
+        return RowDetails(row=self, parent=self, flags=QtCore.Qt.Window)
 
     def _expand_layout(self) -> None:
         """Toggle the expansion of the signal panel."""
@@ -1192,8 +1192,8 @@ class RowDetails(QtWidgets.QWidget):
     row: TyphosPositionerRowWidget
     resize_timer: QtCore.QTimer
 
-    def __init__(self, row: TyphosPositionerRowWidget, parent: QtWidgets.QWidget | None = None):
-        super().__init__(parent=parent)
+    def __init__(self, row: TyphosPositionerRowWidget, parent: QtWidgets.QWidget | None = None, **kwargs):
+        super().__init__(parent=parent, **kwargs)
         self.row = row
 
         self.label = QtWidgets.QLabel()
