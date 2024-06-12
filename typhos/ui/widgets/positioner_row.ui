@@ -1044,7 +1044,7 @@
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">padding: 2px; margin: 0px; background-color: red</string>
+            <string notr="true">QPushButton { padding: 2px; margin: 0px; background-color: red }</string>
            </property>
            <property name="text">
             <string>Stop</string>
@@ -1263,7 +1263,7 @@ Screen</string>
             <string/>
            </property>
            <property name="styleSheet">
-            <string notr="true">color: black; background-color: none;   border-radius: 0px;</string>
+            <string notr="true">PyDMLabel { color: black; background-color: none;   border-radius: 0px; }</string>
            </property>
            <property name="text">
             <string/>

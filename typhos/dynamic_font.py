@@ -140,11 +140,6 @@ def patch_widget(
     min_size : float or None, optional
         The minimum font point size we're allowed to apply to the widget.
     """
-    if "font-size" in widget.styleSheet():
-        logger.warning(
-            f"Widget named {widget.objectName()} has a fixed size from its "
-            "stylesheet, and cannot be resized dynamically."
-        )
     if isinstance(widget, QtWidgets.QComboBox):
         return patch_combo_widget(
             widget=widget,
@@ -161,6 +156,31 @@ def patch_widget(
         )
     else:
         raise TypeError(f"Dynamic font not supported for {widget}")
+
+
+def set_font_common(
+    widget: QtWidgets.QWidget,
+    font_size: int,
+    min_size: int,
+    max_size: int,
+) -> None:
+    # 0.1 = avoid meaningless resizes
+    # 0.00001 = snap to min/max
+    delta = 0.1
+    if max_size is not None and font_size > max_size:
+        font_size = max_size
+        delta = 0.00001
+    if min_size is not None and font_size < min_size:
+        font_size = min_size
+        delta = 0.00001
+    font = widget.font()
+    if abs(font.pointSizeF() - font_size) > delta:
+        font.setPointSizeF(font_size)
+        # Set the font directly
+        widget.setFont(font)
+        # Also set the font in the stylesheet
+        # In case some code resets the style
+        patch_style_font_size(widget=widget, font_size=font_size)
 
 
 def patch_text_widget(
@@ -180,24 +200,17 @@ def patch_text_widget(
     The text is immediately resized for the first time during this function call.
     """
     def set_font_size() -> None:
-        font = widget.font()
         font_size = get_max_font_size_cached(
             widget.text(),
             widget.width(),
             widget.height(),
         )
-        # 0.1 = avoid meaningless resizes
-        # 0.00001 = snap to min/max
-        delta = 0.1
-        if max_size is not None and font_size > max_size:
-            font_size = max_size
-            delta = 0.00001
-        if min_size is not None and font_size < min_size:
-            font_size = min_size
-            delta = 0.00001
-        if abs(font.pointSizeF() - font_size) > delta:
-            font.setPointSizeF(font_size)
-            widget.setFont(font)
+        set_font_common(
+            widget=widget,
+            font_size=font_size,
+            max_size=max_size,
+            min_size=min_size,
+        )
 
     # Cache and reuse results per widget
     # Low effort and not exhaustive, but reduces the usage of the big loop
@@ -252,7 +265,6 @@ def patch_combo_widget(
     The text is immediately resized for the first time during this function call.
     """
     def set_font_size() -> None:
-        font = widget.font()
         combo_options = [
             widget.itemText(index) for index in range(widget.count())
         ]
@@ -264,19 +276,12 @@ def patch_combo_widget(
             )
             for text in combo_options
         ]
-        font_size = min(font_sizes)
-        # 0.1 = avoid meaningless resizes
-        # 0.00001 = snap to min/max
-        delta = 0.1
-        if max_size is not None and font_size > max_size:
-            font_size = max_size
-            delta = 0.00001
-        if min_size is not None and font_size < min_size:
-            font_size = min_size
-            delta = 0.00001
-        if abs(font.pointSizeF() - font_size) > delta:
-            font.setPointSizeF(font_size)
-            widget.setFont(font)
+        set_font_common(
+            widget=widget,
+            font_size=min(font_sizes),
+            max_size=max_size,
+            min_size=min_size,
+        )
 
     # Cache and reuse results per widget
     # Low effort and not exhaustive, but reduces the usage of the big loop
@@ -316,6 +321,7 @@ def unpatch_widget(widget: QtWidgets.QWidget) -> None:
     widget : QtWidgets.QWidget
         The widget to unpatch.
     """
+    unpatch_style_font_size(widget=widget)
     if not hasattr(widget.resizeEvent, "_patched_methods_"):
         return
     if isinstance(widget, QtWidgets.QComboBox):
@@ -354,3 +360,50 @@ def is_patched(widget: QtWidgets.QWidget) -> bool:
         True if the widget has been patched.
     """
     return hasattr(widget.resizeEvent, "_patched_methods_")
+
+
+standard_comment = "/* Auto patch from typhos.dynamic_font */"
+
+
+def patch_style_font_size(widget: QtWidgets.QWidget, font_size: int) -> None:
+    """
+    Update a widget's stylesheet to force the font size.
+
+    Requires the widget stylesheet to either be empty or filled with
+    existing rules that have class specifiers, e.g. it's ok to have:
+
+    QPushButton { padding: 2px; margin: 0px; background-color: red }
+
+    But not to just have:
+
+    padding: 2px; margin: 0px; background-color: red
+
+    This will not be applied until next style reload, which can be
+    done via unpolish and polish
+    (see https://wiki.qt.io/Dynamic_Properties_and_Stylesheets)
+
+    In this module, this is used to guard against stylesheet reloads
+    undoing the dynamic font size. We will not call unpolish or polish
+    ourselves, but some other code might.
+    """
+    starting_stylesheet = widget.styleSheet()
+    if standard_comment in starting_stylesheet:
+        unpatch_style_font_size(widget=widget)
+    widget.setStyleSheet(
+        f"{widget.styleSheet()}\n"
+        f"{standard_comment}\n"
+        f"{widget.__class__.__name__} {{ font-size: {font_size} pt }}"
+    )
+
+
+def unpatch_style_font_size(widget: QtWidgets.QWidget) -> None:
+    """
+    Undo the effects of patch_style_font_size.
+
+    Assumes that the last two lines of the stylesheet are the comment
+    and the rule that we added.
+    """
+    if standard_comment in widget.styleSheet():
+        widget.setStyleSheet(
+            "\n".join(widget.styleSheet().split("\n")[:-2])
+        )

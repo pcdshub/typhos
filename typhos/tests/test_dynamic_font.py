@@ -9,7 +9,8 @@ from qtpy import QtCore, QtGui, QtWidgets
 
 from typhos.tests import conftest
 
-from ..dynamic_font import is_patched, patch_widget, unpatch_widget
+from ..dynamic_font import (is_patched, patch_style_font_size, patch_widget,
+                            unpatch_style_font_size, unpatch_widget)
 
 logger = logging.getLogger(__name__)
 
@@ -74,3 +75,27 @@ def test_patching(
         widget,
         f"{request.node.name}_{cls.__name__}_dynamic_font_size",
     )
+
+
+@pytest.mark.parametrize(
+    "stylesheet",
+    [
+        "",
+        "background: red",
+        "QLabel { background: blue }",
+        "QWidget { font-size: 12 pt }",
+    ]
+)
+def test_style_patching(stylesheet: str, qtbot: pytestqt.qtbot.QtBot):
+    widget = QtWidgets.QWidget()
+    qtbot.add_widget(widget)
+    widget.setStyleSheet(stylesheet)
+
+    expected_text = "font-size: 16 pt"
+    assert expected_text not in widget.styleSheet()
+    patch_style_font_size(widget=widget, font_size=16)
+    assert expected_text in widget.styleSheet()
+    unpatch_style_font_size(widget=widget)
+    assert expected_text not in widget.styleSheet()
+
+    assert widget.styleSheet() == stylesheet
