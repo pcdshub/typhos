@@ -7,8 +7,10 @@ API Breaks
 
 Features
 --------
-- Implement dynamic resizing in all directions for positioner widgets.
-- Make positioner widgets more vertically compact.
+- Rework the design, sizing, and font scaling of the positioner row widget to address
+  concerns about readability and poor use of space for positioners that don't need
+  all of the widget components.
+- Implement dynamic resizing in all directions for positioner row widgets.
 
 Bugfixes
 --------
