@@ -865,11 +865,30 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         menu = self.generate_context_menu()
         menu.exec_(self.mapToGlobal(ev.pos()))
 
-    def resizeEvent(self, event: QtGui.QResizeEvent):
+    def maybe_fix_parent_size(self):
         if self.nested_panel:
-            # force this widget's container to give it enough space!
+            # force this widget's containers to give it enough space!
             self.parent().setMinimumHeight(self.parent().minimumSizeHint().height())
+
+    def resizeEvent(self, event: QtGui.QResizeEvent):
+        """
+        Fix the parent container's size whenever our size changes.
+
+        This also runs when we add or filter rows.
+        """
+        self.maybe_fix_parent_size()
         return super().resizeEvent(event)
+
+    def setVisible(self, visible: bool):
+        """
+        Fix the parent container's size whenever we switch visibility.
+
+        This also runs when we toggle a row visibility using the title
+        and when all signal rows get filtered all at once.
+        """
+        rval = super().setVisible(visible)
+        self.maybe_fix_parent_size()
+        return rval
 
 
 class CompositeSignalPanel(SignalPanel):
