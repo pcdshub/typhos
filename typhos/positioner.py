@@ -10,7 +10,7 @@ from typing import Optional, Union
 
 import ophyd
 from pydm.widgets.channel import PyDMChannel
-from qtpy import QtCore, QtWidgets, uic
+from qtpy import QtCore, QtGui, QtWidgets, uic
 
 from typhos.display import TyphosDisplaySwitcher
 
@@ -171,6 +171,11 @@ class TyphosPositionerWidget(
         self._initialized = False
         self._moving_channel = None
 
+        self._show_lowlim = True
+        self._show_lowtrav = True
+        self._show_highlim = True
+        self._show_hightrav = True
+
         super().__init__(parent=parent)
 
         self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
@@ -185,7 +190,7 @@ class TyphosPositionerWidget(
         self.show_expert_button = False
         self._after_set_moving(False)
 
-        dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.01)
+        dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.05, min_size=4)
 
     def _clear_status_thread(self):
         """Clear a previous status thread."""
@@ -395,7 +400,6 @@ class TyphosPositionerWidget(
         # False = Red, True = Green, None = no box (in motion is yellow)
         if not self._last_move:
             self._last_move = None
-        utils.reload_widget_stylesheet(self, cascade=True)
 
     def _get_position(self):
         if not self._readback:
@@ -422,6 +426,7 @@ class TyphosPositionerWidget(
         """Link the positioner lower limit switch with the ui element."""
         if signal is None:
             widget.hide()
+            self._show_lowlim = False
 
     @utils.linked_attribute('high_limit_switch_attribute',
                             'ui.high_limit_switch', True)
@@ -429,6 +434,7 @@ class TyphosPositionerWidget(
         """Link the positioner high limit switch with the ui element."""
         if signal is None:
             widget.hide()
+            self._show_highlim = False
 
     @utils.linked_attribute('low_limit_travel_attribute', 'ui.low_limit', True)
     def _link_low_travel(self, signal, widget):
@@ -461,6 +467,8 @@ class TyphosPositionerWidget(
         # If not found or invalid, hide them:
         self.ui.low_limit.hide()
         self.ui.high_limit.hide()
+        self._show_lowtrav = False
+        self._show_hightrav = False
 
     @utils.linked_attribute('moving_attribute', 'ui.moving_indicator', True)
     def _link_moving(self, signal, widget):
@@ -513,10 +521,7 @@ class TyphosPositionerWidget(
             self.ui.set_value.setAlignment(QtCore.Qt.AlignCenter)
             self.ui.set_value.returnPressed.connect(self.set)
 
-        self.ui.set_value.setSizePolicy(
-            QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed,
-        )
+        self.ui.set_value.setSizePolicy(self.ui.user_setpoint.sizePolicy())
         self.ui.set_value.setMinimumWidth(
             self.ui.user_setpoint.minimumWidth()
         )
@@ -907,11 +912,13 @@ class _TyphosPositionerRowUI(_TyphosPositionerUI):
     """Annotations helper for positioner_row.ui; not to be instantiated."""
 
     notes_edit: TyphosNotesEdit
-    status_container_widget: QtWidgets.QFrame
-    extended_signal_panel: Optional[TyphosSignalPanel]
-    status_error_prefix: QtWidgets.QLabel
-    error_prefix: QtWidgets.QLabel
+    status_container_widget: QtWidgets.QWidget
+    extended_signal_panel: Optional[RowDetails]
     switcher: TyphosDisplaySwitcher
+    status_text_layout: None  # Row UI doesn't use status_text_layout
+    low_limit_widget: QtWidgets.QWidget
+    high_limit_widget: QtWidgets.QWidget
+    setpoint_widget: QtWidgets.QWidget
 
 
 class TyphosPositionerRowWidget(TyphosPositionerWidget):
@@ -932,12 +939,15 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self._alarm_level = AlarmLevel.DISCONNECTED
 
         super().__init__(*args, **kwargs)
-
-        for idx in range(self.layout().count()):
-            item = self.layout().itemAt(idx)
-            if item is self.ui.status_text_layout:
-                self.layout().takeAt(idx)
-                break
+        dynamic_font.patch_widget(self.ui.low_limit, pad_percent=0.01, max_size=12, min_size=4)
+        dynamic_font.patch_widget(self.ui.high_limit, pad_percent=0.01, max_size=12, min_size=4)
+        dynamic_font.patch_widget(self.ui.device_name_label, pad_percent=0.01, min_size=4)
+        dynamic_font.patch_widget(self.ui.notes_edit, pad_percent=0.01, min_size=4)
+        dynamic_font.patch_widget(self.ui.alarm_label, pad_percent=0.01, min_size=4)
+        dynamic_font.patch_widget(self.ui.moving_indicator_label, pad_percent=0.01, min_size=4)
+        dynamic_font.patch_widget(self.ui.stop_button, pad_percent=0.4, min_size=4)
+        dynamic_font.patch_widget(self.ui.expert_button, pad_percent=0.3, min_size=4)
+        dynamic_font.patch_widget(self.ui.clear_error_button, pad_percent=0.3, min_size=4)
 
         # TODO move these out
         self._omit_names = [
@@ -986,7 +996,12 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         omit_signals = self.all_linked_signals
         to_keep_signals = [
             getattr(device, attr, None)
-            for attr in (self.velocity_attribute, self.acceleration_attribute)
+            for attr in (
+                self.velocity_attribute,
+                self.acceleration_attribute,
+                self.high_limit_travel_attribute,
+                self.low_limit_travel_attribute,
+            )
         ]
         for sig in to_keep_signals:
             if sig in omit_signals:
@@ -1009,13 +1024,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         if self.device is None:
             return None
 
-        panel = TyphosSignalPanel()
-        panel.omitNames = self.get_names_to_omit()
-        panel.sortBy = SignalOrder.byName
-        panel.add_device(self.device)
-
-        self.ui.layout().addWidget(panel)
-        return panel
+        return RowDetails(row=self, parent=self, flags=QtCore.Qt.Window)
 
     def _expand_layout(self) -> None:
         """Toggle the expansion of the signal panel."""
@@ -1023,17 +1032,11 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             self.ui.extended_signal_panel = self._create_signal_panel()
             if self.ui.extended_signal_panel is None:
                 return
-
             to_show = True
         else:
             to_show = not self.ui.extended_signal_panel.isVisible()
 
         self.ui.extended_signal_panel.setVisible(to_show)
-
-        if to_show:
-            self.ui.expand_button.setText('v')
-        else:
-            self.ui.expand_button.setText('>')
 
     def add_device(self, device: ophyd.Device) -> None:
         """Add (or rather set) the ophyd device for this positioner."""
@@ -1050,6 +1053,16 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.notes_edit.add_device(device)
         self.ui.switcher.help_toggle_button.setToolTip(self._get_tooltip())
         self.ui.switcher.help_toggle_button.setEnabled(False)
+
+        if not any((
+            self._show_lowlim,
+            self._show_highlim,
+            self._show_lowtrav,
+            self._show_hightrav,
+        )):
+            # Hide the limit sections
+            self.ui.low_limit_widget.hide()
+            self.ui.high_limit_widget.hide()
 
     def _get_tooltip(self):
         """Update the tooltip based on device information."""
@@ -1081,12 +1094,24 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         """Link the IOC error message with the ui element."""
         if signal is None:
             widget.hide()
-            self.ui.error_prefix.hide()
         else:
             signal.subscribe(self.new_error_message)
 
     def new_error_message(self, value, *args, **kwargs):
         self.update_status_visibility(error_message=value)
+
+    def _define_setpoint_widget(self):
+        super()._define_setpoint_widget()
+        if isinstance(self.ui.set_value, QtWidgets.QComboBox):
+            # Pad extra to avoid intersecting drop-down arrow
+            dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.18, min_size=4)
+            # Consume the vertical space left by the missing tweak widgets
+            self.ui.set_value.setMinimumHeight(
+                self.ui.user_setpoint.minimumHeight()
+                + self.ui.tweak_value.minimumHeight()
+            )
+        else:
+            dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.1, min_size=4)
 
     def _set_status_text(
         self,
@@ -1137,16 +1162,12 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             else:
                 self.ui.status_label.setText('Check alarm')
             has_status = True
-        has_status_error = False
         if has_status and has_error:
             # We want to avoid having duplicate information (low effort try)
             if error_message in status_text:
                 has_error = False
-                has_status_error = True
         self.ui.status_label.setVisible(has_status)
-        self.ui.status_error_prefix.setVisible(has_status_error)
         self.ui.error_label.setVisible(has_error)
-        self.ui.error_prefix.setVisible(has_error)
 
 
 def clear_error_in_background(device):
@@ -1162,3 +1183,106 @@ def clear_error_in_background(device):
 
     td = threading.Thread(target=inner, daemon=True)
     td.start()
+
+
+class RowDetails(QtWidgets.QWidget):
+    """
+    Container class for floating window with positioner row's basic config info.
+    """
+    row: TyphosPositionerRowWidget
+    resize_timer: QtCore.QTimer
+
+    def __init__(self, row: TyphosPositionerRowWidget, parent: QtWidgets.QWidget | None = None, **kwargs):
+        super().__init__(parent=parent, **kwargs)
+        self.row = row
+
+        self.label = QtWidgets.QLabel()
+        self.label.setText(row.ui.device_name_label.text())
+        font = self.label.font()
+        font.setPointSize(font.pointSize() + 4)
+        self.label.setFont(font)
+        self.label.setMaximumHeight(
+            QtGui.QFontMetrics(font).boundingRect(self.label.text()).height()
+        )
+
+        self.panel = TyphosSignalPanel()
+        self.panel.omitNames = row.get_names_to_omit()
+        self.panel.sortBy = SignalOrder.byName
+        self.panel.add_device(row.device)
+
+        self.scroll_area = QtWidgets.QScrollArea()
+        self.scroll_area.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        self.scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self.panel)
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.addWidget(self.scroll_area)
+
+        self.setLayout(layout)
+        self.resize_timer = QtCore.QTimer(parent=self)
+        self.resize_timer.timeout.connect(self.fix_scroll_size)
+        self.resize_timer.setInterval(1)
+        self.resize_timer.setSingleShot(True)
+
+        self.original_panel_min_width = self.panel.minimumWidth()
+        self.last_resize_width = 0
+        self.resize_done = False
+
+    def hideEvent(self, event: QtGui.QHideEvent):
+        """
+        After hide, update button text, even if we were hidden via clicking the "x".
+        """
+        self.row.ui.expand_button.setText('>')
+        return super().hideEvent(event)
+
+    def showEvent(self, event: QtGui.QShowEvent):
+        """
+        Before show, update button text and move window to just under button.
+        """
+        button = self.row.ui.expand_button
+        button.setText('v')
+        self.move(
+            button.mapToGlobal(
+                QtCore.QPoint(
+                    button.pos().x(),
+                    button.pos().y() + button.height()
+                    + self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight),
+                )
+            )
+        )
+        if not self.resize_done:
+            self.resize_timer.start()
+        return super().showEvent(event)
+
+    def fix_scroll_size(self):
+        """
+        Slot that ensures the panel gets enough space in the scroll area.
+
+        The panel, when created, has smaller sizing information than it does
+        a few moments after being shown for the first time. This might
+        update several times before settling down.
+
+        We want to watch for this resize and set the scroll area width such
+        that there's enough room to see the widget at its minimum size.
+        """
+        if self.panel.minimumWidth() <= self.original_panel_min_width:
+            # No change
+            self.resize_timer.start()
+            return
+        elif self.last_resize_width != self.panel.minimumWidth():
+            # We are not stable yet
+            self.last_resize_width = self.panel.minimumWidth()
+            self.resize_timer.start()
+            return
+
+        # Make sure the panel has enough space to exist!
+        self.scroll_area.setMinimumWidth(
+            self.panel.minimumWidth()
+            + self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent)
+            + 2 * self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollView_ScrollBarOverlap)
+            + 2 * self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollView_ScrollBarSpacing)
+        )
+        self.resize_done = True

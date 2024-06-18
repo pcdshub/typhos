@@ -20,7 +20,7 @@ from typing import Dict, List, Optional
 import ophyd
 from ophyd import Kind
 from ophyd.signal import EpicsSignal, EpicsSignalRO
-from qtpy import QtCore, QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Q_ENUMS, Property
 
 from . import display, utils
@@ -724,6 +724,8 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         self.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
         self.contextMenuEvent = self.open_context_menu
 
+        self.nested_panel = False
+
     def _get_kind(self, kind: str) -> ophyd.Kind:
         """Property getter for show[kind]."""
         return self._kinds[kind]
@@ -822,10 +824,17 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
     def add_device(self, device):
         """Typhos hook for adding a new device."""
         self.devices.clear()
+        self.nested_panel = False
         super().add_device(device)
         # Configure the layout for the new device
         self._panel_layout.add_device(device)
         self._update_panel()
+        parent = self.parent()
+        while parent is not None:
+            if isinstance(parent, TyphosSignalPanel):
+                self.nested_panel = True
+                break
+            parent = parent.parent()
 
     def set_device_display(self, display):
         """Typhos hook for when the TyphosDeviceDisplay is associated."""
@@ -855,6 +864,31 @@ class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
         """
         menu = self.generate_context_menu()
         menu.exec_(self.mapToGlobal(ev.pos()))
+
+    def maybe_fix_parent_size(self):
+        if self.nested_panel:
+            # force this widget's containers to give it enough space!
+            self.parent().setMinimumHeight(self.parent().minimumSizeHint().height())
+
+    def resizeEvent(self, event: QtGui.QResizeEvent):
+        """
+        Fix the parent container's size whenever our size changes.
+
+        This also runs when we add or filter rows.
+        """
+        self.maybe_fix_parent_size()
+        return super().resizeEvent(event)
+
+    def setVisible(self, visible: bool):
+        """
+        Fix the parent container's size whenever we switch visibility.
+
+        This also runs when we toggle a row visibility using the title
+        and when all signal rows get filtered all at once.
+        """
+        rval = super().setVisible(visible)
+        self.maybe_fix_parent_size()
+        return rval
 
 
 class CompositeSignalPanel(SignalPanel):

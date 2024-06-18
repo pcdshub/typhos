@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>872</width>
-    <height>58</height>
+    <width>681</width>
+    <height>125</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -46,6 +46,18 @@
    </property>
    <item>
     <widget class="TyphosPositionerRowWidget" name="TyphosPositionerRowWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>681</width>
+       <height>125</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string/>
      </property>

@@ -165,13 +165,16 @@
              <string/>
             </property>
             <property name="styleSheet">
-             <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
+             <string notr="true">background-color: None; color: None;</string>
             </property>
             <property name="text">
              <string>low_limit</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
+            </property>
+            <property name="alarmSensitiveBorder" stdset="0">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -219,6 +222,9 @@
     </string>
             </property>
             <property name="alarmSensitiveContent" stdset="0">
+             <bool>false</bool>
+            </property>
+            <property name="alarmSensitiveBorder" stdset="0">
              <bool>false</bool>
             </property>
             <property name="onColor" stdset="0">
@@ -354,6 +360,9 @@ Screen</string>
           <property name="showUnits" stdset="0">
            <bool>true</bool>
           </property>
+          <property name="alarmSensitiveBorder" stdset="0">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item alignment="Qt::AlignHCenter">
@@ -381,6 +390,9 @@ Screen</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
+          </property>
+          <property name="alarmSensitiveBorder" stdset="0">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -511,6 +523,9 @@ Screen</string>
           <property name="wordWrap">
            <bool>true</bool>
           </property>
+          <property name="alarmSensitiveBorder" stdset="0">
+           <bool>false</bool>
+          </property>
           <property name="displayFormat" stdset="0">
            <enum>PyDMLabel::String</enum>
           </property>
@@ -638,13 +653,16 @@ Screen</string>
              <string/>
             </property>
             <property name="styleSheet">
-             <string notr="true">font-size: 8pt; background-color: None; color: None;</string>
+             <string notr="true">background-color: None; color: None;</string>
             </property>
             <property name="text">
              <string>high_limit</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
+            </property>
+            <property name="alarmSensitiveBorder" stdset="0">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
