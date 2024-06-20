@@ -60,7 +60,7 @@ test:
   - ipython>=7.16
   - jinja2<3.1
   - line_profiler
-  - pcdsdevices
+  - pcdsdevices>=8.4.0
   - pytest
   - pytest-benchmark
   - pytest-qt
