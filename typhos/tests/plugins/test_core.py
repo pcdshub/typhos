@@ -5,8 +5,9 @@ import pydm.utilities
 import pytest
 from ophyd import Component as Cpt
 from ophyd import Device, Signal
+from ophyd.sim import EnumSignal
 from pydm import PyDMApplication
-from pydm.widgets import PyDMLineEdit
+from pydm.widgets import PyDMChannel, PyDMLineEdit
 from pytestqt.qtbot import QtBot
 
 from typhos.plugins.core import (SignalConnection, register_signal,
@@ -211,3 +212,51 @@ def test_array_signal_put_value(qapp, qtbot):
     widget.send_value_signal[np.ndarray].emit(np.zeros(4))
     qapp.processEvents()
     assert all(sig.get() == np.zeros(4))
+
+
+def test_add_listener_order(qapp):
+    sig = EnumSignal(name="my_listener", value=0, enum_strings=("zero", "one", "two"))
+    register_signal(sig)
+
+    order = []
+
+    def new_value(*args, **kwargs):
+        order.append("value")
+
+    def new_meta(*args, **kwargs):
+        order.append("meta")
+
+    chan = PyDMChannel(address="sig://my_listener", value_slot=new_value, enum_strings_slot=new_meta)
+    _ = SignalConnection(chan, "my_listener", "sig")
+    qapp.processEvents()
+
+    assert order == ["meta", "value"]
+
+
+def test_enum_casts(qapp):
+    sig = Signal(name="my_enum_caster", value=0)
+    register_signal(sig)
+
+    chan = PyDMChannel(address="sig://my_enum_caster")
+    conn = SignalConnection(chan, "my_enum_caster", "sig")
+    qapp.processEvents()
+
+    conn.enum_strs = ("1", "2", "5")
+
+    # First, keep type as an int
+    assert conn.cast("1") == 0
+    assert conn.cast("2") == 1
+    assert conn.cast("5") == 2
+    assert conn.cast(0) == 0
+    assert conn.cast(1) == 1
+    assert conn.cast(2) == 2
+
+    # Try str next
+    conn.signal_type = str
+
+    assert conn.cast("1") == "1"
+    assert conn.cast("2") == "2"
+    assert conn.cast("5") == "5"
+    assert conn.cast(0) == "1"
+    assert conn.cast(1) == "2"
+    assert conn.cast(2) == "5"
