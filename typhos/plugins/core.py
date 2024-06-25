@@ -80,10 +80,10 @@ class SignalConnection(PyDMConnection):
     def __init__(self, channel, address, protocol=None, parent=None):
         # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
-        self._connection_open = True
-        self.signal_type = None
-        self.is_float = False
-        self.enum_strs = ()
+        self._connection_open: bool = True
+        self.signal_type: type | None = None
+        self.is_float: bool = False
+        self.enum_strs: tuple[str, ...] = ()
 
         # Collect our signal
         self.signal = self.find_signal(address)
@@ -161,7 +161,9 @@ class SignalConnection(PyDMConnection):
                 except (TypeError, ValueError):
                     value = str(value)
             else:
-                raise TypeError(f"Invalid combination: {self.enum_strs=} with {self.signal_type=}")
+                raise TypeError(
+                    f"Invalid combination: enum_strs={self.enum_strs} with signal_type={self.signal_type}"
+                )
         elif self.signal_type is np.ndarray:
             value = np.asarray(value)
         else:
