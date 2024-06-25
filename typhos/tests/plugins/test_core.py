@@ -252,7 +252,9 @@ def test_enum_casts(qapp):
     assert conn.cast(2) == 2
 
     # Try str next
-    conn.signal_type = str
+    conn.signal_type = None
+    sig.put("2")
+    qapp.processEvents()
 
     assert conn.cast("1") == "1"
     assert conn.cast("2") == "2"
