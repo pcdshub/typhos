@@ -80,9 +80,11 @@ class SignalConnection(PyDMConnection):
     def __init__(self, channel, address, protocol=None, parent=None):
         # Create base connection
         super().__init__(channel, address, protocol=protocol, parent=parent)
-        self._connection_open = True
-        self.signal_type = None
-        self.is_float = False
+        self._connection_open: bool = True
+        self.signal_type: type | None = None
+        self.is_float: bool = False
+        self.enum_strs: tuple[str, ...] = ()
+
         # Collect our signal
         self.signal = self.find_signal(address)
         # Subscribe to updates from Ophyd
@@ -143,7 +145,26 @@ class SignalConnection(PyDMConnection):
                          dtype, self.signal.name, self.signal_type)
 
         logger.debug("Casting %r to %r", value, self.signal_type)
-        if self.signal_type is np.ndarray:
+        if self.enum_strs:
+            # signal_type is either int or str
+            # use enums to cast type
+            if self.signal_type is int:
+                # Get the index
+                try:
+                    value = self.enum_strs.index(value)
+                except (TypeError, ValueError, AttributeError):
+                    value = int(value)
+            elif self.signal_type is str:
+                # Get the enum string
+                try:
+                    value = self.enum_strs[value]
+                except (TypeError, ValueError):
+                    value = str(value)
+            else:
+                raise TypeError(
+                    f"Invalid combination: enum_strs={self.enum_strs} with signal_type={self.signal_type}"
+                )
+        elif self.signal_type is np.ndarray:
             value = np.asarray(value)
         else:
             value = self.signal_type(value)
@@ -227,6 +248,7 @@ class SignalConnection(PyDMConnection):
             self.unit_signal.emit(units)
         if enum_strs is not None:
             self.enum_strings_signal.emit(enum_strs)
+            self.enum_strs = enum_strs
 
         # Special handling for severity
         if severity is None:
@@ -266,9 +288,9 @@ class SignalConnection(PyDMConnection):
         else:
             self.is_float = False
 
-        # Report new value
-        self.send_new_value(signal_val)
+        # Report new meta for context, then value
         self.send_new_meta(**signal_meta)
+        self.send_new_value(signal_val)
         # If the channel is used for writing to PVs, hook it up to the
         # 'put' methods.
         if channel.value_signal is not None:
