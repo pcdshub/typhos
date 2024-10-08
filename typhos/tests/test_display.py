@@ -95,6 +95,7 @@ def test_display_without_md(motor, display):
 
 def test_display_with_md(motor, display):
     screen = 'engineering_screen.ui'
+    display.display_type = DisplayTypes.detailed_screen
     display.add_device(
         motor, macros={'detailed_screen': screen})
     display.load_best_template()
@@ -156,6 +157,7 @@ def test_display_device_name_property(motor, display, qtbot):
 def test_display_with_py_file(display, motor, qtbot):
     qtbot.add_widget(display)
     py_file = str(conftest.MODULE_PATH / 'utils' / 'display.py')
+    display.display_type = DisplayTypes.detailed_screen
     display.add_device(motor, macros={'detailed_screen': py_file})
     display.load_best_template()
     assert isinstance(display.display_widget, Display)
