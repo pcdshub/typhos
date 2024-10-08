@@ -190,7 +190,7 @@ def test_display_with_sig_template(display, device, qapp, qtbot):
     ]
 )
 def test_get_template_display_type(path: Path, expected: DisplayTypes | Exception):
-    if isinstance(expected, Exception):
+    if issubclass(expected, Exception):
         with pytest.raises(expected):
             get_template_display_type(path)
     else:
