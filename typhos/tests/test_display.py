@@ -187,16 +187,22 @@ def test_display_with_sig_template(display, device, qapp, qtbot):
         (Path("user/module/Potato.embedded.ui"), DisplayTypes.embedded_screen),
         (Path("user/module/Potato.detailed.ui"), DisplayTypes.detailed_screen),
         (Path("user/module/Potato.engineering.ui"), DisplayTypes.engineering_screen),
+    ]
+)
+def test_get_template_display_type_good(path: Path, expected: DisplayTypes):
+    assert get_template_display_type(path) == expected
+
+
+@pytest.mark.parametrize(
+    "path, expected",
+    [
         (Path("user/module/enigma.ui"), ValueError),
         (Path("user/module/not_very_detailed.ui"), ValueError),
     ]
 )
-def test_get_template_display_type(path: Path, expected: DisplayTypes | Exception):
-    if issubclass(expected, Exception):
-        with pytest.raises(expected):
-            get_template_display_type(path)
-    else:
-        assert get_template_display_type(path) == expected
+def test_get_template_display_type_bad(path: Path, expected: type[Exception]):
+    with pytest.raises(expected):
+        get_template_display_type(path)
 
 
 def test_display_effective_display_type(display, device, qapp, qtbot):
