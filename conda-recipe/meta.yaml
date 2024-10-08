@@ -20,6 +20,7 @@ requirements:
   build:
   - python >=3.9
   - pip
+  - setuptools
   - setuptools_scm
   host:
   - python >=3.9
