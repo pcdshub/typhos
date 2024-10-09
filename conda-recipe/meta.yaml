@@ -22,9 +22,6 @@ requirements:
   - pip
   - setuptools
   - setuptools_scm
-  host:
-  - python >=3.9
-  - pip
   run:
   - python >=3.9
   - coloredlogs
