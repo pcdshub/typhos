@@ -257,7 +257,7 @@ class TyphosSuite(TyphosBase):
         *,
         pin: bool = False,
         content_layout: QtWidgets.QLayout | None = None,
-        default_display_type: DisplayTypes = DisplayTypes.detailed_screen,
+        default_display_type: DisplayTypes = DisplayTypes.embedded_screen,
         scroll_option: ScrollOptions = ScrollOptions.auto,
     ):
         super().__init__(parent=parent)

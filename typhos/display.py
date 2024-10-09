@@ -8,6 +8,7 @@ import logging
 import os
 import pathlib
 import webbrowser
+from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 import ophyd
@@ -1032,15 +1033,15 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         embedded_templates: Optional[list[str]] = None,
         detailed_templates: Optional[list[str]] = None,
         engineering_templates: Optional[list[str]] = None,
-        display_type: Union[DisplayTypes, str, int] = 'detailed_screen',
-        scroll_option: Union[ScrollOptions, str, int] = 'auto',
+        display_type: Union[DisplayTypes, str, int] = 'embedded_screen',
+        scroll_option: Union[ScrollOptions, str, int] = ScrollOptions.auto,
         nested: bool = False,
     ):
         self._current_template = None
         self._forced_template = ''
         self._macros = {}
         self._display_widget = None
-        self._scroll_option = ScrollOptions.no_scroll
+        self._scroll_option = scroll_option
         self._searched = False
         self._hide_empty = False
         self._nested = nested
@@ -1113,11 +1114,9 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
 
     @property
     def _layout_in_scroll_area(self) -> bool:
-        """Layout the widget in the scroll area or not, based on settings."""
+        """Layout the widget in the scroll area or not, based on settings and template."""
         if self.scroll_option == ScrollOptions.auto:
-            if self.display_type == DisplayTypes.embedded_screen:
-                return False
-            return True
+            return self.effective_display_type != DisplayTypes.embedded_screen
         elif self.scroll_option == ScrollOptions.scrollbar:
             return True
         elif self.scroll_option == ScrollOptions.no_scroll:
@@ -1240,6 +1239,28 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         if self._display_type != value:
             self._display_type = value
             self.load_best_template()
+
+    @property
+    def effective_display_type(self) -> DisplayTypes:
+        """
+        Return the native display type of the current selected template.
+
+        It's possible to request e.g. an embedded screen or an engineering
+        screen and get the detailed screen or tree instead.
+
+        This returns the actual type of the screen that was chosen for use
+        in code that needs to respond to the actual template in use, rather
+        than the one requested.
+
+        If no template has been selected yet, this falls back to the
+        specified display type.
+        """
+        if self.current_template is None:
+            return self.display_type
+        try:
+            return get_template_display_type(self.current_template)
+        except ValueError:
+            return self.display_type
 
     @property
     def macros(self):
@@ -1781,3 +1802,15 @@ def hide_empty(widget, process_widget=True):
         elif isinstance(widget, typhos_panel.TyphosSignalPanel):
             overall_status = bool(widget._panel_layout.visible_elements)
         widget.setVisible(overall_status)
+
+
+def get_template_display_type(template: Path) -> DisplayTypes:
+    """
+    Returns a template's native display type based on its name.
+
+    Raises a ValueError if the name cannot be determined.
+    """
+    # Either e.g. ClassName.detailed or core built-in like detailed_tree
+    template_name = template.stem
+    display_type = template_name.split(".")[-1].split("_")[0] + "_screen"
+    return normalize_display_type(display_type=display_type)

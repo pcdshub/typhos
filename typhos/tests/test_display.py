@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from pathlib import Path
+
 import ophyd
 import pytest
 from pydm import Display
 
 import typhos.display
 from typhos import utils
+from typhos.display import DisplayTypes, get_template_display_type
 
 from . import conftest
 from .conftest import show_widget
@@ -90,6 +95,7 @@ def test_display_without_md(motor, display):
 
 def test_display_with_md(motor, display):
     screen = 'engineering_screen.ui'
+    display.display_type = DisplayTypes.detailed_screen
     display.add_device(
         motor, macros={'detailed_screen': screen})
     display.load_best_template()
@@ -151,6 +157,7 @@ def test_display_device_name_property(motor, display, qtbot):
 def test_display_with_py_file(display, motor, qtbot):
     qtbot.add_widget(display)
     py_file = str(conftest.MODULE_PATH / 'utils' / 'display.py')
+    display.display_type = DisplayTypes.detailed_screen
     display.add_device(motor, macros={'detailed_screen': py_file})
     display.load_best_template()
     assert isinstance(display.display_widget, Display)
@@ -166,3 +173,46 @@ def test_display_with_sig_template(display, device, qapp, qtbot):
         device.setpoint.put(num)
         qapp.processEvents()
         assert display.display_widget.ui.setpoint.text() == str(num)
+
+
+@pytest.mark.parametrize(
+    "path, expected",
+    [
+        (Path("typhos/ui/core/detailed_screen.ui"), DisplayTypes.detailed_screen),
+        (Path("typhos/ui/core/detailed_tree.ui"), DisplayTypes.detailed_screen),
+        (Path("typhos/ui/core/embedded_screen.ui"), DisplayTypes.embedded_screen),
+        (Path("typhos/ui/core/engineering_screen.ui"), DisplayTypes.engineering_screen),
+        (Path("typhos/ui/devices/PositionerBase.detailed.ui"), DisplayTypes.detailed_screen),
+        (Path("typhos/ui/devices/PositionerBase.embedded.ui"), DisplayTypes.embedded_screen),
+        (Path("user/module/Potato.embedded.ui"), DisplayTypes.embedded_screen),
+        (Path("user/module/Potato.detailed.ui"), DisplayTypes.detailed_screen),
+        (Path("user/module/Potato.engineering.ui"), DisplayTypes.engineering_screen),
+    ]
+)
+def test_get_template_display_type_good(path: Path, expected: DisplayTypes):
+    assert get_template_display_type(path) == expected
+
+
+@pytest.mark.parametrize(
+    "path, expected",
+    [
+        (Path("user/module/enigma.ui"), ValueError),
+        (Path("user/module/not_very_detailed.ui"), ValueError),
+    ]
+)
+def test_get_template_display_type_bad(path: Path, expected: type[Exception]):
+    with pytest.raises(expected):
+        get_template_display_type(path)
+
+
+def test_display_effective_display_type(display, device, qapp, qtbot):
+    qtbot.add_widget(display)
+    assert display.effective_display_type == display.display_type
+    display.force_template = str(conftest.MODULE_PATH / 'utils' / 'sig.ui')
+    assert display.effective_display_type == display.display_type
+    display.force_template = str(conftest.MODULE_PATH.parent / 'ui' / 'core' / 'embedded_screen.ui')
+    assert display.effective_display_type == DisplayTypes.embedded_screen
+    display.force_template = str(conftest.MODULE_PATH.parent / 'ui' / 'core' / 'detailed_tree.ui')
+    assert display.effective_display_type == DisplayTypes.detailed_screen
+    display.force_template = str(conftest.MODULE_PATH.parent / 'ui' / 'core' / 'engineering_screen.ui')
+    assert display.effective_display_type == DisplayTypes.engineering_screen
