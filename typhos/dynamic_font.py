@@ -276,6 +276,8 @@ def patch_combo_widget(
             )
             for text in combo_options
         ]
+        if not font_sizes:
+            return
         set_font_common(
             widget=widget,
             font_size=min(font_sizes),
