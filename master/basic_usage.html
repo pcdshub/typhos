@@ -1,24 +1,22 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How it Works &mdash; Typhos 3.1.2.dev63+g730c3b7 documentation</title>
+  <title>How it Works &mdash; Typhos 4.0.1.dev19+g3c1daa6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=6dac2bad"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=98a77fb6"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -37,9 +35,6 @@
           <a href="index.html" class="icon icon-home">
             Typhos
           </a>
-              <div class="version">
-                3.1.2.dev63+g730c3b7
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -241,16 +236,16 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1724349661.4245565}),</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1734658137.0273426}),</span>
 <span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1724349661.4245555})])</span>
+<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1734658137.0273418})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1724349661.424964}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1734658137.027772}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1724349661.4250405})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1734658137.0277896})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a
@@ -263,7 +258,8 @@ as well:</p>
 </pre></div>
 </div>
 <figure class="align-center">
-<a class="reference internal image-reference" href="_images/kind_panel.gif"><img alt="_images/kind_panel.gif" src="_images/kind_panel.gif" style="width: 840.0px; height: 563.0px;" /></a>
+<a class="reference internal image-reference" href="_images/kind_panel.gif"><img alt="_images/kind_panel.gif" src="_images/kind_panel.gif" style="width: 840.0px; height: 563.0px;" />
+</a>
 </figure>
 <p>Now, at first glance it may not be obvious, but there is a lot of information
 here! We know which of these signals an operator will want to control and which
@@ -286,7 +282,8 @@ shown:</p>
 </pre></div>
 </div>
 <figure class="align-center">
-<a class="reference internal image-reference" href="_images/device_display.gif"><img alt="_images/device_display.gif" src="_images/device_display.gif" style="width: 842.0px; height: 565.0px;" /></a>
+<a class="reference internal image-reference" href="_images/device_display.gif"><img alt="_images/device_display.gif" src="_images/device_display.gif" style="width: 842.0px; height: 565.0px;" />
+</a>
 </figure>
 </section>
 </section>
