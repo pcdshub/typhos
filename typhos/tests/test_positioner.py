@@ -298,5 +298,6 @@ def test_positioner_widget_long_status_text(motor_widget, qtbot):
         ),
         max_length=50,
     )
+    text = widget.ui.status_label.text()
     assert text.endswith("...")
     assert len(text) < 60
