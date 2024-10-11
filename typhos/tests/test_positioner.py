@@ -277,8 +277,8 @@ def test_positioner_widget_move_error(motor_widget, qtbot):
 
 
 @pytest.mark.no_gc
-def test_positioner_widget_long_status_text(motor_widget, qtbot):
-    motor, widget = motor_widget
+def test_positioner_widget_long_status_text(motor_widget):
+    _, widget = motor_widget
 
     assert widget.ui.status_label.text() == ''
 
