@@ -801,7 +801,7 @@ class TyphosPositionerWidget(
                 tooltip = f"{text}: {tooltip}"
             else:
                 tooltip = text
-            text = message.text[:max_length] + '...'
+            text = text[:max_length] + '...'
         self.ui.status_label.setText(text)
         if tooltip and "\n" not in tooltip:
             # Force rich text, qt auto line wraps if it detects rich text

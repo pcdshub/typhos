@@ -20,7 +20,7 @@ from ophyd.utils.errors import LimitError, UnknownStatusFailure
 
 from typhos.alarm import KindLevel
 from typhos.positioner import TyphosPositionerWidget
-from typhos.status import TyphosStatusResult
+from typhos.status import TyphosStatusMessage, TyphosStatusResult
 from typhos.utils import SignalRO
 
 from .conftest import RichSignal, show_widget
@@ -274,3 +274,30 @@ def test_positioner_widget_move_error(motor_widget, qtbot):
         assert 'LimitError' in widget.ui.status_label.text()
 
     qtbot.waitUntil(has_limit_error, timeout=1000)
+
+
+@pytest.mark.no_gc
+def test_positioner_widget_long_status_text(motor_widget):
+    _, widget = motor_widget
+
+    assert widget.ui.status_label.text() == ''
+
+    widget._set_status_text("Oh no! " * 1000, max_length=50)
+
+    text = widget.ui.status_label.text()
+    assert text.endswith("...")
+    assert len(text) < 60
+
+    widget._set_status_text("")
+    assert widget.ui.status_label.text() == ''
+
+    widget._set_status_text(
+        TyphosStatusMessage(
+            "Error! " * 1000,
+            tooltip="Test suite giant error string!",
+        ),
+        max_length=50,
+    )
+    text = widget.ui.status_label.text()
+    assert text.endswith("...")
+    assert len(text) < 60
