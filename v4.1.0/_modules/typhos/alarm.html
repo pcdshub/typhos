@@ -1,0 +1,577 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>typhos.alarm &mdash; Typhos 4.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=42d1b3bd"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Typhos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">How it Works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Supported Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../save.html">Saving and Loading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../connections.html">Application Connections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command Line Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../display.html">Suite and Displays</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../widgets.html">Widgets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Typhos Data Plugins for PyDM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html#cache-utilities">Cache Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../unit_tests.html">Unit Test Quirks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Typhos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">typhos.alarm</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for typhos.alarm</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module to define alarm summary frameworks and widgets.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">from</span> <span class="nn">ophyd.device</span> <span class="kn">import</span> <span class="n">Kind</span>
+<span class="kn">from</span> <span class="nn">ophyd.signal</span> <span class="kn">import</span> <span class="n">EpicsSignalBase</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.base</span> <span class="kn">import</span> <span class="n">PyDMPrimitiveWidget</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.channel</span> <span class="kn">import</span> <span class="n">PyDMChannel</span>
+<span class="kn">from</span> <span class="nn">pydm.widgets.drawing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">PyDMDrawing</span><span class="p">,</span> <span class="n">PyDMDrawingCircle</span><span class="p">,</span>
+                                  <span class="n">PyDMDrawingEllipse</span><span class="p">,</span> <span class="n">PyDMDrawingPolygon</span><span class="p">,</span>
+                                  <span class="n">PyDMDrawingRectangle</span><span class="p">,</span> <span class="n">PyDMDrawingTriangle</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span>
+
+<span class="kn">from</span> <span class="nn">.plugins</span> <span class="kn">import</span> <span class="n">register_signal</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TyphosObject</span><span class="p">,</span> <span class="n">channel_from_signal</span><span class="p">,</span>
+                    <span class="n">get_all_signals_from_device</span><span class="p">,</span> <span class="n">pyqt_class_from_enum</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">HappiChannel</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">KindLevel</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Options for TyphosAlarm.kindLevel.&quot;&quot;&quot;</span>
+    <span class="n">HINTED</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">NORMAL</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">CONFIG</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">OMITTED</span> <span class="o">=</span> <span class="mi">3</span>
+
+
+<span class="k">class</span> <span class="nc">AlarmLevel</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Possible summary alarm states for a device.</span>
+
+<span class="sd">    These are also the valuess emitted from TyphosAlarm.alarm_changed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">NO_ALARM</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">MINOR</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">MAJOR</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">INVALID</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">DISCONNECTED</span> <span class="o">=</span> <span class="mi">4</span>
+
+
+<span class="n">_KindLevel</span> <span class="o">=</span> <span class="n">pyqt_class_from_enum</span><span class="p">(</span><span class="n">KindLevel</span><span class="p">)</span>
+<span class="n">_AlarmLevel</span> <span class="o">=</span> <span class="n">pyqt_class_from_enum</span><span class="p">(</span><span class="n">AlarmLevel</span><span class="p">)</span>
+
+
+<span class="c1"># Define behavior for the user&#39;s Kind selection.</span>
+<span class="n">KIND_FILTERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">KindLevel</span><span class="o">.</span><span class="n">HINTED</span><span class="p">:</span>
+        <span class="p">(</span><span class="k">lambda</span> <span class="n">walk</span><span class="p">:</span> <span class="n">walk</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">Kind</span><span class="o">.</span><span class="n">hinted</span><span class="p">),</span>
+    <span class="n">KindLevel</span><span class="o">.</span><span class="n">NORMAL</span><span class="p">:</span>
+        <span class="p">(</span><span class="k">lambda</span> <span class="n">walk</span><span class="p">:</span> <span class="n">walk</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Kind</span><span class="o">.</span><span class="n">hinted</span><span class="p">,</span> <span class="n">Kind</span><span class="o">.</span><span class="n">normal</span><span class="p">)),</span>
+    <span class="n">KindLevel</span><span class="o">.</span><span class="n">CONFIG</span><span class="p">:</span>
+        <span class="p">(</span><span class="k">lambda</span> <span class="n">walk</span><span class="p">:</span> <span class="n">walk</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">Kind</span><span class="o">.</span><span class="n">omitted</span><span class="p">),</span>
+    <span class="n">KindLevel</span><span class="o">.</span><span class="n">OMITTED</span><span class="p">:</span>
+        <span class="p">(</span><span class="k">lambda</span> <span class="n">walk</span><span class="p">:</span> <span class="kc">True</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SignalInfo</span><span class="p">:</span>
+    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="n">PyDMChannel</span>
+    <span class="n">signal_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">connected</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">severity</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AlarmLevel</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">DISCONNECTED</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">AlarmLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">describe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">alarm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm</span>
+        <span class="k">if</span> <span class="n">alarm</span> <span class="o">==</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">NO_ALARM</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s1"> has no alarm&#39;</span>
+        <span class="k">elif</span> <span class="n">alarm</span> <span class="ow">in</span> <span class="p">(</span><span class="n">AlarmLevel</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">,</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">INVALID</span><span class="p">):</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s1"> is </span><span class="si">{</span><span class="n">alarm</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">desc</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s1"> has a </span><span class="si">{</span><span class="n">alarm</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> alarm&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_name</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">desc</span>
+
+
+<span class="k">class</span> <span class="nc">TyphosAlarm</span><span class="p">(</span><span class="n">TyphosObject</span><span class="p">,</span> <span class="n">PyDMDrawing</span><span class="p">,</span> <span class="n">_KindLevel</span><span class="p">,</span> <span class="n">_AlarmLevel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that holds logic and routines common to all Typhos Alarm widgets.</span>
+
+<span class="sd">    Overall, these classes exist to summarize alarm states from Ophyd Devices</span>
+<span class="sd">    and change the colors on indicator widgets appropriately.</span>
+
+<span class="sd">    We will consider a subset of the signals that is of KindLevel and above and</span>
+<span class="sd">    summarize state based on the &quot;worst&quot; alarm we see as defined by AlarmLevel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">)</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">_AlarmLevel</span><span class="p">)</span>
+
+    <span class="n">KindLevel</span> <span class="o">=</span> <span class="n">KindLevel</span>
+    <span class="n">AlarmLevel</span> <span class="o">=</span> <span class="n">AlarmLevel</span>
+
+    <span class="n">_qt_designer_</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">:</span> <span class="s2">&quot;Typhos Alarm Widgets&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;is_container&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">alarm_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">_AlarmLevel</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kind_level</span> <span class="o">=</span> <span class="n">KindLevel</span><span class="o">.</span><span class="n">HINTED</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Default drawing properties, can override if needed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penWidth</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penColor</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penStyle</span> <span class="o">=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SolidLine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_alarm_state</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_alarm_color</span><span class="p">)</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">kindLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines which signals to include in the alarm summary.</span>
+
+<span class="sd">        If this is &quot;hinted&quot;, only include hinted signals.</span>
+<span class="sd">        If this is &quot;normal&quot;, include normal and hinted signals.</span>
+<span class="sd">        If this is &quot;config&quot;, include everything except for omitted signals</span>
+<span class="sd">        If this is &quot;omitted&quot;, include all signals</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind_level</span>
+
+    <span class="nd">@kindLevel</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">kindLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind_level</span><span class="p">):</span>
+        <span class="c1"># We must update the alarm config to add/remove PVs as appropriate.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kind_level</span> <span class="o">=</span> <span class="n">kind_level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_alarm_config</span><span class="p">()</span>
+
+    <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The channel address to use for this widget.</span>
+
+<span class="sd">        If this is a happi:// channel, we&#39;ll create the device and</span>
+<span class="sd">        add it to this widget.</span>
+
+<span class="sd">        If this is a ca:// channel, we&#39;ll connect to the PV and include its</span>
+<span class="sd">        alarm information in the evaluation of this widget.</span>
+
+<span class="sd">        There is an assumption that you&#39;ll either be using this via one of the</span>
+<span class="sd">        channel options or by using &quot;add_device&quot; one or more times. There may</span>
+<span class="sd">        be some strange behavior if you try to set up this widget using both</span>
+<span class="sd">        approaches at the same time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@channel</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
+            <span class="c1"># Remove old connection</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;disconnect&#39;</span><span class="p">):</span>
+                        <span class="n">channel</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">:</span>
+                        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="c1"># Load new channel</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;happi://&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">:</span>
+                <span class="n">channel</span> <span class="o">=</span> <span class="n">HappiChannel</span><span class="p">(</span>
+                    <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">,</span>
+                    <span class="n">tx_slot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tx</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">channel</span> <span class="o">=</span> <span class="n">PyDMChannel</span><span class="p">(</span>
+                    <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">,</span>
+                    <span class="n">connection_slot</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_connection</span><span class="p">,</span>
+                                            <span class="n">addr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">),</span>
+                    <span class="n">severity_slot</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_severity</span><span class="p">,</span>
+                                          <span class="n">addr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">]</span> <span class="o">=</span> <span class="n">SignalInfo</span><span class="p">(</span>
+                    <span class="n">address</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel</span><span class="p">,</span>
+                    <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                    <span class="n">signal_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">connected</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">severity</span><span class="o">=</span><span class="n">AlarmLevel</span><span class="o">.</span><span class="n">INVALID</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channels</span> <span class="o">=</span> <span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+            <span class="c1"># Connect the channel to the HappiPlugin</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">):</span>
+                <span class="n">channel</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive information from happi channel&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">reset_alarm_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_info</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_summary</span> <span class="o">=</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">DISCONNECTED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_alarm_color</span><span class="p">(</span><span class="n">AlarmLevel</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Let pydm know about our pydm channels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ch</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channels</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">ch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ch</span>
+
+    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize our alarm handling when adding a device.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_alarm_config</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">clear_all_alarm_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset this widget down to the &quot;no alarm handling&quot; state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">channel</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="n">ch</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_alarm_state</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">setup_alarm_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a device to the alarm summary.</span>
+
+<span class="sd">        This will pick PVs based on the device kind and the configured kind</span>
+<span class="sd">        level, configuring the PyDMChannels to update our alarm state and</span>
+<span class="sd">        color when we get updates from our PVs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sigs</span> <span class="o">=</span> <span class="n">get_all_signals_from_device</span><span class="p">(</span>
+            <span class="n">device</span><span class="p">,</span>
+            <span class="n">filter_by</span><span class="o">=</span><span class="n">KIND_FILTERS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind_level</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">channel_addrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">channel_from_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span> <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">sigs</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">sigs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">EpicsSignalBase</span><span class="p">):</span>
+                <span class="n">register_signal</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">PyDMChannel</span><span class="p">(</span>
+                <span class="n">address</span><span class="o">=</span><span class="n">addr</span><span class="p">,</span>
+                <span class="n">connection_slot</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_connection</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="n">addr</span><span class="p">),</span>
+                <span class="n">severity_slot</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_severity</span><span class="p">,</span> <span class="n">addr</span><span class="o">=</span><span class="n">addr</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">channel_addrs</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">sigs</span><span class="p">):</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">SignalInfo</span><span class="p">(</span>
+                <span class="n">address</span><span class="o">=</span><span class="n">ch</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                <span class="n">channel</span><span class="o">=</span><span class="n">ch</span><span class="p">,</span>
+                <span class="n">signal_name</span><span class="o">=</span><span class="n">sig</span><span class="o">.</span><span class="n">dotted_name</span><span class="p">,</span>
+                <span class="n">connected</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">severity</span><span class="o">=</span><span class="n">AlarmLevel</span><span class="o">.</span><span class="n">INVALID</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">device_info</span><span class="p">[</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+            <span class="n">ch</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+        <span class="n">all_channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">all_channels</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Finished setup of alarm config for device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> on &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;alarm widget with channel </span><span class="si">{</span><span class="n">all_channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Tried to set up alarm config for device </span><span class="si">{</span><span class="n">device</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, but &#39;</span>
+                <span class="s1">&#39;did not configure any channels! Check your kindLevel!&#39;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_alarm_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clean up the existing alarm config and create a new one.</span>
+
+<span class="sd">        This must be called when settings like KindLevel are changed so we can</span>
+<span class="sd">        re-evaluate them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_all_alarm_configs</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setup_alarm_config</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Slot that will be called when a PV connects or disconnects.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="n">connected</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_current_alarm</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">update_severity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">severity</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Slot that will be called when a PV&#39;s alarm severity changes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span><span class="o">.</span><span class="n">severity</span> <span class="o">=</span> <span class="n">severity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_current_alarm</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">update_current_alarm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check what the current worst available alarm state is.</span>
+
+<span class="sd">        If the alarm state is different than the last time we checked,</span>
+<span class="sd">        emit the &quot;alarm_changed&quot; signal. This signal is configured at</span>
+<span class="sd">        init to change the color of this widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">:</span>
+            <span class="n">new_alarm</span> <span class="o">=</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">INVALID</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_alarm</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">alarm</span> <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">new_alarm</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm_summary</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">alarm_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">new_alarm</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="c1"># Widget was destroyed and not properly cleaned up</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Dangling reference to alarm widget!&#39;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Updated alarm from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">alarm_summary</span><span class="si">}</span><span class="s1"> to </span><span class="si">{</span><span class="n">new_alarm</span><span class="si">}</span><span class="s1"> &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;on alarm widget with channel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alarm_summary</span> <span class="o">=</span> <span class="n">new_alarm</span>
+
+    <span class="k">def</span> <span class="nf">set_alarm_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alarm_level</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the alarm color to the shade defined by the current alarm level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">indicator_stylesheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">alarm_level</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extra handling for showing the user which alarms are alarming.</span>
+
+<span class="sd">        We&#39;ll show this information on mouseover if anything is disconnected or</span>
+<span class="sd">        in an alarm state, unless the user middle-clicks, which will have the</span>
+<span class="sd">        default PyDM behavior of showing all the channels and copying them to</span>
+<span class="sd">        clipboard.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># super() doesn&#39;t work here, some strange pyqt thing</span>
+        <span class="n">default_pydm_event</span> <span class="o">=</span> <span class="n">PyDMPrimitiveWidget</span><span class="o">.</span><span class="n">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">default_pydm_event</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QEvent</span><span class="o">.</span><span class="n">Enter</span><span class="p">:</span>
+            <span class="n">alarming</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_alarm_tooltip</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">alarming</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">show_alarm_tooltip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show a tooltip that reveals which channels are alarmed or disconnected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tooltip_lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Start with the channel field, just show the status.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_info</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span>
+            <span class="n">tooltip_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Channel </span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Handle each device</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">device_info_list</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># At least show the device name</span>
+            <span class="n">tooltip_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Device </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">has_alarm</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">device_info_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">alarm</span> <span class="o">!=</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">NO_ALARM</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_alarm</span><span class="p">:</span>
+                        <span class="n">has_alarm</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">tooltip_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tooltip_lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">tooltip_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">tooltip_lines</span><span class="p">:</span>
+            <span class="n">tooltip</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tooltip_lines</span><span class="p">)</span>
+            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QToolTip</span><span class="o">.</span><span class="n">showText</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span>
+                    <span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="mi">10</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">())),</span>
+                <span class="n">tooltip</span><span class="p">,</span>
+                <span class="bp">self</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Return True if we showed something</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">tooltip_lines</span><span class="p">)</span>
+
+
+<span class="c1"># Subclass an re-introduce properties as needed</span>
+<span class="c1"># Each of these must be included for these to work in designer</span>
+
+<span class="k">class</span> <span class="nc">TyphosAlarmCircle</span><span class="p">(</span><span class="n">TyphosAlarm</span><span class="p">,</span> <span class="n">PyDMDrawingCircle</span><span class="p">):</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">)</span>
+    <span class="n">kindLevel</span> <span class="o">=</span> <span class="n">TyphosAlarm</span><span class="o">.</span><span class="n">kindLevel</span>
+
+
+<span class="k">class</span> <span class="nc">TyphosAlarmRectangle</span><span class="p">(</span><span class="n">TyphosAlarm</span><span class="p">,</span> <span class="n">PyDMDrawingRectangle</span><span class="p">):</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">)</span>
+    <span class="n">kindLevel</span> <span class="o">=</span> <span class="n">TyphosAlarm</span><span class="o">.</span><span class="n">kindLevel</span>
+
+
+<span class="k">class</span> <span class="nc">TyphosAlarmTriangle</span><span class="p">(</span><span class="n">TyphosAlarm</span><span class="p">,</span> <span class="n">PyDMDrawingTriangle</span><span class="p">):</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">)</span>
+    <span class="n">kindLevel</span> <span class="o">=</span> <span class="n">TyphosAlarm</span><span class="o">.</span><span class="n">kindLevel</span>
+
+
+<span class="k">class</span> <span class="nc">TyphosAlarmEllipse</span><span class="p">(</span><span class="n">TyphosAlarm</span><span class="p">,</span> <span class="n">PyDMDrawingEllipse</span><span class="p">):</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">)</span>
+    <span class="n">kindLevel</span> <span class="o">=</span> <span class="n">TyphosAlarm</span><span class="o">.</span><span class="n">kindLevel</span>
+
+
+<span class="k">class</span> <span class="nc">TyphosAlarmPolygon</span><span class="p">(</span><span class="n">TyphosAlarm</span><span class="p">,</span> <span class="n">PyDMDrawingPolygon</span><span class="p">):</span>
+    <span class="n">QtCore</span><span class="o">.</span><span class="n">Q_ENUMS</span><span class="p">(</span><span class="n">_KindLevel</span><span class="p">)</span>
+    <span class="n">kindLevel</span> <span class="o">=</span> <span class="n">TyphosAlarm</span><span class="o">.</span><span class="n">kindLevel</span>
+    <span class="n">numberOfPoints</span> <span class="o">=</span> <span class="n">PyDMDrawingPolygon</span><span class="o">.</span><span class="n">numberOfPoints</span>
+
+
+<span class="k">def</span> <span class="nf">indicator_stylesheet</span><span class="p">(</span><span class="n">shape_cls</span><span class="p">,</span> <span class="n">alarm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the indicator stylesheet that will modify a PyDMDrawing&#39;s color.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape_cls : type</span>
+<span class="sd">        The PyDMDrawing widget subclass.</span>
+
+<span class="sd">    alarm : int</span>
+<span class="sd">        The value from AlarmLevel</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    indicator_stylesheet : str</span>
+<span class="sd">        The correctly colored stylesheet to apply to the widget.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">shape_cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> &#39;</span>
+        <span class="s1">&#39;{border: none; &#39;</span>
+        <span class="s1">&#39; background: transparent;&#39;</span>
+        <span class="s1">&#39; qproperty-brush: rgba&#39;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">alarm</span> <span class="o">==</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;(255,255,255,255);}&#39;</span>
+    <span class="k">elif</span> <span class="n">alarm</span> <span class="o">==</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">NO_ALARM</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;(0,255,0,255);}&#39;</span>
+    <span class="k">elif</span> <span class="n">alarm</span> <span class="o">==</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">MINOR</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;(255,255,0,255);}&#39;</span>
+    <span class="k">elif</span> <span class="n">alarm</span> <span class="o">==</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">MAJOR</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;(255,0,0,255);}&#39;</span>
+    <span class="k">elif</span> <span class="n">alarm</span> <span class="o">==</span> <span class="n">AlarmLevel</span><span class="o">.</span><span class="n">INVALID</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;(255,0,255,255);}&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Recieved invalid alarm level </span><span class="si">{</span><span class="n">alarm</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
