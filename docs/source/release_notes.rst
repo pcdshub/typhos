@@ -2,6 +2,26 @@ Release History
 ###############
 
 
+v4.1.0 (2024-12-19)
+===================
+
+Bugfixes
+--------
+- Fix an issue where detailed tree screens would automatically load without
+  scrollbars. Now, the "auto" scrollbar setting is based primarily on the
+  apparent display type of the screen, not of the originally requested
+  display type, which may not be used if no such template exists.
+- Fix an issue where dynamic font scaling applied to a combobox
+  with no entries would raise an exception and close typhos.
+- Fix an issue where long status messages from positioner widget moves
+  would fail to display in certain circumstances.
+
+Contributors
+------------
+- zllentz
+
+
+
 v4.0.0 (2024-08-20)
 ===================
 
