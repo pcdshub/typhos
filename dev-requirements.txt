@@ -2,7 +2,7 @@ caproto
 flake8
 ipython>=7.16
 jinja2
-line_profiler
+line_profiler>=4.1.2
 pcdsdevices>=8.4.0
 pytest
 pytest-benchmark
