@@ -2,7 +2,7 @@ coloredlogs
 entrypoints
 numpy
 numpydoc
-ophyd
+ophyd==1.7.0
 pcdsutils
 platformdirs
 PyQt5
