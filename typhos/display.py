@@ -1467,7 +1467,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
         designer = display.findChildren(widgets.TyphosDesignerMixin) or []
         bases = display.findChildren(utils.TyphosBase) or []
 
-        for widget in set(bases + designer):
+        for widget in set(bases + designer + [display]):
             if device and hasattr(widget, 'add_device'):
                 widget.add_device(device)
 
