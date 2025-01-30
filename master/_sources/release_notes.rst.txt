@@ -2,6 +2,26 @@ Release History
 ###############
 
 
+v4.2.0 (2025-04-07)
+===================
+
+Features
+--------
+- Add `long_name` support for `device.signal` or `device.component.signal` that replace `label_text` for rows in `SignalPanel`
+- Allows custom displays with "add_device" methods to hook typhos correctly
+
+Bugfixes
+--------
+- Clean up signal plugin with channel.disconnect(destroying=True), since channels are being deleted on test cleanup
+
+Contributors
+------------
+- ZLLentz
+- aberges-SLAC
+- tangkong
+
+
+
 v4.1.0 (2024-12-19)
 ===================
 

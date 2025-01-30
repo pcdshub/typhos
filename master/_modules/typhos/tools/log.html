@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.tools.log &mdash; Typhos 4.0.1.dev19+g3c1daa6 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+  <title>typhos.tools.log &mdash; Typhos 4.1.1.dev19+g32e5da39 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=98a77fb6"></script>
+      <script src="../../../_static/documentation_options.js?v=12ebebfe"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
@@ -87,21 +87,21 @@
            <div itemprop="articleBody">
              
   <h1>Source code for typhos.tools.log</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">pydm.widgets.logdisplay</span> <span class="kn">import</span> <span class="n">PyDMLogDisplay</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QVBoxLayout</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydm.widgets.logdisplay</span><span class="w"> </span><span class="kn">import</span> <span class="n">PyDMLogDisplay</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QVBoxLayout</span>
 
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">TyphosBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TyphosBase</span>
 
 
 <div class="viewcode-block" id="TyphosLogDisplay">
 <a class="viewcode-back" href="../../../generated/typhos.tools.TyphosLogDisplay.html#typhos.tools.TyphosLogDisplay">[docs]</a>
-<span class="k">class</span> <span class="nc">TyphosLogDisplay</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TyphosLogDisplay</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Typhos Logging Display.&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TyphosLogDisplay.__init__">
 <a class="viewcode-back" href="../../../generated/typhos.tools.TyphosLogDisplay.html#typhos.tools.TyphosLogDisplay.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="c1"># Set the logname to be non-existant so that we do not attach to the</span>
         <span class="c1"># root logger. This causes issue if this widget is closed before the</span>
@@ -113,7 +113,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logdisplay</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a device to the logging display.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
         <span class="c1"># If this is the first device</span>
@@ -135,7 +135,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.suite &mdash; Typhos 4.0.1.dev19+g3c1daa6 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>typhos.suite &mdash; Typhos 4.1.1.dev19+g32e5da39 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=98a77fb6"></script>
+      <script src="../../_static/documentation_options.js?v=12ebebfe"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
@@ -90,26 +90,26 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The high-level Typhos Suite, which bundles tools and panels.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">textwrap</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">ophyd</span>
-<span class="kn">import</span> <span class="nn">pcdsutils.qt</span>
-<span class="kn">from</span> <span class="nn">ophyd</span> <span class="kn">import</span> <span class="n">Device</span>
-<span class="kn">from</span> <span class="nn">pyqtgraph</span> <span class="kn">import</span> <span class="n">parametertree</span>
-<span class="kn">from</span> <span class="nn">pyqtgraph.parametertree</span> <span class="kn">import</span> <span class="n">parameterTypes</span> <span class="k">as</span> <span class="n">ptypes</span>
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ophyd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pcdsutils.qt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd</span><span class="w"> </span><span class="kn">import</span> <span class="n">Device</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyqtgraph</span><span class="w"> </span><span class="kn">import</span> <span class="n">parametertree</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyqtgraph.parametertree</span><span class="w"> </span><span class="kn">import</span> <span class="n">parameterTypes</span> <span class="k">as</span> <span class="n">ptypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">widgets</span>
-<span class="kn">from</span> <span class="nn">.display</span> <span class="kn">import</span> <span class="n">DisplayTypes</span><span class="p">,</span> <span class="n">ScrollOptions</span><span class="p">,</span> <span class="n">TyphosDeviceDisplay</span>
-<span class="kn">from</span> <span class="nn">.tools</span> <span class="kn">import</span> <span class="n">TyphosLogDisplay</span><span class="p">,</span> <span class="n">TyphosTimePlot</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">TyphosException</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">widgets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">DisplayTypes</span><span class="p">,</span> <span class="n">ScrollOptions</span><span class="p">,</span> <span class="n">TyphosDeviceDisplay</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">TyphosLogDisplay</span><span class="p">,</span> <span class="n">TyphosTimePlot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">TyphosException</span><span class="p">,</span> <span class="n">clean_attr</span><span class="p">,</span> <span class="n">clean_name</span><span class="p">,</span>
                     <span class="n">flatten_tree</span><span class="p">,</span> <span class="n">save_suite</span><span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -117,7 +117,7 @@
 <span class="n">DEFAULT_TOOLS</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
 
 
-<span class="k">class</span> <span class="nc">SidebarParameter</span><span class="p">(</span><span class="n">parametertree</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SidebarParameter</span><span class="p">(</span><span class="n">parametertree</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameter to hold information for the sidebar.</span>
 
@@ -141,12 +141,12 @@
     <span class="n">sigHide</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
     <span class="n">sigEmbed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">embeddable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">devices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">embeddable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">opts</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">embeddable</span> <span class="o">=</span> <span class="n">embeddable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span> <span class="k">if</span> <span class="n">devices</span> <span class="k">else</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">has_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Device</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Device</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine if this parameter contains the given device.</span>
 
@@ -168,12 +168,12 @@
         <span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">TyphosDisplayNotCreatedError</span><span class="p">(</span><span class="n">TyphosException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TyphosDisplayNotCreatedError</span><span class="p">(</span><span class="n">TyphosException</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The given subdisplay has not yet been shown.&quot;&quot;&quot;</span>
     <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">LazySubdisplay</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LazySubdisplay</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A lazy subdisplay which only is instantiated when shown in the suite.</span>
 
@@ -189,7 +189,7 @@
     <span class="n">widget</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="n">devices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ophyd</span><span class="o">.</span><span class="n">Device</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">]):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">widget_cls</span> <span class="o">=</span> <span class="n">widget_cls</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="o">=</span> <span class="kc">None</span>
@@ -198,15 +198,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Device</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">ophyd</span><span class="o">.</span><span class="n">Device</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook for adding a device from the suite.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">hideEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHideEvent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hideEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHideEvent</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook for when the tool is hidden.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">hideEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Make the widget no longer lazy.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
@@ -219,27 +219,27 @@
             <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">showEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QShowEvent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">showEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QShowEvent</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook for when the tool is shown in the suite.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_widget</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">showEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">minimumSizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">minimumSizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Minimum size hint forwarder from the embedded widget.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">minimumSizeHint</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Size hint forwarder from the embedded widget.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">DeviceParameter</span><span class="p">(</span><span class="n">SidebarParameter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeviceParameter</span><span class="p">(</span><span class="n">SidebarParameter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameter to hold information on an Ophyd Device.</span>
 
@@ -257,7 +257,7 @@
 
     <span class="n">itemClass</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">TyphosSidebarItem</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">subdevices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">subdevices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
         <span class="c1"># Set options for parameter</span>
         <span class="n">opts</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clean_name</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">strip_parent</span><span class="o">=</span><span class="n">device</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
@@ -297,7 +297,7 @@
 
 <div class="viewcode-block" id="TyphosSuite">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite">[docs]</a>
-<span class="k">class</span> <span class="nc">TyphosSuite</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TyphosSuite</span><span class="p">(</span><span class="n">TyphosBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This suite combines tools and devices into a single widget.</span>
 
@@ -342,7 +342,7 @@
         <span class="s2">&quot;StripTool&quot;</span><span class="p">:</span> <span class="n">TyphosTimePlot</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">parent</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -394,7 +394,7 @@
 
 <div class="viewcode-block" id="TyphosSuite.add_subdisplay">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.add_subdisplay">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">display</span><span class="p">,</span> <span class="n">category</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add an arbitrary widget to the tree of available widgets and tools.</span>
 
@@ -419,7 +419,7 @@
 
 <div class="viewcode-block" id="TyphosSuite.add_lazy_subdisplay">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.add_lazy_subdisplay">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_lazy_subdisplay</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_lazy_subdisplay</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">display_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">],</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -448,7 +448,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">top_level_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">top_level_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get top-level groups.</span>
 
@@ -465,7 +465,7 @@
 
 <div class="viewcode-block" id="TyphosSuite.add_tool">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.add_tool">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a widget to the toolbar.</span>
 
@@ -488,7 +488,7 @@
 
 <div class="viewcode-block" id="TyphosSuite.get_subdisplay">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.get_subdisplay">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Device</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">instantiate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Device</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">instantiate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a subdisplay by name or contained device.</span>
 
@@ -545,7 +545,7 @@
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.show_subdisplay">[docs]</a>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">show_subdisplay</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show_subdisplay</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">widget</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">SidebarParameter</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">:</span>
@@ -598,7 +598,7 @@
         <span class="k">return</span> <span class="n">widget</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_new_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_new_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hook for when a new template is selected in a sub-display.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
@@ -611,7 +611,7 @@
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.embed_subdisplay">[docs]</a>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">embed_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embed_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Embed a display in the dock system.&quot;&quot;&quot;</span>
         <span class="c1"># Grab the relevant display</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">embedded_dock</span><span class="p">:</span>
@@ -637,7 +637,7 @@
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.hide_subdisplay">[docs]</a>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">hide_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hide_subdisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Hide a visible subdisplay.</span>
 
@@ -684,7 +684,7 @@
 <div class="viewcode-block" id="TyphosSuite.hide_subdisplays">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.hide_subdisplays">[docs]</a>
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">hide_subdisplays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hide_subdisplays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Hide all open displays.&quot;&quot;&quot;</span>
         <span class="c1"># Grab children from devices</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -693,14 +693,14 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Tools loaded into the suite.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;Tools&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
                     <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="p">[</span><span class="s1">&#39;Tools&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">childs</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">_update_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the window title, optionally with a device.</span>
 
@@ -716,7 +716,7 @@
 
 <div class="viewcode-block" id="TyphosSuite.add_device">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.add_device">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;Devices&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s1">&#39;Devices&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a device to the suite.</span>
 
@@ -753,7 +753,7 @@
 <div class="viewcode-block" id="TyphosSuite.from_device">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.from_device">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_device</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_device</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="n">Device</span><span class="p">,</span>
         <span class="n">parent</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -820,7 +820,7 @@
 <div class="viewcode-block" id="TyphosSuite.from_devices">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.from_devices">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_devices</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_devices</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">devices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Device</span><span class="p">],</span>
         <span class="n">parent</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -907,7 +907,7 @@
 
 <div class="viewcode-block" id="TyphosSuite.save">
 <a class="viewcode-back" href="../../save.html#typhos.TyphosSuite.save">[docs]</a>
-    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save suite settings to a file using :meth:`typhos.utils.save_suite`.</span>
 
@@ -940,7 +940,7 @@
 
 <div class="viewcode-block" id="TyphosSuite.save_screenshot">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.save_screenshot">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_screenshot</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_screenshot</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -961,7 +961,7 @@
 
 <div class="viewcode-block" id="TyphosSuite.save_device_screenshots">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosSuite.save_device_screenshots">[docs]</a>
-    <span class="k">def</span> <span class="nf">save_device_screenshots</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_device_screenshots</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -1001,14 +1001,14 @@
         <span class="k">return</span> <span class="n">filenames</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
         <span class="n">items</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_level_groups</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">flatten_tree</span><span class="p">(</span><span class="n">group</span><span class="p">):</span>
                 <span class="n">items</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">value</span><span class="p">()]</span> <span class="o">=</span> <span class="n">item</span>
         <span class="k">return</span> <span class="n">items</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_show_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">dock</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">dock</span><span class="p">):</span>
         <span class="n">sidebar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sidebar</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sidebar</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sidebar</span><span class="o">.</span><span class="n">items</span><span class="p">:</span>
@@ -1020,7 +1020,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to find sidebar item for </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_add_to_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an item to the sidebar, connecting necessary signals.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
             <span class="c1"># Create or grab our category</span>
@@ -1063,7 +1063,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

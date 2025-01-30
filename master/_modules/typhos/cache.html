@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.cache &mdash; Typhos 4.0.1.dev19+g3c1daa6 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>typhos.cache &mdash; Typhos 4.1.1.dev19+g32e5da39 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=98a77fb6"></script>
+      <script src="../../_static/documentation_options.js?v=12ebebfe"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
@@ -87,18 +87,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for typhos.cache</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">fnmatch</span>
-<span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">qtpy</span> <span class="kn">import</span> <span class="n">QtCore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtCore</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">.widgets</span> <span class="kn">import</span> <span class="n">SignalWidgetInfo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.widgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalWidgetInfo</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -112,7 +112,7 @@
 
 <div class="viewcode-block" id="get_global_describe_cache">
 <a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_describe_cache">[docs]</a>
-<span class="k">def</span> <span class="nf">get_global_describe_cache</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_global_describe_cache</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the _GlobalDescribeCache singleton.&quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_GLOBAL_DESCRIBE_CACHE</span>
     <span class="k">if</span> <span class="n">_GLOBAL_DESCRIBE_CACHE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -123,7 +123,7 @@
 
 <div class="viewcode-block" id="get_global_widget_type_cache">
 <a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_widget_type_cache">[docs]</a>
-<span class="k">def</span> <span class="nf">get_global_widget_type_cache</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_global_widget_type_cache</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the _GlobalWidgetTypeCache singleton.&quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_GLOBAL_WIDGET_TYPE_CACHE</span>
     <span class="k">if</span> <span class="n">_GLOBAL_WIDGET_TYPE_CACHE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -134,7 +134,7 @@
 
 <div class="viewcode-block" id="get_global_display_path_cache">
 <a class="viewcode-back" href="../../utils.html#typhos.cache.get_global_display_path_cache">[docs]</a>
-<span class="k">def</span> <span class="nf">get_global_display_path_cache</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_global_display_path_cache</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the _GlobalDisplayPathCache singleton.&quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_GLOBAL_DISPLAY_PATH_CACHE</span>
     <span class="k">if</span> <span class="n">_GLOBAL_DISPLAY_PATH_CACHE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -145,7 +145,7 @@
 
 <div class="viewcode-block" id="_GlobalDescribeCache">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache">[docs]</a>
-<span class="k">class</span> <span class="nc">_GlobalDescribeCache</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_GlobalDescribeCache</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cache of ophyd object descriptions.</span>
 
@@ -166,7 +166,7 @@
 
     <span class="n">new_description</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
@@ -179,14 +179,14 @@
 
 <div class="viewcode-block" id="_GlobalDescribeCache.clear">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache.clear">[docs]</a>
-    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the cache.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the description of ``obj``.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
@@ -197,7 +197,7 @@
                          <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{}</span>
 
-    <span class="k">def</span> <span class="nf">_worker_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_worker_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is the worker thread method that gets run in the thread pool.</span>
 
@@ -222,7 +222,7 @@
                 <span class="o">...</span>
 
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">_connection_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_connection_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">connected</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A connection callback from the connection monitor thread.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -239,7 +239,7 @@
 
 <div class="viewcode-block" id="_GlobalDescribeCache.get">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache.get">[docs]</a>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        To access a description, call this method. If available, it will be</span>
 <span class="sd">        returned immediately.  Otherwise, upon connection and successful</span>
@@ -267,7 +267,7 @@
 
 <div class="viewcode-block" id="_GlobalWidgetTypeCache">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache">[docs]</a>
-<span class="k">class</span> <span class="nc">_GlobalWidgetTypeCache</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_GlobalWidgetTypeCache</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cache of ophyd object Typhos widget types.</span>
 
@@ -291,7 +291,7 @@
 
     <span class="n">widgets_determined</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">SignalWidgetInfo</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">describe_cache</span> <span class="o">=</span> <span class="n">get_global_describe_cache</span><span class="p">()</span>
@@ -300,13 +300,13 @@
 
 <div class="viewcode-block" id="_GlobalWidgetTypeCache.clear">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache.clear">[docs]</a>
-    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear the cache.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 
     <span class="nd">@QtCore</span><span class="o">.</span><span class="n">Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">_new_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_new_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;New description: determine widget types and update the cache.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">desc</span><span class="p">:</span>
             <span class="c1"># Marks an error in retrieving the description</span>
@@ -320,7 +320,7 @@
 
 <div class="viewcode-block" id="_GlobalWidgetTypeCache.get">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache.get">[docs]</a>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        To access widget types, call this method. If available, it will be</span>
 <span class="sd">        returned immediately.  Otherwise, upon connection and successful</span>
@@ -355,7 +355,7 @@
 <span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">_CachedPath</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CachedPath</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A wrapper around pathlib.Path to support repeated globbing.</span>
 
@@ -377,7 +377,7 @@
 <span class="sd">        happens on the next glob, and not on a timer-basis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">stale_threshold</span><span class="o">=</span><span class="n">TYPHOS_DISPLAY_PATH_CACHE_TIME</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
@@ -385,7 +385,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stale_threshold</span> <span class="o">=</span> <span class="n">stale_threshold</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a cached path, if not already cached.</span>
 
@@ -399,23 +399,23 @@
             <span class="k">return</span> <span class="n">path</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Keep the hash the same as the internal path for set()/dict() usage</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">time_since_last_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time_since_last_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Time (in seconds) since the last update.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_time</span>
 
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the file list.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">glob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">glob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Glob a pattern.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
@@ -437,7 +437,7 @@
 
 <div class="viewcode-block" id="_GlobalDisplayPathCache">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache">[docs]</a>
-<span class="k">class</span> <span class="nc">_GlobalDisplayPathCache</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_GlobalDisplayPathCache</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A cache for all configured display paths.</span>
 
@@ -446,14 +446,14 @@
 <span class="sd">        2. Typhos package built-in paths.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">DISPLAY_PATHS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
 <div class="viewcode-block" id="_GlobalDisplayPathCache.update">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache.update">[docs]</a>
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Force a reload of all paths in the cache.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Clearing global path cache.&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
@@ -462,7 +462,7 @@
 
 <div class="viewcode-block" id="_GlobalDisplayPathCache.add_path">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache.add_path">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a path to be searched during ``glob``.</span>
 
@@ -488,7 +488,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

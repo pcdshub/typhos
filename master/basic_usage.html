@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How it Works &mdash; Typhos 4.0.1.dev19+g3c1daa6 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+  <title>How it Works &mdash; Typhos 4.1.1.dev19+g32e5da39 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=98a77fb6"></script>
+      <script src="_static/documentation_options.js?v=12ebebfe"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
@@ -143,7 +143,7 @@ using screens to using an IPython shell seamless.</p>
 <p>For the following applications we’ll use the <code class="docutils literal notranslate"><span class="pre">motor</span></code> simulation contained
 within <code class="docutils literal notranslate"><span class="pre">ophyd</span></code> itself. We also need to create a <code class="docutils literal notranslate"><span class="pre">QApplication</span></code> before we
 create any widgets:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QApplication</span>
 
 <span class="gp">In [2]: </span><span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
 </pre></div>
@@ -166,8 +166,8 @@ would only require the following:</p>
 creates an appropriate screen for it.</p>
 <p>If you are looking to integrate typhos at the Python source code level,
 consider the following example which uses <code class="docutils literal notranslate"><span class="pre">typhos</span></code> with <code class="docutils literal notranslate"><span class="pre">happi</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">happi</span>
-<span class="kn">from</span> <span class="nn">typhos.plugins</span> <span class="kn">import</span> <span class="n">register_client</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">happi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typhos.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_client</span>
 
 <span class="c1"># Initialize a new JSON based client</span>
 <span class="n">client</span> <span class="o">=</span> <span class="n">happi</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;db.json&#39;</span><span class="p">,</span> <span class="n">initialize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -236,23 +236,22 @@ the various attributes allows us to see how our signals are organized.</p>
 <span class="go"># Important signals, all hints will be found here as well</span>
 <span class="gp">In [5]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gh">Out[5]: </span>
-<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1734658137.0273426}),</span>
-<span class="go">             (&#39;motor_setpoint&#39;,</span>
-<span class="go">              {&#39;value&#39;: 0, &#39;timestamp&#39;: 1734658137.0273418})])</span>
+<span class="go">OrderedDict([(&#39;motor&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1744056840.433079}),</span>
+<span class="go">             (&#39;motor_setpoint&#39;, {&#39;value&#39;: 0, &#39;timestamp&#39;: 1744056840.433078})])</span>
 
 <span class="go"># Configuration information</span>
 <span class="gp">In [6]: </span><span class="n">motor</span><span class="o">.</span><span class="n">read_configuration</span><span class="p">()</span>
 <span class="gh">Out[6]: </span>
-<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1734658137.027772}),</span>
+<span class="go">OrderedDict([(&#39;motor_velocity&#39;, {&#39;value&#39;: 1, &#39;timestamp&#39;: 1744056840.4334822}),</span>
 <span class="go">             (&#39;motor_acceleration&#39;,</span>
-<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1734658137.0277896})])</span>
+<span class="go">              {&#39;value&#39;: 1, &#39;timestamp&#39;: 1744056840.4335017})])</span>
 </pre></div>
 </div>
 <p>The <a class="reference internal" href="widgets.html#typhos.TyphosSignalPanel" title="typhos.TyphosSignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSignalPanel</span></code></a> will render these, allowing us to select a
 subset of the signals to display based on their kind. Below both the
 <code class="docutils literal notranslate"><span class="pre">QtDesigner</span></code> using <code class="docutils literal notranslate"><span class="pre">happi</span></code> and the corresponding <code class="docutils literal notranslate"><span class="pre">Python</span></code> code is shown
 as well:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="kn">from</span> <span class="nn">typhos</span> <span class="kn">import</span> <span class="n">TyphosSignalPanel</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="kn">from</span><span class="w"> </span><span class="nn">typhos</span><span class="w"> </span><span class="kn">import</span> <span class="n">TyphosSignalPanel</span>
 
 <span class="gp">In [8]: </span><span class="n">panel</span> <span class="o">=</span> <span class="n">TyphosSignalPanel</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
 </pre></div>
@@ -276,7 +275,7 @@ not have any devices already. Typhos comes with some default templates, and you
 can cycle between them by changing the <code class="docutils literal notranslate"><span class="pre">display_type</span></code></p>
 <p>Once again, both the <code class="docutils literal notranslate"><span class="pre">Python</span></code> code and the <code class="docutils literal notranslate"><span class="pre">QtDesigner</span></code> use cases are
 shown:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="kn">from</span> <span class="nn">typhos</span> <span class="kn">import</span> <span class="n">TyphosDeviceDisplay</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="kn">from</span><span class="w"> </span><span class="nn">typhos</span><span class="w"> </span><span class="kn">import</span> <span class="n">TyphosDeviceDisplay</span>
 
 <span class="gp">In [10]: </span><span class="n">display</span> <span class="o">=</span> <span class="n">TyphosDeviceDisplay</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">motor</span><span class="p">)</span>
 </pre></div>
@@ -293,10 +292,10 @@ shown:</p>
 is the complete code from start to finish required to create the suite. Look at
 the <code class="docutils literal notranslate"><span class="pre">TyphosSuited.default_tools</span></code> to control which <code class="docutils literal notranslate"><span class="pre">typhos.tools</span></code> are
 loaded.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ophyd.sim</span> <span class="kn">import</span> <span class="n">motor</span>
-<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span>
-<span class="kn">from</span> <span class="nn">typhos.suite</span> <span class="kn">import</span> <span class="n">TyphosSuite</span>
-<span class="kn">from</span> <span class="nn">typhos.utils</span> <span class="kn">import</span> <span class="n">apply_standard_stylesheets</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ophyd.sim</span><span class="w"> </span><span class="kn">import</span> <span class="n">motor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QApplication</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typhos.suite</span><span class="w"> </span><span class="kn">import</span> <span class="n">TyphosSuite</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typhos.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_standard_stylesheets</span>
 
 <span class="c1"># Create our application</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
@@ -405,7 +404,7 @@ installing <code class="docutils literal notranslate"><span class="pre">typhos</
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

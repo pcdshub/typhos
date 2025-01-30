@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saving and Loading &mdash; Typhos 4.0.1.dev19+g3c1daa6 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+  <title>Saving and Loading &mdash; Typhos 4.1.1.dev19+g32e5da39 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=98a77fb6"></script>
+      <script src="_static/documentation_options.js?v=12ebebfe"></script>
       <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
@@ -101,12 +101,12 @@ once again assuming that they are stored in a <code class="docutils literal notr
 <p>A <code class="docutils literal notranslate"><span class="pre">QFileDialog</span></code> will be used to query the user for the desired
 location of the created Python file</p>
 <p>The template will be of the form:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">typhos.cli</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typhos.cli</span>
 
 <span class="n">devices</span> <span class="o">=</span> <span class="p">{</span><span class="n">devices</span><span class="p">}</span>
 
-<span class="k">def</span> <span class="nf">create_suite</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_suite</span><span class="p">(</span><span class="n">cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">typhos</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">create_suite</span><span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -132,8 +132,8 @@ Python file and execute the stored <code class="docutils literal notranslate"><s
 if you want to use the file to embed a saved <a class="reference internal" href="display.html#typhos.TyphosSuite" title="typhos.TyphosSuite"><code class="xref py py-class docutils literal notranslate"><span class="pre">TyphosSuite</span></code></a> inside
 another PyQt window for instance, or load multiple suites at once.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span>
-<span class="kn">from</span> <span class="nn">typhos</span> <span class="kn">import</span> <span class="n">load_suite</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QApplication</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typhos</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_suite</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
 <span class="n">saved_suite</span> <span class="o">=</span> <span class="n">load_suite</span><span class="p">(</span><span class="s1">&#39;saved_suite.py&#39;</span><span class="p">)</span>
@@ -164,7 +164,7 @@ devices will not be loaded properly.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
