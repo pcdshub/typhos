@@ -3,9 +3,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview: module code &mdash; Typhos 4.1.1.dev12+g3976918b documentation</title>
+  <title>625 fix add_device behavior with custom displays &mdash; Typhos 4.1.1.dev12+g3976918b documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -18,7 +19,9 @@
       <script src="../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="627 Add long_name for SignalPanel" href="627-Add_long_name_for_SignalPanel.html" />
+    <link rel="prev" title="Upcoming Changes" href="../upcoming_changes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,7 +44,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../basic_usage.html">How it Works</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tools.html">Supported Tools</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../save.html">Saving and Loading</a></li>
@@ -49,7 +52,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../upcoming_changes.html">Upcoming Changes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../upcoming_changes.html">Upcoming Changes</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">625 fix add_device behavior with custom displays</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#api-breaks">API Breaks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#maintenance">Maintenance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="627-Add_long_name_for_SignalPanel.html">627 Add long_name for SignalPanel</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -76,8 +90,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Overview: module code</li>
+          <li class="breadcrumb-item"><a href="../upcoming_changes.html">Upcoming Changes</a></li>
+      <li class="breadcrumb-item active">625 fix add_device behavior with custom displays</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/upcoming_release_notes/625-fix_add_device_behavior_with_custom_displays.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -85,29 +101,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="PyQt5/QtCore.html">PyQt5.QtCore</a></li>
-<li><a href="PyQt5/QtWidgets.html">PyQt5.QtWidgets</a></li>
-<li><a href="typhos/alarm.html">typhos.alarm</a></li>
-<li><a href="typhos/cache.html">typhos.cache</a></li>
-<li><a href="typhos/display.html">typhos.display</a></li>
-<li><a href="typhos/func.html">typhos.func</a></li>
-<li><a href="typhos/panel.html">typhos.panel</a></li>
-<li><a href="typhos/plugins/core.html">typhos.plugins.core</a></li>
-<li><a href="typhos/plugins/happi.html">typhos.plugins.happi</a></li>
-<li><a href="typhos/positioner.html">typhos.positioner</a></li>
-<li><a href="typhos/suite.html">typhos.suite</a></li>
-<li><a href="typhos/textedit.html">typhos.textedit</a></li>
-<li><a href="typhos/tools/log.html">typhos.tools.log</a></li>
-<li><a href="typhos/tools/plot.html">typhos.tools.plot</a></li>
-<li><a href="typhos/tweakable.html">typhos.tweakable</a></li>
-<li><a href="typhos/utils.html">typhos.utils</a></li>
-<li><a href="typhos/widgets.html">typhos.widgets</a></li>
+  <section id="fix-add-device-behavior-with-custom-displays">
+<h1>625 fix add_device behavior with custom displays<a class="headerlink" href="#fix-add-device-behavior-with-custom-displays" title="Link to this heading"></a></h1>
+<section id="api-breaks">
+<h2>API Breaks<a class="headerlink" href="#api-breaks" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>N/A</p></li>
 </ul>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Allows custom displays with “add_device” methods to hook typhos correctly</p></li>
+</ul>
+</section>
+<section id="bugfixes">
+<h2>Bugfixes<a class="headerlink" href="#bugfixes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>N/A</p></li>
+</ul>
+</section>
+<section id="maintenance">
+<h2>Maintenance<a class="headerlink" href="#maintenance" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>N/A</p></li>
+</ul>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>ZLLentz</p></li>
+<li><p>aberges-SLAC</p></li>
+</ul>
+</section>
+</section>
+
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../upcoming_changes.html" class="btn btn-neutral float-left" title="Upcoming Changes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="627-Add_long_name_for_SignalPanel.html" class="btn btn-neutral float-right" title="627 Add long_name for SignalPanel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
