@@ -266,7 +266,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             label.setToolTip(_tooltip)
         return label
 
-    def _get_long_name(self, device, attr, dotted_name) -> str:
+    def _get_long_name(self, device, attr, dotted_name):
         """
         Check the signal for its long_name, if it exists.
         Until Ophyd makes it a standard signal, need to manually check
