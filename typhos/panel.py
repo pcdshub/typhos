@@ -235,16 +235,65 @@ class SignalPanel(QtWidgets.QGridLayout):
                for _, sig_info in signal_pairs):
             self.loading_complete.emit([name for name, _ in signal_pairs])
 
-    def _create_row_label(self, attr, dotted_name, tooltip):
-        """Create a row label (i.e., the one used to display the name)."""
-        label_text = self.label_text_from_attribute(attr, dotted_name)
+    def _create_row_label(self, attr, dotted_name, tooltip, long_name=None):
+        """
+        Create a row label (i.e., the one used to display the name).
+        If an alternative (human-readable) long name is defined, use that instead
+        and add the dotted_name to the tooltip for hutch python ease of use.
+
+        Parameters
+        -----------
+        attr: any
+            Name of the signal
+        dotted_name: any
+            Full dotted name of the signal
+        tooltip: str
+            Doc string to add to signal
+        long_name: str, optional
+            Long form (human readable) name to use for the signal row label text.
+        """
+        if long_name:
+            label_text = long_name
+        else:
+            label_text = self.label_text_from_attribute(attr, dotted_name)
         label = SignalPanelRowLabel(label_text)
         label.setObjectName(dotted_name)
         if tooltip is not None:
-            label.setToolTip(tooltip)
+            if long_name:
+                _tooltip = dotted_name + '<br>' + round(1.75*len(dotted_name))*'-' + '<br>' + tooltip
+            else:
+                _tooltip = tooltip
+            label.setToolTip(_tooltip)
         return label
 
-    def add_signal(self, signal, name=None, *, tooltip=None):
+    def _get_long_name(self, device, attr, dotted_name):
+        """
+        Check the signal for its long_name, if it exists.
+        Until Ophyd makes it a standard signal, need to manually check
+        the device and its components for the name.
+
+        Parameters
+        -----------
+            device: (any)
+                The Ophyd.Device with component signals
+            attr: (str)
+                The str name of the signal attribute
+            dotted_name: (str)
+                The full dotted name to the signal
+
+        Returns
+        --------
+            str or None
+        """
+        try:
+            if hasattr(getattr(device, attr), 'long_name'):
+                return getattr(device, attr).long_name
+        except AttributeError:
+            # Then maybe we have a nested component and can't touch the signal
+            if hasattr(getattr(device, dotted_name), 'long_name'):
+                return getattr(device, dotted_name).long_name
+
+    def add_signal(self, signal, name=None, long_name=None, *, tooltip=None):
         """
         Add a signal to the panel.
 
@@ -277,7 +326,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         logger.debug("Adding signal %s (%s)", signal.name, name)
 
-        label = self._create_row_label(name, name, tooltip)
+        label = self._create_row_label(attr=name, dotted_name=name, long_name=long_name, tooltip=tooltip)
         loading = utils.TyphosLoading(
             timeout_message='Connection timed out.'
         )
@@ -332,8 +381,11 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         logger.debug("Adding component %s", dotted_name)
 
+        # Workaround until Ophyd.Component.long_name PR comes through
+        long_name = self._get_long_name(device, attr, dotted_name)
         label = self._create_row_label(
-            attr, dotted_name, tooltip=component.doc or '')
+            attr=attr, dotted_name=dotted_name, long_name=long_name,
+            tooltip=component.doc or '')
         row = self.add_row(label, None)  # utils.TyphosLoading())
         self.signal_name_to_info[dotted_name] = dict(
             row=row,
@@ -662,8 +714,10 @@ class SignalPanel(QtWidgets.QGridLayout):
                 logger.warning('Failed to get signal %r from device %s: %s',
                                dotted_name, device.name, ex, exc_info=True)
                 return
-
-            return self.add_signal(signal, name=attr, tooltip=component.doc)
+            # Workaround until Ophyd.Component.long_name PR comes through
+            long_name = self._get_long_name(device, attr, dotted_name)
+            return self.add_signal(signal=signal, name=attr, long_name=long_name,
+                                   tooltip=component.doc)
 
         return self._add_component(device, attr, dotted_name, component)
 
