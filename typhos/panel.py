@@ -250,7 +250,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         tooltip: str
             Doc string to add to signal
         long_name: str, optional
-            Long form (human readable) name to use for the signal row label text.    
+            Long form (human readable) name to use for the signal row label text.
         """
         if long_name:
             label_text = long_name
@@ -268,7 +268,7 @@ class SignalPanel(QtWidgets.QGridLayout):
 
     def _get_long_name(self, device, attr, dotted_name) -> str:
         """
-        Check the signal for its long_name, if it exists. 
+        Check the signal for its long_name, if it exists.
         Until Ophyd makes it a standard signal, need to manually check
         the device and its components for the name.
 
@@ -294,7 +294,6 @@ class SignalPanel(QtWidgets.QGridLayout):
             if hasattr(getattr(device, dotted_name), 'long_name'):
                 long_name = getattr(device, dotted_name).long_name
         return long_name
-
 
     def add_signal(self, signal, name=None, long_name=None, *, tooltip=None):
         """
@@ -328,7 +327,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             return
 
         logger.debug("Adding signal %s (%s)", signal.name, name)
-        
+
         label = self._create_row_label(attr=name, dotted_name=name, long_name=long_name, tooltip=tooltip)
         loading = utils.TyphosLoading(
             timeout_message='Connection timed out.'
