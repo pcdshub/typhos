@@ -266,6 +266,36 @@ class SignalPanel(QtWidgets.QGridLayout):
             label.setToolTip(_tooltip)
         return label
 
+    def _get_long_name(self, device, attr, dotted_name) -> str:
+        """
+        Check the signal for its long_name, if it exists. 
+        Until Ophyd makes it a standard signal, need to manually check
+        the device and its components for the name.
+
+        Parameters
+        -----------
+            device: (any)
+                The Ophyd.Device with component signals
+            attr: (str)
+                The str name of the signal attribute
+            dotted_name: (str)
+                The full dotted name to the signal
+
+        Returns
+        --------
+            str or None
+        """
+        long_name = None
+        try:
+            if hasattr(getattr(device, attr), 'long_name'):
+                long_name = getattr(device, attr).long_name
+        except AttributeError:
+            # Then maybe we have a nested component and can't touch the signal
+            if hasattr(getattr(device, dotted_name), 'long_name'):
+                long_name = getattr(device, dotted_name).long_name
+        return long_name
+
+
     def add_signal(self, signal, name=None, long_name=None, *, tooltip=None):
         """
         Add a signal to the panel.
@@ -354,15 +384,8 @@ class SignalPanel(QtWidgets.QGridLayout):
 
         logger.debug("Adding component %s", dotted_name)
 
-        # Hacky workaround until Ophyd.Component.long_name PR comes through
-        long_name = None
-        try:
-            if hasattr(getattr(device, attr), 'long_name'):
-                long_name = getattr(device, attr).long_name
-        except AttributeError:
-            # Then maybe we have a nested component and can't touch the signal
-            if hasattr(getattr(device, dotted_name), 'long_name'):
-                long_name = getattr(device, dotted_name).long_name
+        # Workaround until Ophyd.Component.long_name PR comes through
+        long_name = self._get_long_name(device, attr, dotted_name)
         label = self._create_row_label(
             attr=attr, dotted_name=dotted_name, long_name=long_name,
             tooltip=component.doc or '')
@@ -694,15 +717,8 @@ class SignalPanel(QtWidgets.QGridLayout):
                 logger.warning('Failed to get signal %r from device %s: %s',
                                dotted_name, device.name, ex, exc_info=True)
                 return
-            # Hacky workaround until Ophyd.Component.long_name PR comes through
-            long_name = None
-            try:
-                if hasattr(getattr(device, attr), 'long_name'):
-                    long_name = getattr(device, attr).long_name             
-            except AttributeError as ex:
-                # Then we must have a component signal, so try the dotted_name
-                if hasattr(getattr(device, dotted_name), 'long_name'):
-                    long_name = getattr(device, dotted_name).long_name
+            # Workaround until Ophyd.Component.long_name PR comes through
+            long_name = self._get_long_name(device, attr, dotted_name)
             return self.add_signal(signal=signal, name=attr, long_name=long_name,
                                    tooltip=component.doc)
 
