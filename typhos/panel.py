@@ -285,15 +285,13 @@ class SignalPanel(QtWidgets.QGridLayout):
         --------
             str or None
         """
-        long_name = None
         try:
             if hasattr(getattr(device, attr), 'long_name'):
-                long_name = getattr(device, attr).long_name
+                return getattr(device, attr).long_name
         except AttributeError:
             # Then maybe we have a nested component and can't touch the signal
             if hasattr(getattr(device, dotted_name), 'long_name'):
-                long_name = getattr(device, dotted_name).long_name
-        return long_name
+                return getattr(device, dotted_name).long_name
 
     def add_signal(self, signal, name=None, long_name=None, *, tooltip=None):
         """
