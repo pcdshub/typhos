@@ -7,7 +7,7 @@ exclude: |
 
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
     -   id: no-commit-to-branch
     -   id: trailing-whitespace
@@ -23,11 +23,11 @@ repos:
     -   id: debug-statements
 
 -   repo: https://github.com/pycqa/flake8.git
-    rev: 6.0.0
+    rev: 7.2.0
     hooks:
     -   id: flake8
 
 -   repo: https://github.com/timothycrosley/isort
-    rev: 5.11.5
+    rev: 6.0.1
     hooks:
     -   id: isort
