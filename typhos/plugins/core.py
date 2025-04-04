@@ -314,7 +314,7 @@ class SignalConnection(PyDMConnection):
         if channel.value_signal is not None and not destroying:
             for _typ in self.supported_types:
                 try:
-                    channel.value_signal[_typ].disconnect(self.put_value)
+                    channel.value_signal[_typ].disconnect(self.put_value, destroying)
                 except (KeyError, TypeError):
                     logger.debug("Unable to disconnect value_signal from %s "
                                  "for type %s", channel.address, _typ)

@@ -427,7 +427,7 @@ def reset_signal_plugin():
     signal_registry.clear()
     plugin = plugin_for_address('sig://test')
     for channel in list(plugin.channels):
-        channel.disconnect()
+        channel.disconnect(destroying=True)
 
 
 @pytest.fixture(scope='function', autouse=True)
