@@ -1,5 +1,6 @@
 from ophyd import Device
 
+from typhos.tests import conftest
 from typhos.tools import TyphosLogDisplay
 
 
@@ -18,3 +19,5 @@ def test_log_display(qtbot):
     dev2 = Device(name='blah')
     log_tool.add_device(dev2)
     assert log_tool.logdisplay.handler in get_handlers(dev2)
+    for device in (dev, dev2):
+        conftest.clear_handlers(device)
