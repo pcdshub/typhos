@@ -873,6 +873,7 @@ class TyphosSuite(TyphosBase):
         for group in self.top_level_groups.values():
             for item in flatten_tree(group):
                 items[item.value()] = item
+        print(items)
         return items.get(widget)
 
     def _show_sidebar(self, widget, dock):
