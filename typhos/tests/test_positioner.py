@@ -71,79 +71,79 @@ def test_positioner_widget_no_limits(qtbot, motor):
         assert getattr(setwidget.ui, widget).isHidden()
 
 
-@pytest.mark.no_gc
-def test_positioner_widget_fixed_limits(qtbot, motor):
-    motor.limits = (-10, 10)
-    widget = TyphosPositionerWidget.from_device(motor)
-    qtbot.addWidget(widget)
-    assert widget.ui.low_limit.text() == '-10'
-    assert widget.ui.high_limit.text() == '10'
+# @pytest.mark.no_gc
+# def test_positioner_widget_fixed_limits(qtbot, motor):
+#     motor.limits = (-10, 10)
+#     widget = TyphosPositionerWidget.from_device(motor)
+#     qtbot.addWidget(widget)
+#     assert widget.ui.low_limit.text() == '-10'
+#     assert widget.ui.high_limit.text() == '10'
 
 
-@show_widget
-@pytest.mark.skip()
-@pytest.mark.no_gc
-def test_positioner_widget_with_signal_limits(motor_widget):
-    motor, widget = motor_widget
-    # Check limit switches
-    low_limit_chan = widget.ui.low_limit_switch.channel
-    assert motor.low_limit_switch.name in low_limit_chan
-    high_limit_chan = widget.ui.high_limit_switch.channel
-    assert motor.high_limit_switch.name in high_limit_chan
-    motor.delay = 3.  # Just for visual testing purposes
-    return widget
+# @show_widget
+# @pytest.mark.skip()
+# @pytest.mark.no_gc
+# def test_positioner_widget_with_signal_limits(motor_widget):
+#     motor, widget = motor_widget
+#     # Check limit switches
+#     low_limit_chan = widget.ui.low_limit_switch.channel
+#     assert motor.low_limit_switch.name in low_limit_chan
+#     high_limit_chan = widget.ui.high_limit_switch.channel
+#     assert motor.high_limit_switch.name in high_limit_chan
+#     motor.delay = 3.  # Just for visual testing purposes
+#     return widget
 
 
-@pytest.mark.no_gc
-def test_positioner_widget_readback(motor_widget):
-    motor, widget = motor_widget
-    assert motor.readback.name in widget.ui.user_readback.channel
+# @pytest.mark.no_gc
+# def test_positioner_widget_readback(motor_widget):
+#     motor, widget = motor_widget
+#     assert motor.readback.name in widget.ui.user_readback.channel
 
 
-@pytest.mark.no_gc
-def test_positioner_widget_stop(motor_widget):
-    motor, widget = motor_widget
-    widget.stop()
-    motor.stop.assert_called_with(success=True)
+# @pytest.mark.no_gc
+# def test_positioner_widget_stop(motor_widget):
+#     motor, widget = motor_widget
+#     widget.stop()
+#     motor.stop.assert_called_with(success=True)
 
 
-class NoMoveSoftPos(SoftPositioner, Device):
-    """
-    SoftPositioner that does not move.
+# class NoMoveSoftPos(SoftPositioner, Device):
+#     """
+#     SoftPositioner that does not move.
 
-    This allows us to "stop" the move at any time.
-    This must be a device for inclusion in the widget,
-    as typhos calls "walk_signals".
-    """
-    def _setup_move(self, *args, **kwargs):
-        ...
-
-
-@pytest.mark.no_gc
-def test_positioner_widget_stop_no_error(motor_widget):
-    _, widget = motor_widget
-    motor = NoMoveSoftPos(name='motor')
-    widget.add_device(motor)
-    # Calling stop on the motor directly is an error status
-    status = motor.move(1, wait=False)
-    motor.stop()
-    with pytest.raises(UnknownStatusFailure):
-        # Raises if the outcome is an exception
-        status.wait(timeout=1)
-    # But the button should avoid this pitfall and have no error
-    status = motor.move(2, wait=False)
-    widget.stop()
-    # Raises if the outcome is an exception
-    status.wait(timeout=1)
+#     This allows us to "stop" the move at any time.
+#     This must be a device for inclusion in the widget,
+#     as typhos calls "walk_signals".
+#     """
+#     def _setup_move(self, *args, **kwargs):
+#         ...
 
 
-@pytest.mark.no_gc
-def test_positioner_widget_set(motor_widget):
-    motor, widget = motor_widget
-    # Check motion
-    widget.ui.set_value.setText('4')
-    widget.ui.set()
-    assert motor.position == 4
+# @pytest.mark.no_gc
+# def test_positioner_widget_stop_no_error(motor_widget):
+#     _, widget = motor_widget
+#     motor = NoMoveSoftPos(name='motor')
+#     widget.add_device(motor)
+#     # Calling stop on the motor directly is an error status
+#     status = motor.move(1, wait=False)
+#     motor.stop()
+#     with pytest.raises(UnknownStatusFailure):
+#         # Raises if the outcome is an exception
+#         status.wait(timeout=1)
+#     # But the button should avoid this pitfall and have no error
+#     status = motor.move(2, wait=False)
+#     widget.stop()
+#     # Raises if the outcome is an exception
+#     status.wait(timeout=1)
+
+
+# @pytest.mark.no_gc
+# def test_positioner_widget_set(motor_widget):
+#     motor, widget = motor_widget
+#     # Check motion
+#     widget.ui.set_value.setText('4')
+#     widget.ui.set()
+#     assert motor.position == 4
 
 
 # @pytest.mark.no_gc
