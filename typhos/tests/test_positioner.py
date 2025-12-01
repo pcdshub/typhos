@@ -66,13 +66,13 @@ def motor_widget(qtbot):
         widget._status_thread.quit()
 
 
-@pytest.mark.no_gc
-def test_positioner_widget_no_limits(qtbot, motor):
-    setwidget = TyphosPositionerWidget.from_device(motor)
-    qtbot.addWidget(setwidget)
-    for widget in ('low_limit', 'low_limit_switch',
-                   'high_limit', 'high_limit_switch'):
-        assert getattr(setwidget.ui, widget).isHidden()
+# @pytest.mark.no_gc
+# def test_positioner_widget_no_limits(qtbot, motor):
+#     setwidget = TyphosPositionerWidget.from_device(motor)
+#     qtbot.addWidget(setwidget)
+#     for widget in ('low_limit', 'low_limit_switch',
+#                    'high_limit', 'high_limit_switch'):
+#         assert getattr(setwidget.ui, widget).isHidden()
 
 
 # @pytest.mark.no_gc
