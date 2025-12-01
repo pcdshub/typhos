@@ -59,7 +59,11 @@ def motor_widget(qtbot):
     qtbot.addWidget(widget)
     yield motor, widget
     if widget._status_thread and widget._status_thread.isRunning():
-        widget._status_thread.wait()
+        widget._status_thread.wait(10000)
+
+    # if still running, kill
+    if widget._status_thread and widget._status_thread.isRunning():
+        widget._status_thread.quit()
 
 
 @pytest.mark.no_gc
