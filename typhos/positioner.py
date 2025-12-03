@@ -179,7 +179,9 @@ class TyphosPositionerWidget(
         super().__init__(parent=parent)
         print("TPW: super finished")
 
-        self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
+        my_ui = uic.loadUi(self.ui_template, self)
+        print("ui loaded")
+        self.ui = typing.cast(_TyphosPositionerUI, my_ui)
         print("TPW: typing.cast")
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         print("TPW: tweak+")
