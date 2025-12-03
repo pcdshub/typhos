@@ -8,6 +8,8 @@ On Python 3.10+ these tests can cause segmentation faults if we manually
 Any test that uses a positioner widget needs to have this mark.
 This is not yet fully understood.
 """
+import faulthandler
+import signal
 from unittest.mock import Mock
 
 import pytest
@@ -24,6 +26,13 @@ from typhos.status import TyphosStatusMessage, TyphosStatusResult
 from typhos.utils import SignalRO
 
 from .conftest import RichSignal, show_widget
+
+# Dump the stack trace to stderr if a timeout occurs (e.g., 30 seconds)
+# This requires the CI job to run at least this long before being killed by the runner
+faulthandler.dump_traceback_later(timeout=30, exit=True)
+
+# Alternatively, enable dumping on a specific user signal (useful if you can send signals to the CI process)
+faulthandler.register(signal.SIGABRT)
 
 
 class SimMotor(SynAxis):
