@@ -9,7 +9,7 @@ on:
 
 jobs:
   standard:
-    uses: pcdshub/pcds-ci-helpers/.github/workflows/python-standard.yml@master
+    uses: tangkong/pcds-ci-helpers/.github/workflows/python-standard.yml@tst_verbose_prints
     secrets: inherit
     with:
       # The workflow needs to know the package name.  This can be determined
