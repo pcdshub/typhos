@@ -26,7 +26,7 @@ from typhos.utils import SignalRO
 
 from .conftest import RichSignal, show_widget
 
-# Dump the stack trace to stderr if a timeout occurs (e.g., 30 seconds)
+# Dump the stack trace to stderr if a timeout occurs (e.g., 2000 seconds)
 # This requires the CI job to run at least this long before being killed by the runner
 faulthandler.dump_traceback_later(timeout=2000, exit=True)
 
