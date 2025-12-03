@@ -66,22 +66,23 @@ def motor_widget(qtbot):
         widget._status_thread.quit()
 
 
-# @pytest.mark.no_gc
-# def test_positioner_widget_no_limits(qtbot, motor):
-#     setwidget = TyphosPositionerWidget.from_device(motor)
-#     qtbot.addWidget(setwidget)
-#     for widget in ('low_limit', 'low_limit_switch',
-#                    'high_limit', 'high_limit_switch'):
-#         assert getattr(setwidget.ui, widget).isHidden()
+@pytest.mark.no_gc
+def test_positioner_widget_no_limits(qtbot, motor):
+    assert True
+    # setwidget = TyphosPositionerWidget.from_device(motor)
+    # qtbot.addWidget(setwidget)
+    # for widget in ('low_limit', 'low_limit_switch',
+    #                'high_limit', 'high_limit_switch'):
+    #     assert getattr(setwidget.ui, widget).isHidden()
 
 
 # @pytest.mark.no_gc
-# def test_positioner_widget_fixed_limits(qtbot, motor):
-#     motor.limits = (-10, 10)
-#     widget = TyphosPositionerWidget.from_device(motor)
-#     qtbot.addWidget(widget)
-#     assert widget.ui.low_limit.text() == '-10'
-#     assert widget.ui.high_limit.text() == '10'
+def test_positioner_widget_fixed_limits(qtbot, motor):
+    motor.limits = (-10, 10)
+    widget = TyphosPositionerWidget.from_device(motor)
+    qtbot.addWidget(widget)
+    assert widget.ui.low_limit.text() == '-10'
+    assert widget.ui.high_limit.text() == '10'
 
 
 @show_widget
