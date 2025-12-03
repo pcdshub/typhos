@@ -52,7 +52,9 @@ class SimMotor(SynAxis):
 
 @pytest.fixture(scope='function')
 def motor_widget(qtbot):
+    print("starting motor widget fixture")
     motor = SimMotor(name='test')
+    print("created simmotor")
     widget = TyphosPositionerWidget()
     print("created widget")
     widget.readback_attribute = 'readback'
@@ -75,6 +77,7 @@ def motor_widget(qtbot):
 
 @pytest.mark.no_gc
 def test_positioner_widget_no_limits(qtbot, motor):
+    print("this should pass")
     assert True
     # setwidget = TyphosPositionerWidget.from_device(motor)
     # qtbot.addWidget(setwidget)
