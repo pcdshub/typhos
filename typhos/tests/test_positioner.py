@@ -54,10 +54,14 @@ class SimMotor(SynAxis):
 def motor_widget(qtbot):
     motor = SimMotor(name='test')
     widget = TyphosPositionerWidget()
+    print("created widget")
     widget.readback_attribute = 'readback'
     widget.add_device(motor)
     qtbot.addWidget(widget)
+    print("yield motor, widget")
     yield motor, widget
+
+    print("back to motor widget fixture")
     if widget._status_thread and widget._status_thread.isRunning():
         print("waiting for status thread")
         widget._status_thread.wait(10000)
@@ -79,14 +83,22 @@ def test_positioner_widget_no_limits(qtbot, motor):
     #     assert getattr(setwidget.ui, widget).isHidden()
 
 
+def test_just_fixture(motor_widget):
+    print(motor_widget)
+    assert True
+
+
 @pytest.mark.no_gc
 def test_positioner_widget_fixed_limits(qtbot, motor):
     motor.limits = (-10, 10)
     widget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(widget)
+    print("added to qtbot")
     assert widget.ui.low_limit.text() == '-10'
     assert widget.ui.high_limit.text() == '10'
+    print("delete later")
     widget.deleteLater()
+    print("end of test")
 
 
 @show_widget
