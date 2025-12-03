@@ -1,5 +1,5 @@
 """
-Module for testing the positioner widgets
+  Module for testing the positioner widgets
 
 Note the heavy usage of @pytest.mark.no_gc here:
 On Python 3.10+ these tests can cause segmentation faults if we manually
