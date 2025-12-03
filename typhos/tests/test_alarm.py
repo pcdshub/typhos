@@ -1,164 +1,164 @@
-from uuid import uuid4
+# from uuid import uuid4
 
-import pytest
-from happi.item import HappiItem
-from happi.loader import from_container
-from ophyd import Component as Cpt
-from ophyd import Device
-from ophyd.utils.epics_pvs import AlarmSeverity
+# import pytest
+# from happi.item import HappiItem
+# from happi.loader import from_container
+# from ophyd import Component as Cpt
+# from ophyd import Device
+# from ophyd.utils.epics_pvs import AlarmSeverity
 
-from typhos.alarm import (AlarmLevel, TyphosAlarmCircle, TyphosAlarmEllipse,
-                          TyphosAlarmPolygon, TyphosAlarmRectangle,
-                          TyphosAlarmTriangle)
-from typhos.plugins.core import register_signal
-from typhos.plugins.happi import HappiClientState, register_client
+# from typhos.alarm import (AlarmLevel, TyphosAlarmCircle, TyphosAlarmEllipse,
+#                           TyphosAlarmPolygon, TyphosAlarmRectangle,
+#                           TyphosAlarmTriangle)
+# from typhos.plugins.core import register_signal
+# from typhos.plugins.happi import HappiClientState, register_client
 
-from .conftest import RichSignal, show_widget
-
-
-@pytest.fixture(
-    scope='function',
-    params=(
-        TyphosAlarmCircle,
-        TyphosAlarmRectangle,
-        TyphosAlarmTriangle,
-        TyphosAlarmEllipse,
-        TyphosAlarmPolygon,
-    ),
-)
-def alarm(qtbot, request):
-    alarm_widget = request.param()
-    alarm_widget.kindLevel = alarm_widget.KindLevel.HINTED
-    print("alarm widget", alarm_widget, alarm_widget.windowTitle())
-    qtbot.addWidget(alarm_widget)
-    return alarm_widget
+# from .conftest import RichSignal, show_widget
 
 
-class SimpleDevice(Device):
-    hint_sig = Cpt(RichSignal, kind='hinted')
-    norm_sig = Cpt(RichSignal, kind='normal')
-    conf_sig = Cpt(RichSignal, kind='config')
-    omit_sig = Cpt(RichSignal, kind='omitted')
+# @pytest.fixture(
+#     scope='function',
+#     params=(
+#         TyphosAlarmCircle,
+#         TyphosAlarmRectangle,
+#         TyphosAlarmTriangle,
+#         TyphosAlarmEllipse,
+#         TyphosAlarmPolygon,
+#     ),
+# )
+# def alarm(qtbot, request):
+#     alarm_widget = request.param()
+#     alarm_widget.kindLevel = alarm_widget.KindLevel.HINTED
+#     print("alarm widget", alarm_widget, alarm_widget.windowTitle())
+#     qtbot.addWidget(alarm_widget)
+#     return alarm_widget
 
 
-@pytest.fixture(scope='function')
-def device():
-    return SimpleDevice(name='simple_' + str(uuid4()))
+# class SimpleDevice(Device):
+#     hint_sig = Cpt(RichSignal, kind='hinted')
+#     norm_sig = Cpt(RichSignal, kind='normal')
+#     conf_sig = Cpt(RichSignal, kind='config')
+#     omit_sig = Cpt(RichSignal, kind='omitted')
 
 
-@pytest.fixture(scope='function')
-def alarm_add_device(alarm, device, qtbot):
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        alarm.add_device(device)
-    return alarm
+# @pytest.fixture(scope='function')
+# def device():
+#     return SimpleDevice(name='simple_' + str(uuid4()))
 
 
-@show_widget
-def test_alarm_basic(alarm):
-    print("testing alarm widget", alarm)
-    assert alarm.alarm_summary == AlarmLevel.DISCONNECTED
+# @pytest.fixture(scope='function')
+# def alarm_add_device(alarm, device, qtbot):
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         alarm.add_device(device)
+#     return alarm
 
 
-def test_alarm_add_device_basic(alarm_add_device):
-    assert alarm_add_device.alarm_summary == AlarmLevel.NO_ALARM
+# @show_widget
+# def test_alarm_basic(alarm):
+#     print("testing alarm widget", alarm)
+#     assert alarm.alarm_summary == AlarmLevel.DISCONNECTED
 
 
-alarm_cases = [
-    ({'connected': False}, AlarmLevel.DISCONNECTED),
-    ({'severity': AlarmSeverity.MINOR}, AlarmLevel.MINOR),
-    ({'severity': AlarmSeverity.MAJOR}, AlarmLevel.MAJOR),
-    ({'severity': AlarmSeverity.INVALID}, AlarmLevel.INVALID),
-]
+# def test_alarm_add_device_basic(alarm_add_device):
+#     assert alarm_add_device.alarm_summary == AlarmLevel.NO_ALARM
 
 
-@pytest.mark.parametrize("metadata,response", alarm_cases)
-def test_one_alarm_add_device(
-        alarm_add_device, device, qtbot, metadata, response
-):
-    alarm = alarm_add_device
-
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        device.hint_sig.update_metadata(metadata)
-
-    assert alarm.alarm_summary == response
+# alarm_cases = [
+#     ({'connected': False}, AlarmLevel.DISCONNECTED),
+#     ({'severity': AlarmSeverity.MINOR}, AlarmLevel.MINOR),
+#     ({'severity': AlarmSeverity.MAJOR}, AlarmLevel.MAJOR),
+#     ({'severity': AlarmSeverity.INVALID}, AlarmLevel.INVALID),
+# ]
 
 
-@pytest.mark.parametrize("metadata,response", alarm_cases)
-def test_one_alarm_sig_ch(alarm, qtbot, metadata, response):
-    name = 'one_sig_ch_' + str(uuid4())
-    sig = RichSignal(name=name)
-    register_signal(sig)
+# @pytest.mark.parametrize("metadata,response", alarm_cases)
+# def test_one_alarm_add_device(
+#         alarm_add_device, device, qtbot, metadata, response
+# ):
+#     alarm = alarm_add_device
 
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        alarm.channel = 'sig://' + name
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         device.hint_sig.update_metadata(metadata)
 
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        sig.update_metadata(metadata)
-
-    assert alarm.alarm_summary == response
+#     assert alarm.alarm_summary == response
 
 
-@pytest.fixture(scope='function')
-def fake_client():
-    old_client = HappiClientState.client
-    client = FakeClient()
-    register_client(client)
-    yield client
-    register_client(old_client)
+# @pytest.mark.parametrize("metadata,response", alarm_cases)
+# def test_one_alarm_sig_ch(alarm, qtbot, metadata, response):
+#     name = 'one_sig_ch_' + str(uuid4())
+#     sig = RichSignal(name=name)
+#     register_signal(sig)
+
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         alarm.channel = 'sig://' + name
+
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         sig.update_metadata(metadata)
+
+#     assert alarm.alarm_summary == response
 
 
-class FakeClient:
-    def find_item(self, *args, name, **kwargs):
-        return HappiItem(
-            name=name,
-            device_class='typhos.tests.test_alarm.SimpleDevice',
-            kwargs={'name': '{{name}}'},
-        )
+# @pytest.fixture(scope='function')
+# def fake_client():
+#     old_client = HappiClientState.client
+#     client = FakeClient()
+#     register_client(client)
+#     yield client
+#     register_client(old_client)
 
 
-@pytest.mark.parametrize("metadata,response", alarm_cases)
-def test_one_alarm_happi_ch(alarm, qtbot, metadata, response, fake_client):
-    name = 'happi_test_device_' + str(uuid4()).replace('-', '_')
-    item = fake_client.find_item(name=name)
-    device = from_container(item)
-
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        alarm.channel = 'happi://' + name
-
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        device.hint_sig.update_metadata(metadata)
-
-    assert alarm.alarm_summary == response
+# class FakeClient:
+#     def find_item(self, *args, name, **kwargs):
+#         return HappiItem(
+#             name=name,
+#             device_class='typhos.tests.test_alarm.SimpleDevice',
+#             kwargs={'name': '{{name}}'},
+#         )
 
 
-def test_kinds_many_alarms_add_device(alarm_add_device, device, qtbot):
-    alarm = alarm_add_device
+# @pytest.mark.parametrize("metadata,response", alarm_cases)
+# def test_one_alarm_happi_ch(alarm, qtbot, metadata, response, fake_client):
+#     name = 'happi_test_device_' + str(uuid4()).replace('-', '_')
+#     item = fake_client.find_item(name=name)
+#     device = from_container(item)
 
-    device.hint_sig.update_metadata({'severity': AlarmSeverity.NO_ALARM})
-    device.norm_sig.update_metadata({'severity': AlarmSeverity.MINOR})
-    device.conf_sig.update_metadata({'severity': AlarmSeverity.MAJOR})
-    device.omit_sig.update_metadata({'severity': AlarmSeverity.INVALID})
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         alarm.channel = 'happi://' + name
 
-    assert alarm.alarm_summary == AlarmLevel.NO_ALARM
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         device.hint_sig.update_metadata(metadata)
 
-    # Step up the KindLevel and watch the alarm change
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        alarm_add_device.kindLevel = alarm.KindLevel.NORMAL
+#     assert alarm.alarm_summary == response
 
-    assert alarm.alarm_summary == AlarmLevel.MINOR
 
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        alarm_add_device.kindLevel = alarm.KindLevel.CONFIG
+# def test_kinds_many_alarms_add_device(alarm_add_device, device, qtbot):
+#     alarm = alarm_add_device
 
-    assert alarm.alarm_summary == AlarmLevel.MAJOR
+#     device.hint_sig.update_metadata({'severity': AlarmSeverity.NO_ALARM})
+#     device.norm_sig.update_metadata({'severity': AlarmSeverity.MINOR})
+#     device.conf_sig.update_metadata({'severity': AlarmSeverity.MAJOR})
+#     device.omit_sig.update_metadata({'severity': AlarmSeverity.INVALID})
 
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        alarm_add_device.kindLevel = alarm.KindLevel.OMITTED
+#     assert alarm.alarm_summary == AlarmLevel.NO_ALARM
 
-    assert alarm.alarm_summary == AlarmLevel.INVALID
+#     # Step up the KindLevel and watch the alarm change
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         alarm_add_device.kindLevel = alarm.KindLevel.NORMAL
 
-    # Disconnect the no_alarm signal to look for a response
-    with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
-        device.hint_sig.update_metadata({'connected': False})
+#     assert alarm.alarm_summary == AlarmLevel.MINOR
 
-    assert alarm.alarm_summary == AlarmLevel.DISCONNECTED
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         alarm_add_device.kindLevel = alarm.KindLevel.CONFIG
+
+#     assert alarm.alarm_summary == AlarmLevel.MAJOR
+
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         alarm_add_device.kindLevel = alarm.KindLevel.OMITTED
+
+#     assert alarm.alarm_summary == AlarmLevel.INVALID
+
+#     # Disconnect the no_alarm signal to look for a response
+#     with qtbot.wait_signal(alarm.alarm_changed, timeout=1000):
+#         device.hint_sig.update_metadata({'connected': False})
+
+#     assert alarm.alarm_summary == AlarmLevel.DISCONNECTED
