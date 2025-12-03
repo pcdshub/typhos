@@ -59,7 +59,7 @@ class SimMotor(SynAxis):
 
 @pytest.fixture(scope='function')
 def motor_widget(qtbot):
-    print("starting motor widget fixture ")
+    print("starting motor widget fixture")
     motor = SimMotor(name='test')
     print("created simmotor")
     widget = TyphosPositionerWidget()
