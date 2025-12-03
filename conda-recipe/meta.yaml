@@ -32,7 +32,7 @@ requirements:
   - pcdsutils
   - platformdirs
   - pydm >=1.19.1
-  - pyqt =5
+  - pyqt =5.15.9
   - pyqtgraph
   - pyyaml
   - qdarkstyle
