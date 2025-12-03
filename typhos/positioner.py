@@ -180,10 +180,15 @@ class TyphosPositionerWidget(
         print("TPW: super finished")
 
         self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
+        print("TPW: typing.cast")
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
+        print("TPW: tweak+")
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
+        print("TPW: tweak-")
         self.ui.stop_button.clicked.connect(self.stop)
+        print("TPW: stop")
         self.ui.clear_error_button.clicked.connect(self.clear_error)
+        print("TPW: initial connections set...")
 
         self.ui.alarm_circle.kindLevel = self.ui.alarm_circle.NORMAL
         self.ui.alarm_circle.alarm_changed.connect(self.update_alarm_text)
