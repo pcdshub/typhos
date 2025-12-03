@@ -175,8 +175,9 @@ class TyphosPositionerWidget(
         self._show_lowtrav = True
         self._show_highlim = True
         self._show_hightrav = True
-
+        print("TPW: calling super")
         super().__init__(parent=parent)
+        print("TPW: super finished")
 
         self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
@@ -187,10 +188,13 @@ class TyphosPositionerWidget(
         self.ui.alarm_circle.kindLevel = self.ui.alarm_circle.NORMAL
         self.ui.alarm_circle.alarm_changed.connect(self.update_alarm_text)
 
+        print("TPW: connections finished")
         self.show_expert_button = False
         self._after_set_moving(False)
 
+        print("TPW: after after_set_moving")
         dynamic_font.patch_widget(self.ui.user_readback, pad_percent=0.05, min_size=4)
+        print("TPW: after patch_widget")
 
     def _clear_status_thread(self):
         """Clear a previous status thread."""
@@ -605,6 +609,7 @@ class TyphosPositionerWidget(
         modifying self.moving.
         """
         utils.reload_widget_stylesheet(self, cascade=True)
+        print("TPW._after_set_moving: stylesheet reloaded")
         if value:
             self.ui.moving_indicator_label.setText('moving')
         else:
