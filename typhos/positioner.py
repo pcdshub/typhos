@@ -180,7 +180,7 @@ class TyphosPositionerWidget(
         print("TPW: super finished")
 
         print(f"attempting to load ui: {self.ui_template}")
-        my_ui = uic.loadUi(self.ui_template, self)
+        my_ui = uic.loadUi(str(self.ui_template), self)
         print("ui loaded")
         self.ui = typing.cast(_TyphosPositionerUI, my_ui)
         print("TPW: typing.cast")
