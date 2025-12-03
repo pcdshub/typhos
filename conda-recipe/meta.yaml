@@ -37,7 +37,7 @@ requirements:
   - pyyaml
   - qdarkstyle
   - qtawesome
-  - qtpy
+  - qtpy =2.4.1
   - timechart >=1.2.4
   run_constrained:
   - happi >=1.14.0
