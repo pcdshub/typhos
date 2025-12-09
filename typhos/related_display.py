@@ -30,7 +30,7 @@ def happi_check():
     return happi_loaded
 
 
-class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
+class TyphosRelatedSuiteButton(QtWidgets.QPushButton, TyphosObject):
     """
     Button to open a typhos suite with happi-loaded devices.
     """
@@ -46,6 +46,9 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         self._happi_cfg = ''
         self._preload = False
         self._suite = None
+        QtCore.QTimer.singleShot(0, self._finish_init)
+
+    def _finish_init(self):
         self.clicked.connect(self.show_suite)
 
     @QtCore.Property('QStringList')

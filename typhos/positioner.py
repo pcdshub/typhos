@@ -137,7 +137,7 @@ class TyphosPositionerWidget(
                    ``hinted`` signals.
     ============== ===========================================================
     """
-    QtCore.Q_ENUMS(_KindLevel)
+    QtCore.Q_ENUMS(KindLevel)
     KindLevel = KindLevel
 
     ui: _TyphosPositionerUI
@@ -179,6 +179,12 @@ class TyphosPositionerWidget(
         super().__init__(parent=parent)
 
         self.ui = typing.cast(_TyphosPositionerUI, uic.loadUi(self.ui_template, self))
+
+        QtCore.QTimer.singleShot(0, self._finish_init)
+
+    def _finish_init(self):
+
+
         self.ui.tweak_positive.clicked.connect(self.positive_tweak)
         self.ui.tweak_negative.clicked.connect(self.negative_tweak)
         self.ui.stop_button.clicked.connect(self.stop)
@@ -198,7 +204,7 @@ class TyphosPositionerWidget(
             return
 
         logger.debug("Clearing current active status")
-        self._status_thread.disconnect()
+        self._status_thread.disconnect(self)
         self._status_thread = None
 
     def _start_status_thread(
@@ -732,7 +738,7 @@ class TyphosPositionerWidget(
         inside of an unrelated screen.
         This will default to False.
         """
-        return self._show_expert_button
+        return getattr(self, '_show_expert_button', False)
 
     @show_expert_button.setter
     def show_expert_button(self, show):
@@ -939,6 +945,9 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self._alarm_level = AlarmLevel.DISCONNECTED
 
         super().__init__(*args, **kwargs)
+
+    def _finish_init(self):
+        super()._finish_init()
         dynamic_font.patch_widget(self.ui.low_limit, pad_percent=0.01, max_size=12, min_size=4)
         dynamic_font.patch_widget(self.ui.high_limit, pad_percent=0.01, max_size=12, min_size=4)
         dynamic_font.patch_widget(self.ui.device_name_label, pad_percent=0.01, min_size=4)
@@ -1024,7 +1033,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         if self.device is None:
             return None
 
-        return RowDetails(row=self, parent=self, flags=QtCore.Qt.Window)
+        return RowDetails(row=self, parent=self, f=QtCore.Qt.Window)
 
     def _expand_layout(self) -> None:
         """Toggle the expansion of the signal panel."""

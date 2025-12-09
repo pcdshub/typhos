@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>369</width>
-    <height>277</height>
+    <width>543</width>
+    <height>327</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,7 +44,7 @@
    <property name="bottomMargin">
     <number>5</number>
    </property>
-   <item alignment="Qt::AlignHCenter">
+   <item alignment="Qt::AlignmentFlag::AlignHCenter">
     <widget class="QFrame" name="motion_frame">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -65,7 +65,7 @@
       </size>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::Shape::Box</enum>
      </property>
      <property name="lineWidth">
       <number>0</number>
@@ -90,8 +90,8 @@
           <property name="topMargin">
            <number>0</number>
           </property>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="PyDMByteIndicator" name="low_limit_switch">
+          <item alignment="Qt::AlignmentFlag::AlignHCenter">
+           <widget class="PyDMByteIndicator" name="low_limit_switch" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -148,7 +148,7 @@
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignHCenter">
+          <item alignment="Qt::AlignmentFlag::AlignHCenter">
            <widget class="PyDMLabel" name="low_limit">
             <property name="minimumSize">
              <size>
@@ -171,7 +171,7 @@
              <string>low_limit</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
             <property name="alarmSensitiveBorder" stdset="0">
              <bool>false</bool>
@@ -185,8 +185,8 @@
           <property name="topMargin">
            <number>0</number>
           </property>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="PyDMByteIndicator" name="moving_indicator">
+          <item alignment="Qt::AlignmentFlag::AlignHCenter">
+           <widget class="PyDMByteIndicator" name="moving_indicator" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -249,7 +249,7 @@
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignHCenter">
+          <item alignment="Qt::AlignmentFlag::AlignHCenter">
            <widget class="QLabel" name="moving_indicator_label">
             <property name="minimumSize">
              <size>
@@ -261,7 +261,7 @@
              <string>motion</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -270,7 +270,7 @@
           </item>
          </layout>
         </item>
-        <item alignment="Qt::AlignHCenter">
+        <item alignment="Qt::AlignmentFlag::AlignHCenter">
          <widget class="TyphosRelatedSuiteButton" name="expert_button">
           <property name="minimumSize">
            <size>
@@ -286,7 +286,6 @@
           </property>
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -305,7 +304,7 @@ Screen</string>
         <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -355,7 +354,7 @@ Screen</string>
            <string>user_readback</string>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
           <property name="showUnits" stdset="0">
            <bool>true</bool>
@@ -365,7 +364,7 @@ Screen</string>
           </property>
          </widget>
         </item>
-        <item alignment="Qt::AlignHCenter">
+        <item alignment="Qt::AlignmentFlag::AlignHCenter">
          <widget class="PyDMLineEdit" name="user_setpoint">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -389,7 +388,7 @@ Screen</string>
            <string/>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
           <property name="alarmSensitiveBorder" stdset="0">
            <bool>false</bool>
@@ -449,7 +448,7 @@ Screen</string>
               </size>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -485,7 +484,6 @@ Screen</string>
           </property>
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -526,9 +524,6 @@ Screen</string>
           <property name="alarmSensitiveBorder" stdset="0">
            <bool>false</bool>
           </property>
-          <property name="displayFormat" stdset="0">
-           <enum>PyDMLabel::String</enum>
-          </property>
          </widget>
         </item>
         <item>
@@ -550,7 +545,7 @@ Screen</string>
         <item>
          <spacer name="verticalSpacer_2">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -575,8 +570,8 @@ Screen</string>
           <property name="topMargin">
            <number>0</number>
           </property>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="PyDMByteIndicator" name="high_limit_switch">
+          <item alignment="Qt::AlignmentFlag::AlignHCenter">
+           <widget class="PyDMByteIndicator" name="high_limit_switch" native="true">
             <property name="minimumSize">
              <size>
               <width>25</width>
@@ -622,9 +617,6 @@ Screen</string>
               <blue>50</blue>
              </color>
             </property>
-            <property name="orientation" stdset="0">
-             <enum>Qt::Vertical</enum>
-            </property>
             <property name="showLabels" stdset="0">
              <bool>false</bool>
             </property>
@@ -659,7 +651,7 @@ Screen</string>
              <string>high_limit</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
             <property name="alarmSensitiveBorder" stdset="0">
              <bool>false</bool>
@@ -673,8 +665,8 @@ Screen</string>
           <property name="topMargin">
            <number>0</number>
           </property>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="TyphosAlarmCircle" name="alarm_circle">
+          <item alignment="Qt::AlignmentFlag::AlignHCenter">
+           <widget class="TyphosAlarmCircle" name="alarm_circle" native="true">
             <property name="minimumSize">
              <size>
               <width>25</width>
@@ -695,7 +687,7 @@ Screen</string>
             </property>
            </widget>
           </item>
-          <item alignment="Qt::AlignHCenter">
+          <item alignment="Qt::AlignmentFlag::AlignHCenter">
            <widget class="QLabel" name="alarm_label">
             <property name="minimumSize">
              <size>
@@ -707,7 +699,7 @@ Screen</string>
              <string>alarm</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -716,7 +708,7 @@ Screen</string>
           </item>
          </layout>
         </item>
-        <item alignment="Qt::AlignHCenter">
+        <item alignment="Qt::AlignmentFlag::AlignHCenter">
          <widget class="QPushButton" name="clear_error_button">
           <property name="minimumSize">
            <size>
@@ -732,7 +724,6 @@ Screen</string>
           </property>
           <property name="font">
            <font>
-            <weight>75</weight>
             <bold>true</bold>
            </font>
           </property>
@@ -751,12 +742,12 @@ Error</string>
         <item>
          <spacer name="verticalSpacer_4">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>40</height>
+            <width>40</width>
+            <height>20</height>
            </size>
           </property>
          </spacer>

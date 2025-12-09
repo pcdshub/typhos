@@ -874,7 +874,9 @@ class TyphosSuite(TyphosBase):
         items = {}
         for group in self.top_level_groups.values():
             for item in flatten_tree(group):
-                items[item.value()] = item
+                value = item.opts.get('value', None)
+                if value:
+                    items[value] = item
         return items.get(widget)
 
     def _show_sidebar(self, widget, dock):

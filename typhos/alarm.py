@@ -103,8 +103,8 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
     We will consider a subset of the signals that is of KindLevel and above and
     summarize state based on the "worst" alarm we see as defined by AlarmLevel.
     """
-    QtCore.Q_ENUMS(_KindLevel)
-    QtCore.Q_ENUMS(_AlarmLevel)
+    QtCore.Q_ENUMS(KindLevel)
+    QtCore.Q_ENUMS(AlarmLevel)
 
     KindLevel = KindLevel
     AlarmLevel = AlarmLevel
@@ -119,11 +119,14 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
     def __init__(self, *args, **kwargs):
         self._kind_level = KindLevel.HINTED
         super().__init__(*args, **kwargs)
+        QtCore.QTimer.singleShot(0, self._finish_init)
+        self.reset_alarm_state()
+
+    def _finish_init(self):
         # Default drawing properties, can override if needed
         self.penWidth = 2
         self.penColor = QtGui.QColor('black')
         self.penStyle = Qt.SolidLine
-        self.reset_alarm_state()
         self.alarm_changed.connect(self.set_alarm_color)
 
     @QtCore.Property(_KindLevel)
@@ -210,13 +213,13 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         self.signal_info = {}
         self.device_info = defaultdict(list)
         self.alarm_summary = AlarmLevel.DISCONNECTED
-        self.set_alarm_color(AlarmLevel.DISCONNECTED)
+        QtCore.QTimer.singleShot(0, partial(self.set_alarm_color, AlarmLevel.DISCONNECTED))
 
     def channels(self):
         """
         Let pydm know about our pydm channels.
         """
-        ch = list(self._channels)
+        ch = list(getattr(self, '_channels', []))
         for info in self.signal_info.values():
             ch.append(info.channel)
         return ch
@@ -395,27 +398,27 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
 # Each of these must be included for these to work in designer
 
 class TyphosAlarmCircle(TyphosAlarm, PyDMDrawingCircle):
-    QtCore.Q_ENUMS(_KindLevel)
+    QtCore.Q_ENUMS(KindLevel)
     kindLevel = TyphosAlarm.kindLevel
 
 
 class TyphosAlarmRectangle(TyphosAlarm, PyDMDrawingRectangle):
-    QtCore.Q_ENUMS(_KindLevel)
+    QtCore.Q_ENUMS(KindLevel)
     kindLevel = TyphosAlarm.kindLevel
 
 
 class TyphosAlarmTriangle(TyphosAlarm, PyDMDrawingTriangle):
-    QtCore.Q_ENUMS(_KindLevel)
+    QtCore.Q_ENUMS(KindLevel)
     kindLevel = TyphosAlarm.kindLevel
 
 
 class TyphosAlarmEllipse(TyphosAlarm, PyDMDrawingEllipse):
-    QtCore.Q_ENUMS(_KindLevel)
+    QtCore.Q_ENUMS(KindLevel)
     kindLevel = TyphosAlarm.kindLevel
 
 
 class TyphosAlarmPolygon(TyphosAlarm, PyDMDrawingPolygon):
-    QtCore.Q_ENUMS(_KindLevel)
+    QtCore.Q_ENUMS(KindLevel)
     kindLevel = TyphosAlarm.kindLevel
     numberOfPoints = PyDMDrawingPolygon.numberOfPoints
 

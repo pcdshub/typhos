@@ -499,8 +499,8 @@ class HappiChannel(pydm.widgets.channel.PyDMChannel, QObject):
     """
 
     def __init__(self, *, tx_slot, **kwargs):
-        super().__init__(**kwargs)
         QObject.__init__(self)
+        super().__init__(**kwargs)
         self._tx_slot = tx_slot
         self._last_md = None
 

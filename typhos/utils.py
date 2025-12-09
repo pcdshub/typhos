@@ -464,10 +464,24 @@ class TyphosLoading(QtWidgets.QLabel):
         self._animation.setScaledSize(self._icon_size)
 
 
-class TyphosObject:
+class TyphosObject():
     def __init__(self, *args, **kwargs):
         self.devices = list()
-        super().__init__(*args, **kwargs)
+        self._weak_partials_ = []
+
+        # Check if a QWidget is already initialized (multiple inheritance case)
+        mro = type(self).__mro__
+        typhos_object_index = mro.index(TyphosObject)
+        has_other_qwidget = any(
+            'QtWidgets' in cls.__module__ or cls is TyphosBase
+            for cls in mro[:typhos_object_index]
+        )
+
+        if not has_other_qwidget:
+            # Normal case: initialize the full chain
+            super().__init__(*args, **kwargs)
+        else:
+            pass
 
     def add_device(self, device):
         """
@@ -606,7 +620,24 @@ class TyphosBase(TyphosObject, QWidget):
 
     def __init__(self, *args, **kwargs):
         self._weak_partials_ = []
-        super().__init__(*args, **kwargs)
+        # Check if a QWidget is already initialized (multiple inheritance case)
+        mro = type(self).__mro__
+        typhos_base_index = mro.index(TyphosBase)
+        has_other_qwidget = any(
+            'QtWidgets' in cls.__module__
+            for cls in mro[:typhos_base_index]
+        )
+
+        if not has_other_qwidget:
+            # Normal case: initialize the full chain
+            try:
+                QWidget.__init__(self, kwargs.get('parent', None))
+            except TypeError:
+                print('blah')
+            super().__init__(*args, **kwargs)
+        else:
+            # Multiple inheritance case: just initialize TyphosObject
+            TyphosObject.__init__(self)
 
     def _connect_partial_weakly(
         self,
@@ -679,7 +710,7 @@ def reload_widget_stylesheet(widget, cascade=False):
     """Reload the stylesheet of the provided widget"""
     widget.style().unpolish(widget)
     widget.style().polish(widget)
-    widget.update()
+    QWidget.update(widget)
     if cascade:
         for child in widget.children():
             if isinstance(child, QWidget):

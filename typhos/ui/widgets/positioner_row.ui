@@ -932,7 +932,7 @@
                </color>
               </property>
               <property name="orientation" stdset="0">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Orientation::Vertical</enum>
               </property>
               <property name="showLabels" stdset="0">
                <bool>false</bool>

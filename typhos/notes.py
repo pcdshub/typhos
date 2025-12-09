@@ -178,14 +178,10 @@ class TyphosNotesEdit(
     }
 
     def __init__(self, *args, refresh_time: float = 5.0, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.editingFinished.connect(self.save_note)
-        self.setPlaceholderText('no notes...')
-        self.edit_filter = utils.FrameOnEditFilter(parent=self)
-        self.setFrame(False)
-        self.installEventFilter(self.edit_filter)
-        self._last_updated: Optional[float] = None
+        QtWidgets.QLineEdit.__init__(self, *args, **kwargs)  # This will call both parent __init__ methods
+        utils.TyphosBase.__init__(self)
         self._refresh_time: float = refresh_time
+
         # to be initialized later
         self.device_name: Optional[str] = None
         self.notes_source: Optional[NotesSource] = None
@@ -195,6 +191,17 @@ class TyphosNotesEdit(
             QtWidgets.QSizePolicy.MinimumExpanding,
             QtWidgets.QSizePolicy.Preferred
         )
+        self._last_updated: Optional[float] = None
+
+        QtCore.QTimer.singleShot(0, self._finish_init)
+
+    def _finish_init(self):
+        self.editingFinished.connect(self.save_note)
+        self.setPlaceholderText('no notes...')
+        self.edit_filter = utils.FrameOnEditFilter(parent=self)
+        self.setFrame(False)
+        self.installEventFilter(self.edit_filter)
+
 
     def update_tooltip(self) -> None:
         if self.data['note'] and self.notes_source is not None:

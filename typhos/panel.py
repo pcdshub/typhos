@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import functools
 import logging
+from enum import Enum
 from functools import partial
 from typing import Dict, List, Optional
 
@@ -31,7 +32,7 @@ from .widgets import SignalWidgetInfo, TyphosDesignerMixin
 logger = logging.getLogger(__name__)
 
 
-class SignalOrder:
+class SignalOrder(Enum):
     """
     Options for sorting signals.
 
@@ -667,7 +668,7 @@ class SignalPanel(QtWidgets.QGridLayout):
             self._maybe_add_signal(device, walk.item.attr, walk.dotted_name,
                                    walk.item)
 
-        self.setSizeConstraint(self.SetMinimumSize)
+        self.setSizeConstraint(self.SizeConstraint.SetMinimumSize)
 
     def _maybe_add_signal(self, device, attr, dotted_name, component):
         """
@@ -714,10 +715,8 @@ class SignalPanel(QtWidgets.QGridLayout):
                 logger.warning('Failed to get signal %r from device %s: %s',
                                dotted_name, device.name, ex, exc_info=True)
                 return
-            # Workaround until Ophyd.Component.long_name PR comes through
-            long_name = self._get_long_name(device, attr, dotted_name)
-            return self.add_signal(signal=signal, name=attr, long_name=long_name,
-                                   tooltip=component.doc)
+
+            return self.add_signal(signal, name=component.kwargs.get('name', attr), tooltip=component.doc)
 
         return self._add_component(device, attr, dotted_name, component)
 
@@ -729,7 +728,7 @@ class SignalPanel(QtWidgets.QGridLayout):
         self.signal_name_to_info.clear()
 
 
-class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin, SignalOrder):
+class TyphosSignalPanel(TyphosBase, TyphosDesignerMixin):
     """
     Panel of Signals for a given device, using :class:`SignalPanel`.
 

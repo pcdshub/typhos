@@ -221,7 +221,7 @@ class TyphosDisplayConfigButton(TyphosToolButton):
 
     def __init__(self, icon=None, *, parent=None):
         super().__init__(icon=icon, parent=parent)
-        self.setPopupMode(self.InstantPopup)
+        self.setPopupMode(self.ToolButtonPopupMode.InstantPopup)
         self.setArrowType(Qt.NoArrow)
         self.templates = None
         self.device_display = None
@@ -838,8 +838,8 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.switcher = TyphosDisplaySwitcher()
 
         self.underline = QtWidgets.QFrame()
-        self.underline.setFrameShape(self.underline.HLine)
-        self.underline.setFrameShadow(self.underline.Plain)
+        self.underline.setFrameShape(self.underline.Shape.HLine)
+        self.underline.setFrameShadow(self.underline.Shadow.Plain)
         self.underline.setLineWidth(10)
 
         self.notes_edit = TyphosNotesEdit()
@@ -877,7 +877,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
 
         self.grid_layout.addWidget(self.help, 2, 0, 1, 2)
 
-        self.grid_layout.setSizeConstraint(self.grid_layout.SetMinimumSize)
+        self.grid_layout.setSizeConstraint(self.grid_layout.SizeConstraint.SetMinimumSize)
         self.setLayout(self.grid_layout)
 
         # Set the property:
@@ -945,7 +945,7 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
         self.label.toggle_requested.connect(toggle)
 
     # Make designable properties from the title label available here as well
-    label_alignment = forward_property('label', QtWidgets.QLabel, 'alignment')
+    # label_alignment = forward_property('label', QtWidgets.QLabel, 'alignment')
     label_font = forward_property('label', QtWidgets.QLabel, 'font')
     label_indent = forward_property('label', QtWidgets.QLabel, 'indent')
     label_margin = forward_property('label', QtWidgets.QLabel, 'margin')
@@ -955,13 +955,13 @@ class TyphosDisplayTitle(QtWidgets.QFrame, widgets.TyphosDesignerMixin):
     label_text = forward_property('label', QtWidgets.QLabel, 'text')
     label_textFormat = forward_property('label', QtWidgets.QLabel,
                                         'textFormat')
-    label_textInteractionFlags = forward_property('label', QtWidgets.QLabel,
-                                                  'textInteractionFlags')
+    # label_textInteractionFlags = forward_property('label', QtWidgets.QLabel,
+    #                                               'textInteractionFlags')
     label_wordWrap = forward_property('label', QtWidgets.QLabel, 'wordWrap')
 
     # Make designable properties from the grid_layout
-    layout_margin = forward_property('grid_layout', QtWidgets.QHBoxLayout,
-                                     'margin')
+    # layout_margin = forward_property('grid_layout', QtWidgets.QHBoxLayout,
+    #                                  'margin')
     layout_spacing = forward_property('grid_layout', QtWidgets.QHBoxLayout,
                                       'spacing')
 
@@ -1019,7 +1019,7 @@ class TyphosDeviceDisplay(utils.TyphosBase, widgets.TyphosDesignerMixin,
     """
 
     # Template types and defaults
-    Q_ENUMS(_DisplayTypes)
+    Q_ENUMS(DisplayTypes)
     TemplateEnum = DisplayTypes  # For convenience
     template_changed = QtCore.Signal(object)
     templates_loaded = QtCore.Signal(object)
