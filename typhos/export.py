@@ -7,8 +7,20 @@ from ophyd.device import Device
 from ophyd.signal import EpicsSignalBase
 from qtpy.QtWidgets import QWidget
 
-from .display import TyphosDeviceDisplay, TyphosDisplayTitle
-from .panel import TyphosSignalPanel
+from typhos.alarm import (
+    TyphosAlarmCircle,
+    TyphosAlarmEllipse,
+    TyphosAlarmPolygon,
+    TyphosAlarmRectangle,
+    TyphosAlarmTriangle,
+)
+from typhos.func import TyphosMethodButton
+from typhos.notes import TyphosNotesEdit
+from typhos.positioner import TyphosPositionerRowWidget, TyphosPositionerWidget
+from typhos.related_display import TyphosRelatedSuiteButton
+
+from .display import TyphosDeviceDisplay, TyphosDisplaySwitcher, TyphosDisplayTitle, TyphosHelpFrame
+from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
 from .utils import is_signal_ro
 from .widgets import determine_widget_type
 
@@ -59,14 +71,12 @@ def from_display(display: TyphosDeviceDisplay) -> etree._ElementTree:
 
     # Replace each typhos designer widget as appropriate
     for elem in root.findall(".//widget"):
-        cls = str(elem.get("class"))
-        try:
-            converter = DESIGNER_WIDGET_TO_XML[cls]
-        except KeyError:
-            continue
         name = str(elem.get("name"))
         widget_obj = display.findChild(QWidget, name)
-        new_elem = converter(widget_obj, name)
+        try:
+            new_elem = convert_widget_to_element(widget_obj, name)
+        except TypeError:
+            continue
         parent_elem = elem.getparent()
         if parent_elem is None:
             continue
@@ -75,6 +85,36 @@ def from_display(display: TyphosDeviceDisplay) -> etree._ElementTree:
     # Finalize the customwidgets section
     # TODO
     return tree
+
+
+def convert_widget_to_element(source_widget: QWidget, name: str) -> etree._Element:
+    """
+    Choose which function to use to replace a typhos widget with an xml description of a standard widget.
+    """
+    match source_widget:
+        case TyphosSignalPanel():
+            return from_typhos_signal_panel(source_widget=source_widget, name=name)
+        case TyphosCompositeSignalPanel():
+            return from_generic_widget(source_widget=source_widget, name=name)
+        case TyphosDisplayTitle():
+            return from_typhos_display_title(source_widget=source_widget, name=name)
+        case (
+            TyphosAlarmCircle()
+            | TyphosAlarmEllipse()
+            | TyphosAlarmPolygon()
+            | TyphosAlarmRectangle()
+            | TyphosAlarmTriangle()
+            | TyphosDisplaySwitcher()
+            | TyphosHelpFrame()
+            | TyphosMethodButton()
+            | TyphosNotesEdit()
+            | TyphosPositionerWidget()
+            | TyphosPositionerRowWidget()
+            | TyphosRelatedSuiteButton()
+        ):
+            return from_generic_widget(source_widget=source_widget, name=name)
+        case _:
+            raise TypeError(f"Unhandled type for {source_widget}")
 
 
 def from_generic_widget(source_widget: QWidget, name: str) -> etree._Element:
@@ -195,23 +235,3 @@ def typhos_type_to_pydm_type(typhos_widget: QWidget) -> str:
             return "PyDMWaveformTable"
         case _:
             return "PyDMLineEdit"
-
-
-DESIGNER_WIDGET_TO_XML = {
-    "TyphosAlarmCircle": from_generic_widget,
-    "TyphosAlarmEllipse": from_generic_widget,
-    "TyphosAlarmPolygon": from_generic_widget,
-    "TyphosAlarmRectangle": from_generic_widget,
-    "TyphosAlarmTriangle": from_generic_widget,
-    "TyphosCompositeSignalPanel": from_generic_widget,
-    "TyphosDeviceDisplay": from_generic_widget,
-    "TyphosDisplaySwitcher": from_generic_widget,
-    "TyphosDisplayTitle": from_typhos_display_title,
-    "TyphosHelpFrame": from_generic_widget,
-    "TyphosMethodButton": from_generic_widget,
-    "TyphosNotesEdit": from_generic_widget,
-    "TyphosPositionerWidget": from_generic_widget,
-    "TyphosPositionerRowWidget": from_generic_widget,
-    "TyphosRelatedSuiteButton": from_generic_widget,
-    "TyphosSignalPanel": from_typhos_signal_panel,
-}
