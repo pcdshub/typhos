@@ -1,6 +1,7 @@
 """
 Export a typhos screen as a PyDM Screen
 """
+
 from lxml import etree
 from ophyd.device import Device
 from ophyd.signal import EpicsSignalBase
@@ -33,6 +34,9 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
     grid.set("class", "QGridLayout")
     grid.set("name", f"{name}_grid_layout")
 
+    device_name = source_widget.devices[0].name
+    device_name_prefix = device_name + "_"
+
     for signal_name, signal_info in source_widget._panel_layout.signal_name_to_info.items():
         signal = signal_info["signal"]
         if not isinstance(signal, EpicsSignalBase):
@@ -44,24 +48,31 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
             read_cls, _ = determine_widget_type(signal=signal, read_only=True)
             write_cls, _ = determine_widget_type(signal=signal, read_only=False)
 
+        short_signal_name = signal_name.removeprefix(device_name_prefix)
+        if short_signal_name == device_name:
+            short_signal_name = "device"
+            short_signal_text = device_name
+        else:
+            short_signal_text = short_signal_name
+
         # First item in row: signal name
         label_item = etree.SubElement(grid, "item")
         label_item.set("row", str(signal_info["row"]))
         label_item.set("column", "0")
         label_widget = etree.SubElement(label_item, "widget")
         label_widget.set("class", "QLabel")
-        label_widget.set("name", f"{signal_name}_label")
+        label_widget.set("name", f"{short_signal_name}_label")
         label_property = etree.SubElement(label_widget, "property")
         label_property.set("name", "text")
         label_string = etree.SubElement(label_property, "string")
-        label_string.text = signal_name
+        label_string.text = short_signal_text
         # Second item in row: readback widget
         readback_item = etree.SubElement(grid, "item")
         readback_item.set("row", str(signal_info["row"]))
         readback_item.set("column", "1")
         readback_widget = etree.SubElement(readback_item, "widget")
         readback_widget.set("class", get_widget(read_cls))
-        readback_widget.set("name", f"{signal_name}_readback")
+        readback_widget.set("name", f"{short_signal_name}_readback")
         readback_property = etree.SubElement(readback_widget, "property")
         readback_property.set("name", "channel")
         readback_string = etree.SubElement(readback_property, "string")
@@ -76,11 +87,11 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
         setpoint_item.set("column", "2")
         setpoint_widget = etree.SubElement(setpoint_item, "widget")
         setpoint_widget.set("class", get_widget(write_cls))
-        setpoint_widget.set("name", f"{signal_name}_setpoint")
+        setpoint_widget.set("name", f"{short_signal_name}_setpoint")
         setpoint_property = etree.SubElement(setpoint_widget, "property")
         setpoint_property.set("name", "channel")
         setpoint_string = etree.SubElement(setpoint_property, "string")
-        setpoint_string.text = f"ca://{signal._write_pv.pvname}"
+        setpoint_string.text = f"ca://{signal._write_pv.pvname}"  # type: ignore
 
     return widget
 
@@ -158,11 +169,20 @@ def from_template_and_device(template: str, device: Device) -> etree._ElementTre
 
 def test():
     from qtpy.QtWidgets import QApplication
-    app = QApplication([])
+
+    app = QApplication([])  # noqa: F841
 
     from pcdsdevices.epics_motor import BeckhoffAxis
+
     device = BeckhoffAxis("IM3L0:PPM:MMS", name="im3l0")
     template = "/cds/home/z/zlentz/github/typhos/typhos/ui/core/detailed_screen.ui"
     tree = from_template_and_device(template, device)
     etree.indent(tree, space=" ", level=0)
-    print(etree.tostring(tree, pretty_print=True, encoding="unicode"))
+    text = etree.tostring(tree, pretty_print=True, encoding="unicode")
+
+    un_macros = {device.prefix: "${prefix}", device.name: "${name}"}
+
+    for unm, macro in un_macros.items():
+        text = text.replace(unm, macro)
+
+    print(text)
