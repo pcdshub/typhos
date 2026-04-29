@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.12"
 
 [options]
-exclude-newer = "2026-04-22T00:30:57.323470441Z"
+exclude-newer = "2026-04-22T17:16:05.905390161Z"
 exclude-newer-span = "P7D"
 
 [[package]]
@@ -2049,6 +2049,7 @@ doc = [
 test = [
     { name = "caproto" },
     { name = "happi" },
+    { name = "line-profiler" },
     { name = "pcdsdevices" },
     { name = "pytest" },
     { name = "pytest-benchmark" },
@@ -2069,6 +2070,7 @@ requires-dist = [
     { name = "happi", marker = "extra == 'test'" },
     { name = "ipython", marker = "extra == 'doc'", specifier = ">=7.16" },
     { name = "line-profiler", marker = "extra == 'dev'" },
+    { name = "line-profiler", marker = "extra == 'test'" },
     { name = "lxml" },
     { name = "lxml-stubs", marker = "extra == 'dev'" },
     { name = "numpy" },
