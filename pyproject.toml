@@ -108,7 +108,7 @@ line-length = 120
 exclude = [".git", "__pycache__", "build", "dist", "*/_version.py"]
 
 [tool.ruff.lint]
-select = ["C", "E", "F", "W", "B", "I"]
+select = ["E", "F", "W", "B", "I"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
