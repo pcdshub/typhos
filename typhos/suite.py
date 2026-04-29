@@ -1,6 +1,7 @@
 """
 The high-level Typhos Suite, which bundles tools and panels.
 """
+
 from __future__ import annotations
 
 import logging
@@ -20,8 +21,7 @@ from qtpy import QtCore, QtGui, QtWidgets
 from . import utils, widgets
 from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
 from .tools import TyphosLogDisplay, TyphosTimePlot
-from .utils import (TyphosBase, TyphosException, clean_attr, clean_name,
-                    flatten_tree, save_suite)
+from .utils import TyphosBase, TyphosException, clean_attr, clean_name, flatten_tree, save_suite
 
 logger = logging.getLogger(__name__)
 # Use non-None sentinel value since None means no tools
@@ -71,16 +71,18 @@ class SidebarParameter(parametertree.Parameter):
         has_device : bool
         """
         return any(
-            (device in self.devices,
-             device in getattr(self.value(), 'devices', []),
-             self.name() == device,
-             isinstance(device, str) and self.name() == clean_attr(device),
-             )
+            (
+                device in self.devices,
+                device in getattr(self.value(), "devices", []),
+                self.name() == device,
+                isinstance(device, str) and self.name() == clean_attr(device),
+            )
         )
 
 
 class TyphosDisplayNotCreatedError(TyphosException):
     """The given subdisplay has not yet been shown."""
+
     ...
 
 
@@ -170,9 +172,9 @@ class DeviceParameter(SidebarParameter):
 
     def __init__(self, device, subdevices=True, **opts):
         # Set options for parameter
-        opts['name'] = clean_name(device, strip_parent=device.root)
+        opts["name"] = clean_name(device, strip_parent=device.root)
         self.device = device
-        opts['expanded'] = False
+        opts["expanded"] = False
         # Grab children from the given device
         children = list()
         if subdevices:
@@ -181,28 +183,24 @@ class DeviceParameter(SidebarParameter):
                 if subdevice._sub_devices:
                     # If that device has children, make sure they are also
                     # displayed further in the tree
-                    children.append(
-                        DeviceParameter(subdevice, subdevices=False)
-                    )
+                    children.append(DeviceParameter(subdevice, subdevices=False))
                 else:
                     # Otherwise just make a regular parameter out of it
-                    child_name = clean_name(subdevice,
-                                            strip_parent=subdevice.root)
+                    child_name = clean_name(subdevice, strip_parent=subdevice.root)
                     param = SidebarParameter(
-                        value=partial(TyphosDeviceDisplay.from_device,
-                                      subdevice),
+                        value=partial(TyphosDeviceDisplay.from_device, subdevice),
                         name=child_name,
                         embeddable=True,
                         devices=[subdevice],
                     )
                     children.append(param)
 
-        opts['children'] = children
+        opts["children"] = children
         super().__init__(
             value=partial(TyphosDeviceDisplay.from_device, device),
-            embeddable=opts.pop('embeddable', True),
+            embeddable=opts.pop("embeddable", True),
             devices=[device],
-            **opts
+            **opts,
         )
 
 
@@ -243,8 +241,8 @@ class TyphosSuite(TyphosBase):
         ``{'tool_name': ToolClass}``.
     """
 
-    DEFAULT_TITLE = 'Typhos Suite'
-    DEFAULT_TITLE_DEVICE = 'Typhos Suite - {device.name}'
+    DEFAULT_TITLE = "Typhos Suite"
+    DEFAULT_TITLE_DEVICE = "Typhos Suite - {device.name}"
 
     default_tools = {
         "Log": TyphosLogDisplay,
@@ -266,17 +264,13 @@ class TyphosSuite(TyphosBase):
 
         self._tree = parametertree.ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
-        self._save_action = ptypes.ActionParameter(name='Save Suite')
+        self._save_action = ptypes.ActionParameter(name="Save Suite")
         self._tree.addParameters(self._save_action)
         self._save_action.sigActivated.connect(self.save)
 
-        self._bar = pcdsutils.qt.QPopBar(title='Suite', parent=self,
-                                         widget=self._tree, pin=pin)
+        self._bar = pcdsutils.qt.QPopBar(title="Suite", parent=self, widget=self._tree, pin=pin)
 
-        self._tree.setSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding,
-            QtWidgets.QSizePolicy.MinimumExpanding
-        )
+        self._tree.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         self._tree.setMinimumSize(250, 150)
 
         self._content_frame = QtWidgets.QFrame(self)
@@ -317,15 +311,12 @@ class TyphosSuite(TyphosBase):
             The top level group to place the controls under in the tree. If the
             category does not exist, a new one will be made
         """
-        logger.debug("Adding widget %r with %r to %r ...",
-                     name, display, category)
+        logger.debug("Adding widget %r with %r to %r ...", name, display, category)
         # Create our parameter
         parameter = SidebarParameter(value=display, name=name)
         self._add_to_sidebar(parameter, category)
 
-    def add_lazy_subdisplay(
-        self, name: str, display_class: type[QtWidgets.QWidget], category: str
-    ):
+    def add_lazy_subdisplay(self, name: str, display_class: type[QtWidgets.QWidget], category: str):
         """
         Add an arbitrary widget to the tree of available widgets and tools.
 
@@ -341,13 +332,9 @@ class TyphosSuite(TyphosBase):
             The top level group to place the controls under in the tree. If the
             category does not exist, a new one will be made
         """
-        logger.debug("Adding lazy subdisplay %r with %r to %r ...",
-                     name, display_class, category)
+        logger.debug("Adding lazy subdisplay %r with %r to %r ...", name, display_class, category)
         # Create our parameter
-        parameter = SidebarParameter(
-            value=LazySubdisplay(display_class),
-            name=name
-        )
+        parameter = SidebarParameter(value=LazySubdisplay(display_class), name=name)
         self._add_to_sidebar(parameter, category)
 
     @property
@@ -362,9 +349,7 @@ class TyphosSuite(TyphosBase):
             {'name': QGroupParameterItem}
         """
         root = self._tree.invisibleRootItem()
-        return {root.child(idx).param.name():
-                root.child(idx).param
-                for idx in range(root.childCount())}
+        return {root.child(idx).param.name(): root.child(idx).param for idx in range(root.childCount())}
 
     def add_tool(self, name: str, tool: type[QtWidgets.QWidget]):
         """
@@ -413,11 +398,7 @@ class TyphosSuite(TyphosBase):
         if not isinstance(display, SidebarParameter):
             for group in self.top_level_groups.values():
                 tree = flatten_tree(group)
-                matches = [
-                    param for param in tree
-                    if hasattr(param, 'has_device') and
-                    param.has_device(display)
-                ]
+                matches = [param for param in tree if hasattr(param, "has_device") and param.has_device(display)]
 
                 if matches:
                     display = matches[0]
@@ -430,9 +411,7 @@ class TyphosSuite(TyphosBase):
         subdisplay = display.value()
         if isinstance(subdisplay, partial):
             if not instantiate:
-                raise TyphosDisplayNotCreatedError(
-                    f"Subdisplay {display} has not been created yet"
-                )
+                raise TyphosDisplayNotCreatedError(f"Subdisplay {display} has not been created yet")
 
             subdisplay = subdisplay()
             display.setValue(subdisplay)
@@ -469,7 +448,7 @@ class TyphosSuite(TyphosBase):
         self._show_sidebar(widget, dock)
         # Add the widget to the dock
         logger.debug("Showing widget %r ...", widget)
-        if hasattr(widget, 'scroll_option'):
+        if hasattr(widget, "scroll_option"):
             widget.scroll_option = self.scroll_option
         if hasattr(widget, "display_type"):
             # Setting a display_type implicitly loads the best template.
@@ -480,12 +459,8 @@ class TyphosSuite(TyphosBase):
         content_layout = self._content_frame.layout()
         content_layout.addWidget(dock)
         if isinstance(content_layout, QtWidgets.QGridLayout):
-            self._content_frame.layout().setAlignment(
-                dock, QtCore.Qt.AlignHCenter
-            )
-            self._content_frame.layout().setAlignment(
-                dock, QtCore.Qt.AlignTop
-            )
+            self._content_frame.layout().setAlignment(dock, QtCore.Qt.AlignHCenter)
+            self._content_frame.layout().setAlignment(dock, QtCore.Qt.AlignTop)
 
         self._new_template()
         if isinstance(widget, TyphosDeviceDisplay):
@@ -521,8 +496,7 @@ class TyphosSuite(TyphosBase):
         widget.setVisible(True)
         widget.display_type = widget.embedded_screen
         widget_count = self.embedded_dock.widget().layout().count()
-        self.embedded_dock.widget().layout().insertWidget(widget_count - 1,
-                                                          widget)
+        self.embedded_dock.widget().layout().insertWidget(widget_count - 1, widget)
 
     @QtCore.Slot()
     @QtCore.Slot(object)
@@ -556,10 +530,8 @@ class TyphosSuite(TyphosBase):
             logger.debug("Closing dock ...")
             widget.parent().close()
         # Hide the full dock if this is the last widget
-        elif (self.embedded_dock
-              and widget.parent() == self.embedded_dock.widget()):
-            logger.debug("Removing %r from embedded widget layout ...",
-                         widget)
+        elif self.embedded_dock and widget.parent() == self.embedded_dock.widget():
+            logger.debug("Removing %r from embedded widget layout ...", widget)
             self.embedded_dock.widget().layout().removeWidget(widget)
             widget.hide()
             if self.embedded_dock.widget().layout().count() == 1:
@@ -580,9 +552,8 @@ class TyphosSuite(TyphosBase):
     @property
     def tools(self):
         """Tools loaded into the suite."""
-        if 'Tools' in self.top_level_groups:
-            return [param.value()
-                    for param in self.top_level_groups['Tools'].childs]
+        if "Tools" in self.top_level_groups:
+            return [param.value() for param in self.top_level_groups["Tools"].childs]
         return []
 
     def _update_title(self, device=None):
@@ -594,12 +565,11 @@ class TyphosSuite(TyphosBase):
         device : ophyd.Device, optional
             Device to indicate in the title.
         """
-        title_fmt = (self.DEFAULT_TITLE if device is None
-                     else self.DEFAULT_TITLE_DEVICE)
+        title_fmt = self.DEFAULT_TITLE if device is None else self.DEFAULT_TITLE_DEVICE
 
         self.setWindowTitle(title_fmt.format(self=self, device=device))
 
-    def add_device(self, device, children=True, category='Devices'):
+    def add_device(self, device, children=True, category="Devices"):
         """
         Add a device to the suite.
 
@@ -629,8 +599,7 @@ class TyphosSuite(TyphosBase):
             try:
                 tool.add_device(device)
             except Exception:
-                logger.exception("Unable to add %s to tool %s",
-                                 device.name, type(tool))
+                logger.exception("Unable to add %s to tool %s", device.name, type(tool))
 
     @classmethod
     def from_device(
@@ -689,12 +658,17 @@ class TyphosSuite(TyphosBase):
         **kwargs :
             Passed to :meth:`TyphosSuite.add_device`
         """
-        return cls.from_devices([device], parent=parent, tools=tools, pin=pin,
-                                content_layout=content_layout,
-                                default_display_type=default_display_type,
-                                scroll_option=scroll_option,
-                                show_displays=show_displays,
-                                **kwargs)
+        return cls.from_devices(
+            [device],
+            parent=parent,
+            tools=tools,
+            pin=pin,
+            content_layout=content_layout,
+            default_display_type=default_display_type,
+            scroll_option=scroll_option,
+            show_displays=show_displays,
+            **kwargs,
+        )
 
     @classmethod
     def from_devices(
@@ -777,8 +751,7 @@ class TyphosSuite(TyphosBase):
                 if show_displays:
                     suite.show_subdisplay(device)
             except Exception:
-                logger.exception("Unable to add %r to TyphosSuite",
-                                 device.name)
+                logger.exception("Unable to add %r to TyphosSuite", device.name)
         return suite
 
     def save(self):
@@ -796,11 +769,10 @@ class TyphosSuite(TyphosBase):
 
         logger.debug("Requesting file location for saved TyphosSuite")
         root_dir = os.getcwd()
-        filename = QtWidgets.QFileDialog.getSaveFileName(
-            self, 'Save TyphosSuite', root_dir, "Python (*.py)")
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save TyphosSuite", root_dir, "Python (*.py)")
         if filename:
             try:
-                with open(filename[0], 'w+') as handle:
+                with open(filename[0], "w+") as handle:
                     save_suite(self, handle)
             except Exception as exc:
                 logger.exception("Failed to save TyphosSuite")
@@ -809,7 +781,7 @@ class TyphosSuite(TyphosBase):
             logger.debug("No filename chosen")
 
     # Add the template to the docstring
-    save.__doc__ += textwrap.indent('\n' + utils.saved_template, '\t\t')
+    save.__doc__ += textwrap.indent("\n" + utils.saved_template, "\t\t")
 
     def save_screenshot(
         self,
@@ -824,7 +796,8 @@ class TyphosSuite(TyphosBase):
 
         logger.info(
             "Saving screenshot of suite titled '%s' to '%s'",
-            self.windowTitle(), filename,
+            self.windowTitle(),
+            filename,
         )
         image.save(filename)
         return True
@@ -850,7 +823,8 @@ class TyphosSuite(TyphosBase):
             if image is None:
                 logger.warning(
                     "Failed to take screenshot of device: %s in %s",
-                    device.name, suite_title,
+                    device.name,
+                    suite_title,
                 )
                 continue
 
@@ -862,7 +836,9 @@ class TyphosSuite(TyphosBase):
             )
             logger.info(
                 "Saving screenshot of '%s': '%s' to '%s'",
-                suite_title, widget_title, filename,
+                suite_title,
+                widget_title,
+                filename,
             )
             image.save(filename)
             filenames[device.name] = filename
@@ -872,7 +848,10 @@ class TyphosSuite(TyphosBase):
         items = {}
         for group in self.top_level_groups.values():
             for item in flatten_tree(group):
-                items[item.value()] = item
+                try:
+                    items[item.value()] = item
+                except ValueError:
+                    ...
         return items.get(widget)
 
     def _show_sidebar(self, widget, dock):
@@ -881,9 +860,7 @@ class TyphosSuite(TyphosBase):
             for item in sidebar.items:
                 item._mark_shown()
             # Make sure we react if the dock is closed outside of our menu
-            self._connect_partial_weakly(
-                dock, dock.closing, self.hide_subdisplay, sidebar
-            )
+            self._connect_partial_weakly(dock, dock.closing, self.hide_subdisplay, sidebar)
         else:
             logger.warning("Unable to find sidebar item for %r", widget)
 
@@ -898,8 +875,7 @@ class TyphosSuite(TyphosBase):
                 group = ptypes.GroupParameter(name=category)
                 self._tree.addParameters(group)
                 self._tree.sortItems(0, QtCore.Qt.AscendingOrder)
-            logger.debug("Adding %r to category %r ...",
-                         parameter.name(), group.name())
+            logger.debug("Adding %r to category %r ...", parameter.name(), group.name())
             group.addChild(parameter)
 
         widget = parameter.value()
@@ -909,14 +885,8 @@ class TyphosSuite(TyphosBase):
             widget.setHidden(True)
 
         logger.debug("Connecting parameter signals ...")
-        self._connect_partial_weakly(
-            parameter, parameter.sigOpen, self.show_subdisplay, parameter
-        )
-        self._connect_partial_weakly(
-            parameter, parameter.sigHide, self.hide_subdisplay, parameter
-        )
+        self._connect_partial_weakly(parameter, parameter.sigOpen, self.show_subdisplay, parameter)
+        self._connect_partial_weakly(parameter, parameter.sigHide, self.hide_subdisplay, parameter)
         if parameter.embeddable:
-            self._connect_partial_weakly(
-                parameter, parameter.sigEmbed, self.embed_subdisplay, parameter
-            )
+            self._connect_partial_weakly(parameter, parameter.sigEmbed, self.embed_subdisplay, parameter)
         return parameter
