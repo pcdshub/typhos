@@ -6,28 +6,25 @@ exclude: |
   )$
 
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-    -   id: no-commit-to-branch
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-ast
-    -   id: check-case-conflict
-    -   id: check-json
-    -   id: check-merge-conflict
-    -   id: check-symlinks
-    -   id: check-xml
-    -   id: check-yaml
-        exclude: '^(conda-recipe/meta.yaml)$'
-    -   id: debug-statements
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  -   id: no-commit-to-branch
+  -   id: trailing-whitespace
+  -   id: end-of-file-fixer
+  -   id: check-ast
+  -   id: check-case-conflict
+  -   id: check-json
+  -   id: check-merge-conflict
+  -   id: check-symlinks
+  -   id: check-xml
+  -   id: check-yaml
+      exclude: '^(conda-recipe/meta.yaml)$'
+  -   id: debug-statements
 
--   repo: https://github.com/pycqa/flake8.git
-    rev: 7.2.0
-    hooks:
-    -   id: flake8
-
--   repo: https://github.com/timothycrosley/isort
-    rev: 6.0.1
-    hooks:
-    -   id: isort
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.15.6
+  hooks:
+  - id: ruff-check  # run the linter
+    args: [ --fix ]  # and the safe fixes
+  - id: ruff-format  # run the formatter

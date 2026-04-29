@@ -5,10 +5,28 @@ requires = [ "setuptools>=45", "setuptools_scm[toml]>=6.2",]
 [project]
 classifiers = [ "Development Status :: 5 - Production/Stable", "Natural Language :: English", "Programming Language :: Python :: 3",]
 description = "Interface generation for ophyd devices"
-dynamic = [ "version", "readme", "dependencies", "optional-dependencies", "optional-dependencies",]
+dynamic = [ "version", "readme" ]
 keywords = []
 name = "typhos"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
+dependencies = [
+    "coloredlogs",
+    "entrypoints",
+    "lxml",
+    "numpy",
+    "numpydoc",
+    "ophyd",
+    "pcdsutils",
+    "platformdirs",
+    "PyQt5",
+    "pydm>=1.19.1",
+    "pyqtgraph",
+    "qdarkstyle",
+    "qtawesome",
+    "qtpy",
+    "timechart",
+]
+
 [[project.authors]]
 name = "SLAC National Accelerator Laboratory"
 
@@ -47,8 +65,33 @@ TyphosSignalPanelPlugin = "typhos.panel:TyphosSignalPanel"
 HappiPlugin = "typhos.plugins:HappiPlugin"
 SignalPlugin = "typhos.plugins:SignalPlugin"
 
-[tool.pytest.ini_options]
-addopts = "--cov=."
+[project.optional-dependencies]
+dev = [
+    "caproto",
+    "happi",
+    "line_profiler",
+    "lxml-stubs",
+    "pcdsdevices>=8.4.0",
+    "ruff>=0.15.11",
+]
+doc = [
+    "docs-versions-menu",
+    "happi",
+    "ipython>=7.16",
+    "sphinx",
+    "sphinx_rtd_theme",
+    "sphinxcontrib-jquery",
+]
+test = [
+    "caproto",
+    "happi",
+    "pcdsdevices>=8.4.0",
+    "pytest",
+    "pytest-benchmark",
+    "pytest-cov",
+    "pytest-qt",
+    "pytest-timeout",
+]
 
 [tool.setuptools.packages.find]
 where = [ ".",]
@@ -59,11 +102,21 @@ namespaces = false
 file = "README.md"
 content-type = "text/markdown"
 
-[tool.setuptools.dynamic.dependencies]
-file = [ "requirements.txt",]
+[tool.ruff]
+line-length = 120
+exclude = [".git", "__pycache__", "build", "dist", "*/_version.py"]
 
-[tool.setuptools.dynamic.optional-dependencies.test]
-file = "dev-requirements.txt"
+[tool.ruff.lint]
+select = ["C", "E", "F", "W", "B", "I"]
 
-[tool.setuptools.dynamic.optional-dependencies.doc]
-file = "docs-requirements.txt"
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.pyright.defineConstant]
+PYQT5 = true
+PYSIDE2 = false
+PYQT6 = false
+PYSIDE6 = false
+
+[tool.uv]
+exclude-newer = "7 days"
