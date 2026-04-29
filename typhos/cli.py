@@ -1,4 +1,5 @@
 """This module defines the ``typhos`` command line utility"""
+
 from __future__ import annotations
 
 import argparse
@@ -22,7 +23,8 @@ from . import utils
 from .app import get_qapp, launch_suite
 from .benchmark.cases import run_benchmarks
 from .benchmark.profile import profiler_context
-from .display import DisplayTypes, ScrollOptions
+from .display import DisplayTypes, ScrollOptions, TyphosDeviceDisplay
+from .export import export_as_ui
 from .suite import TyphosSuite
 from .utils import apply_standard_stylesheets, compose_stylesheets, nullcontext
 
@@ -55,111 +57,102 @@ class TyphosArguments(types.SimpleNamespace):
 
 # Argument Parser Setup
 parser = argparse.ArgumentParser(
-    description=(
-        'Create a TyphosSuite for device/s stored in a Happi Database'
-    ),
+    description=("Create a TyphosSuite for device/s stored in a Happi Database"),
 )
 
 parser.add_argument(
-    'devices',
-    nargs='*',
+    "devices",
+    nargs="*",
     help=(
-        'Device names to load in the TyphosSuite or class name with '
+        "Device names to load in the TyphosSuite or class name with "
         'parameters on the format: package.ClassName[{"param1":"val1",...}]'
     ),
 )
 parser.add_argument(
-    '--layout',
-    default='vertical',
+    "--layout",
+    default="vertical",
     help=(
-        'Select a alternate layout for suites of many '
+        "Select a alternate layout for suites of many "
         'devices. Valid options are "horizontal", '
         '"vertical" (default), "grid", "flow", and any unique '
-        'shortenings of those options.'
+        "shortenings of those options."
     ),
 )
 parser.add_argument(
-    '--cols',
+    "--cols",
     default=3,
     help=(
-        'The number of columns to use for the grid layout '
-        'if selected in the layout argument. This will have '
-        'no effect for other layouts.'
+        "The number of columns to use for the grid layout "
+        "if selected in the layout argument. This will have "
+        "no effect for other layouts."
     ),
 )
 parser.add_argument(
-    '--display-type',
-    default='embedded',
+    "--display-type",
+    default="embedded",
     help=(
-        'The kind of display to open for each device at '
+        "The kind of display to open for each device at "
         'initial load. Valid options are "embedded" (default), '
         '"detailed", "engineering", and any '
-        'unique shortenings of those options.'
+        "unique shortenings of those options."
     ),
 )
 parser.add_argument(
-    '--scrollable',
-    default='auto',
+    "--scrollable",
+    default="auto",
     help=(
-        'Whether or not to include the scrollbar. '
+        "Whether or not to include the scrollbar. "
         'Valid options are "auto", "true", "false", '
-        'and any unique shortenings of those options. '
+        "and any unique shortenings of those options. "
         'Selecting "auto" will include a scrollbar for '
-        'non-embedded layouts.'
+        "non-embedded layouts."
     ),
 )
 parser.add_argument(
-    '--size',
+    "--size",
     help=(
-        'A starting x,y size for the typhos suite. '
-        'Useful if the default size is not suitable for '
-        'your application. Example: --size 1000,1000'
+        "A starting x,y size for the typhos suite. "
+        "Useful if the default size is not suitable for "
+        "your application. Example: --size 1000,1000"
     ),
 )
 parser.add_argument(
-    '--hide-displays',
-    action='store_true',
-    help=(
-        'Option to start with subdisplays hidden instead '
-        'of shown.'
-    )
+    "--hide-displays", action="store_true", help=("Option to start with subdisplays hidden instead of shown.")
 )
 parser.add_argument(
-    '--happi-cfg',
+    "--happi-cfg",
+    help=("Location of happi configuration file if not specified by $HAPPI_CFG environment variable"),
+)
+parser.add_argument(
+    "--fake-device",
+    action="store_true",
     help=(
-        'Location of happi configuration file '
-        'if not specified by $HAPPI_CFG environment variable'
+        "Create fake devices with no EPICS connections. "
+        "This does not yet work for happi devices. An "
+        "example invocation: "
+        "typhos --fake-device ophyd.EpicsMotor[]"
     ),
 )
 parser.add_argument(
-    '--fake-device',
-    action='store_true',
-    help=(
-        'Create fake devices with no EPICS connections. '
-        'This does not yet work for happi devices. An '
-        'example invocation: '
-        'typhos --fake-device ophyd.EpicsMotor[]'
-    ),
+    "--version",
+    "-V",
+    action="store_true",
+    help="Current version and location of Typhos installation.",
 )
 parser.add_argument(
-    '--version',
-    '-V',
-    action='store_true',
-    help='Current version and location ' 'of Typhos installation.',
+    "--verbose",
+    "-v",
+    action="store_true",
+    help="Show the debug logging stream",
 )
 parser.add_argument(
-    '--verbose',
-    '-v',
-    action='store_true',
-    help='Show the debug logging stream',
+    "--dark",
+    action="store_true",
+    help="Use the QDarkStyleSheet shipped with Typhos",
 )
 parser.add_argument(
-    '--dark',
-    action='store_true',
-    help='Use the QDarkStyleSheet shipped with Typhos',
-)
-parser.add_argument(
-    "--stylesheet-override", "--stylesheet",
+    "--stylesheet-override",
+    "--stylesheet",
     action="append",
     help="Override all built-in stylesheets, using this stylesheet instead.",
 )
@@ -170,47 +163,40 @@ parser.add_argument(
         "Include an additional stylesheet in the loading process. "
         "This stylesheet will take priority over all built-in stylesheets, "
         "but not over a template or widget's styleSheet property."
-    )
-)
-parser.add_argument(
-    '--profile-modules',
-    nargs='*',
-    help=(
-        'Submodules to profile during the execution. '
-        'If no specific modules are specified, '
-        'profiles all submodules of typhos. '
-        'Turns on line profiling.'
     ),
 )
 parser.add_argument(
-    '--profile-output',
+    "--profile-modules",
+    nargs="*",
     help=(
-        'Filename to output the profile results to. '
-        'If omitted, prints results to stdout. '
-        'Turns on line profiling.'
+        "Submodules to profile during the execution. "
+        "If no specific modules are specified, "
+        "profiles all submodules of typhos. "
+        "Turns on line profiling."
     ),
 )
 parser.add_argument(
-    '--benchmark',
-    nargs='*',
+    "--profile-output",
+    help=("Filename to output the profile results to. If omitted, prints results to stdout. Turns on line profiling."),
+)
+parser.add_argument(
+    "--benchmark",
+    nargs="*",
     help=(
-        'Runs the specified benchmarking tests instead of '
-        'launching a screen. '
-        'If no specific tests are specified, '
-        'runs all of them. '
-        'Turns on line profiling.'
+        "Runs the specified benchmarking tests instead of "
+        "launching a screen. "
+        "If no specific tests are specified, "
+        "runs all of them. "
+        "Turns on line profiling."
     ),
 )
 parser.add_argument(
-    '--exit-after',
+    "--exit-after",
     type=float,
-    help=(
-        "(For profiling purposes) Exit typhos after the provided number of "
-        "seconds"
-    ),
+    help=("(For profiling purposes) Exit typhos after the provided number of seconds"),
 )
 parser.add_argument(
-    '--screenshot',
+    "--screenshot",
     dest="screenshot_filename",
     help=(
         "Save screenshot(s) of all contained TyphosDeviceDisplay instances to "
@@ -219,26 +205,26 @@ parser.add_argument(
         "device, and name."
     ),
 )
+parser.add_argument(
+    "--export", default="", help="Instead of loading a suite, export the first device as a pure pydm ui file."
+)
 
 
 # Append to module docs
-__doc__ += '\n::\n\n    ' + parser.format_help().replace('\n', '\n    ')
+__doc__ += "\n::\n\n    " + parser.format_help().replace("\n", "\n    ")  # type: ignore
 
 
 def typhos_cli_setup(args):
     """Setup logging and style."""
     # Logging Level handling
     logging.getLogger().addHandler(logging.NullHandler())
-    shown_logger = logging.getLogger('typhos')
+    shown_logger = logging.getLogger("typhos")
     if args.verbose:
         level = "DEBUG"
-        log_fmt = (
-            '[%(asctime)s] - %(levelname)s - Thread (%(thread)d - '
-            '%(threadName)s ) - %(name)s -> %(message)s'
-        )
+        log_fmt = "[%(asctime)s] - %(levelname)s - Thread (%(thread)d - %(threadName)s ) - %(name)s -> %(message)s"
     else:
         level = "INFO"
-        log_fmt = '[%(asctime)s] - %(levelname)s - %(message)s'
+        log_fmt = "[%(asctime)s] - %(levelname)s - %(message)s"
     coloredlogs.install(level=level, logger=shown_logger, fmt=log_fmt)
     logger.debug("Set logging level of %r to %r", shown_logger.name, level)
 
@@ -279,10 +265,10 @@ def create_suite(
     device_names: list[str],
     cfg: Optional[str] = None,
     fake_devices: bool = False,
-    layout: str = 'horizontal',
+    layout: str = "horizontal",
     cols: int = 3,
-    display_type: str = 'detailed',
-    scroll_option: str = 'auto',
+    display_type: str = "detailed",
+    scroll_option: str = "auto",
     show_displays: bool = True,
 ) -> TyphosSuite:
     """
@@ -321,9 +307,7 @@ def create_suite(
         A suite that has been populated with devices.
     """
     if device_names:
-        devices = create_devices(
-            device_names, cfg=cfg, fake_devices=fake_devices
-        )
+        devices = create_devices(device_names, cfg=cfg, fake_devices=fake_devices)
     else:
         devices = []
     if devices or not device_names:
@@ -359,19 +343,17 @@ def get_layout_from_cli(
     qlayout : QLayout
         The qt layout object, instantiated.
     """
-    if 'horizontal'.startswith(layout):
+    if "horizontal".startswith(layout):
         return QtWidgets.QHBoxLayout()
-    if 'vertical'.startswith(layout):
+    if "vertical".startswith(layout):
         return QtWidgets.QVBoxLayout()
-    if 'grid'.startswith(layout):
+    if "grid".startswith(layout):
         return FixedColGrid(cols=cols)
-    if 'flow'.startswith(layout):
+    if "flow".startswith(layout):
         return FlowLayout()
     else:
         raise ValueError(
-            f'{layout} is not a valid layout name. '
-            'The allowed values are "horizontal", '
-            '"vertical", "grid", and "flow".'
+            f'{layout} is not a valid layout name. The allowed values are "horizontal", "vertical", "grid", and "flow".'
         )
 
 
@@ -410,33 +392,27 @@ class FixedColGrid(QtWidgets.QGridLayout):
 def get_display_type_from_cli(display_type: str) -> DisplayTypes:
     """Convert the cli string to the appropriate DisplayTypes enum."""
     display_type = display_type.lower()
-    if 'embedded'.startswith(display_type):
+    if "embedded".startswith(display_type):
         return DisplayTypes.embedded_screen
-    if 'detailed'.startswith(display_type):
+    if "detailed".startswith(display_type):
         return DisplayTypes.detailed_screen
-    if 'engineering'.startswith(display_type):
+    if "engineering".startswith(display_type):
         return DisplayTypes.engineering_screen
     raise ValueError(
-        f'{display_type} is not a valid display type. '
-        'The allowed values are "embedded", "detailed", '
-        'and "engineering".'
+        f'{display_type} is not a valid display type. The allowed values are "embedded", "detailed", and "engineering".'
     )
 
 
 def get_scrollable_from_cli(scrollable: str) -> ScrollOptions:
     """Convert the cli string to the appropriate ScrollOptions enum."""
     scrollable = scrollable.lower()
-    if 'auto'.startswith(scrollable):
+    if "auto".startswith(scrollable):
         return ScrollOptions.auto
-    if 'true'.startswith(scrollable):
+    if "true".startswith(scrollable):
         return ScrollOptions.scrollbar
-    if 'false'.startswith(scrollable):
+    if "false".startswith(scrollable):
         return ScrollOptions.no_scroll
-    raise ValueError(
-        f'{scrollable} is not a valid scroll option. '
-        'The allowed values are "auto", "true", '
-        'and "false".'
-    )
+    raise ValueError(f'{scrollable} is not a valid scroll option. The allowed values are "auto", "true", and "false".')
 
 
 def create_devices(device_names, cfg=None, fake_devices=False):
@@ -453,7 +429,7 @@ def create_devices(device_names, cfg=None, fake_devices=False):
     devices = list()
 
     klass_regex = re.compile(
-        r'([a-zA-Z][a-zA-Z0-9\.\_]*)\[(\{.*})*[\,]*\]'  # noqa
+        r"([a-zA-Z][a-zA-Z0-9\.\_]*)\[(\{.*})*[\,]*\]"  # noqa
     )
 
     for device_name in device_names:
@@ -474,19 +450,17 @@ def create_devices(device_names, cfg=None, fake_devices=False):
                     # Give default value to missing positional args
                     # This might fail, but is best effort
                     for arg in inspect.getfullargspec(klass).args:
-                        if arg not in default_kwargs and arg != 'self':
-                            if arg == 'prefix':
-                                default_kwargs[arg] = 'FAKE_PREFIX:'
+                        if arg not in default_kwargs and arg != "self":
+                            if arg == "prefix":
+                                default_kwargs[arg] = "FAKE_PREFIX:"
                             else:
-                                default_kwargs[arg] = 'FAKE'
+                                default_kwargs[arg] = "FAKE"
 
                 device = klass(**default_kwargs)
                 devices.append(device)
 
             except Exception:
-                logger.exception(
-                    "Unable to load class entry: %s with args %s", klass, args
-                )
+                logger.exception("Unable to load class entry: %s with args %s", klass, args)
                 continue
         else:
             if not happi_client:
@@ -496,16 +470,12 @@ def create_devices(device_names, cfg=None, fake_devices=False):
                 )
                 continue
             if fake_devices:
-                raise NotImplementedError(
-                    "Fake devices from happi not " "supported yet"
-                )
+                raise NotImplementedError("Fake devices from happi not supported yet")
             try:
                 device = happi_client.load_device(name=device_name)
                 devices.append(device)
             except Exception:
-                logger.exception(
-                    "Unable to load Happi entry: %r", device_name
-                )
+                logger.exception("Unable to load Happi entry: %r", device_name)
         if fake_devices:
             clear_fake_device(device)
     return devices
@@ -515,10 +485,10 @@ def typhos_run(
     device_names: list[str],
     cfg: Optional[str] = None,
     fake_devices: bool = False,
-    layout: str = 'horizontal',
+    layout: str = "horizontal",
     cols: int = 3,
-    display_type: str = 'detailed',
-    scroll_option: str = 'auto',
+    display_type: str = "detailed",
+    scroll_option: str = "auto",
     initial_size: Optional[str] = None,
     show_displays: bool = True,
     exit_after: Optional[float] = None,
@@ -585,9 +555,7 @@ def typhos_run(
 
     if initial_size is not None:
         try:
-            initial_size = QtCore.QSize(
-                *(int(opt) for opt in initial_size.split(','))
-            )
+            initial_size = QtCore.QSize(*(int(opt) for opt in initial_size.split(",")))
         except TypeError as exc:
             raise ValueError(
                 "Invalid --size argument. Expected a two-element pair "
@@ -595,10 +563,7 @@ def typhos_run(
             ) from exc
 
     def exit_early():
-        logger.warning(
-            "Exiting typhos early due to --exit-after=%s CLI argument.",
-            exit_after
-        )
+        logger.warning("Exiting typhos early due to --exit-after=%s CLI argument.", exit_after)
 
         if screenshot_filename is not None:
             suite.save_device_screenshots(screenshot_filename)
@@ -611,13 +576,53 @@ def typhos_run(
     return launch_suite(suite, initial_size=initial_size)
 
 
+def typhos_export(
+    device_name: str,
+    export_filename: str,
+    cfg: Optional[str] = None,
+    fake_devices: bool = False,
+    display_type: str = "detailed",
+    scroll_option: str = "auto",
+):
+    """
+    Export a device display as a pydm-compatible ui file.
+
+    Parameters
+    ----------
+    device_name : str
+        The happi name associated with the device to instantiate,
+        or the full class specification from the cli.
+    export_filename : str, optional
+        Filepath to use as the target for ui file export.
+    cfg : str, optional
+        The happi configuration file to use. If omitted, uses
+        the environment variables specified by happi.
+    fake_devices : bool, optional
+        If True, use fake devices behind the screen instead of
+        making real connections.
+    display_type : str, optional
+        The type of display to use in the suite. See the
+        cli help for valid options.
+    scroll_option : str, optional
+        Options for the scrollbar. See the cli help for valid options.
+    """
+    with utils.no_device_lazy_load():
+        devices = create_devices([device_name], cfg=cfg, fake_devices=fake_devices)
+        display = TyphosDeviceDisplay.from_device(
+            device=devices[0],
+            scroll_option=get_scrollable_from_cli(scroll_option),
+            display_type=get_display_type_from_cli(display_type),
+        )
+        return export_as_ui(display, export_filename=export_filename)
+
+
 def typhos_cli(args):
     """Command Line Application for Typhos."""
     args = parser.parse_args(args, TyphosArguments())
 
     if args.version:
         typhos_file = sys.modules["typhos"].__file__
-        print(f'Typhos: Version {typhos_version} from {typhos_file}')
+        print(f"Typhos: Version {typhos_version} from {typhos_file}")
         return
 
     if any(
@@ -642,8 +647,16 @@ def typhos_cli(args):
         if args.benchmark is not None:
             # Note: actually a list of suites
             suite = run_benchmarks(args.benchmark)
+        elif args.export:
+            suite = typhos_export(
+                device_name=args.devices[0],
+                export_filename=args.export,
+                cfg=args.happi_cfg,
+                fake_devices=args.fake_device,
+                display_type=args.display_type,
+                scroll_option=args.scrollable,
+            )
         else:
-
             suite = typhos_run(
                 args.devices,
                 cfg=args.happi_cfg,

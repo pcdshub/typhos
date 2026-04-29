@@ -13,6 +13,70 @@ from .utils import is_signal_ro
 from .widgets import determine_widget_type
 
 
+def export_as_ui(display: TyphosDeviceDisplay, export_filename: str):
+    """
+    Main starting point for the export routine called from cli.
+
+    This is meant to be run after generating the standard typhos suite but instead of
+    building the main window and executing the QApplication.
+
+    Parameters
+    ----------
+    suite : TyphosSuite
+        The suite whose first display we'll use as an export.
+    export_filename : str
+        The destination filepath to save the .ui file.
+    """
+    device: Device = display.devices[0]
+
+    tree = from_display(display)
+    etree.indent(tree, space=" ", level=0)
+    text = etree.tostring(tree, pretty_print=True, encoding="unicode")
+
+    if display.macros:
+        un_macros = {
+            value: f"${{{key}}}"
+            for key, value in display.macros.items()
+            if isinstance(key, str) and isinstance(value, str)
+        }
+    else:
+        un_macros = {device.prefix: "${prefix}", device.name: "${name}"}
+
+    for unm, macro in un_macros.items():
+        text = text.replace(unm, macro)
+
+    with open(export_filename, "w") as fd:
+        fd.write(text)
+
+
+def from_display(display: TyphosDeviceDisplay) -> etree._ElementTree:
+    """
+    Generate a corresponding ui file xml tree from a source display.
+    """
+    template = str(display.current_template)
+    tree = etree.parse(template)
+    root = tree.getroot()
+
+    # Replace each typhos designer widget as appropriate
+    for elem in root.findall(".//widget"):
+        cls = str(elem.get("class"))
+        try:
+            converter = DESIGNER_WIDGET_TO_XML[cls]
+        except KeyError:
+            continue
+        name = str(elem.get("name"))
+        widget_obj = display.findChild(QWidget, name)
+        new_elem = converter(widget_obj, name)
+        parent_elem = elem.getparent()
+        if parent_elem is None:
+            continue
+        parent_elem.replace(elem, new_elem)
+
+    # Finalize the customwidgets section
+    # TODO
+    return tree
+
+
 def from_generic_widget(source_widget: QWidget, name: str) -> etree._Element:
     """
     Replace most typhos widgets with blank QWidgets
@@ -37,10 +101,13 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
     device_name = source_widget.devices[0].name
     device_name_prefix = device_name + "_"
 
+    row = -1
+
     for signal_name, signal_info in source_widget._panel_layout.signal_name_to_info.items():
         signal = signal_info["signal"]
         if not isinstance(signal, EpicsSignalBase):
             continue
+        row += 1
         if is_signal_ro(signal):
             read_cls, _ = determine_widget_type(signal=signal, read_only=True)
             write_cls = None
@@ -57,7 +124,7 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
 
         # First item in row: signal name
         label_item = etree.SubElement(grid, "item")
-        label_item.set("row", str(signal_info["row"]))
+        label_item.set("row", str(row))
         label_item.set("column", "0")
         label_widget = etree.SubElement(label_item, "widget")
         label_widget.set("class", "QLabel")
@@ -68,10 +135,10 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
         label_string.text = short_signal_text
         # Second item in row: readback widget
         readback_item = etree.SubElement(grid, "item")
-        readback_item.set("row", str(signal_info["row"]))
+        readback_item.set("row", str(row))
         readback_item.set("column", "1")
         readback_widget = etree.SubElement(readback_item, "widget")
-        readback_widget.set("class", get_widget(read_cls))
+        readback_widget.set("class", typhos_type_to_pydm_type(read_cls))
         readback_widget.set("name", f"{short_signal_name}_readback")
         readback_property = etree.SubElement(readback_widget, "property")
         readback_property.set("name", "channel")
@@ -83,10 +150,10 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
             continue
         # Third item in row: setpoint widget
         setpoint_item = etree.SubElement(grid, "item")
-        setpoint_item.set("row", str(signal_info["row"]))
+        setpoint_item.set("row", str(row))
         setpoint_item.set("column", "2")
         setpoint_widget = etree.SubElement(setpoint_item, "widget")
-        setpoint_widget.set("class", get_widget(write_cls))
+        setpoint_widget.set("class", typhos_type_to_pydm_type(write_cls))
         setpoint_widget.set("name", f"{short_signal_name}_setpoint")
         setpoint_property = etree.SubElement(setpoint_widget, "property")
         setpoint_property.set("name", "channel")
@@ -96,7 +163,7 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
     return widget
 
 
-def get_widget(typhos_widget: QWidget) -> str:
+def typhos_type_to_pydm_type(typhos_widget: QWidget) -> str:
     match str(typhos_widget.__name__):
         case "PyDMLabel" | "TyphosLabel" | "WaveformDialogButton" | "ImageDialogButton":
             return "PyDMLabel"
@@ -134,55 +201,3 @@ DESIGNER_WIDGET_TO_XML = {
     "TyphosRelatedSuiteButton": from_generic_widget,
     "TyphosSignalPanel": from_typhos_signal_panel,
 }
-
-
-def from_template_and_device(template: str, device: Device) -> etree._ElementTree:
-    """
-    Generate a corresponding ui file xml tree from a source template and an ophyd device.
-    """
-    display = TyphosDeviceDisplay()
-    display.force_template = template
-    display.add_device(device)
-
-    tree = etree.parse(template)
-    root = tree.getroot()
-
-    # Replace each typhos designer widget as appropriate
-    for elem in root.findall(".//widget"):
-        cls = str(elem.get("class"))
-        try:
-            converter = DESIGNER_WIDGET_TO_XML[cls]
-        except KeyError:
-            continue
-        name = str(elem.get("name"))
-        widget_obj = display.findChild(QWidget, name)
-        new_elem = converter(widget_obj, name)
-        parent_elem = elem.getparent()
-        if parent_elem is None:
-            continue
-        parent_elem.replace(elem, new_elem)
-
-    # Finalize the customwidgets section
-    # TODO
-    return tree
-
-
-def test():
-    from qtpy.QtWidgets import QApplication
-
-    app = QApplication([])  # noqa: F841
-
-    from pcdsdevices.epics_motor import BeckhoffAxis
-
-    device = BeckhoffAxis("IM3L0:PPM:MMS", name="im3l0")
-    template = "/cds/home/z/zlentz/github/typhos/typhos/ui/core/detailed_screen.ui"
-    tree = from_template_and_device(template, device)
-    etree.indent(tree, space=" ", level=0)
-    text = etree.tostring(tree, pretty_print=True, encoding="unicode")
-
-    un_macros = {device.prefix: "${prefix}", device.name: "${name}"}
-
-    for unm, macro in un_macros.items():
-        text = text.replace(unm, macro)
-
-    print(text)
