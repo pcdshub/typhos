@@ -7,7 +7,7 @@ from ophyd.device import Device
 from ophyd.signal import EpicsSignalBase
 from qtpy.QtWidgets import QWidget
 
-from .display import TyphosDeviceDisplay
+from .display import TyphosDeviceDisplay, TyphosDisplayTitle
 from .panel import TyphosSignalPanel
 from .utils import is_signal_ro
 from .widgets import determine_widget_type
@@ -37,7 +37,7 @@ def export_as_ui(display: TyphosDeviceDisplay, export_filename: str):
         un_macros = {
             value: f"${{{key}}}"
             for key, value in display.macros.items()
-            if isinstance(key, str) and isinstance(value, str)
+            if isinstance(key, str) and isinstance(value, str) and not key.startswith("_")
         }
     else:
         un_macros = {device.prefix: "${prefix}", device.name: "${name}"}
@@ -84,6 +84,20 @@ def from_generic_widget(source_widget: QWidget, name: str) -> etree._Element:
     widget = etree.Element("widget")
     widget.set("class", "QWidget")
     widget.set("name", name)
+    return widget
+
+
+def from_typhos_display_title(source_widget: TyphosDisplayTitle, name: str) -> etree._Element:
+    """
+    Just the device name I guess
+    """
+    widget = etree.Element("widget")
+    widget.set("class", "QLabel")
+    widget.set("name", name)
+    text_property = etree.SubElement(widget, "property")
+    text_property.set("name", "text")
+    text_string = etree.SubElement(text_property, "string")
+    text_string.text = source_widget.device_display.devices[0].name
     return widget
 
 
@@ -192,7 +206,7 @@ DESIGNER_WIDGET_TO_XML = {
     "TyphosCompositeSignalPanel": from_generic_widget,
     "TyphosDeviceDisplay": from_generic_widget,
     "TyphosDisplaySwitcher": from_generic_widget,
-    "TyphosDisplayTitle": from_generic_widget,
+    "TyphosDisplayTitle": from_typhos_display_title,
     "TyphosHelpFrame": from_generic_widget,
     "TyphosMethodButton": from_generic_widget,
     "TyphosNotesEdit": from_generic_widget,
