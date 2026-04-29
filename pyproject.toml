@@ -85,6 +85,7 @@ doc = [
 test = [
     "caproto",
     "happi",
+    "line_profiler",
     "pcdsdevices>=8.4.0",
     "pytest",
     "pytest-benchmark",
