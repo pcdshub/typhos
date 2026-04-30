@@ -108,7 +108,7 @@ def test_display_type_change(motor, display):
 
 def test_display_modified_templates(display, motor):
     display.add_device(motor)
-    eng_ui = display.templates["engineering_screen"]
+    eng_ui = display.templates["detailed_screen"]
     display.templates["embedded_screen"] = eng_ui
     display.display_type = display.embedded_screen
     assert display.current_template == eng_ui[0]
