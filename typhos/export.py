@@ -2,27 +2,19 @@
 Export a typhos screen as a PyDM Screen
 """
 
+import logging
+
 from lxml import etree
 from ophyd.device import Device
 from ophyd.signal import EpicsSignalBase
 from qtpy.QtWidgets import QWidget
 
-from typhos.alarm import (
-    TyphosAlarmCircle,
-    TyphosAlarmEllipse,
-    TyphosAlarmPolygon,
-    TyphosAlarmRectangle,
-    TyphosAlarmTriangle,
-)
-from typhos.func import TyphosMethodButton
-from typhos.notes import TyphosNotesEdit
-from typhos.positioner import TyphosPositionerRowWidget, TyphosPositionerWidget
-from typhos.related_display import TyphosRelatedSuiteButton
-
-from .display import TyphosDeviceDisplay, TyphosDisplaySwitcher, TyphosDisplayTitle, TyphosHelpFrame
+from .display import TyphosDeviceDisplay, TyphosDisplayTitle
 from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
 from .utils import is_signal_ro
 from .widgets import determine_widget_type
+
+logger = logging.getLogger(__name__)
 
 
 def export_as_ui(display: TyphosDeviceDisplay, export_filename: str):
@@ -69,13 +61,17 @@ def from_display(display: TyphosDeviceDisplay) -> etree._ElementTree:
     tree = etree.parse(template)
     root = tree.getroot()
 
+    logger.debug(f"Parsing display: searching for widgets in template {template}")
+
     # Replace each typhos designer widget as appropriate
     for elem in root.findall(".//widget"):
         name = str(elem.get("name"))
+        logger.debug(f"Found widget named {name}")
         widget_obj = display.findChild(QWidget, name)
         try:
             new_elem = convert_widget_to_element(widget_obj, name)
         except TypeError:
+            logger.debug(f"Widget {name} was not a replaceable widget type, skipping")
             continue
         parent_elem = elem.getparent()
         if parent_elem is None:
@@ -91,36 +87,43 @@ def convert_widget_to_element(source_widget: QWidget, name: str) -> etree._Eleme
     """
     Choose which function to use to replace a typhos widget with an xml description of a standard widget.
     """
-    match source_widget:
-        case TyphosSignalPanel():
+    try:
+        type_name = source_widget.__class__.__name__
+    except AttributeError:
+        type_name = str(source_widget)
+    match type_name:
+        case "TyphosSignalPanel":
             return from_typhos_signal_panel(source_widget=source_widget, name=name)
-        case TyphosCompositeSignalPanel():
-            return from_generic_widget(source_widget=source_widget, name=name)
-        case TyphosDisplayTitle():
+        case "TyphosCompositeSignalPanel":
+            return from_typhos_composite_signal_panel(source_widget=source_widget, name=name)
+        case "TyphosDisplayTitle":
             return from_typhos_display_title(source_widget=source_widget, name=name)
         case (
-            TyphosAlarmCircle()
-            | TyphosAlarmEllipse()
-            | TyphosAlarmPolygon()
-            | TyphosAlarmRectangle()
-            | TyphosAlarmTriangle()
-            | TyphosDisplaySwitcher()
-            | TyphosHelpFrame()
-            | TyphosMethodButton()
-            | TyphosNotesEdit()
-            | TyphosPositionerWidget()
-            | TyphosPositionerRowWidget()
-            | TyphosRelatedSuiteButton()
+            "TyphosAlarmCircle"
+            | "TyphosAlarmEllipse"
+            | "TyphosAlarmPolygon"
+            | "TyphosAlarmRectangle"
+            | "TyphosAlarmTriangle"
+            | "TyphosDisplaySwitcher"
+            | "TyphosHelpFrame"
+            | "TyphosMethodButton"
+            | "TyphosNotesEdit"
+            | "TyphosPositionerWidget"
+            | "TyphosPositionerRowWidget"
+            | "TyphosRelatedSuiteButton"
         ):
             return from_generic_widget(source_widget=source_widget, name=name)
         case _:
-            raise TypeError(f"Unhandled type for {source_widget}")
+            err = f"Unhandled type for {source_widget} of type {type_name}"
+            logger.debug(err)
+            raise TypeError(err)
 
 
 def from_generic_widget(source_widget: QWidget, name: str) -> etree._Element:
     """
     Replace most typhos widgets with blank QWidgets
     """
+    logger.debug(f"Replace {name} with generic QWidget")
     widget = etree.Element("widget")
     widget.set("class", "QWidget")
     widget.set("name", name)
@@ -131,6 +134,7 @@ def from_typhos_display_title(source_widget: TyphosDisplayTitle, name: str) -> e
     """
     Just the device name I guess
     """
+    logger.debug(f"Replace {name} with title QLabel")
     widget = etree.Element("widget")
     widget.set("class", "QLabel")
     widget.set("name", name)
@@ -145,6 +149,7 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
     """
     Replace TyphosSignalPanel with a QWidget containing a simple QGridLayout
     """
+    logger.debug(f"Exploring contents of signal panel {name}")
     widget = etree.Element("widget")
     widget.set("class", "QWidget")
     widget.set("name", name)
@@ -158,14 +163,18 @@ def from_typhos_signal_panel(source_widget: TyphosSignalPanel, name: str) -> etr
     row = -1
 
     for signal_name, signal_info in source_widget._panel_layout.signal_name_to_info.items():
+        logger.debug(f"Checking widget info for signal {signal_name}")
         signal = signal_info["signal"]
         if not isinstance(signal, EpicsSignalBase):
+            logger.debug("Not an epics signal, skipping")
             continue
         row += 1
         if is_signal_ro(signal):
+            logger.debug("Picking read-only widgets")
             read_cls, _ = determine_widget_type(signal=signal, read_only=True)
             write_cls = None
         else:
+            logger.debug("Picking read-write widgets")
             read_cls, _ = determine_widget_type(signal=signal, read_only=True)
             write_cls, _ = determine_widget_type(signal=signal, read_only=False)
 
@@ -235,3 +244,145 @@ def typhos_type_to_pydm_type(typhos_widget: QWidget) -> str:
             return "PyDMWaveformTable"
         case _:
             return "PyDMLineEdit"
+
+
+def from_typhos_composite_signal_panel(source_widget: TyphosCompositeSignalPanel, name: str) -> etree._Element:
+    """
+    Replace TyphosCompositeSignalPanel with repeated applications of what we do for typhos signal panel
+    """
+    # The composite signal panel works by:
+    # 1. call add_device once
+    # 2. For each top-level component in order, call add_sub_device if it's a device or _maybe_add_signal otherwise
+    # 2a. add_sub_device creates a mini TyphosDeviceDisplay with the subdevice
+    #     this subdisplay is a whole new template for us to deal with
+    # 2b. _maybe_add_signal, for this purposes of this screen, will add the signal if it matches the kind settings
+    #     it has some other behavior otherwise, but it is only relevant for the display switcher we won't support here
+    # Note that each thing is added as a new row in a grid layout- so that's our outer structure, a grid
+    # We'll try to build this using the primitives we implemented above
+    logger.debug(f"Exploring contents of composite signal panel {name}")
+
+    widget = etree.Element("widget")
+    widget.set("class", "QWidget")
+    widget.set("name", name)
+    grid = etree.SubElement(widget, "layout")
+    grid.set("class", "QGridLayout")
+    grid.set("name", f"{name}_grid_layout")
+
+    device_name = source_widget.devices[0].name
+    device_name_prefix = device_name + "_"
+
+    # Iterate through the rows in the grid layout
+    # Three possibilities:
+    # 1. a TyphosDeviceDisplay spanning all columns
+    # 2. a Qlabel in col 0, then a readback widget in cols 1-2
+    # 3. a Qlabel in col 0, a readback widget in col 1, a setpoint widget in col 2
+    # For 1 we can use the display xml builder, but strip out everything except the main widget
+    # For 2 and 3 we can use the per-row behavior from the signal panel function
+
+    grid_layout = source_widget._panel_layout
+    signal_info_list = list(grid_layout.signal_name_to_info.values())
+    output_row = -1
+
+    for row_count in range(grid_layout.rowCount()):
+        logger.debug(f"Checking grid row index {row_count}")
+        first_item = grid_layout.itemAtPosition(row_count, 0)
+        if first_item is None:
+            logger.debug("No item in row, skipping")
+            continue
+        first_widget = first_item.widget()
+        if first_widget is None:
+            logger.debug("No widget in row, skipping")
+            continue
+        logger.debug(f"Found {first_widget} named {first_widget.objectName()} on row {row_count}")
+        if isinstance(first_widget, TyphosDeviceDisplay):
+            output_row += 1
+            logger.debug(f"Expanding subdisplay on input row {row_count} for output row {output_row}")
+            # A device subdisplay
+            tree = from_display(display=first_widget)
+            root = tree.getroot()
+            top_widget = root.find("widget")
+            if top_widget is None:
+                raise RuntimeError("Display had no top-level widget?")
+            subdisplay_item = etree.SubElement(grid, "item")
+            subdisplay_item.set("row", str(output_row))
+            subdisplay_item.set("column", "0")
+            subdisplay_item.set("colspan", "3")
+            subdisplay_item.append(top_widget)
+        else:
+            logger.debug(f"Expanding signal on row {row_count}")
+            # A signal row
+            signal_info = None
+            for info in signal_info_list:
+                if info["row"] == row_count:
+                    # We found it
+                    signal_info = info
+            if signal_info is None:
+                raise RuntimeError(f"No signal info for row {row_count}")
+            if signal_info["signal"] is None:
+                logger.debug(f"Skipping signal info {signal_info}, no signal created")
+                continue
+            logger.debug(f"Using signal info {signal_info}")
+
+            signal = signal_info["signal"]
+            signal_name = signal.name
+            if not isinstance(signal, EpicsSignalBase):
+                logger.debug("Not an epics signal, skipping")
+                continue
+            output_row += 1
+            logger.debug(f"Assigning output row count {output_row}")
+
+            if is_signal_ro(signal):
+                logger.debug("Picking read-only widgets")
+                read_cls, _ = determine_widget_type(signal=signal, read_only=True)
+                write_cls = None
+            else:
+                logger.debug("Picking read-write widgets")
+                read_cls, _ = determine_widget_type(signal=signal, read_only=True)
+                write_cls, _ = determine_widget_type(signal=signal, read_only=False)
+
+            short_signal_name = signal_name.removeprefix(device_name_prefix)
+            if short_signal_name == device_name:
+                short_signal_name = "device"
+                short_signal_text = device_name
+            else:
+                short_signal_text = short_signal_name
+
+            # First item in row: signal name
+            label_item = etree.SubElement(grid, "item")
+            label_item.set("row", str(output_row))
+            label_item.set("column", "0")
+            label_widget = etree.SubElement(label_item, "widget")
+            label_widget.set("class", "QLabel")
+            label_widget.set("name", f"{short_signal_name}_label")
+            label_property = etree.SubElement(label_widget, "property")
+            label_property.set("name", "text")
+            label_string = etree.SubElement(label_property, "string")
+            label_string.text = short_signal_text
+            # Second item in row: readback widget
+            readback_item = etree.SubElement(grid, "item")
+            readback_item.set("row", str(output_row))
+            readback_item.set("column", "1")
+            readback_widget = etree.SubElement(readback_item, "widget")
+            readback_widget.set("class", typhos_type_to_pydm_type(read_cls))
+            readback_widget.set("name", f"{short_signal_name}_readback")
+            readback_property = etree.SubElement(readback_widget, "property")
+            readback_property.set("name", "channel")
+            readback_string = etree.SubElement(readback_property, "string")
+            readback_string.text = f"ca://{signal_info['signal'].pvname}"
+            # Extend to end of no third item in row
+            if write_cls is None:
+                readback_item.set("colspan", "2")
+                continue
+            # Third item in row: setpoint widget
+            setpoint_item = etree.SubElement(grid, "item")
+            setpoint_item.set("row", str(output_row))
+            setpoint_item.set("column", "2")
+            setpoint_widget = etree.SubElement(setpoint_item, "widget")
+            setpoint_widget.set("class", typhos_type_to_pydm_type(write_cls))
+            setpoint_widget.set("name", f"{short_signal_name}_setpoint")
+            setpoint_property = etree.SubElement(setpoint_widget, "property")
+            setpoint_property.set("name", "channel")
+            setpoint_string = etree.SubElement(setpoint_property, "string")
+            setpoint_string.text = f"ca://{signal._write_pv.pvname}"  # type: ignore
+
+    return widget
