@@ -127,6 +127,20 @@ def from_generic_widget(source_widget: QWidget, name: str) -> etree._Element:
     widget = etree.Element("widget")
     widget.set("class", "QWidget")
     widget.set("name", name)
+    # Match the size of the original widget just so the screen is recognizable
+    original_size = source_widget.sizeHint()
+    min_size_property = etree.SubElement(widget, "property", name="minimumSize")
+    min_size = etree.SubElement(min_size_property, "size")
+    min_width = etree.SubElement(min_size, "width")
+    min_width.text = str(original_size.width())
+    min_height = etree.SubElement(min_size, "height")
+    min_height.text = str(original_size.height())
+    max_size_property = etree.SubElement(widget, "property", name="maximumSize")
+    max_size = etree.SubElement(max_size_property, "size")
+    max_width = etree.SubElement(max_size, "width")
+    max_width.text = str(original_size.width())
+    max_height = etree.SubElement(max_size, "height")
+    max_height.text = str(original_size.height())
     return widget
 
 
