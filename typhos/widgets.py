@@ -208,7 +208,11 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
             self.displayFormat = display_format
 
     def __dtor__(self):
-        menu = self.unitMenu
+        try:
+            menu = self.unitMenu
+        except AttributeError:
+            # It never got made for whatever reason, can leave
+            return
         if menu is not None:
             menu.deleteLater()
         self.unitMenu = None
