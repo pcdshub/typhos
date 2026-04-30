@@ -2,6 +2,7 @@
 Export a typhos screen as a PyDM Screen
 """
 
+import json
 import logging
 
 from lxml import etree
@@ -38,19 +39,27 @@ def export_as_ui(display: TyphosDeviceDisplay, export_filename: str):
     text = etree.tostring(tree, pretty_print=True, encoding="unicode")
 
     if display.macros:
-        un_macros = {
-            value: f"${{{key}}}"
+        all_macros = {
+            key: value
             for key, value in display.macros.items()
             if isinstance(key, str) and isinstance(value, str) and not key.startswith("_")
         }
     else:
-        un_macros = {device.prefix: "${prefix}", device.name: "${name}"}
+        all_macros = {"prefix": device.prefix, "name": device.name}
+
+    un_macros = {value: f"${{{key}}}" for key, value in all_macros.items()}
 
     for unm, macro in un_macros.items():
         text = text.replace(unm, macro)
 
     with open(export_filename, "w") as fd:
         fd.write(text)
+
+    logger.info(f"Wrote file {export_filename}")
+
+    used_macros = {key: value for key, value in all_macros.items() if un_macros[value] in text}
+
+    logger.info(f"Run as pydm --macro '{json.dumps(used_macros)}' {export_filename}")
 
 
 def from_display(display: TyphosDeviceDisplay) -> etree._ElementTree:
