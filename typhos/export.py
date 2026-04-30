@@ -22,13 +22,13 @@ def export_as_ui(display: TyphosDeviceDisplay, export_filename: str):
     """
     Main starting point for the export routine called from cli.
 
-    This is meant to be run after generating the standard typhos suite but instead of
-    building the main window and executing the QApplication.
+    This is meant to be run after generating a typhos display but instead of
+    building the suite and main window and executing the QApplication.
 
     Parameters
     ----------
-    suite : TyphosSuite
-        The suite whose first display we'll use as an export.
+    display : TyphosDeviceDisplay
+        The display we'll use as an export.
     export_filename : str
         The destination filepath to save the .ui file.
     """
