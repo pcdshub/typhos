@@ -293,6 +293,7 @@ def add_signal_row_to_grid(signal_name: str, signal_info: dict, device_name: str
         # Helpful to get the press value correct here in the translation so the button works as intended
         press_value = get_variety_metadata(signal_info["signal"])["value"]
         add_string_property(widget=setpoint_widget, prop_name="pressValue", prop_value=str(press_value))
+        add_string_property(widget=setpoint_widget, prop_name="text", prop_value="Command")
 
 
 def typhos_type_to_pydm_type(typhos_widget: QWidget) -> str:
