@@ -12,6 +12,7 @@ with the correct type with the method `get_param_value``. There may be cases
 where these widgets find that the user has entered inappropriate values, in
 this case they should return np.nan to halt the function from being called.
 """
+
 import inspect
 import logging
 from functools import partial
@@ -20,9 +21,18 @@ import numpy as np
 from numpydoc import docscrape
 from qtpy.QtCore import Property, QSize, Qt, Slot
 from qtpy.QtGui import QFont
-from qtpy.QtWidgets import (QCheckBox, QGroupBox, QHBoxLayout, QLabel,
-                            QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
-                            QVBoxLayout, QWidget)
+from qtpy.QtWidgets import (
+    QCheckBox,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 from .status import TyphosStatusThread
 from .utils import clean_attr, raise_to_operator
@@ -38,6 +48,7 @@ class ParamWidget(QWidget):
     This creates the QLabel for the parameter and defines the interface
     required for subclasses of the ParamWidget.
     """
+
     def __init__(self, parameter, default=inspect._empty, parent=None):
         super().__init__(parent=parent)
         # Store parameter information
@@ -74,6 +85,7 @@ class ParamCheckBox(ParamWidget):
 
     parent : QWidget, optional
     """
+
     def __init__(self, parameter, default=inspect._empty, parent=None):
         super().__init__(parameter, default=default, parent=parent)
         self.param_control = QCheckBox(parent=self)
@@ -110,7 +122,8 @@ class ParamLineEdit(ParamWidget):
 
     parent : QWidget, optional
     """
-    def __init__(self, parameter, _type, default='', parent=None):
+
+    def __init__(self, parameter, _type, default="", parent=None):
         super().__init__(parameter, default=default, parent=parent)
         # Store type information
         self._type = _type
@@ -137,14 +150,13 @@ class ParamLineEdit(ParamWidget):
             val = self._type(self.param_edit.text())
         # If not possible, capture the exception and report `np.nan`
         except ValueError:
-            logger.exception("Could not convert text to %r",
-                             self._type.__name__)
+            logger.exception("Could not convert text to %r", self._type.__name__)
             val = np.nan
         return val
 
 
 def parse_numpy_docstring(docstring):
-    '''
+    """
     Parse a numpy docstring for summary and parameter information.
 
     Parameters
@@ -158,15 +170,15 @@ def parse_numpy_docstring(docstring):
         info['summary'] is a string summary.
         info['params'] is a dictionary of parameter name to a list of
         description lines.
-    '''
+    """
     info = {}
     parsed = docscrape.NumpyDocString(docstring)
-    info['summary'] = '\n'.join(parsed['Summary'])
-    params = parsed['Parameters']
+    info["summary"] = "\n".join(parsed["Summary"])
+    params = parsed["Parameters"]
 
     # numpydoc v0.8.0 uses just a tuple for parameters, but later versions use
     # a namedtuple.  here, only assume a tuple:
-    info['params'] = {name: lines for name, type_, lines in params}
+    info["params"] = {name: lines for name, type_, lines in params}
     return info
 
 
@@ -216,19 +228,18 @@ class FunctionDisplay(QGroupBox):
 
     parent : QWidget, optional
     """
+
     accepted_types = [bool, str, int, float]
 
-    def __init__(self, func, name=None, annotations=None,
-                 hide_params=None, parent=None):
+    def __init__(self, func, name=None, annotations=None, hide_params=None, parent=None):
         # Function information
         self.func = func
         self.signature = inspect.signature(func)
         self.name = name or self.func.__name__
         # Initialize parent
-        super().__init__(f'{clean_attr(self.name)} Parameters',
-                         parent=parent)
+        super().__init__(f"{clean_attr(self.name)} Parameters", parent=parent)
         # Ignore certain parameters, args and kwargs by default
-        self.hide_params = ['self', 'args', 'kwargs']
+        self.hide_params = ["self", "args", "kwargs"]
         if hide_params:
             self.hide_params.extend(hide_params)
         # Create basic layout
@@ -240,18 +251,15 @@ class FunctionDisplay(QGroupBox):
         # Add our button to execute the function
         self.execute_button = QPushButton()
 
-        self.docs = {'summary': func.__doc__ or '',
-                     'params': {}
-                     }
+        self.docs = {"summary": func.__doc__ or "", "params": {}}
 
         if func.__doc__ is not None:
             try:
                 self.docs.update(**parse_numpy_docstring(func.__doc__))
             except Exception as ex:
-                logger.warning('Unable to parse docstring for function %s: %s',
-                               name, ex, exc_info=ex)
+                logger.warning("Unable to parse docstring for function %s: %s", name, ex, exc_info=ex)
 
-        self.execute_button.setToolTip(self.docs['summary'])
+        self.execute_button.setToolTip(self.docs["summary"])
 
         self.execute_button.setText(clean_attr(self.name))
         self.execute_button.clicked.connect(self.execute)
@@ -267,31 +275,26 @@ class FunctionDisplay(QGroupBox):
         self._layout.addItem(QSpacerItem(10, 5, vPolicy=QSizePolicy.Expanding))
         # Create parameters from function signature
         annotations = annotations or dict()
-        for param in [param for param in self.signature.parameters.values()
-                      if param.name not in self.hide_params]:
+        for param in [param for param in self.signature.parameters.values() if param.name not in self.hide_params]:
             logger.debug("Adding parameter %s ", param.name)
             # See if we received a manual annotation for this parameter
             if param.name in annotations:
                 _type = annotations[param.name]
-                logger.debug("Found manually specified type %r",
-                             _type.__name__)
+                logger.debug("Found manually specified type %r", _type.__name__)
             # Try and get the type from the function annotation
             elif param.annotation != inspect._empty:
                 _type = param.annotation
-                logger.debug("Found annotated type %r ",
-                             _type.__name__)
+                logger.debug("Found annotated type %r ", _type.__name__)
             # Try and get the type from the default value
             elif param.default != inspect._empty:
                 _type = type(param.default)
-                logger.debug("Gathered type %r from parameter default ",
-                             _type.__name__)
+                logger.debug("Gathered type %r from parameter default ", _type.__name__)
             # If we don't have a default value or an annotation,
             # we can not make a widget for this parameter. Since
             # this is a required variable (no default), the function
             # will not work without it. Raise an Exception
             else:
-                raise TypeError("Parameter {} has an unspecified "
-                                "type".format(param.name))
+                raise TypeError("Parameter {} has an unspecified type".format(param.name))
 
             # Add our parameter
             self.add_parameter(param.name, _type, default=param.default)
@@ -305,8 +308,9 @@ class FunctionDisplay(QGroupBox):
         Required parameters.
         """
         parameters = self.signature.parameters
-        return [param.parameter for param in self.param_controls
-                if parameters[param.parameter].default == inspect._empty]
+        return [
+            param.parameter for param in self.param_controls if parameters[param.parameter].default == inspect._empty
+        ]
 
     @property
     def optional_params(self):
@@ -314,8 +318,9 @@ class FunctionDisplay(QGroupBox):
         Optional parameters.
         """
         parameters = self.signature.parameters
-        return [param.parameter for param in self.param_controls
-                if parameters[param.parameter].default != inspect._empty]
+        return [
+            param.parameter for param in self.param_controls if parameters[param.parameter].default != inspect._empty
+        ]
 
     @Slot()
     def execute(self):
@@ -336,15 +341,13 @@ class FunctionDisplay(QGroupBox):
             kwargs = dict()
             # Gather information from parameter widgets
             for button in self.param_controls:
-                logger.debug("Gathering parameters for %s ...",
-                             button.parameter)
+                logger.debug("Gathering parameters for %s ...", button.parameter)
                 val = button.get_param_value()
                 logger.debug("Received %s", val)
                 # Watch for NaN values returned from widgets
                 # This indicates that there was improper information given
                 if np.isnan(val):
-                    logger.error("Invalid information supplied for %s "
-                                 "parameter", button.parameter)
+                    logger.error("Invalid information supplied for %s parameter", button.parameter)
                     return
                 kwargs[button.parameter] = val
             # Button up function call with partial to try below
@@ -383,20 +386,16 @@ class FunctionDisplay(QGroupBox):
             The generated widget.
         """
         if tooltip is None:
-            tooltip_header = f'{name} - {_type.__name__}'
-            tooltip = [
-                tooltip_header,
-                '-' * len(tooltip_header)
-            ]
+            tooltip_header = f"{name} - {_type.__name__}"
+            tooltip = [tooltip_header, "-" * len(tooltip_header)]
 
             if default != inspect._empty:
-                tooltip.append(f'Default: {default}')
+                tooltip.append(f"Default: {default}")
 
             try:
-                doc_param = self.docs['params'][name]
+                doc_param = self.docs["params"][name]
             except KeyError:
-                logger.debug('Parameter information is not available '
-                             'for %s(%s)', self.name, name)
+                logger.debug("Parameter information is not available for %s(%s)", self.name, name)
             else:
                 if doc_param:
                     tooltip.extend(doc_param)
@@ -404,18 +403,18 @@ class FunctionDisplay(QGroupBox):
             # If the tooltip is just the header, remove the dashes underneath:
             if len(tooltip) == 2:
                 tooltip = tooltip[:1]
-            tooltip = '\n'.join(tooltip)
+            tooltip = "\n".join(tooltip)
 
         # Create our parameter control widget
         # QCheckBox field
-        if _type == bool:
+        if _type is bool:
             cntrl = ParamCheckBox(name, default=default)
         else:
             # Check if this is a valid type
             if _type not in self.accepted_types:
-                raise TypeError("Parameter {} has type {} which can not "
-                                "be represented in a widget"
-                                "".format(name, _type.__name__))
+                raise TypeError(
+                    "Parameter {} has type {} which can not be represented in a widget".format(name, _type.__name__)
+                )
             # Create our QLineEdit
             cntrl = ParamLineEdit(name, default=default, _type=_type)
         # Add our button to the widget
@@ -455,6 +454,7 @@ class FunctionPanel(TogglePanel):
 
     parent : QWidget
     """
+
     def __init__(self, methods=None, parent=None):
         # Initialize parent
         super().__init__("Functions", parent=parent)
@@ -486,7 +486,7 @@ class FunctionPanel(TogglePanel):
             :class:`.FunctionDisplay` constructor.
         """
         # Create method display
-        func_name = kwargs.get('name', func.__name__)
+        func_name = kwargs.get("name", func.__name__)
         logger.debug("Adding method %s ...", func_name)
         widget = FunctionDisplay(func, *args, **kwargs)
         # Store for posterity
@@ -494,8 +494,7 @@ class FunctionPanel(TogglePanel):
         # Add to panel. Make sure that if this is
         # the first added method that the panel is visible
         self.show_contents(True)
-        self.contents.layout().insertWidget(len(self.methods),
-                                            widget)
+        self.contents.layout().insertWidget(len(self.methods), widget)
 
 
 class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
@@ -506,11 +505,12 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
     will be run when the button is clicked. If ``use_status`` is set to True,
     the button will be disabled while the ``Status`` object is active.
     """
+
     _min_visible_operation = 0.1
     _max_allowed_operation = 10.0
 
     def __init__(self, parent=None):
-        self._method = ''
+        self._method = ""
         self._use_status = False
         super().__init__(parent=parent)
         self._status_thread = None
@@ -555,15 +555,13 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
             logger.error("No device loaded into the object")
             return
         device = self.devices[0]
-        logger.debug("Grabbing method %r from %r ...",
-                     self.method_name, device.name)
+        logger.debug("Grabbing method %r from %r ...", self.method_name, device.name)
         try:
             method = getattr(device, self.method_name)
             logger.debug("Executing method ...")
             status = method()
         except Exception as exc:
-            logger.exception("Error executing method %r.",
-                             self.method_name)
+            logger.exception("Error executing method %r.", self.method_name)
             raise_to_operator(exc)
             return
         if self.use_status:
@@ -579,7 +577,8 @@ class TyphosMethodButton(QPushButton, TyphosDesignerMixin):
             self._status_thread = None
             logger.debug("Setting up new status thread ...")
             self._status_thread = TyphosStatusThread(
-                status, start_delay=self._min_visible_operation,
+                status,
+                start_delay=self._min_visible_operation,
                 timeout=self._max_allowed_operation,
                 parent=self,
             )

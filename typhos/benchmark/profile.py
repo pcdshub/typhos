@@ -1,6 +1,7 @@
 """
 Module using line_profiler to measure code performance and diagnose slowdowns.
 """
+
 import logging
 import warnings
 from contextlib import contextmanager
@@ -9,10 +10,10 @@ from .utils import get_native_functions, get_submodules
 
 logger = logging.getLogger(__name__)
 
-_optional_err = ('Optional dependency line_profiler missing from python '
-                 'environment. Cannot run profiler.')
+_optional_err = "Optional dependency line_profiler missing from python environment. Cannot run profiler."
 try:
     from line_profiler import LineProfiler
+
     has_line_profiler = True
 except ImportError:
     has_line_profiler = False
@@ -58,7 +59,7 @@ def setup_profiler(module_names=None):
     e.g. module_names=['typhos.display'].
     """
     if module_names is None:
-        module_names = ['typhos']
+        module_names = ["typhos"]
 
     profiler = get_profiler()
 
@@ -87,7 +88,7 @@ def toggle_profiler(turn_on):
 def save_results(filename):
     """Saves the formatted profiling results to filename."""
     profiler = get_profiler()
-    with open(filename, 'w') as fd:
+    with open(filename, "w") as fd:
         profiler.print_stats(fd, stripzeros=True, output_unit=1e-3)
 
 

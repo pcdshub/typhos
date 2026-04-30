@@ -1,18 +1,19 @@
 """
 Widgets that open up typhos displays.
 """
+
 import logging
 
 from pydm.utilities import establish_widget_connections, is_qt_designer
 from qtpy import QtCore, QtWidgets
 
 from .suite import TyphosSuite
-from .utils import (TyphosObject, no_device_lazy_load, raise_window,
-                    use_stylesheet)
+from .utils import TyphosObject, no_device_lazy_load, raise_window, use_stylesheet
 
 try:
     from happi.client import Client
     from happi.loader import load_devices
+
     happi_loaded = True
 except ImportError:
     happi_loaded = False
@@ -24,8 +25,7 @@ logger = logging.getLogger(__name__)
 def happi_check():
     if not happi_loaded:
         logger.warning(
-            'The happi module is not in your Python environment, '
-            'happi TyphosRelatedSuiteButton features will not work.'
+            "The happi module is not in your Python environment, happi TyphosRelatedSuiteButton features will not work."
         )
     return happi_loaded
 
@@ -43,12 +43,12 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._happi_names = []
-        self._happi_cfg = ''
+        self._happi_cfg = ""
         self._preload = False
         self._suite = None
         self.clicked.connect(self.show_suite)
 
-    @QtCore.Property('QStringList')
+    @QtCore.Property("QStringList")
     def happi_names(self):
         """
         List of devices to include in the suite.
@@ -112,7 +112,7 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
         """
         devices = self.devices + self.get_happi_devices()
         if not devices:
-            raise ValueError('There are no devices assigned to this button.')
+            raise ValueError("There are no devices assigned to this button.")
         self._suite = TyphosSuite.from_devices(devices)
         use_stylesheet(widget=self._suite)
         establish_widget_connections(self._suite)
@@ -133,14 +133,12 @@ class TyphosRelatedSuiteButton(TyphosObject, QtWidgets.QPushButton):
                     search_result = happi_client.search(name=name)[0]
                 except IndexError:
                     raise ValueError(
-                        f'Did not find device with name {name} in happi. '
-                        'Please check your spelling and your database.'
+                        f"Did not find device with name {name} in happi. Please check your spelling and your database."
                     ) from None
                 items.append(search_result.item)
 
             with no_device_lazy_load():
                 device_namespace = load_devices(*items, threaded=True)
 
-            return [getattr(device_namespace, name)
-                    for name in self.happi_names]
+            return [getattr(device_namespace, name) for name in self.happi_names]
         return []

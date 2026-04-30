@@ -2,8 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 from ophyd.status import Status
-from ophyd.utils import (StatusTimeoutError, UnknownStatusFailure,
-                         WaitTimeoutError)
+from ophyd.utils import StatusTimeoutError, UnknownStatusFailure, WaitTimeoutError
 from qtpy.QtWidgets import QWidget
 
 from typhos.status import TyphosStatusResult, TyphosStatusThread
@@ -21,20 +20,20 @@ class Listener(QWidget):
         self.exc = Mock()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def status(qtbot):
     status = Status()
     return status
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def listener(qtbot, status):
     listener = Listener()
     qtbot.addWidget(listener)
     return listener
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def thread(qtbot, status, listener):
     thread = TyphosStatusThread(status)
     thread.status_started.connect(listener.started)
@@ -72,7 +71,7 @@ def test_status_thread_completed(qtbot, listener, status, thread):
     assert not listener.timeout.called
     assert not listener.err_msg.called
     assert not listener.exc.called
-    res, = listener.finished.call_args[0]
+    (res,) = listener.finished.call_args[0]
     assert res == TyphosStatusResult.success
 
 
@@ -84,15 +83,15 @@ def test_status_thread_wait_timeout(qtbot, listener, thread, status):
     thread.start()
     qtbot.waitUntil(lambda: listener.started.called, timeout=2000)
     qtbot.waitUntil(lambda: listener.timeout.called, timeout=2000)
-    msg, = listener.err_msg.call_args[0]
-    exc, = listener.exc.call_args[0]
+    (msg,) = listener.err_msg.call_args[0]
+    (exc,) = listener.exc.call_args[0]
     assert "taking longer than expected" in msg.text
     assert isinstance(exc, WaitTimeoutError)
     assert not listener.finished.called
     # and now we should be able to finish
     status.set_finished()
     qtbot.waitUntil(lambda: listener.finished.called, timeout=2000)
-    res, = listener.finished.call_args[0]
+    (res,) = listener.finished.call_args[0]
     assert res == TyphosStatusResult.success
 
 
@@ -107,9 +106,9 @@ def test_status_thread_status_timeout(qtbot, listener, thread):
     qtbot.waitUntil(lambda: listener.err_msg.called, timeout=2000)
     qtbot.waitUntil(lambda: listener.exc.called, timeout=2000)
     qtbot.waitUntil(lambda: listener.finished.called, timeout=2000)
-    res, = listener.finished.call_args[0]
-    msg, = listener.err_msg.call_args[0]
-    exc, = listener.exc.call_args[0]
+    (res,) = listener.finished.call_args[0]
+    (msg,) = listener.err_msg.call_args[0]
+    (exc,) = listener.exc.call_args[0]
     assert res == TyphosStatusResult.failure
     assert "failed with timeout" in msg.text
     assert isinstance(exc, StatusTimeoutError)
@@ -126,9 +125,9 @@ def test_status_thread_unk_failure(qtbot, listener, status, thread):
     qtbot.waitUntil(lambda: listener.err_msg.called, timeout=2000)
     qtbot.waitUntil(lambda: listener.exc.called, timeout=2000)
     qtbot.waitUntil(lambda: listener.finished.called, timeout=2000)
-    res, = listener.finished.call_args[0]
-    msg, = listener.err_msg.call_args[0]
-    exc, = listener.exc.call_args[0]
+    (res,) = listener.finished.call_args[0]
+    (msg,) = listener.err_msg.call_args[0]
+    (exc,) = listener.exc.call_args[0]
     assert res == TyphosStatusResult.failure
     assert "failed with no reason" in msg.text
     assert isinstance(exc, UnknownStatusFailure)
@@ -145,9 +144,9 @@ def test_status_thread_specific_failure(qtbot, listener, status, thread):
     qtbot.waitUntil(lambda: listener.err_msg.called, timeout=2000)
     qtbot.waitUntil(lambda: listener.exc.called, timeout=2000)
     qtbot.waitUntil(lambda: listener.finished.called, timeout=2000)
-    res, = listener.finished.call_args[0]
-    msg, = listener.err_msg.call_args[0]
-    exc, = listener.exc.call_args[0]
+    (res,) = listener.finished.call_args[0]
+    (msg,) = listener.err_msg.call_args[0]
+    (exc,) = listener.exc.call_args[0]
     assert res == TyphosStatusResult.failure
     assert "test_error" in msg.text
     assert not isinstance(exc, WaitTimeoutError)

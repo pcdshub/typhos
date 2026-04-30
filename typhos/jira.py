@@ -23,7 +23,7 @@ def _failsafe_call(func, *args, value_on_failure=None, **kwargs):
         return func(*args, **kwargs)
     except Exception as ex:
         if value_on_failure is None:
-            return f'FAILURE: {type(ex).__name__}: {ex}'
+            return f"FAILURE: {type(ex).__name__}: {ex}"
         return value_on_failure
 
 
@@ -42,13 +42,12 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
         self.name = QtWidgets.QLineEdit(getpass.getuser())
         layout.addRow("Your &name", self.name)
         # TODO jira suffix
-        self.email = QtWidgets.QLineEdit(
-            f"{getpass.getuser()}{utils.JIRA_EMAIL_SUFFIX}"
-        )
+        self.email = QtWidgets.QLineEdit(f"{getpass.getuser()}{utils.JIRA_EMAIL_SUFFIX}")
         layout.addRow("Your &e-mail", self.email)
         self.summary = QtWidgets.QLineEdit("")
         layout.addRow("Issue &summary", self.summary)
-        self.details = QtWidgets.QPlainTextEdit("""\
+        self.details = QtWidgets.QPlainTextEdit(
+            """\
 * What were you trying to do?
 
 * What did the device/interface/etc do?
@@ -56,7 +55,8 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
 * What should have happened?
 
 * Please provide additional context here:
-        """.strip())
+        """.strip()
+        )
 
         layout.addRow("Issue &details", self.details)
         self.submit = QtWidgets.QPushButton("Submit")
@@ -67,9 +67,7 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
 
         self.device = device
         if device is not None:
-            self.summary.setText(
-                f"Device {device.name} ({device.__class__.__name__})"
-            )
+            self.summary.setText(f"Device {device.name} ({device.__class__.__name__})")
             self.setWindowTitle(f"Typhos issue reporting ({device.name})")
         else:
             self.setWindowTitle("Typhos issue reporting")
@@ -77,6 +75,7 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
     @staticmethod
     def get_environment():
         """Get the default environment information."""
+
         def monospace(text):
             return "{{%s}}" % text
 
@@ -93,10 +92,7 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
     @property
     def anything_provided(self) -> bool:
         """Were any fields filled out whatsoever?"""
-        return any(
-            bool(value.strip())
-            for value in self.get_dictionary().values()
-        )
+        return any(bool(value.strip()) for value in self.get_dictionary().values())
 
     def get_dictionary(self, full=False) -> dict[str, str]:
         """Return all issue details as a dictionary."""
@@ -111,7 +107,7 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
             email=self.email.text().strip(),
             summary=self.summary.text().strip(),
             description=self.details.toPlainText().strip(),
-            **(auto_generated if full else {})
+            **(auto_generated if full else {}),
         )
 
     def _check_submission(self):
@@ -121,11 +117,7 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
             summary="Summary",
             description="Description",
         )
-        errors = [
-            f"Missing field: {desc}"
-            for key, desc in required_fields.items()
-            if not as_dict[key]
-        ]
+        errors = [f"Missing field: {desc}" for key, desc in required_fields.items() if not as_dict[key]]
 
         if errors:
             self.status.setText("\n".join(errors))
@@ -143,10 +135,7 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
         self.status.setText("All fields OK. Submitting...")
         try:
             with urllib.request.urlopen(self.request, timeout=5) as fp:
-                logger.info(
-                    "Jira collector response: %s",
-                    fp.read().decode('utf-8')
-                )
+                logger.info("Jira collector response: %s", fp.read().decode("utf-8"))
         except Exception as ex:
             # Sorry, please don't hold it against us...
             raise_to_operator(ex)
@@ -173,9 +162,9 @@ class TyphosJiraIssueWidget(QtWidgets.QFrame):
 
         result = QtWidgets.QMessageBox.question(
             self,
-            'Cancel issue submission',
-            'Cancel issue submission? Nothing will be saved or reported.',
-            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            "Cancel issue submission",
+            "Cancel issue submission? Nothing will be saved or reported.",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
         )
         if result == QtWidgets.QMessageBox.Yes:
             event.accept()

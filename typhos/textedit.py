@@ -4,6 +4,7 @@ Multiline text edit widget.
 Variety support pending:
 - Text format
 """
+
 import logging
 
 import numpy as np
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @variety.uses_key_handlers
-@variety.use_for_variety_write('text-multiline')
+@variety.use_for_variety_write("text-multiline")
 class TyphosTextEdit(QtWidgets.QWidget, PyDMWritableWidget):
     """
     A writable, multiline text editor with support for PyDM Channels.
@@ -30,14 +31,13 @@ class TyphosTextEdit(QtWidgets.QWidget, PyDMWritableWidget):
         The channel to be used by the widget.
     """
 
-    def __init__(self, parent=None, init_channel=None, variety_metadata=None,
-                 ophyd_signal=None):
+    def __init__(self, parent=None, init_channel=None, variety_metadata=None, ophyd_signal=None):
 
         self._display_text = None
         self._encoding = "utf-8"
-        self._delimiter = '\n'
+        self._delimiter = "\n"
         self._ophyd_signal = ophyd_signal
-        self._format = 'plain'
+        self._format = "plain"
         self._raw_value = None
 
         QtWidgets.QWidget.__init__(self, parent)
@@ -53,10 +53,10 @@ class TyphosTextEdit(QtWidgets.QWidget, PyDMWritableWidget):
         self.setLayout(layout)
 
         self._text_edit = QtWidgets.QTextEdit()
-        self._send_button = QtWidgets.QPushButton('Send')
+        self._send_button = QtWidgets.QPushButton("Send")
         self._send_button.clicked.connect(self._send_clicked)
 
-        self._revert_button = QtWidgets.QPushButton('Revert')
+        self._revert_button = QtWidgets.QPushButton("Revert")
         self._revert_button.clicked.connect(self._revert_clicked)
 
         self._button_layout = QtWidgets.QHBoxLayout()
@@ -86,8 +86,7 @@ class TyphosTextEdit(QtWidgets.QWidget, PyDMWritableWidget):
             text = self._text_edit.toPlainText()
 
         text = self._delimiter.join(text.splitlines())
-        return np.array(list(text.encode(self._encoding)),
-                        dtype=np.uint8)
+        return np.array(list(text.encode(self._encoding)), dtype=np.uint8)
 
     def _from_wire(self, value):
         """numpy array/string/bytes -> string."""
@@ -107,8 +106,10 @@ class TyphosTextEdit(QtWidgets.QWidget, PyDMWritableWidget):
         except ValueError:
             logger.exception(
                 "send_value error %r with type %r and format %r (widget %r).",
-                send_value, self.channeltype, self._display_format_type,
-                self.objectName()
+                send_value,
+                self.channeltype,
+                self._display_format_type,
+                self.objectName(),
             )
 
         self._text_edit.document().setModified(False)
@@ -137,18 +138,18 @@ class TyphosTextEdit(QtWidgets.QWidget, PyDMWritableWidget):
         if self._raw_value is not None:
             self.value_changed(self._raw_value)
 
-    @variety.key_handler('delimiter')
+    @variety.key_handler("delimiter")
     def _variety_key_handler_delimiter(self, delimiter):
         self._delimiter = delimiter
 
-    @variety.key_handler('encoding')
+    @variety.key_handler("encoding")
     def _variety_key_handler_encoding(self, encoding):
         self._encoding = encoding
         self._reinterpret_text()
 
-    @variety.key_handler('format')
+    @variety.key_handler("format")
     def _variety_key_handler_format(self, format_):
         self._format = format_
-        if format_ != 'plain':
-            logger.warning('Non-plain formats not yet implemented.')
+        if format_ != "plain":
+            logger.warning("Non-plain formats not yet implemented.")
         self._reinterpret_text()

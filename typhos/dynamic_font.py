@@ -3,6 +3,7 @@ Dynamic font size helper utilities:
 
 Dynamically set widget font size based on its current size.
 """
+
 from __future__ import annotations
 
 import functools
@@ -64,11 +65,7 @@ def get_widget_maximum_font_size(
     current_width = 0.0
 
     # Only stop when step is small enough and new size is smaller than QWidget
-    while (
-        step > precision
-        or (curent_height > target_height)
-        or (current_width > target_width)
-    ):
+    while step > precision or (curent_height > target_height) or (current_width > target_width):
         # Keep last tested value
         last_tested_size = current_size
 
@@ -199,6 +196,7 @@ def patch_text_widget(
 
     The text is immediately resized for the first time during this function call.
     """
+
     def set_font_size() -> None:
         font_size = get_max_font_size_cached(
             widget.text(),
@@ -264,10 +262,9 @@ def patch_combo_widget(
 
     The text is immediately resized for the first time during this function call.
     """
+
     def set_font_size() -> None:
-        combo_options = [
-            widget.itemText(index) for index in range(widget.count())
-        ]
+        combo_options = [widget.itemText(index) for index in range(widget.count())]
         font_sizes = [
             get_max_font_size_cached(
                 text,
@@ -307,9 +304,7 @@ def patch_combo_widget(
 
     orig_resize_event = widget.resizeEvent
 
-    resizeEvent._patched_methods_ = (
-        widget.resizeEvent,
-    )
+    resizeEvent._patched_methods_ = (widget.resizeEvent,)
     widget.resizeEvent = resizeEvent
     set_font_size()
 
@@ -342,9 +337,7 @@ def unpatch_text_widget(widget: QtWidgets.QLabel | QtWidgets.QLineEdit):
 
 
 def unpatch_combo_widget(widget: QtWidgets.QComboBox):
-    (
-        widget.resizeEvent,
-    ) = widget.resizeEvent._patched_methods_
+    (widget.resizeEvent,) = widget.resizeEvent._patched_methods_
 
 
 def is_patched(widget: QtWidgets.QWidget) -> bool:
@@ -392,9 +385,7 @@ def patch_style_font_size(widget: QtWidgets.QWidget, font_size: int) -> None:
     if standard_comment in starting_stylesheet:
         unpatch_style_font_size(widget=widget)
     widget.setStyleSheet(
-        f"{widget.styleSheet()}\n"
-        f"{standard_comment}\n"
-        f"{widget.__class__.__name__} {{ font-size: {font_size} pt }}"
+        f"{widget.styleSheet()}\n{standard_comment}\n{widget.__class__.__name__} {{ font-size: {font_size} pt }}"
     )
 
 
@@ -406,6 +397,4 @@ def unpatch_style_font_size(widget: QtWidgets.QWidget) -> None:
     and the rule that we added.
     """
     if standard_comment in widget.styleSheet():
-        widget.setStyleSheet(
-            "\n".join(widget.styleSheet().split("\n")[:-2])
-        )
+        widget.setStyleSheet("\n".join(widget.styleSheet().split("\n")[:-2]))

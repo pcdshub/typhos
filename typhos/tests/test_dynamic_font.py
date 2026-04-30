@@ -9,8 +9,7 @@ from qtpy import QtCore, QtGui, QtWidgets
 
 from typhos.tests import conftest
 
-from ..dynamic_font import (is_patched, patch_style_font_size, patch_widget,
-                            unpatch_style_font_size, unpatch_widget)
+from ..dynamic_font import is_patched, patch_style_font_size, patch_widget, unpatch_style_font_size, unpatch_widget
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
         QtWidgets.QPushButton,
         QtWidgets.QComboBox,
         PyDMLabel,
-    ]
+    ],
 )
 def test_patching(
     request: pytest.FixtureRequest,
@@ -62,7 +61,7 @@ def test_patching(
 
     # Font size case 2: text is updated (not supported in combobox yet)
     if not isinstance(widget, QtWidgets.QComboBox):
-        widget.setText(widget.text()*100)
+        widget.setText(widget.text() * 100)
         new_text_font_size = widget.font().pointSizeF()
         logger.debug(f"setText patched font size is {new_text_font_size}")
         assert resized_font_size != new_text_font_size
@@ -84,7 +83,7 @@ def test_patching(
         "background: red",
         "QLabel { background: blue }",
         "QWidget { font-size: 12 pt }",
-    ]
+    ],
 )
 def test_style_patching(stylesheet: str, qtbot: pytestqt.qtbot.QtBot):
     widget = QtWidgets.QWidget()

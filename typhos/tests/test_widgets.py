@@ -5,8 +5,7 @@ from qtpy.QtWidgets import QWidget
 
 from typhos import widgets
 from typhos.suite import SidebarParameter
-from typhos.widgets import (ImageDialogButton, QDialog, SignalDialogButton,
-                            TyphosSidebarItem, WaveformDialogButton)
+from typhos.widgets import ImageDialogButton, QDialog, SignalDialogButton, TyphosSidebarItem, WaveformDialogButton
 
 from .conftest import pydm_version_xfail
 
@@ -21,16 +20,16 @@ class DialogButton(SignalDialogButton):
         return widget
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def widget_button(qtbot, monkeypatch):
-    monkeypatch.setattr(QDialog, 'exec_', lambda x: 1)
-    button = DialogButton('ca://Pv:1')
+    monkeypatch.setattr(QDialog, "exec_", lambda x: 1)
+    button = DialogButton("ca://Pv:1")
     qtbot.addWidget(button)
     return button
 
 
 def test_sidebar_item():
-    param = SidebarParameter(name='test', embeddable=True)
+    param = SidebarParameter(name="test", embeddable=True)
     item = TyphosSidebarItem(param, 0)
     assert len(item.toolbar.actions()) == 3
     assert item.open_action.isEnabled()
@@ -68,11 +67,9 @@ def test_signal_dialog_button_repeated_show(qtbot, widget_button):
 
 @pydm_version_xfail
 @pytest.mark.no_cleanup_check
-@pytest.mark.parametrize('button_type', [WaveformDialogButton,
-                                         ImageDialogButton],
-                         ids=['Waveform', 'Image'])
+@pytest.mark.parametrize("button_type", [WaveformDialogButton, ImageDialogButton], ids=["Waveform", "Image"])
 def test_dialog_button_instances_smoke(qtbot, button_type):
-    button = button_type(init_channel='ca://Pv:2')
+    button = button_type(init_channel="ca://Pv:2")
     qtbot.addWidget(button)
     widget = button.widget()
     qtbot.addWidget(widget)
@@ -83,7 +80,7 @@ def test_line_edit_history(qtbot, motor):
     widget = widgets.TyphosLineEdit()
     qtbot.addWidget(widget)
 
-    widget.channel = 'sig://' + ophyd.sim.motor.setpoint.name
+    widget.channel = "sig://" + ophyd.sim.motor.setpoint.name
     widget.channeltype = int  # hack
     pydm.utilities.establish_widget_connections(widget)
 
@@ -92,7 +89,7 @@ def test_line_edit_history(qtbot, motor):
         widget.setText(str(i))
         widget.send_value()
 
-    expected = items[-widget.setpointHistoryCount:]
+    expected = items[-widget.setpointHistoryCount :]
     assert list(widget.setpoint_history) == [str(s) for s in expected]
 
     # Smoke test menu creation

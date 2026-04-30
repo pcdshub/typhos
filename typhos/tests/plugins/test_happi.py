@@ -39,7 +39,7 @@ def test_connection(
 
     # Register a channel and check we received object and metadata
     mock = Mock()
-    hc = HappiChannel(address='happi://test_device', tx_slot=mock)
+    hc = HappiChannel(address="happi://test_device", tx_slot=mock)
     hc.connect()
 
     assert set(happi_plugin.channels) == {hc}
@@ -50,11 +50,11 @@ def test_connection(
     qtbot.wait_until(mock_called)
 
     tx = mock.call_args[0][0]
-    assert isinstance(tx['obj'], ophyd.sim.SynAxis)
-    assert isinstance(tx['md'], dict)
+    assert isinstance(tx["obj"], ophyd.sim.SynAxis)
+    assert isinstance(tx["md"], dict)
     # Add another object and check that the connection does refire
     mock2 = Mock()
-    hc2 = HappiChannel(address='happi://test_device', tx_slot=mock2)
+    hc2 = HappiChannel(address="happi://test_device", tx_slot=mock2)
     hc2.connect()
 
     assert set(happi_plugin.channels) == {hc, hc2}
@@ -77,7 +77,7 @@ def test_connection_for_child(
     happi_plugin: HappiPlugin,
 ):
     mock = Mock()
-    hc = HappiChannel(address='happi://test_motor.setpoint', tx_slot=mock)
+    hc = HappiChannel(address="happi://test_motor.setpoint", tx_slot=mock)
     hc.connect()
 
     def mock_called():
@@ -85,16 +85,16 @@ def test_connection_for_child(
 
     qtbot.wait_until(mock_called)
     tx = mock.call_args[0][0]
-    assert tx['obj'].name == 'test_motor_setpoint'
+    assert tx["obj"].name == "test_motor_setpoint"
 
 
 def test_bad_address_smoke(client: happi.Client):
-    hc = HappiChannel(address='happi://not_a_device', tx_slot=lambda x: None)
+    hc = HappiChannel(address="happi://not_a_device", tx_slot=lambda x: None)
     hc.connect()
 
 
 def test_happi_is_optional():
-    with patch.dict(sys.modules, {'happi': None}):
+    with patch.dict(sys.modules, {"happi": None}):
         importlib.reload(typhos.plugins)
         importlib.reload(typhos)
-        assert sys.modules['happi'] is None
+        assert sys.modules["happi"] is None

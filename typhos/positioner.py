@@ -137,29 +137,30 @@ class TyphosPositionerWidget(
                    ``hinted`` signals.
     ============== ===========================================================
     """
+
     QtCore.Q_ENUMS(_KindLevel)
     KindLevel = KindLevel
 
     ui: _TyphosPositionerUI
-    ui_template = os.path.join(utils.ui_dir, 'widgets', 'positioner.ui')
-    _readback_attr = 'user_readback'
-    _setpoint_attr = 'user_setpoint'
-    _low_limit_switch_attr = 'low_limit_switch'
-    _high_limit_switch_attr = 'high_limit_switch'
-    _low_limit_travel_attr = 'low_limit_travel'
-    _high_limit_travel_attr = 'high_limit_travel'
-    _velocity_attr = 'velocity'
-    _acceleration_attr = 'acceleration'
-    _moving_attr = 'motor_is_moving'
-    _error_message_attr = 'error_message'
+    ui_template = os.path.join(utils.ui_dir, "widgets", "positioner.ui")
+    _readback_attr = "user_readback"
+    _setpoint_attr = "user_setpoint"
+    _low_limit_switch_attr = "low_limit_switch"
+    _high_limit_switch_attr = "high_limit_switch"
+    _low_limit_travel_attr = "low_limit_travel"
+    _high_limit_travel_attr = "high_limit_travel"
+    _velocity_attr = "velocity"
+    _acceleration_attr = "acceleration"
+    _moving_attr = "motor_is_moving"
+    _error_message_attr = "error_message"
     _min_visible_operation = 0.1
 
     alarm_text = {
-        AlarmLevel.NO_ALARM: 'no alarm',
-        AlarmLevel.MINOR: 'minor',
-        AlarmLevel.MAJOR: 'major',
-        AlarmLevel.DISCONNECTED: 'no conn',
-        AlarmLevel.INVALID: 'invalid',
+        AlarmLevel.NO_ALARM: "no alarm",
+        AlarmLevel.MINOR: "minor",
+        AlarmLevel.MAJOR: "major",
+        AlarmLevel.DISCONNECTED: "no conn",
+        AlarmLevel.INVALID: "invalid",
     }
 
     def __init__(self, parent=None):
@@ -289,11 +290,13 @@ class TyphosPositionerWidget(
         mult = rescale
         # This time is always greater than the kinematic calc
         return (
-            math.ceil(rescale * (dist/speed + 2 * abs(acc_time)) + abs(settle_time)),
-            ("an upper bound on the expected time based on the speed, distance traveled, "
-             "and acceleration time. Numerically, this is "
-             f"{mult=}*({dist=:.2f}{units}/{speed=:.2f}{units}/s) + "
-             f"2*{acc_time=:.2f}s + {settle_time=}s, rounded up."),
+            math.ceil(rescale * (dist / speed + 2 * abs(acc_time)) + abs(settle_time)),
+            (
+                "an upper bound on the expected time based on the speed, distance traveled, "
+                "and acceleration time. Numerically, this is "
+                f"{mult=}*({dist=:.2f}{units}/{speed=:.2f}{units}/s) + "
+                f"2*{acc_time=:.2f}s + {settle_time=}s, rounded up."
+            ),
         )
 
     def _set(self, value):
@@ -310,10 +313,9 @@ class TyphosPositionerWidget(
             timeout, desc = self._get_timeout(set_position, settle_time=5, rescale=1.2)
         except Exception:
             # Something went wrong, just run without a timeout.
-            logger.exception('Unable to estimate motor timeout.')
+            logger.exception("Unable to estimate motor timeout.")
             timeout = None
-        logger.debug("Setting device %r to %r with timeout %r",
-                     self.device, value, timeout)
+        logger.debug("Setting device %r to %r with timeout %r", self.device, value, timeout)
         try:
             status = self.device.set(set_position)
         except Exception as exc:
@@ -352,7 +354,7 @@ class TyphosPositionerWidget(
         try:
             setpoint = self._get_position() + float(offset)
         except Exception:
-            logger.exception('Tweak failed')
+            logger.exception("Tweak failed")
             return
 
         self.ui.set_value.setText(str(setpoint))
@@ -364,7 +366,7 @@ class TyphosPositionerWidget(
         try:
             self.tweak(float(self.tweak_value.text()))
         except Exception:
-            logger.exception('Tweak failed')
+            logger.exception("Tweak failed")
 
     @QtCore.Slot()
     def negative_tweak(self):
@@ -372,7 +374,7 @@ class TyphosPositionerWidget(
         try:
             self.tweak(-float(self.tweak_value.text()))
         except Exception:
-            logger.exception('Tweak failed')
+            logger.exception("Tweak failed")
 
     @QtCore.Slot()
     def stop(self):
@@ -394,7 +396,7 @@ class TyphosPositionerWidget(
         """
         for device in self.devices:
             clear_error_in_background(device)
-        self._set_status_text('')
+        self._set_status_text("")
         # This variable holds True if last move was good, False otherwise
         # It also controls whether or not we have a red box on the widget
         # False = Red, True = Green, None = no box (in motion is yellow)
@@ -406,43 +408,40 @@ class TyphosPositionerWidget(
             raise Exception("No Device configured for widget!")
         return self._readback.get()
 
-    @utils.linked_attribute('readback_attribute', 'ui.user_readback', True)
+    @utils.linked_attribute("readback_attribute", "ui.user_readback", True)
     def _link_readback(self, signal, widget):
         """Link the positioner readback with the ui element."""
         self._readback = signal
 
-    @utils.linked_attribute('setpoint_attribute', 'ui.user_setpoint', True)
+    @utils.linked_attribute("setpoint_attribute", "ui.user_setpoint", True)
     def _link_setpoint(self, signal, widget):
         """Link the positioner setpoint with the ui element."""
         self._setpoint = signal
         if signal is not None:
             # Seed the set_value text with the user_setpoint channel value.
-            if hasattr(widget, 'textChanged'):
+            if hasattr(widget, "textChanged"):
                 widget.textChanged.connect(self._user_setpoint_update)
 
-    @utils.linked_attribute('low_limit_switch_attribute',
-                            'ui.low_limit_switch', True)
+    @utils.linked_attribute("low_limit_switch_attribute", "ui.low_limit_switch", True)
     def _link_low_limit_switch(self, signal, widget):
         """Link the positioner lower limit switch with the ui element."""
         if signal is None:
             widget.hide()
             self._show_lowlim = False
 
-    @utils.linked_attribute('high_limit_switch_attribute',
-                            'ui.high_limit_switch', True)
+    @utils.linked_attribute("high_limit_switch_attribute", "ui.high_limit_switch", True)
     def _link_high_limit_switch(self, signal, widget):
         """Link the positioner high limit switch with the ui element."""
         if signal is None:
             widget.hide()
             self._show_highlim = False
 
-    @utils.linked_attribute('low_limit_travel_attribute', 'ui.low_limit', True)
+    @utils.linked_attribute("low_limit_travel_attribute", "ui.low_limit", True)
     def _link_low_travel(self, signal, widget):
         """Link the positioner lower travel limit with the ui element."""
         return signal is not None
 
-    @utils.linked_attribute('high_limit_travel_attribute', 'ui.high_limit',
-                            True)
+    @utils.linked_attribute("high_limit_travel_attribute", "ui.high_limit", True)
     def _link_high_travel(self, signal, widget):
         """Link the positioner high travel limit with the ui element."""
         return signal is not None
@@ -470,7 +469,7 @@ class TyphosPositionerWidget(
         self._show_lowtrav = False
         self._show_hightrav = False
 
-    @utils.linked_attribute('moving_attribute', 'ui.moving_indicator', True)
+    @utils.linked_attribute("moving_attribute", "ui.moving_indicator", True)
     def _link_moving(self, signal, widget):
         """Link the positioner moving indicator with the ui element."""
         if signal is None:
@@ -488,7 +487,7 @@ class TyphosPositionerWidget(
         self._moving_channel.connect()
         return True
 
-    @utils.linked_attribute('error_message_attribute', 'ui.error_label', True)
+    @utils.linked_attribute("error_message_attribute", "ui.error_label", True)
     def _link_error_message(self, signal, widget):
         """Link the IOC error message with the ui element."""
         if signal is None:
@@ -522,17 +521,13 @@ class TyphosPositionerWidget(
             self.ui.set_value.returnPressed.connect(self.set)
 
         self.ui.set_value.setSizePolicy(self.ui.user_setpoint.sizePolicy())
-        self.ui.set_value.setMinimumWidth(
-            self.ui.user_setpoint.minimumWidth()
-        )
-        self.ui.set_value.setMaximumWidth(
-            self.ui.user_setpoint.maximumWidth()
-        )
+        self.ui.set_value.setMinimumWidth(self.ui.user_setpoint.minimumWidth())
+        self.ui.set_value.setMaximumWidth(self.ui.user_setpoint.maximumWidth())
         self.ui.setpoint_layout.addWidget(
             self.ui.set_value,
             alignment=QtCore.Qt.AlignHCenter,
         )
-        self.ui.set_value.setObjectName('set_value')
+        self.ui.set_value.setObjectName("set_value")
         # Because set_value is used instead
         self.ui.user_setpoint.setVisible(False)
 
@@ -558,7 +553,7 @@ class TyphosPositionerWidget(
 
         # If the stop method is missing, hide the button
         try:
-            device.stop
+            device.stop  # noqa: B018
             self.ui.stop_button.show()
         except AttributeError:
             self.ui.stop_button.hide()
@@ -606,9 +601,9 @@ class TyphosPositionerWidget(
         """
         utils.reload_widget_stylesheet(self, cascade=True)
         if value:
-            self.ui.moving_indicator_label.setText('moving')
+            self.ui.moving_indicator_label.setText("moving")
         else:
-            self.ui.moving_indicator_label.setText('done')
+            self.ui.moving_indicator_label.setText("done")
 
     def _set_moving(self, value):
         """
@@ -801,7 +796,7 @@ class TyphosPositionerWidget(
                 tooltip = f"{text}: {tooltip}"
             else:
                 tooltip = text
-            text = text[:max_length] + '...'
+            text = text[:max_length] + "..."
         self.ui.status_label.setText(text)
         if tooltip and "\n" not in tooltip:
             # Force rich text, qt auto line wraps if it detects rich text
@@ -832,7 +827,7 @@ class TyphosPositionerWidget(
     def _user_setpoint_update(self, text):
         """Qt slot - indicating the ``user_setpoint`` widget text changed."""
         try:
-            text = text.strip().split(' ')[0]
+            text = text.strip().split(" ")[0]
             text = text.strip()
         except Exception:
             return
@@ -845,7 +840,7 @@ class TyphosPositionerWidget(
                     self.ui.set_value.setCurrentIndex(idx)
                     self._initialized = True
                 except ValueError:
-                    logger.debug('Failed to convert value to int. %s', text)
+                    logger.debug("Failed to convert value to int. %s", text)
             else:
                 self._initialized = True
                 self.ui.set_value.setText(text)
@@ -884,10 +879,7 @@ class TyphosPositionerWidget(
     @property
     def all_linked_signals(self) -> list[ophyd.Signal]:
         """All linked signal names."""
-        signals = [
-            getattr(self.device, attr, None)
-            for attr in self.all_linked_attributes
-        ]
+        signals = [getattr(self.device, attr, None) for attr in self.all_linked_attributes]
         return [sig for sig in signals if sig is not None]
 
     def show_ui_type_hints(self):
@@ -926,11 +918,11 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
     ui_template = os.path.join(utils.ui_dir, "widgets", "positioner_row.ui")
 
     alarm_text = {
-        AlarmLevel.NO_ALARM: 'ok',
-        AlarmLevel.MINOR: 'minor',
-        AlarmLevel.MAJOR: 'major',
-        AlarmLevel.DISCONNECTED: 'conn',
-        AlarmLevel.INVALID: 'inv',
+        AlarmLevel.NO_ALARM: "ok",
+        AlarmLevel.MINOR: "minor",
+        AlarmLevel.MAJOR: "major",
+        AlarmLevel.DISCONNECTED: "conn",
+        AlarmLevel.INVALID: "inv",
     }
 
     def __init__(self, *args, **kwargs):
@@ -1054,12 +1046,14 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         self.ui.switcher.help_toggle_button.setToolTip(self._get_tooltip())
         self.ui.switcher.help_toggle_button.setEnabled(False)
 
-        if not any((
-            self._show_lowlim,
-            self._show_highlim,
-            self._show_lowtrav,
-            self._show_hightrav,
-        )):
+        if not any(
+            (
+                self._show_lowlim,
+                self._show_highlim,
+                self._show_lowtrav,
+                self._show_hightrav,
+            )
+        ):
             # Hide the limit sections
             self.ui.low_limit_widget.hide()
             self.ui.high_limit_widget.hide()
@@ -1070,26 +1064,15 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         tooltip = []
         # BUG: I'm seeing two devices in `self.devices` for
         # $ typhos --fake-device 'ophyd.EpicsMotor[{"prefix":"b"}]'
-        for device in sorted(
-            set(self.devices),
-            key=lambda dev: self.devices.index(dev)
-        ):
+        for device in sorted(set(self.devices), key=lambda dev: self.devices.index(dev)):
             heading = device.name or type(device).__name__
-            tooltip.extend([
-                heading,
-                "-" * len(heading),
-                ""
-            ])
+            tooltip.extend([heading, "-" * len(heading), ""])
 
-            tooltip.append(
-                inspect.getdoc(device) or
-                inspect.getdoc(type(device)) or
-                "No docstring"
-            )
+            tooltip.append(inspect.getdoc(device) or inspect.getdoc(type(device)) or "No docstring")
             tooltip.append("")
         return "\n".join(tooltip)
 
-    @utils.linked_attribute('error_message_attribute', 'ui.error_label', True)
+    @utils.linked_attribute("error_message_attribute", "ui.error_label", True)
     def _link_error_message(self, signal, widget):
         """Link the IOC error message with the ui element."""
         if signal is None:
@@ -1107,8 +1090,7 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
             dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.18, min_size=4)
             # Consume the vertical space left by the missing tweak widgets
             self.ui.set_value.setMinimumHeight(
-                self.ui.user_setpoint.minimumHeight()
-                + self.ui.tweak_value.minimumHeight()
+                self.ui.user_setpoint.minimumHeight() + self.ui.tweak_value.minimumHeight()
             )
         else:
             dynamic_font.patch_widget(self.ui.set_value, pad_percent=0.1, min_size=4)
@@ -1158,9 +1140,9 @@ class TyphosPositionerRowWidget(TyphosPositionerWidget):
         if not has_status and not has_error:
             # We want to fill something in, check if we have alarms
             if alarm_level == AlarmLevel.NO_ALARM:
-                self.ui.status_label.setText('Status OK')
+                self.ui.status_label.setText("Status OK")
             else:
-                self.ui.status_label.setText('Check alarm')
+                self.ui.status_label.setText("Check alarm")
             has_status = True
         if has_status and has_error:
             # We want to avoid having duplicate information (low effort try)
@@ -1189,6 +1171,7 @@ class RowDetails(QtWidgets.QWidget):
     """
     Container class for floating window with positioner row's basic config info.
     """
+
     row: TyphosPositionerRowWidget
     resize_timer: QtCore.QTimer
 
@@ -1201,9 +1184,7 @@ class RowDetails(QtWidgets.QWidget):
         font = self.label.font()
         font.setPointSize(font.pointSize() + 4)
         self.label.setFont(font)
-        self.label.setMaximumHeight(
-            QtGui.QFontMetrics(font).boundingRect(self.label.text()).height()
-        )
+        self.label.setMaximumHeight(QtGui.QFontMetrics(font).boundingRect(self.label.text()).height())
 
         self.panel = TyphosSignalPanel()
         self.panel.omitNames = row.get_names_to_omit()
@@ -1235,7 +1216,7 @@ class RowDetails(QtWidgets.QWidget):
         """
         After hide, update button text, even if we were hidden via clicking the "x".
         """
-        self.row.ui.expand_button.setText('>')
+        self.row.ui.expand_button.setText(">")
         return super().hideEvent(event)
 
     def showEvent(self, event: QtGui.QShowEvent):
@@ -1243,13 +1224,12 @@ class RowDetails(QtWidgets.QWidget):
         Before show, update button text and move window to just under button.
         """
         button = self.row.ui.expand_button
-        button.setText('v')
+        button.setText("v")
         self.move(
             button.mapToGlobal(
                 QtCore.QPoint(
                     button.pos().x(),
-                    button.pos().y() + button.height()
-                    + self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight),
+                    button.pos().y() + button.height() + self.style().pixelMetric(QtWidgets.QStyle.PM_TitleBarHeight),
                 )
             )
         )

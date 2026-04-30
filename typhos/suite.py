@@ -266,7 +266,7 @@ class TyphosSuite(TyphosBase):
 
         self._tree = parametertree.ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
-        self._save_action = ptypes.ActionParameter(name='Save Suite', value=None)
+        self._save_action = ptypes.ActionParameter(name="Save Suite", value=None)
         self._tree.addParameters(self._save_action)
         self._save_action.sigActivated.connect(self.save)
 

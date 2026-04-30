@@ -1,4 +1,5 @@
 """This module defines methods for launching full typhos applications."""
+
 import logging
 from typing import Optional
 
@@ -24,10 +25,7 @@ def get_qapp():
     return qapp
 
 
-def launch_suite(
-    suite: TyphosSuite,
-    initial_size: Optional[QSize] = None
-) -> QMainWindow:
+def launch_suite(suite: TyphosSuite, initial_size: Optional[QSize] = None) -> QMainWindow:
     """
     Creates a main window and execs the application.
 

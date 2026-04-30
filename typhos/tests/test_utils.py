@@ -14,9 +14,16 @@ from qtpy.QtWidgets import QLineEdit, QWidget
 
 from .. import utils
 from ..suite import TyphosSuite
-from ..utils import (TyphosBase, apply_standard_stylesheets, clean_name,
-                     compose_stylesheets, load_suite, no_device_lazy_load,
-                     saved_template, use_stylesheet)
+from ..utils import (
+    TyphosBase,
+    apply_standard_stylesheets,
+    clean_name,
+    compose_stylesheets,
+    load_suite,
+    no_device_lazy_load,
+    saved_template,
+    use_stylesheet,
+)
 from . import conftest
 
 
@@ -29,13 +36,12 @@ class LayeredDevice(Device):
 
 
 def test_clean_name():
-    device = LayeredDevice(name='test')
-    assert clean_name(device.radial, strip_parent=False) == 'test radial'
-    assert clean_name(device.radial, strip_parent=True) == 'radial'
-    assert clean_name(device.radial.phi,
-                      strip_parent=False) == 'test radial phi'
-    assert clean_name(device.radial.phi, strip_parent=True) == 'phi'
-    assert clean_name(device.radial.phi, strip_parent=device) == 'radial phi'
+    device = LayeredDevice(name="test")
+    assert clean_name(device.radial, strip_parent=False) == "test radial"
+    assert clean_name(device.radial, strip_parent=True) == "radial"
+    assert clean_name(device.radial.phi, strip_parent=False) == "test radial phi"
+    assert clean_name(device.radial.phi, strip_parent=True) == "phi"
+    assert clean_name(device.radial.phi, strip_parent=device) == "radial phi"
 
 
 def test_compose_stylesheets(qtbot: pytestqt.qtbot.QtBot, qapp):
@@ -64,15 +70,9 @@ def test_compose_stylesheets(qtbot: pytestqt.qtbot.QtBot, qapp):
     green_sheet = "QLineEdit { color: green }"
     blue_sheet = "QLineEdit { color: blue }"
     other_sheet = "QLineEdit { background-color: white }"
-    red_widget.setStyleSheet(
-        compose_stylesheets([red_sheet, green_sheet, blue_sheet, other_sheet])
-    )
-    green_widget.setStyleSheet(
-        compose_stylesheets([green_sheet, red_sheet, other_sheet, blue_sheet])
-    )
-    blue_widget.setStyleSheet(
-        compose_stylesheets([blue_sheet, other_sheet, green_sheet, red_sheet])
-    )
+    red_widget.setStyleSheet(compose_stylesheets([red_sheet, green_sheet, blue_sheet, other_sheet]))
+    green_widget.setStyleSheet(compose_stylesheets([green_sheet, red_sheet, other_sheet, blue_sheet]))
+    blue_widget.setStyleSheet(compose_stylesheets([blue_sheet, other_sheet, green_sheet, red_sheet]))
     qapp.processEvents()
 
     # Each widget should have a white background and a unique foreground color
@@ -164,16 +164,16 @@ def test_typhosbase_repaint_smoke(qtbot: pytestqt.qtbot.QtBot):
 
 def test_load_suite(qtbot: pytestqt.qtbot.QtBot, happi_cfg):
     # Setup new saved file
-    module = saved_template.format(devices=['test_motor'])
-    module_file = str(pathlib.Path(tempfile.gettempdir()) / 'my_suite.py')
-    with open(module_file, 'w+') as handle:
+    module = saved_template.format(devices=["test_motor"])
+    module_file = str(pathlib.Path(tempfile.gettempdir()) / "my_suite.py")
+    with open(module_file, "w+") as handle:
         handle.write(module)
 
     suite = load_suite(module_file, happi_cfg)
     qtbot.addWidget(suite)
     assert isinstance(suite, TyphosSuite)
     assert len(suite.devices) == 1
-    assert suite.devices[0].name == 'test_motor'
+    assert suite.devices[0].name == "test_motor"
     os.remove(module_file)
 
 
@@ -186,16 +186,16 @@ def test_load_suite_with_bad_py_file():
 
 def test_no_device_lazy_load():
     class TestDevice(Device):
-        c = Cpt(Device, suffix='Test')
+        c = Cpt(Device, suffix="Test")
 
-    dev = TestDevice(name='foo')
+    dev = TestDevice(name="foo")
 
     old_val = Device.lazy_wait_for_connection
     assert dev.lazy_wait_for_connection is old_val
     assert dev.c.lazy_wait_for_connection is old_val
 
     with no_device_lazy_load():
-        dev2 = TestDevice(name='foo')
+        dev2 = TestDevice(name="foo")
 
         assert Device.lazy_wait_for_connection is False
         assert dev2.lazy_wait_for_connection is False
@@ -206,61 +206,63 @@ def test_no_device_lazy_load():
     assert dev.c.lazy_wait_for_connection is old_val
 
 
-class Class1:
-    ...
+class Class1: ...
 
 
-Class1.full_name = Class1.__module__ + '.' + Class1.__name__
+Class1.full_name = Class1.__module__ + "." + Class1.__name__
 
 
 @pytest.mark.parametrize(
-    'cls, view_type, expected, create',
-    [pytest.param(
-        Class1, 'detailed',
-        # Expected
-        ['Class1.detailed.ui'],
-        # Create these:
-        ['foo.bar.ui', 'Class1.detailed.ui'],
-    ),
+    "cls, view_type, expected, create",
+    [
         pytest.param(
-        Class1, 'detailed',
-        # Expected
-        [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui',
-         'Class1.ui'],
-        # Create these:
-        ['a.ui', Class1.full_name + '.detailed.ui', 'Class1.detailed.ui',
-         'Class1.ui'],
-    ),
+            Class1,
+            "detailed",
+            # Expected
+            ["Class1.detailed.ui"],
+            # Create these:
+            ["foo.bar.ui", "Class1.detailed.ui"],
+        ),
         pytest.param(
-        Class1, 'detailed',
-        # Expected
-        [Class1.full_name + '.detailed.ui', 'Class1.detailed.ui'],
-        # Create these:
-        [Class1.full_name + '.detailed.ui', 'b.ui', 'Class1.detailed.ui'],
-    ),
+            Class1,
+            "detailed",
+            # Expected
+            [Class1.full_name + ".detailed.ui", "Class1.detailed.ui", "Class1.ui"],
+            # Create these:
+            ["a.ui", Class1.full_name + ".detailed.ui", "Class1.detailed.ui", "Class1.ui"],
+        ),
         pytest.param(
-        Class1, 'detailed',
-        # Expected
-        ['Class1.ui'],
-        # Create these:
-        ['Class1.ui', 'c.ui', 'Class1.engineering.ui'],
-    ),
+            Class1,
+            "detailed",
+            # Expected
+            [Class1.full_name + ".detailed.ui", "Class1.detailed.ui"],
+            # Create these:
+            [Class1.full_name + ".detailed.ui", "b.ui", "Class1.detailed.ui"],
+        ),
         pytest.param(
-        Class1, 'detailed',
-        # Expected
-        ['Class1.py', 'Class1.ui'],
-        # Create these:
-        ['Class1.ui', 'Class1.py', 'c.ui', 'Class1.engineering.ui'],
-    ),
-    ]
+            Class1,
+            "detailed",
+            # Expected
+            ["Class1.ui"],
+            # Create these:
+            ["Class1.ui", "c.ui", "Class1.engineering.ui"],
+        ),
+        pytest.param(
+            Class1,
+            "detailed",
+            # Expected
+            ["Class1.py", "Class1.ui"],
+            # Create these:
+            ["Class1.ui", "Class1.py", "c.ui", "Class1.engineering.ui"],
+        ),
+    ],
 )
 def test_path_search(tmpdir, cls, view_type, create, expected):
     for to_create in create:
         file = tmpdir.join(to_create)
-        file.write('')
+        file.write("")
 
-    results = utils.find_templates_for_class(
-        cls, view_type, paths=[tmpdir])
+    results = utils.find_templates_for_class(cls, view_type, paths=[tmpdir])
 
     assert list(r.name for r in results) == expected
 

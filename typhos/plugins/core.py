@@ -1,6 +1,7 @@
 """
 Module Docstring
 """
+
 import logging
 
 import numpy as np
@@ -35,7 +36,7 @@ def register_signal(signal):
         # .dotted_name does not include the root device's name
         names = (
             signal.name,
-            '.'.join((signal.root.name, signal.dotted_name)),
+            ".".join((signal.root.name, signal.dotted_name)),
         )
     # Warn the user if they are adding twice
     for name in names:
@@ -75,6 +76,7 @@ class SignalConnection(PyDMConnection):
     signal : ophyd.Signal
         Stored signal object.
     """
+
     supported_types = [int, float, str, np.ndarray]
 
     def __init__(self, channel, address, protocol=None, parent=None):
@@ -138,11 +140,10 @@ class SignalConnection(PyDMConnection):
         # We make the assumption that signals do not change types during a
         # connection
         if not self.signal_type:
-            dtype = self.signal.describe()[self.signal.name]['dtype']
+            dtype = self.signal.describe()[self.signal.name]["dtype"]
             # Only way this raises a KeyError is if ophyd is confused
             self.signal_type = _type_map[dtype][0]
-            logger.debug("Found signal type %r for %r. Using Python type %r",
-                         dtype, self.signal.name, self.signal_type)
+            logger.debug("Found signal type %r for %r. Using Python type %r", dtype, self.signal.name, self.signal_type)
 
         logger.debug("Casting %r to %r", value, self.signal_type)
         if self.enum_strs:
@@ -161,9 +162,7 @@ class SignalConnection(PyDMConnection):
                 except (TypeError, ValueError):
                     value = str(value)
             else:
-                raise TypeError(
-                    f"Invalid combination: enum_strs={self.enum_strs} with signal_type={self.signal_type}"
-                )
+                raise TypeError(f"Invalid combination: enum_strs={self.enum_strs} with signal_type={self.signal_type}")
         elif self.signal_type is np.ndarray:
             value = np.asarray(value)
         else:
@@ -201,18 +200,10 @@ class SignalConnection(PyDMConnection):
             value = self.cast(value)
             self.new_value_signal[self.signal_type].emit(value)
         except Exception:
-            logger.exception("Unable to update %r with value %r.",
-                             self.signal.name, value)
+            logger.exception("Unable to update %r with value %r.", self.signal.name, value)
 
     def send_new_meta(
-            self,
-            connected=None,
-            write_access=None,
-            severity=None,
-            precision=None,
-            units=None,
-            enum_strs=None,
-            **kwargs
+        self, connected=None, write_access=None, severity=None, precision=None, units=None, enum_strs=None, **kwargs
     ):
         """
         Update the UI with new metadata from the Signal.
@@ -272,9 +263,9 @@ class SignalConnection(PyDMConnection):
             # Gather metadata
             signal_meta = self.signal.metadata
         except Exception:
-            logger.exception("Failed to gather proper information "
-                             "from signal %r to initialize %r",
-                             self.signal.name, channel)
+            logger.exception(
+                "Failed to gather proper information from signal %r to initialize %r", self.signal.name, channel
+            )
             return
         if isinstance(signal_val, (float, np.floating)):
             # Precision is commonly omitted from non-epics signals
@@ -299,8 +290,7 @@ class SignalConnection(PyDMConnection):
                     val_sig = channel.value_signal[_typ]
                     val_sig.connect(self.put_value, Qt.QueuedConnection)
                 except KeyError:
-                    logger.debug("%s has no value_signal for type %s",
-                                 channel.address, _typ)
+                    logger.debug("%s has no value_signal for type %s", channel.address, _typ)
 
     def remove_listener(self, channel, destroying=False, **kwargs):
         """
@@ -316,8 +306,7 @@ class SignalConnection(PyDMConnection):
                 try:
                     channel.value_signal[_typ].disconnect(self.put_value, destroying)
                 except (KeyError, TypeError):
-                    logger.debug("Unable to disconnect value_signal from %s "
-                                 "for type %s", channel.address, _typ)
+                    logger.debug("Unable to disconnect value_signal from %s for type %s", channel.address, _typ)
         # Disconnect any other signals
         super().remove_listener(channel, destroying=destroying, **kwargs)
         logger.debug("Successfully removed %r", channel)
@@ -330,7 +319,8 @@ class SignalConnection(PyDMConnection):
 
 class SignalPlugin(PyDMPlugin):
     """Plugin registered with PyDM to handle SignalConnection."""
-    protocol = 'sig'
+
+    protocol = "sig"
     connection_class = SignalConnection
 
     def add_connection(self, channel):
@@ -342,12 +332,11 @@ class SignalPlugin(PyDMPlugin):
         # don't add this to our list of good to go connections. The next
         # attempt we try again.
         except KeyError:
-            logger.error("Unable to find signal for %r in signal registry."
-                         "Use typhos.plugins.register_signal()",
-                         channel)
+            logger.error(
+                "Unable to find signal for %r in signal registry.Use typhos.plugins.register_signal()", channel
+            )
         except Exception:
-            logger.exception("Unable to create a connection to %r",
-                             channel)
+            logger.exception("Unable to create a connection to %r", channel)
 
     def remove_connection(self, channel, destroying=False):
         try:

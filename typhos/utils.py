@@ -1,6 +1,7 @@
 """
 Utility functions for typhos
 """
+
 from __future__ import annotations
 
 import atexit
@@ -31,8 +32,7 @@ from ophyd.signal import EpicsSignalBase, EpicsSignalRO
 from pydm.config import STYLESHEET as PYDM_USER_STYLESHEET
 from pydm.config import STYLESHEET_INCLUDE_DEFAULT as PYDM_INCLUDE_DEFAULT
 from pydm.exception import raise_to_operator  # noqa
-from pydm.utilities.stylesheet import \
-    GLOBAL_STYLESHEET as PYDM_DEFAULT_STYLESHEET
+from pydm.utilities.stylesheet import GLOBAL_STYLESHEET as PYDM_DEFAULT_STYLESHEET
 from pydm.widgets.base import PyDMWritableWidget
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import QSize
@@ -53,42 +53,38 @@ logger = logging.getLogger(__name__)
 # - str
 # - pathlib.Path
 # - list of such objects
-TYPHOS_ENTRY_POINT_KEY = 'typhos.ui'
+TYPHOS_ENTRY_POINT_KEY = "typhos.ui"
 MODULE_PATH = pathlib.Path(__file__).parent.resolve()
-ui_dir = MODULE_PATH / 'ui'
-ui_core_dir = ui_dir / 'core'
+ui_dir = MODULE_PATH / "ui"
+ui_core_dir = ui_dir / "core"
 
-GrabKindItem = collections.namedtuple('GrabKindItem',
-                                      ('attr', 'component', 'signal'))
-DEBUG_MODE = bool(os.environ.get('TYPHOS_DEBUG', False))
+GrabKindItem = collections.namedtuple("GrabKindItem", ("attr", "component", "signal"))
+DEBUG_MODE = bool(os.environ.get("TYPHOS_DEBUG", False))
 
 # Help settings:
 # TYPHOS_HELP_URL (str): The help URL format string
-HELP_URL = os.environ.get('TYPHOS_HELP_URL', "").strip()
+HELP_URL = os.environ.get("TYPHOS_HELP_URL", "").strip()
 HELP_WEB_ENABLED = bool(HELP_URL.strip())
 
 # TYPHOS_HELP_HEADERS (json): headers to pass to HELP_URL
-HELP_HEADERS = json.loads(os.environ.get('TYPHOS_HELP_HEADERS', "") or "{}")
+HELP_HEADERS = json.loads(os.environ.get("TYPHOS_HELP_HEADERS", "") or "{}")
 HELP_HEADERS_HOSTS = os.environ.get("TYPHOS_HELP_HEADERS_HOSTS", "").split(",")
 
 # TYPHOS_HELP_TOKEN (str): An optional token for the bearer authentication
 # scheme - e.g., personal access tokens with Confluence
-HELP_TOKEN = os.environ.get('TYPHOS_HELP_TOKEN', None)
+HELP_TOKEN = os.environ.get("TYPHOS_HELP_TOKEN", None)
 if HELP_TOKEN:
     HELP_HEADERS["Authorization"] = f"Bearer {HELP_TOKEN}"
 
 # TYPHOS_JIRA_URL (str): The jira REST API collector URL
-JIRA_URL = os.environ.get('TYPHOS_JIRA_URL', "").strip()
+JIRA_URL = os.environ.get("TYPHOS_JIRA_URL", "").strip()
 # TYPHOS_JIRA_HEADERS (json): headers to pass to JIRA_URL
-JIRA_HEADERS = json.loads(
-    os.environ.get('TYPHOS_JIRA_HEADERS', '{"X-Atlassian-Token": "no-check"}')
-    or "{}"
-)
+JIRA_HEADERS = json.loads(os.environ.get("TYPHOS_JIRA_HEADERS", '{"X-Atlassian-Token": "no-check"}') or "{}")
 # TYPHOS_JIRA_TOKEN (str): An optional token for the bearer authentication
 # scheme - e.g., personal access tokens with Confluence
-JIRA_TOKEN = os.environ.get('TYPHOS_JIRA_TOKEN', None)
+JIRA_TOKEN = os.environ.get("TYPHOS_JIRA_TOKEN", None)
 # TYPHOS_JIRA_EMAIL_SUFFIX (str): The default e-mail address suffix
-JIRA_EMAIL_SUFFIX = os.environ.get('TYPHOS_JIRA_EMAIL_SUFFIX', "").strip()
+JIRA_EMAIL_SUFFIX = os.environ.get("TYPHOS_JIRA_EMAIL_SUFFIX", "").strip()
 if JIRA_TOKEN:
     JIRA_HEADERS["Authorization"] = f"Bearer {JIRA_TOKEN}"
 
@@ -96,8 +92,7 @@ if happi is None:
     logger.info("happi is not installed; some features may be unavailable")
 
 
-class TyphosException(Exception):
-    ...
+class TyphosException(Exception): ...
 
 
 def _get_display_paths():
@@ -110,7 +105,7 @@ def _get_display_paths():
     - The typhos.ui entry point
     - typhos built-ins
     """
-    paths = os.environ.get('PYDM_DISPLAYS_PATH', '')
+    paths = os.environ.get("PYDM_DISPLAYS_PATH", "")
     for path in paths.split(os.pathsep):
         path = pathlib.Path(path).expanduser().resolve()
         if path.exists() and path.is_dir():
@@ -123,8 +118,7 @@ def _get_display_paths():
         try:
             obj = entry.load()
         except Exception:
-            msg = (f'Failed to load {TYPHOS_ENTRY_POINT_KEY} '
-                   f'entry: {entry.name}.')
+            msg = f"Failed to load {TYPHOS_ENTRY_POINT_KEY} entry: {entry.name}."
             logger.error(msg)
             logger.debug(msg, exc_info=True)
             continue
@@ -137,19 +131,18 @@ def _get_display_paths():
         try:
             yield pathlib.Path(obj)
         except Exception:
-            msg = (f'{TYPHOS_ENTRY_POINT_KEY} entry point '
-                   f'{entry.name}: {obj} is not a valid path!')
+            msg = f"{TYPHOS_ENTRY_POINT_KEY} entry point {entry.name}: {obj} is not a valid path!"
             logger.error(msg)
             logger.debug(msg, exc_info=True)
 
-    yield ui_dir / 'core'
-    yield ui_dir / 'devices'
+    yield ui_dir / "core"
+    yield ui_dir / "devices"
 
 
 DISPLAY_PATHS = list(_get_display_paths())
 
 
-if hasattr(ophyd.signal, 'SignalRO'):
+if hasattr(ophyd.signal, "SignalRO"):
     SignalRO = ophyd.signal.SignalRO
 else:
     # SignalRO was re-introduced to ophyd.signal in December 2019 (1f83a055).
@@ -188,7 +181,7 @@ def channel_from_signal(signal, read=True):
             if pvname is not None and isinstance(pvname, str):
                 return channel_name(pvname)
 
-    return channel_name(signal.name, protocol='sig')
+    return channel_name(signal.name, protocol="sig")
 
 
 def is_signal_ro(signal):
@@ -201,18 +194,18 @@ def is_signal_ro(signal):
     return isinstance(signal, (SignalRO, EpicsSignalRO, ophyd.sim.SynSignalRO))
 
 
-def channel_name(pv, protocol='ca'):
+def channel_name(pv, protocol="ca"):
     """
     Create a valid PyDM channel from a PV name
     """
-    return protocol + '://' + pv
+    return protocol + "://" + pv
 
 
 def clean_attr(attr):
     """
     Create a nicer, human readable alias from a Python attribute name
     """
-    return attr.replace('.', ' ').replace('_', ' ')
+    return attr.replace(".", " ").replace("_", " ")
 
 
 def clean_name(device, strip_parent=True):
@@ -235,7 +228,7 @@ def clean_name(device, strip_parent=True):
             parent_name = strip_parent.name
         else:
             parent_name = device.parent.name
-        name = name.replace(parent_name + '_', '')
+        name = name.replace(parent_name + "_", "")
     # Return the cleaned alias
     return clean_attr(name)
 
@@ -262,14 +255,14 @@ def use_stylesheet(
     # Dark Style
     if dark:
         import qdarkstyle
+
         style = qdarkstyle.load_stylesheet_pyqt5()
     # Light Style
     else:
         # Load the path to the file
-        style_path = os.path.join(ui_dir, 'style.qss')
+        style_path = os.path.join(ui_dir, "style.qss")
         if not os.path.exists(style_path):
-            raise OSError("Unable to find Typhos stylesheet in {}"
-                          "".format(style_path))
+            raise OSError("Unable to find Typhos stylesheet in {}".format(style_path))
         # Load the stylesheet from the file
         with open(style_path) as handle:
             style = handle.read()
@@ -277,7 +270,7 @@ def use_stylesheet(
         widget = QtWidgets.QApplication.instance()
     # We can set Fusion style if it is an application
     if isinstance(widget, QtWidgets.QApplication):
-        widget.setStyle(QtWidgets.QStyleFactory.create('Fusion'))
+        widget.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
 
     # Set Stylesheet
     widget.setStyleSheet(style)
@@ -364,7 +357,7 @@ def apply_standard_stylesheets(
         If omitted, apply to the whole QApplication.
     """
     if isinstance(widget, QtWidgets.QApplication):
-        widget.setStyle(QtWidgets.QStyleFactory.create('Fusion'))
+        widget.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
 
     stylesheets = []
 
@@ -380,9 +373,10 @@ def apply_standard_stylesheets(
 
     if dark:
         import qdarkstyle
+
         stylesheets.append(qdarkstyle.load_stylesheet_pyqt5())
     else:
-        stylesheets.append(ui_dir / 'style.qss')
+        stylesheets.append(ui_dir / "style.qss")
 
     if include_pydm and PYDM_INCLUDE_DEFAULT:
         stylesheets.append(PYDM_DEFAULT_STYLESHEET)
@@ -392,9 +386,7 @@ def apply_standard_stylesheets(
 
 def random_color():
     """Return a random hex color description"""
-    return QColor(random.randint(0, 255),
-                  random.randint(0, 255),
-                  random.randint(0, 255))
+    return QColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
 
 class TyphosLoading(QtWidgets.QLabel):
@@ -408,6 +400,7 @@ class TyphosLoading(QtWidgets.QLabel):
         and replace it with a default timeout message.
 
     """
+
     LOADING_TIMEOUT_MS = 10000
     loading_gif = None
 
@@ -416,15 +409,14 @@ class TyphosLoading(QtWidgets.QLabel):
         super().__init__(parent=parent, **kwargs)
         self._icon_size = QSize(32, 32)
         if TyphosLoading.loading_gif is None:
-            loading_path = os.path.join(ui_dir, 'loading.gif')
+            loading_path = os.path.join(ui_dir, "loading.gif")
             TyphosLoading.loading_gif = QMovie(loading_path)
         self._animation = TyphosLoading.loading_gif
         self._animation.setScaledSize(self._icon_size)
         self.setMovie(self._animation)
         self._animation.start()
         if self.LOADING_TIMEOUT_MS > 0:
-            QtCore.QTimer.singleShot(self.LOADING_TIMEOUT_MS,
-                                     self._handle_timeout)
+            QtCore.QTimer.singleShot(self.LOADING_TIMEOUT_MS, self._handle_timeout)
 
         self.setContextMenuPolicy(QtCore.Qt.DefaultContextMenu)
 
@@ -435,17 +427,14 @@ class TyphosLoading(QtWidgets.QLabel):
             clipboard = QtWidgets.QApplication.instance().clipboard()
             clipboard.setText(text)
 
-        menu.addSection('Copy to clipboard')
-        action = menu.addAction('&All')
-        action.triggered.connect(functools.partial(copy_to_clipboard,
-                                                   text=self.toolTip()))
+        menu.addSection("Copy to clipboard")
+        action = menu.addAction("&All")
+        action.triggered.connect(functools.partial(copy_to_clipboard, text=self.toolTip()))
         menu.addSeparator()
 
         for line in self.toolTip().splitlines():
             action = menu.addAction(line)
-            action.triggered.connect(
-                functools.partial(copy_to_clipboard, text=line)
-            )
+            action.triggered.connect(functools.partial(copy_to_clipboard, text=line))
 
         menu.exec_(self.mapToGlobal(event.pos()))
 
@@ -487,8 +476,7 @@ class TyphosObject:
         opt.initFrom(self)
         painter = QPainter()
         painter.begin(self)
-        self.style().drawPrimitive(QtWidgets.QStyle.PE_Widget, opt, painter,
-                                   self)
+        self.style().drawPrimitive(QtWidgets.QStyle.PE_Widget, opt, painter, self)
         super().paintEvent(event)
 
     @classmethod
@@ -536,23 +524,13 @@ class WeakPartialMethodSlot:
     **kwargs :
         Keyword arguments to pass to the method.
     """
-    def __init__(
-        self,
-        signal_owner: QtCore.QObject,
-        signal: QtCore.Signal,
-        method: MethodType,
-        *args,
-        **kwargs
-    ):
+
+    def __init__(self, signal_owner: QtCore.QObject, signal: QtCore.Signal, method: MethodType, *args, **kwargs):
         self.signal = signal
         self.signal.connect(self._call, QtCore.Qt.QueuedConnection)
         self.method = weakref.WeakMethod(method)
-        self._method_finalizer = weakref.finalize(
-            method.__self__, self._method_destroyed
-        )
-        self._signal_finalizer = weakref.finalize(
-            signal_owner, self._signal_destroyed
-        )
+        self._method_finalizer = weakref.finalize(method.__self__, self._method_destroyed)
+        self._signal_finalizer = weakref.finalize(signal_owner, self._signal_destroyed)
         self.partial_args = args
         self.partial_kwargs = kwargs
 
@@ -609,12 +587,7 @@ class TyphosBase(TyphosObject, QWidget):
         super().__init__(*args, **kwargs)
 
     def _connect_partial_weakly(
-        self,
-        signal_owner: QtCore.QObject,
-        signal: QtCore.Signal,
-        method: MethodType,
-        *args,
-        **kwargs
+        self, signal_owner: QtCore.QObject, signal: QtCore.Signal, method: MethodType, *args, **kwargs
     ):
         """
         Connect the provided signal to an instance method via
@@ -633,9 +606,7 @@ class TyphosBase(TyphosObject, QWidget):
         **kwargs :
             Keyword arguments to pass to the method.
         """
-        slot = WeakPartialMethodSlot(
-            signal_owner, signal, method, *args, **kwargs
-        )
+        slot = WeakPartialMethodSlot(signal_owner, signal, method, *args, **kwargs)
         self._weak_partials_.append(slot)
 
 
@@ -649,11 +620,11 @@ def make_identifier(name):
     # Leading / following whitespace
     name = name.strip()
     # Intermediate whitespace should be underscores
-    name = re.sub('[\\s\\t\\n]+', '_', name)
+    name = re.sub("[\\s\\t\\n]+", "_", name)
     # Remove invalid characters
-    name = re.sub('[^0-9a-zA-Z_]', '', name)
+    name = re.sub("[^0-9a-zA-Z_]", "", name)
     # Remove leading characters until we find a letter or an underscore
-    name = re.sub('^[^a-zA-Z_]+', '', name)
+    name = re.sub("^[^a-zA-Z_]+", "", name)
     return name
 
 
@@ -699,7 +670,7 @@ def save_suite(suite, file_or_buffer):
     """
     # Accept file-like objects or a handle
     if isinstance(file_or_buffer, str):
-        handle = open(file_or_buffer, 'w+')
+        handle = open(file_or_buffer, "w+")
     else:
         handle = file_or_buffer
     logger.debug("Saving TyphosSuite contents to %r", handle)
@@ -708,7 +679,7 @@ def save_suite(suite, file_or_buffer):
 
 
 def load_suite(path, cfg=None):
-    """"
+    """ "
     Load a file saved via Typhos
 
     Parameters
@@ -725,12 +696,11 @@ def load_suite(path, cfg=None):
     suite: TyphosSuite
     """
     logger.info("Importing TyphosSuite from file %r ...", path)
-    module_name = pathlib.Path(path).name.replace('.py', '')
-    spec = importlib.util.spec_from_file_location(module_name,
-                                                  path)
+    module_name = pathlib.Path(path).name.replace(".py", "")
+    spec = importlib.util.spec_from_file_location(module_name, path)
     suite_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(suite_module)
-    if hasattr(suite_module, 'create_suite'):
+    if hasattr(suite_module, "create_suite"):
         logger.debug("Executing create_suite method from %r", suite_module)
         return suite_module.create_suite(cfg=cfg)
     else:
@@ -753,10 +723,10 @@ if __name__ == '__main__':
 
 @contextlib.contextmanager
 def no_device_lazy_load():
-    '''
+    """
     Context manager which disables the ophyd.device.Device
     `lazy_wait_for_connection` behavior and later restore its value.
-    '''
+    """
     old_val = Device.lazy_wait_for_connection
     try:
         Device.lazy_wait_for_connection = False
@@ -766,34 +736,34 @@ def no_device_lazy_load():
 
 
 def pyqt_class_from_enum(enum):
-    '''
+    """
     Create an inheritable base class from a Python Enum, which can also be used
     for Q_ENUMS.
-    '''
+    """
     enum_dict = {item.name: item.value for item in list(enum)}
-    return type(enum.__name__, (object, ), enum_dict)
+    return type(enum.__name__, (object,), enum_dict)
 
 
 def _get_template_filenames_for_class(class_, view_type, *, include_mro=True):
-    '''
+    """
     Yields all possible template filenames that can be used for the class, in
     order of priority, including those in the class MRO.
 
     This does not include the file extension, to be appended by the caller.
-    '''
+    """
     for cls in class_.mro():
         module = cls.__module__
         name = cls.__name__
-        yield f'{module}.{name}.{view_type}'
-        yield f'{name}.{view_type}'
-        yield f'{name}'
+        yield f"{module}.{name}.{view_type}"
+        yield f"{name}.{view_type}"
+        yield f"{name}"
 
         if not include_mro:
             break
 
 
 def remove_duplicate_items(list_):
-    'Return a de-duplicated list/tuple of items in `list_`, retaining order'
+    "Return a de-duplicated list/tuple of items in `list_`, retaining order"
     cls = type(list_)
     return cls(sorted(set(list_), key=list_.index))
 
@@ -810,9 +780,8 @@ def is_standard_template(template):
     return common_path == ui_core_dir
 
 
-def find_templates_for_class(cls, view_type, paths, *, extensions=None,
-                             include_mro=True):
-    '''
+def find_templates_for_class(cls, view_type, paths, *, extensions=None, include_mro=True):
+    """
     Given a class `cls` and a view type (such as 'detailed'), search `paths`
     for potential templates to show.
 
@@ -833,22 +802,20 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
     ------
     path : pathlib.Path
         A matching path, ordered from most-to-least specific.
-    '''
+    """
     if not inspect.isclass(cls):
         cls = type(cls)
 
     if not extensions:
-        extensions = ['.py', '.ui']
+        extensions = [".py", ".ui"]
     elif isinstance(extensions, str):
         extensions = [extensions]
 
     from .cache import _CachedPath
-    paths = remove_duplicate_items(
-        [_CachedPath.from_path(p) for p in paths]
-    )
 
-    for candidate_filename in _get_template_filenames_for_class(
-            cls, view_type, include_mro=include_mro):
+    paths = remove_duplicate_items([_CachedPath.from_path(p) for p in paths])
+
+    for candidate_filename in _get_template_filenames_for_class(cls, view_type, include_mro=include_mro):
         for extension in extensions:
             for path in paths:
                 for match in path.glob(candidate_filename + extension):
@@ -857,7 +824,7 @@ def find_templates_for_class(cls, view_type, paths, *, extensions=None,
 
 
 def find_file_in_paths(filename, *, paths=None):
-    '''
+    """
     Search for filename ``filename`` in the list of paths ``paths``
 
     Parameters
@@ -870,7 +837,7 @@ def find_file_in_paths(filename, *, paths=None):
     Yields
     ------
     All filenames that match in the given paths
-    '''
+    """
     if paths is None:
         paths = DISPLAY_PATHS
 
@@ -883,9 +850,8 @@ def find_file_in_paths(filename, *, paths=None):
         filename = filename.name
 
     from .cache import _CachedPath
-    paths = remove_duplicate_items(
-        [_CachedPath.from_path(p) for p in paths]
-    )
+
+    paths = remove_duplicate_items([_CachedPath.from_path(p) for p in paths])
 
     for path in paths:
         for match in path.glob(filename):
@@ -909,12 +875,12 @@ def get_device_from_fake_class(cls):
     """
     bases = cls.__bases__
     if not bases or len(bases) != 1:
-        raise ValueError('Not a fake class based on inheritance')
+        raise ValueError("Not a fake class based on inheritance")
 
-    actual_class, = bases
+    (actual_class,) = bases
 
     if actual_class not in ophyd.sim.fake_device_cache:
-        raise ValueError('Not a fake class (ophyd.sim does not know about it)')
+        raise ValueError("Not a fake class (ophyd.sim does not know about it)")
 
     return actual_class
 
@@ -941,25 +907,23 @@ def code_from_device_repr(device):
     try:
         module = device.__module__
     except AttributeError:
-        raise ValueError('Device class must be in a module') from None
+        raise ValueError("Device class must be in a module") from None
 
     class_name = device.__class__.__name__
-    if module == '__main__':
-        raise ValueError('Device class must be in a module')
+    if module == "__main__":
+        raise ValueError("Device class must be in a module")
 
     cls = device.__class__
     is_fake = is_fake_device_class(cls)
 
-    full_class_name = f'{module}.{class_name}'
-    kwargs = '\n   '.join(f'{k}={v!r},' for k, v in device._repr_info())
-    logger.debug('%r fully qualified Device class: %r', device.name,
-                 full_class_name)
+    full_class_name = f"{module}.{class_name}"
+    kwargs = "\n   ".join(f"{k}={v!r}," for k, v in device._repr_info())
+    logger.debug("%r fully qualified Device class: %r", device.name, full_class_name)
     if is_fake:
         actual_class = get_device_from_fake_class(cls)
-        actual_name = f'{actual_class.__module__}.{actual_class.__name__}'
-        logger.debug('%r fully qualified Device class is fake, based on: %r',
-                     device.name, actual_class)
-        return f'''\
+        actual_name = f"{actual_class.__module__}.{actual_class.__name__}"
+        logger.debug("%r fully qualified Device class is fake, based on: %r", device.name, actual_class)
+        return f"""\
 import ophyd.sim
 import pcdsutils
 
@@ -969,16 +933,16 @@ import pcdsutils
     {kwargs}
 )
 ophyd.sim.clear_fake_device({device.name})
-'''
+"""
 
-    return f'''\
+    return f"""\
 import pcdsutils
 
 {class_name} = pcdsutils.utils.import_helper({full_class_name!r})
 {device.name} = {class_name}(
     {kwargs}
 )
-'''
+"""
 
 
 def code_from_device(device):
@@ -986,7 +950,7 @@ def code_from_device(device):
     Generate code required to load ``device`` in another process
     """
     is_fake = is_fake_device_class(device.__class__)
-    if happi is None or not hasattr(device, 'md') or is_fake:
+    if happi is None or not hasattr(device, "md") or is_fake:
         return code_from_device_repr(device)
 
     happi_name = device.md.name
@@ -1001,7 +965,7 @@ md = client.find_item(name="{happi_name}")
 
 @contextlib.contextmanager
 def subscription_context(*objects, callback, event_type=None, run=True):
-    '''
+    """
     [Context manager] Subscribe to a specific event from all objects
 
     Unsubscribes all signals before exiting
@@ -1017,15 +981,14 @@ def subscription_context(*objects, callback, event_type=None, run=True):
         The event type to subscribe to
     run : bool, optional
         Run the previously cached subscription immediately
-    '''
+    """
     obj_to_cid = {}
     try:
         for obj in objects:
             try:
-                obj_to_cid[obj] = obj.subscribe(callback,
-                                                event_type=event_type, run=run)
+                obj_to_cid[obj] = obj.subscribe(callback, event_type=event_type, run=run)
             except Exception:
-                logger.exception('Failed to subscribe to object %s', obj.name)
+                logger.exception("Failed to subscribe to object %s", obj.name)
         yield dict(obj_to_cid)
     finally:
         for obj, cid in obj_to_cid.items():
@@ -1038,7 +1001,7 @@ def subscription_context(*objects, callback, event_type=None, run=True):
 
 
 def get_all_signals_from_device(device, include_lazy=False, filter_by=None):
-    '''
+    """
     Get all signals in a given device
 
     Parameters
@@ -1049,17 +1012,14 @@ def get_all_signals_from_device(device, include_lazy=False, filter_by=None):
         Include lazy signals as well
     filter_by : callable, optional
         Filter signals, with signature ``callable(ophyd.Device.ComponentWalk)``
-    '''
+    """
     if not filter_by:
+
         def filter_by(walk):
             return True
 
     def _get_signals():
-        return [
-            walk.item
-            for walk in device.walk_signals(include_lazy=include_lazy)
-            if filter_by(walk)
-        ]
+        return [walk.item for walk in device.walk_signals(include_lazy=include_lazy) if filter_by(walk)]
 
     if not include_lazy:
         return _get_signals()
@@ -1069,9 +1029,8 @@ def get_all_signals_from_device(device, include_lazy=False, filter_by=None):
 
 
 @contextlib.contextmanager
-def subscription_context_device(device, callback, event_type=None, run=True, *,
-                                include_lazy=False, filter_by=None):
-    '''
+def subscription_context_device(device, callback, event_type=None, run=True, *, include_lazy=False, filter_by=None):
+    """
     [Context manager] Subscribe to ``event_type`` from signals in ``device``
 
     Unsubscribes all signals before exiting
@@ -1091,10 +1050,9 @@ def subscription_context_device(device, callback, event_type=None, run=True, *,
         Include lazy signals as well
     filter_by : callable, optional
         Filter signals, with signature ``callable(ophyd.Device.ComponentWalk)``
-    '''
+    """
     signals = get_all_signals_from_device(device, include_lazy=include_lazy)
-    with subscription_context(*signals, callback=callback,
-                              event_type=event_type, run=run) as obj_to_cid:
+    with subscription_context(*signals, callback=callback, event_type=event_type, run=run) as obj_to_cid:
         yield obj_to_cid
 
 
@@ -1112,40 +1070,39 @@ class _ConnectionStatus:
             self.remove_object(obj)
 
     def _run_callback_hack_on_object(self, obj):
-        '''
+        """
         HACK: peek into ophyd objects to see if they're connected but have
         never run metadata callbacks
 
         This is part of an ongoing ophyd issue and may be removed in the
         future.
-        '''
+        """
         if obj not in self.objects:
             return
 
-        if obj.connected and obj._args_cache.get('meta') is None:
+        if obj.connected and obj._args_cache.get("meta") is None:
             md = dict(obj.metadata)
-            if 'connected' not in md:
-                md['connected'] = True
+            if "connected" not in md:
+                md["connected"] = True
             self._connection_callback(obj=obj, **md)
 
     def add_object(self, obj):
-        'Add an additional object to be monitored'
+        "Add an additional object to be monitored"
         with self.lock:
             if obj in self.objects:
                 return
 
         self.objects.add(obj)
         try:
-            self.obj_to_cid[obj] = obj.subscribe(
-                self._connection_callback, event_type='meta', run=True)
+            self.obj_to_cid[obj] = obj.subscribe(self._connection_callback, event_type="meta", run=True)
         except Exception:
-            logger.exception('Failed to subscribe to object: %s', obj.name)
+            logger.exception("Failed to subscribe to object: %s", obj.name)
             self.objects.remove(obj)
         else:
             self._run_callback_hack_on_object(obj)
 
     def remove_object(self, obj):
-        'Remove an object from being monitored - no more callbacks'
+        "Remove an object from being monitored - no more callbacks"
         with self.lock:
             if obj in self.connected:
                 self.connected.remove(obj)
@@ -1172,20 +1129,16 @@ class _ConnectionStatus:
             else:
                 return
 
-        logger.debug('Connection update: %r (obj=%s connected=%s kwargs=%r)',
-                     self, obj.name, connected, kwargs)
+        logger.debug("Connection update: %r (obj=%s connected=%s kwargs=%r)", self, obj.name, connected, kwargs)
         self.callback(obj=obj, connected=connected, **kwargs)
 
     def __repr__(self):
-        return (
-            f'<{self.__class__.__name__} connected={len(self.connected)} '
-            f'objects={len(self.objects)}>'
-        )
+        return f"<{self.__class__.__name__} connected={len(self.connected)} objects={len(self.objects)}>"
 
 
 @contextlib.contextmanager
 def connection_status_monitor(*signals, callback):
-    '''
+    """
     [Context manager] Monitor connection status from a number of signals
 
     Filters out any other metadata updates, only calling once
@@ -1199,13 +1152,13 @@ def connection_status_monitor(*signals, callback):
         Callback to run, with same signature as that of
         :meth:`ophyd.OphydObj.subscribe`. ``obj`` and ``connected`` are
         guaranteed kwargs.
-    '''
+    """
 
     status = _ConnectionStatus(callback)
 
-    with subscription_context(*signals, callback=status._connection_callback,
-                              event_type='meta', run=True
-                              ) as status.obj_to_cid:
+    with subscription_context(
+        *signals, callback=status._connection_callback, event_type="meta", run=True
+    ) as status.obj_to_cid:
         for sig in signals:
             status._run_callback_hack_on_object(sig)
 
@@ -1213,7 +1166,7 @@ def connection_status_monitor(*signals, callback):
 
 
 class DeviceConnectionMonitorThread(QtCore.QThread):
-    '''
+    """
     Monitor connection status in a background thread
 
     Parameters
@@ -1229,7 +1182,7 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
         Connection update signal with signature::
 
             (signal, connected, metadata_dict)
-    '''
+    """
 
     connection_update = QtCore.Signal(object, bool, dict)
 
@@ -1263,8 +1216,7 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
         self.connection_update.emit(obj, connected, kwargs)
 
     def run(self):
-        signals = get_all_signals_from_device(
-            self.device, include_lazy=self.include_lazy)
+        signals = get_all_signals_from_device(self.device, include_lazy=self.include_lazy)
 
         with connection_status_monitor(*signals, callback=self.callback):
             while not self.isInterruptionRequested():
@@ -1273,7 +1225,7 @@ class DeviceConnectionMonitorThread(QtCore.QThread):
 
 
 class ObjectConnectionMonitorThread(QtCore.QThread):
-    '''
+    """
     Monitor connection status in a background thread
 
     Attributes
@@ -1282,7 +1234,7 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
         Connection update signal with signature::
 
             (signal, connected, metadata_dict)
-    '''
+    """
 
     connection_update = QtCore.Signal(object, bool, dict)
 
@@ -1341,9 +1293,7 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
     def run(self):
         self.lock.acquire()
         try:
-            with connection_status_monitor(
-                    *self._init_objects,
-                    callback=self.callback) as self.status:
+            with connection_status_monitor(*self._init_objects, callback=self.callback) as self.status:
                 self._init_objects.clear()
                 self.lock.release()
                 while not self.isInterruptionRequested():
@@ -1355,7 +1305,7 @@ class ObjectConnectionMonitorThread(QtCore.QThread):
 
 
 class ThreadPoolWorker(QtCore.QRunnable):
-    '''
+    """
     Worker thread helper
 
     Parameters
@@ -1366,7 +1316,7 @@ class ThreadPoolWorker(QtCore.QRunnable):
         Arguments for the function call
     **kwargs
         Keyword rarguments for the function call
-    '''
+    """
 
     def __init__(self, func, *args, **kwargs):
         super().__init__()
@@ -1379,8 +1329,7 @@ class ThreadPoolWorker(QtCore.QRunnable):
         try:
             self.func(*self.args, **self.kwargs)
         except Exception:
-            logger.exception('Failed to run %s(*%s, **%r) in thread pool',
-                             self.func, self.args, self.kwargs)
+            logger.exception("Failed to run %s(*%s, **%r) in thread pool", self.func, self.args, self.kwargs)
 
 
 def _get_top_level_components(device_cls):
@@ -1444,29 +1393,29 @@ def dump_grid_layout(layout, rows=None, cols=None, *, cell_width=60):
     rows = rows or layout.rowCount()
     cols = cols or layout.columnCount()
 
-    separator = '-' * ((cell_width + 4) * cols)
-    cell = ' {:<%ds}' % cell_width
+    separator = "-" * ((cell_width + 4) * cols)
+    cell = " {:<%ds}" % cell_width
 
     def get_text(item):
         if not item:
-            return ''
+            return ""
 
         entry = item.widget() or item.layout()
         visible = entry is None or entry.isVisible()
         if isinstance(entry, QtWidgets.QLabel):
-            entry = f'<QLabel {entry.text()!r}>'
+            entry = f"<QLabel {entry.text()!r}>"
 
         if not visible:
-            entry = f'(invis) {entry}'
+            entry = f"(invis) {entry}"
         return entry
 
     with io.StringIO() as file:
         print(separator, file=file)
         for row in range(rows):
-            print('|', end='', file=file)
+            print("|", end="", file=file)
             for col in range(cols):
                 item = get_text(layout.itemAtPosition(row, col))
-                print(cell.format(str(item)), end=' |', file=file)
+                print(cell.format(str(item)), end=" |", file=file)
 
             print(file=file)
 
@@ -1518,7 +1467,7 @@ def get_variety_metadata(cpt):
     if not isinstance(cpt, ophyd.Component):
         cpt = get_component(cpt)
 
-    return getattr(cpt, '_variety_metadata', {})
+    return getattr(cpt, "_variety_metadata", {})
 
 
 def widget_to_image(widget, fill_color=QtCore.Qt.transparent):
@@ -1530,8 +1479,7 @@ def widget_to_image(widget, fill_color=QtCore.Qt.transparent):
     QtGui.QImage
         The display, as an image.
     """
-    image = QtGui.QImage(widget.width(), widget.height(),
-                         QtGui.QImage.Format_ARGB32_Premultiplied)
+    image = QtGui.QImage(widget.width(), widget.height(), QtGui.QImage.Format_ARGB32_Premultiplied)
 
     image.fill(fill_color)
     pixmap = QtGui.QPixmap(image)
@@ -1567,7 +1515,7 @@ def patch_connect_slots():
                 "downgrading Python or upgrading pyqt5 to >= 5.13.1. "
                 "For further discussion, see "
                 "https://github.com/pcdshub/typhos/issues/354",
-                exc_info=ex
+                exc_info=ex,
             )
 
     QtCore.QMetaObject.connectSlotsByName = connect_slots_patch
@@ -1637,12 +1585,11 @@ def linked_attribute(property_attr, widget_attr, hide_unavailable=False):
                     link_signal_to_widget(signal, widget)
                 except Exception:
                     logger.exception(
-                        'device.%s => self.%s (signal: %s widget: %s)',
-                        device_attr, widget_attr, signal, widget)
+                        "device.%s => self.%s (signal: %s widget: %s)", device_attr, widget_attr, signal, widget
+                    )
                     signal = None
                 else:
-                    logger.debug('device.%s => self.%s (signal=%s widget=%s)',
-                                 device_attr, widget_attr, signal, widget)
+                    logger.debug("device.%s => self.%s (signal=%s widget=%s)", device_attr, widget_attr, signal, widget)
 
             if signal is None and hide_unavailable:
                 widget.setVisible(False)
@@ -1650,6 +1597,7 @@ def linked_attribute(property_attr, widget_attr, hide_unavailable=False):
             return func(self, signal, widget)
 
         return wrapped
+
     return wrapper
 
 
@@ -1679,6 +1627,7 @@ class FrameOnEditFilter(QtCore.QObject):
     This will make the QLineEdit look like a QLabel when the user is
     not editing it.
     """
+
     def eventFilter(self, object: QtWidgets.QLineEdit, event: QtCore.QEvent) -> bool:
         # Even if we install only on line edits, this can be passed a generic
         # QWidget when we remove and clean up the line edit widget.
@@ -1704,8 +1653,7 @@ class FrameOnEditFilter(QtCore.QObject):
         object.setFrame(True)
         color = object.palette().color(QtGui.QPalette.ColorRole.Base)
         object.setStyleSheet(
-            f"QLineEdit {{ background: rgba({color.red()},"
-            f"{color.green()}, {color.blue()}, {color.alpha()})}}"
+            f"QLineEdit {{ background: rgba({color.red()},{color.green()}, {color.blue()}, {color.alpha()})}}"
         )
         object.setReadOnly(False)
 
@@ -1720,9 +1668,7 @@ class FrameOnEditFilter(QtCore.QObject):
         """
         if object.text():
             object.setFrame(False)
-            object.setStyleSheet(
-                "QLineEdit { background: transparent }"
-            )
+            object.setStyleSheet("QLineEdit { background: transparent }")
         object.setReadOnly(True)
 
 
@@ -1738,11 +1684,7 @@ def take_widget_screenshot(widget: QtWidgets.QWidget) -> Optional[QtGui.QImage]:
         primary_screen: QtGui.QScreen = app.primaryScreen()
         logger.debug("Primary screen: %s", primary_screen)
 
-        screen = (
-            widget.screen()
-            if hasattr(widget, "screen")
-            else primary_screen
-        )
+        screen = widget.screen() if hasattr(widget, "screen") else primary_screen
 
         logger.info(
             "Screenshot: %s (%s, primary screen: %s widget screen: %s)",
@@ -1760,10 +1702,9 @@ def take_widget_screenshot(widget: QtWidgets.QWidget) -> Optional[QtGui.QImage]:
 
 
 def take_top_level_widget_screenshots(
-    *, visible_only: bool = True,
-) -> Generator[
-    tuple[QtWidgets.QWidget, QtGui.QImage], None, None
-]:
+    *,
+    visible_only: bool = True,
+) -> Generator[tuple[QtWidgets.QWidget, QtGui.QImage], None, None]:
     """
     Yield screenshots of all top-level widgets.
 

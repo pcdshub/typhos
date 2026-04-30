@@ -1,6 +1,7 @@
 """
 Module to define alarm summary frameworks and widgets.
 """
+
 import enum
 import logging
 import os
@@ -12,15 +13,19 @@ from ophyd.device import Kind
 from ophyd.signal import EpicsSignalBase
 from pydm.widgets.base import PyDMPrimitiveWidget
 from pydm.widgets.channel import PyDMChannel
-from pydm.widgets.drawing import (PyDMDrawing, PyDMDrawingCircle,
-                                  PyDMDrawingEllipse, PyDMDrawingPolygon,
-                                  PyDMDrawingRectangle, PyDMDrawingTriangle)
+from pydm.widgets.drawing import (
+    PyDMDrawing,
+    PyDMDrawingCircle,
+    PyDMDrawingEllipse,
+    PyDMDrawingPolygon,
+    PyDMDrawingRectangle,
+    PyDMDrawingTriangle,
+)
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Qt
 
 from .plugins import register_signal
-from .utils import (TyphosObject, channel_from_signal,
-                    get_all_signals_from_device, pyqt_class_from_enum)
+from .utils import TyphosObject, channel_from_signal, get_all_signals_from_device, pyqt_class_from_enum
 from .widgets import HappiChannel
 
 logger = logging.getLogger(__name__)
@@ -28,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 class KindLevel(enum.IntEnum):
     """Options for TyphosAlarm.kindLevel."""
+
     HINTED = 0
     NORMAL = 1
     CONFIG = 2
@@ -40,6 +46,7 @@ class AlarmLevel(enum.IntEnum):
 
     These are also the valuess emitted from TyphosAlarm.alarm_changed.
     """
+
     NO_ALARM = 0
     MINOR = 1
     MAJOR = 2
@@ -53,14 +60,10 @@ _AlarmLevel = pyqt_class_from_enum(AlarmLevel)
 
 # Define behavior for the user's Kind selection.
 KIND_FILTERS = {
-    KindLevel.HINTED:
-        (lambda walk: walk.item.kind == Kind.hinted),
-    KindLevel.NORMAL:
-        (lambda walk: walk.item.kind in (Kind.hinted, Kind.normal)),
-    KindLevel.CONFIG:
-        (lambda walk: walk.item.kind != Kind.omitted),
-    KindLevel.OMITTED:
-        (lambda walk: True),
+    KindLevel.HINTED: (lambda walk: walk.item.kind == Kind.hinted),
+    KindLevel.NORMAL: (lambda walk: walk.item.kind in (Kind.hinted, Kind.normal)),
+    KindLevel.CONFIG: (lambda walk: walk.item.kind != Kind.omitted),
+    KindLevel.OMITTED: (lambda walk: True),
 }
 
 
@@ -82,13 +85,13 @@ class SignalInfo:
     def describe(self) -> str:
         alarm = self.alarm
         if alarm == AlarmLevel.NO_ALARM:
-            desc = f'{self.address} has no alarm'
+            desc = f"{self.address} has no alarm"
         elif alarm in (AlarmLevel.DISCONNECTED, AlarmLevel.INVALID):
-            desc = f'{self.address} is {alarm.name}'
+            desc = f"{self.address} is {alarm.name}"
         else:
-            desc = f'{self.address} has a {alarm.name} alarm'
+            desc = f"{self.address} has a {alarm.name} alarm"
         if self.signal_name:
-            return f'{desc} ({self.signal_name})'
+            return f"{desc} ({self.signal_name})"
         else:
             return desc
 
@@ -103,6 +106,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
     We will consider a subset of the signals that is of KindLevel and above and
     summarize state based on the "worst" alarm we see as defined by AlarmLevel.
     """
+
     QtCore.Q_ENUMS(_KindLevel)
     QtCore.Q_ENUMS(_AlarmLevel)
 
@@ -121,7 +125,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         super().__init__(*args, **kwargs)
         # Default drawing properties, can override if needed
         self.penWidth = 2
-        self.penColor = QtGui.QColor('black')
+        self.penColor = QtGui.QColor("black")
         self.penStyle = Qt.SolidLine
         self.reset_alarm_state()
         self.alarm_changed.connect(self.set_alarm_color)
@@ -170,14 +174,14 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
             # Remove old connection
             if self._channels:
                 for channel in self._channels:
-                    if hasattr(channel, 'disconnect'):
+                    if hasattr(channel, "disconnect"):
                         channel.disconnect()
                     if channel in self.signal_info:
                         del self.signal_info[channel]
                 self._channels.clear()
             # Load new channel
             self._channel = str(value)
-            if 'happi://' in self._channel:
+            if "happi://" in self._channel:
                 channel = HappiChannel(
                     address=self._channel,
                     tx_slot=self._tx,
@@ -185,26 +189,24 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
             else:
                 channel = PyDMChannel(
                     address=self._channel,
-                    connection_slot=partial(self.update_connection,
-                                            addr=self._channel),
-                    severity_slot=partial(self.update_severity,
-                                          addr=self._channel),
+                    connection_slot=partial(self.update_connection, addr=self._channel),
+                    severity_slot=partial(self.update_severity, addr=self._channel),
                 )
                 self.signal_info[self._channel] = SignalInfo(
                     address=self._channel,
                     channel=channel,
-                    signal_name='',
+                    signal_name="",
                     connected=False,
                     severity=AlarmLevel.INVALID,
                 )
             self._channels = [channel]
             # Connect the channel to the HappiPlugin
-            if hasattr(channel, 'connect'):
+            if hasattr(channel, "connect"):
                 channel.connect()
 
     def _tx(self, value):
         """Receive information from happi channel"""
-        self.add_device(value['obj'])
+        self.add_device(value["obj"])
 
     def reset_alarm_state(self):
         self.signal_info = {}
@@ -244,10 +246,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         level, configuring the PyDMChannels to update our alarm state and
         color when we get updates from our PVs.
         """
-        sigs = get_all_signals_from_device(
-            device,
-            filter_by=KIND_FILTERS[self._kind_level]
-        )
+        sigs = get_all_signals_from_device(device, filter_by=KIND_FILTERS[self._kind_level])
         channel_addrs = [channel_from_signal(sig) for sig in sigs]
         for sig in sigs:
             if not isinstance(sig, EpicsSignalBase):
@@ -258,9 +257,10 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                 connection_slot=partial(self.update_connection, addr=addr),
                 severity_slot=partial(self.update_severity, addr=addr),
             )
-            for addr in channel_addrs]
+            for addr in channel_addrs
+        ]
 
-        for ch, sig in zip(channels, sigs):
+        for ch, sig in zip(channels, sigs, strict=True):
             info = SignalInfo(
                 address=ch.address,
                 channel=ch,
@@ -275,13 +275,13 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         all_channels = self.channels()
         if all_channels:
             logger.debug(
-                f'Finished setup of alarm config for device {device.name} on '
-                f'alarm widget with channel {all_channels[0]}.'
+                f"Finished setup of alarm config for device {device.name} on "
+                f"alarm widget with channel {all_channels[0]}."
             )
         else:
             logger.warning(
-                f'Tried to set up alarm config for device {device.name}, but '
-                'did not configure any channels! Check your kindLevel!'
+                f"Tried to set up alarm config for device {device.name}, but "
+                "did not configure any channels! Check your kindLevel!"
             )
 
     def update_alarm_config(self):
@@ -322,12 +322,12 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
                 self.alarm_changed.emit(new_alarm)
             except RuntimeError:
                 # Widget was destroyed and not properly cleaned up
-                logger.debug('Dangling reference to alarm widget!')
+                logger.debug("Dangling reference to alarm widget!")
                 return
             else:
                 logger.debug(
-                    f'Updated alarm from {self.alarm_summary} to {new_alarm} '
-                    f'on alarm widget with channel {self.channels()[0]}'
+                    f"Updated alarm from {self.alarm_summary} to {new_alarm} "
+                    f"on alarm widget with channel {self.channels()[0]}"
                 )
         self.alarm_summary = new_alarm
 
@@ -364,25 +364,24 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
         # Start with the channel field, just show the status.
         if self.channel in self.signal_info:
             info = self.signal_info[self.channel]
-            tooltip_lines.append(f'Channel {info.describe()}')
+            tooltip_lines.append(f"Channel {info.describe()}")
 
         # Handle each device
         for name, device_info_list in self.device_info.items():
             # At least show the device name
-            tooltip_lines.append(f'Device {name}')
+            tooltip_lines.append(f"Device {name}")
             has_alarm = False
             for info in device_info_list:
                 if info.alarm != AlarmLevel.NO_ALARM:
                     if not has_alarm:
                         has_alarm = True
-                        tooltip_lines.append('-' * 2 * len(tooltip_lines[-1]))
+                        tooltip_lines.append("-" * 2 * len(tooltip_lines[-1]))
                     tooltip_lines.append(info.describe())
 
         if tooltip_lines:
             tooltip = os.linesep.join(tooltip_lines)
             QtWidgets.QToolTip.showText(
-                self.mapToGlobal(
-                    QtCore.QPoint(event.x() + 10, event.y())),
+                self.mapToGlobal(QtCore.QPoint(event.x() + 10, event.y())),
                 tooltip,
                 self,
             )
@@ -393,6 +392,7 @@ class TyphosAlarm(TyphosObject, PyDMDrawing, _KindLevel, _AlarmLevel):
 
 # Subclass an re-introduce properties as needed
 # Each of these must be included for these to work in designer
+
 
 class TyphosAlarmCircle(TyphosAlarm, PyDMDrawingCircle):
     QtCore.Q_ENUMS(_KindLevel)
@@ -437,22 +437,17 @@ def indicator_stylesheet(shape_cls, alarm):
     indicator_stylesheet : str
         The correctly colored stylesheet to apply to the widget.
     """
-    base = (
-        f'{shape_cls.__name__} '
-        '{border: none; '
-        ' background: transparent;'
-        ' qproperty-brush: rgba'
-    )
+    base = f"{shape_cls.__name__} {{border: none;  background: transparent; qproperty-brush: rgba"
 
     if alarm == AlarmLevel.DISCONNECTED:
-        return base + '(255,255,255,255);}'
+        return base + "(255,255,255,255);}"
     elif alarm == AlarmLevel.NO_ALARM:
-        return base + '(0,255,0,255);}'
+        return base + "(0,255,0,255);}"
     elif alarm == AlarmLevel.MINOR:
-        return base + '(255,255,0,255);}'
+        return base + "(255,255,0,255);}"
     elif alarm == AlarmLevel.MAJOR:
-        return base + '(255,0,0,255);}'
+        return base + "(255,0,0,255);}"
     elif alarm == AlarmLevel.INVALID:
-        return base + '(255,0,255,255);}'
+        return base + "(255,0,255,255);}"
     else:
-        raise ValueError(f'Recieved invalid alarm level {alarm}')
+        raise ValueError(f"Recieved invalid alarm level {alarm}")

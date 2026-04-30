@@ -4,6 +4,7 @@ Tweakable value widget.
 Variety support pending:
 - everything
 """
+
 import logging
 
 import qtpy
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 @variety.uses_key_handlers
-@variety.use_for_variety_write('scalar-tweakable')
+@variety.use_for_variety_write("scalar-tweakable")
 class TyphosTweakable(utils.TyphosBase):
     #  TODO rearrange package: widgets.TyphosDesignerMixin):
     """
@@ -33,12 +34,11 @@ class TyphosTweakable(utils.TyphosBase):
     -----
     """
 
-    ui_template = utils.ui_dir / 'widgets' / 'tweakable.ui'
-    _readback_attr = 'readback'
-    _setpoint_attr = 'setpoint'
+    ui_template = utils.ui_dir / "widgets" / "tweakable.ui"
+    _readback_attr = "readback"
+    _setpoint_attr = "setpoint"
 
-    def __init__(self, parent=None, init_channel=None, variety_metadata=None,
-                 ophyd_signal=None):
+    def __init__(self, parent=None, init_channel=None, variety_metadata=None, ophyd_signal=None):
 
         self._ophyd_signal = ophyd_signal
         super().__init__(parent=parent)
@@ -65,7 +65,7 @@ class TyphosTweakable(utils.TyphosBase):
         try:
             setpoint = float(self.readback.text()) + float(offset)
         except Exception:
-            logger.exception('Tweak failed')
+            logger.exception("Tweak failed")
             return
 
         self.ui.setpoint.setText(str(setpoint))
@@ -77,7 +77,7 @@ class TyphosTweakable(utils.TyphosBase):
         try:
             self.tweak(float(self.tweak_value.text()))
         except Exception:
-            logger.exception('Tweak failed')
+            logger.exception("Tweak failed")
 
     @QtCore.Slot()
     def negative_tweak(self):
@@ -85,4 +85,4 @@ class TyphosTweakable(utils.TyphosBase):
         try:
             self.tweak(-float(self.tweak_value.text()))
         except Exception:
-            logger.exception('Tweak failed')
+            logger.exception("Tweak failed")

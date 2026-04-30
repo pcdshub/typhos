@@ -8,15 +8,15 @@ from .utils import load_suite, patch_connect_slots, use_stylesheet
 from .version import __version__  # noqa: F401
 
 __all__ = [
-    'use_stylesheet',
-    'register_signal',
-    'load_suite',
-    'TyphosCompositeSignalPanel',
-    'TyphosDeviceDisplay',
-    'TyphosSuite',
-    'TyphosSignalPanel',
-    'TyphosPositionerWidget',
-    'TyphosMethodButton',
+    "use_stylesheet",
+    "register_signal",
+    "load_suite",
+    "TyphosCompositeSignalPanel",
+    "TyphosDeviceDisplay",
+    "TyphosSuite",
+    "TyphosSignalPanel",
+    "TyphosPositionerWidget",
+    "TyphosMethodButton",
 ]
 
 

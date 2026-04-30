@@ -22,6 +22,7 @@ Where benchmark_name is one of the supported tests:
 * wide_noconnect
 * wide_soft
 """
+
 from __future__ import annotations
 
 import logging
@@ -58,8 +59,8 @@ def get_suffix(walk: ophyd.device.ComponentWalk) -> str:
     subclass and that it was defined using only
     :class:`ophyd.Component` in the device ancestors tree.
     """
-    suffix = ''
-    for cls, attr in zip(walk.ancestors, walk.dotted_name.split('.')):
+    suffix = ""
+    for cls, attr in zip(walk.ancestors, walk.dotted_name.split("."), strict=True):
         suffix += getattr(cls, attr).suffix
     return suffix
 
@@ -96,9 +97,7 @@ def run_caproto_ioc(prefix: str, test_name: str) -> None:
         pvprops[suffix] = pvproperty()
 
     print(
-        f"Running caproto IOC for test: {test_name} "
-        f"with prefix {prefix!r} "
-        f"Total PVs: {len(pvprops)}",
+        f"Running caproto IOC for test: {test_name} with prefix {prefix!r} Total PVs: {len(pvprops)}",
     )
 
     try:

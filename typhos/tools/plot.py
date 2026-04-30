@@ -1,12 +1,12 @@
 """
 Typhos Plotting Interface
 """
+
 import logging
 
 from qtpy import QtCore, QtGui
 from qtpy.QtCore import Qt, Slot
-from qtpy.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QPushButton,
-                            QVBoxLayout)
+from qtpy.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
 from timechart.displays.main_display import TimeChartDisplay
 from timechart.utilities.utils import random_color
 
@@ -42,9 +42,9 @@ class TyphosTimePlot(utils.TyphosBase):
 
         self.signal_combo = QComboBox()
         self.signal_combo.setModel(self._proxy_model)
-        self.signal_combo_label = QLabel('Available Signals: ')
+        self.signal_combo_label = QLabel("Available Signals: ")
 
-        self.signal_create = QPushButton('Connect')
+        self.signal_create = QPushButton("Connect")
         self.signal_combo_layout = QHBoxLayout()
         self.signal_combo_layout.addWidget(self.signal_combo_label, 0)
         self.signal_combo_layout.addWidget(self.signal_combo, 1)
@@ -55,8 +55,7 @@ class TyphosTimePlot(utils.TyphosBase):
         self.timechart = TimeChartDisplay(show_pv_add_panel=False)
         self.layout().addWidget(self.timechart)
         cache = get_global_describe_cache()
-        cache.new_description.connect(self._new_description,
-                                      Qt.QueuedConnection)
+        cache.new_description.connect(self._new_description, Qt.QueuedConnection)
 
     @property
     def channel_to_curve(self):
@@ -85,7 +84,7 @@ class TyphosTimePlot(utils.TyphosBase):
             If a signal of the same name already is available.
         """
         if name in self._available_signals:
-            raise ValueError('Signal already available')
+            raise ValueError("Signal already available")
 
         channel = utils.channel_from_signal(signal)
         self._available_signals[name] = (signal, channel)
@@ -119,8 +118,7 @@ class TyphosTimePlot(utils.TyphosBase):
         if not color:
             color = random_color()
         logger.debug("Adding %s to plot ...", channel)
-        self.timechart.add_y_channel(pv_name=channel, curve_name=name,
-                                     color=color, **kwargs)
+        self.timechart.add_y_channel(pv_name=channel, curve_name=name, color=color, **kwargs)
 
     @Slot()
     def remove_curve(self, name):
@@ -153,14 +151,14 @@ class TyphosTimePlot(utils.TyphosBase):
 
     @Slot(object, dict)
     def _new_description(self, signal, desc):
-        name = f'{signal.root.name}.{signal.dotted_name}'
-        if 'dtype' not in desc:
+        name = f"{signal.root.name}.{signal.dotted_name}"
+        if "dtype" not in desc:
             # Marks an error in retrieving the description
             logger.debug("Ignoring signal without description %s", name)
             return
 
         # Only include scalars
-        if desc['dtype'] not in ('integer', 'number'):
+        if desc["dtype"] not in ("integer", "number"):
             logger.debug("Ignoring non-scalar signal %s", name)
             return
 
@@ -176,8 +174,7 @@ class TyphosTimePlot(utils.TyphosBase):
         super().add_device(device)
 
         cache = get_global_describe_cache()
-        for signal in utils.get_all_signals_from_device(device,
-                                                        include_lazy=False):
+        for signal in utils.get_all_signals_from_device(device, include_lazy=False):
             desc = cache.get(signal)
             if desc is not None:
                 self._new_description(signal, desc)
