@@ -53,6 +53,8 @@ class SidebarParameter(parametertree.Parameter):
     sigEmbed = QtCore.Signal(object)
 
     def __init__(self, devices=None, embeddable=None, **opts):
+        if "value" not in opts:
+            opts["value"] = None
         super().__init__(**opts)
         self.embeddable = embeddable
         self.devices = list(devices) if devices else []
@@ -264,7 +266,7 @@ class TyphosSuite(TyphosBase):
 
         self._tree = parametertree.ParameterTree(parent=self, showHeader=False)
         self._tree.setAlternatingRowColors(False)
-        self._save_action = ptypes.ActionParameter(name="Save Suite")
+        self._save_action = ptypes.ActionParameter(name='Save Suite', value=None)
         self._tree.addParameters(self._save_action)
         self._save_action.sigActivated.connect(self.save)
 
@@ -872,7 +874,7 @@ class TyphosSuite(TyphosBase):
                 group = self.top_level_groups[category]
             else:
                 logger.debug("Creating new category %r ...", category)
-                group = ptypes.GroupParameter(name=category)
+                group = ptypes.GroupParameter(name=category, value=None)
                 self._tree.addParameters(group)
                 self._tree.sortItems(0, QtCore.Qt.AscendingOrder)
             logger.debug("Adding %r to category %r ...", parameter.name(), group.name())
