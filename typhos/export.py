@@ -230,8 +230,8 @@ def typhos_type_to_pydm_type(typhos_widget: QWidget) -> str:
     match str(typhos_widget.__name__):
         case "PyDMLabel" | "TyphosLabel" | "WaveformDialogButton" | "ImageDialogButton":
             return "PyDMLabel"
-        case "PyDMLabel" | "TyphosComboBox":
-            return "PyDMLabel"
+        case "TyphosComboBox":
+            return "PyDMEnumComboBox"
         case "PyDMPushButton" | "TyphosCommandButton":
             return "PyDMPushButton"
         case "PyDMEnumButton" | "TyphosCommandEnumButton":
