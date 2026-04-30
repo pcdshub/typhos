@@ -59,7 +59,8 @@ def export_as_ui(display: TyphosDeviceDisplay, export_filename: str):
 
     used_macros = {key: value for key, value in all_macros.items() if un_macros[value] in text}
 
-    logger.info(f"Run as pydm --macro '{json.dumps(used_macros)}' {export_filename}")
+    logger.info("File must be opened and re-saved in designer before it can be run!")
+    logger.info(f"After re-save, run as pydm --macro '{json.dumps(used_macros)}' {export_filename}")
 
 
 def from_display(display: TyphosDeviceDisplay) -> etree._ElementTree:
