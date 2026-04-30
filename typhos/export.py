@@ -12,7 +12,7 @@ from qtpy.QtWidgets import QWidget
 
 from .display import TyphosDeviceDisplay, TyphosDisplayTitle
 from .panel import TyphosCompositeSignalPanel, TyphosSignalPanel
-from .utils import is_signal_ro
+from .utils import get_variety_metadata, is_signal_ro
 from .widgets import determine_widget_type
 
 logger = logging.getLogger(__name__)
@@ -284,10 +284,15 @@ def add_signal_row_to_grid(signal_name: str, signal_info: dict, device_name: str
     if write_cls is None:
         return
     # Third item in row: setpoint widget
+    setpoint_clsname = typhos_type_to_pydm_type(write_cls)
     setpoint_widget = create_widget_in_grid(
-        name=f"{short_signal_name}_setpoint", cls=typhos_type_to_pydm_type(write_cls), grid=grid, row=row, col=2
+        name=f"{short_signal_name}_setpoint", cls=setpoint_clsname, grid=grid, row=row, col=2
     )
     add_string_property(widget=setpoint_widget, prop_name="channel", prop_value=f"ca://{signal._write_pv.pvname}")  # type: ignore
+    if setpoint_clsname == "PyDMPushButton":
+        # Helpful to get the press value correct here in the translation so the button works as intended
+        press_value = get_variety_metadata(signal_info["signal"])["value"]
+        add_string_property(widget=setpoint_widget, prop_name="pressValue", prop_value=str(press_value))
 
 
 def typhos_type_to_pydm_type(typhos_widget: QWidget) -> str:
