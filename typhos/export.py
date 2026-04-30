@@ -348,7 +348,7 @@ def add_size_property(widget: etree._Element, size_name: str, width: int, height
     size_elem = etree.SubElement(prop_elem, "size")
     width_elem = etree.SubElement(size_elem, "width")
     width_elem.text = str(width)
-    height_elem = etree.SubElement(size_elem, "width")
+    height_elem = etree.SubElement(size_elem, "height")
     height_elem.text = str(height)
     return prop_elem
 
