@@ -6,16 +6,16 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Widgets &mdash; Typhos 4.2.1.dev7+g640e1afc4 documentation</title>
+  <title>Widgets &mdash; Typhos 4.2.2.dev31+g35db14a19 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=effccb0e"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/documentation_options.js?v=017cbea6"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -52,7 +52,6 @@
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul class="current">
@@ -282,7 +281,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.SignalWidgetInfo">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">SignalWidgetInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">SignalWidgetInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo" title="Link to this definition"></a></dt>
 <dd><p>Provides information on how to create signal widgets: class and kwargs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -296,7 +295,7 @@ be able to write back to the widget and if the signal has <code class="docutils 
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="typhos.widgets.SignalWidgetInfo.from_signal">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo.from_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo.from_signal" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalWidgetInfo.from_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalWidgetInfo.from_signal" title="Link to this definition"></a></dt>
 <dd><p>Create a <cite>SignalWidgetInfo</cite> given an object and its description.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -364,7 +363,7 @@ hides and shows the contents. Each variation in Typhos is documented below.</p>
 <h3>Basic Signal Panels<a class="headerlink" href="#basic-signal-panels" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.panel.SignalPanel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.panel.</span></span><span class="sig-name descname"><span class="pre">SignalPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.panel.</span></span><span class="sig-name descname"><span class="pre">SignalPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#SignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.SignalPanel" title="Link to this definition"></a></dt>
 <dd><p>Basic panel layout for <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> and other ophyd objects.</p>
 <p>This panel does not support hierarchical display of signals; rather, it
 flattens a device hierarchy showing all signals in the same area.</p>
@@ -542,13 +541,13 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.panel.SignalPanel.row_count">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">row_count</span></span><a class="headerlink" href="#typhos.panel.SignalPanel.row_count" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">row_count</span></span><a class="headerlink" href="#typhos.panel.SignalPanel.row_count" title="Link to this definition"></a></dt>
 <dd><p>Get the number of filled-in rows.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.panel.SignalPanel.signals">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">signals</span></span><a class="headerlink" href="#typhos.panel.SignalPanel.signals" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">signals</span></span><a class="headerlink" href="#typhos.panel.SignalPanel.signals" title="Link to this definition"></a></dt>
 <dd><p>Get all instantiated signals, omitting components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -562,7 +561,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.panel.SignalPanel.visible_elements">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">visible_elements</span></span><a class="headerlink" href="#typhos.panel.SignalPanel.visible_elements" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">visible_elements</span></span><a class="headerlink" href="#typhos.panel.SignalPanel.visible_elements" title="Link to this definition"></a></dt>
 <dd><p>Get all signals visible according to filters, omitting components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -576,7 +575,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.panel.SignalPanel.visible_signals">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">visible_signals</span></span><a class="headerlink" href="#typhos.panel.SignalPanel.visible_signals" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">visible_signals</span></span><a class="headerlink" href="#typhos.panel.SignalPanel.visible_signals" title="Link to this definition"></a></dt>
 <dd><p>Get all signals visible according to filters, omitting components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -592,7 +591,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.TyphosSignalPanel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.</span></span><span class="sig-name descname"><span class="pre">TyphosSignalPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSignalPanel" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.</span></span><span class="sig-name descname"><span class="pre">TyphosSignalPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosSignalPanel" title="Link to this definition"></a></dt>
 <dd><p>Panel of Signals for a given device, using <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -604,7 +603,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 </dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.TyphosSignalPanel.SignalOrder">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SignalOrder</span></span><a class="headerlink" href="#typhos.TyphosSignalPanel.SignalOrder" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">SignalOrder</span></span><a class="headerlink" href="#typhos.TyphosSignalPanel.SignalOrder" title="Link to this definition"></a></dt>
 <dd><p>Options for sorting signals.</p>
 <p>This can be used as a base class for subclasses of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">QtWidgets.QWidget</span></code>, allowing this to be used in
@@ -619,7 +618,7 @@ attribute name may lead to ambiguity or name clashes.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.TyphosSignalPanel.filter_settings">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_settings</span></span><a class="headerlink" href="#typhos.TyphosSignalPanel.filter_settings" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">filter_settings</span></span><a class="headerlink" href="#typhos.TyphosSignalPanel.filter_settings" title="Link to this definition"></a></dt>
 <dd><p>Get the filter settings dictionary.</p>
 </dd></dl>
 
@@ -663,7 +662,7 @@ and when all signal rows get filtered all at once.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.TyphosSignalPanel.show_kinds">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">show_kinds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Kind</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#typhos.TyphosSignalPanel.show_kinds" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">show_kinds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Kind</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#typhos.TyphosSignalPanel.show_kinds" title="Link to this definition"></a></dt>
 <dd><p>Get a list of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Kind</span></code> that should be shown.</p>
 </dd></dl>
 
@@ -674,7 +673,7 @@ and when all signal rows get filtered all at once.</p>
 <h3>Composite Signal Panels<a class="headerlink" href="#composite-signal-panels" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.panel.CompositeSignalPanel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.panel.</span></span><span class="sig-name descname"><span class="pre">CompositeSignalPanel</span></span><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.panel.</span></span><span class="sig-name descname"><span class="pre">CompositeSignalPanel</span></span><a class="reference internal" href="_modules/typhos/panel.html#CompositeSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.panel.CompositeSignalPanel" title="Link to this definition"></a></dt>
 <dd><p>Composite panel layout for <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Signal</span></code> and other ophyd objects.</p>
 <p>Contrasted to <a class="reference internal" href="#typhos.panel.SignalPanel" title="typhos.panel.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a>, this class retains the hierarchy built
 into an <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Device</span></code> hierarchy.  Individual signals mix in with
@@ -762,7 +761,7 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.panel.CompositeSignalPanel.visible_elements">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">visible_elements</span></span><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.visible_elements" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">visible_elements</span></span><a class="headerlink" href="#typhos.panel.CompositeSignalPanel.visible_elements" title="Link to this definition"></a></dt>
 <dd><p>Return all visible signals and components.</p>
 </dd></dl>
 
@@ -770,7 +769,7 @@ sub-device displays, which may or may not have custom screens.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.TyphosCompositeSignalPanel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.</span></span><span class="sig-name descname"><span class="pre">TyphosCompositeSignalPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosCompositeSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosCompositeSignalPanel" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.</span></span><span class="sig-name descname"><span class="pre">TyphosCompositeSignalPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/panel.html#TyphosCompositeSignalPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosCompositeSignalPanel" title="Link to this definition"></a></dt>
 <dd><p>Hierarchical panel for a device, using <code class="xref py py-class docutils literal notranslate"><span class="pre">CompositeSignalPanel</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -788,7 +787,7 @@ sub-device displays, which may or may not have custom screens.</p>
 <h2>TyphosPositionerWidget<a class="headerlink" href="#typhospositionerwidget" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.TyphosPositionerWidget">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.</span></span><span class="sig-name descname"><span class="pre">TyphosPositionerWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.</span></span><span class="sig-name descname"><span class="pre">TyphosPositionerWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/positioner.html#TyphosPositionerWidget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosPositionerWidget" title="Link to this definition"></a></dt>
 <dd><p>Widget to interact with a <code class="xref py py-class docutils literal notranslate"><span class="pre">ophyd.Positioner</span></code>.</p>
 <p>Standard positioner motion requires a large amount of context for
 operators. For most motors, it may not be enough to simply have a text
@@ -864,7 +863,7 @@ alarm state of all of the device’s <code class="docutils literal notranslate">
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.TyphosPositionerWidget.KindLevel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">KindLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#typhos.TyphosPositionerWidget.KindLevel" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">KindLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#typhos.TyphosPositionerWidget.KindLevel" title="Link to this definition"></a></dt>
 <dd><p>Options for TyphosAlarm.kindLevel.</p>
 </dd></dl>
 
@@ -876,13 +875,13 @@ alarm state of all of the device’s <code class="docutils literal notranslate">
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.TyphosPositionerWidget.all_linked_attributes">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_linked_attributes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#typhos.TyphosPositionerWidget.all_linked_attributes" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">all_linked_attributes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#typhos.TyphosPositionerWidget.all_linked_attributes" title="Link to this definition"></a></dt>
 <dd><p>All linked attribute names.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.TyphosPositionerWidget.all_linked_signals">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_linked_signals</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Signal</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#typhos.TyphosPositionerWidget.all_linked_signals" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">all_linked_signals</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Signal</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#typhos.TyphosPositionerWidget.all_linked_signals" title="Link to this definition"></a></dt>
 <dd><p>All linked signal names.</p>
 </dd></dl>
 
@@ -898,7 +897,7 @@ be cleared from view.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.TyphosPositionerWidget.device">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><a class="headerlink" href="#typhos.TyphosPositionerWidget.device" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">device</span></span><a class="headerlink" href="#typhos.TyphosPositionerWidget.device" title="Link to this definition"></a></dt>
 <dd><p>The associated device.</p>
 </dd></dl>
 
@@ -951,7 +950,7 @@ be cleared from view.</p>
 <h2>Functions and Methods<a class="headerlink" href="#functions-and-methods" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.func.FunctionPanel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.func.</span></span><span class="sig-name descname"><span class="pre">FunctionPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#FunctionPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.func.FunctionPanel" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.func.</span></span><span class="sig-name descname"><span class="pre">FunctionPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#FunctionPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.func.FunctionPanel" title="Link to this definition"></a></dt>
 <dd><p>Function Panel.</p>
 <p>Similar to <a class="reference internal" href="#typhos.panel.SignalPanel" title="typhos.panel.SignalPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalPanel</span></code></a> but instead displays a set of function
 widgets arranged in a row. Each provided method has a
@@ -985,7 +984,7 @@ widgets arranged in a row. Each provided method has a
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.TyphosMethodButton">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.</span></span><span class="sig-name descname"><span class="pre">TyphosMethodButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosMethodButton" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.</span></span><span class="sig-name descname"><span class="pre">TyphosMethodButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosMethodButton" title="Link to this definition"></a></dt>
 <dd><p>QPushButton to access a method of a Device.</p>
 <p>The function provided by the loaded device and the <code class="xref py py-attr docutils literal notranslate"><span class="pre">method_name</span></code>
 will be run when the button is clicked. If <code class="docutils literal notranslate"><span class="pre">use_status</span></code> is set to True,
@@ -1009,7 +1008,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py method">
 <dt class="sig sig-object py" id="typhos.TyphosMethodButton.from_device">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.from_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosMethodButton.from_device" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/func.html#TyphosMethodButton.from_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.TyphosMethodButton.from_device" title="Link to this definition"></a></dt>
 <dd><p>Create a TyphosMethodButton from a device.</p>
 </dd></dl>
 
@@ -1020,7 +1019,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 <h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.ClickableBitIndicator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">ClickableBitIndicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ClickableBitIndicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.ClickableBitIndicator" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">ClickableBitIndicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QWidget</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ClickableBitIndicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.ClickableBitIndicator" title="Link to this definition"></a></dt>
 <dd><p>A bit indicator that emits <cite>clicked</cite> when clicked.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="typhos.widgets.ClickableBitIndicator.mousePressEvent">
@@ -1031,7 +1030,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.ImageDialogButton">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">ImageDialogButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ImageDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.ImageDialogButton" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">ImageDialogButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#ImageDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.ImageDialogButton" title="Link to this definition"></a></dt>
 <dd><p>QPushButton to show a 2-d array.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1053,11 +1052,11 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.SignalDialogButton">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">SignalDialogButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalDialogButton" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">SignalDialogButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#SignalDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SignalDialogButton" title="Link to this definition"></a></dt>
 <dd><p>QPushButton to launch a QDialog with a PyDMWidget</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="typhos.widgets.SignalDialogButton.icon">
-<span class="sig-name descname"><span class="pre">icon</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">NotImplemented</span></em><a class="headerlink" href="#typhos.widgets.SignalDialogButton.icon" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">icon</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">NotImplemented</span></span><a class="headerlink" href="#typhos.widgets.SignalDialogButton.icon" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1074,7 +1073,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="typhos.widgets.SignalDialogButton.text">
-<span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">NotImplemented</span></em><a class="headerlink" href="#typhos.widgets.SignalDialogButton.text" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">text</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">NotImplemented</span></span><a class="headerlink" href="#typhos.widgets.SignalDialogButton.text" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1087,7 +1086,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.SubDisplay">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">SubDisplay</span></span><a class="reference internal" href="_modules/typhos/widgets.html#SubDisplay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SubDisplay" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">SubDisplay</span></span><a class="reference internal" href="_modules/typhos/widgets.html#SubDisplay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.SubDisplay" title="Link to this definition"></a></dt>
 <dd><p>QDockWidget modified to emit a signal when closed</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="typhos.widgets.SubDisplay.closeEvent">
@@ -1098,7 +1097,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosArrayTable">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosArrayTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosArrayTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosArrayTable" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosArrayTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosArrayTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosArrayTable" title="Link to this definition"></a></dt>
 <dd><p>A table widget which reshapes and displays a given waveform value.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1117,7 +1116,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosArrayTable.variety_metadata">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosArrayTable.variety_metadata" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosArrayTable.variety_metadata" title="Link to this definition"></a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1125,7 +1124,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosByteIndicator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosByteIndicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteIndicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosByteIndicator" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosByteIndicator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteIndicator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosByteIndicator" title="Link to this definition"></a></dt>
 <dd><p>Displays an integer value as individual, read-only bit indicators.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1133,7 +1132,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 </ul>
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosByteIndicator.variety_metadata">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosByteIndicator.variety_metadata" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosByteIndicator.variety_metadata" title="Link to this definition"></a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1141,7 +1140,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosByteSetpoint">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosByteSetpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteSetpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosByteSetpoint" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosByteSetpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosByteSetpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosByteSetpoint" title="Link to this definition"></a></dt>
 <dd><p>Displays an integer value as individual, toggleable bit indicators.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1157,7 +1156,7 @@ the button will be disabled while the <code class="docutils literal notranslate"
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosComboBox">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosComboBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosComboBox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosComboBox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosComboBox" title="Link to this definition"></a></dt>
 <dd><p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>Used for variety text-enum (setpoint)</p></li>
@@ -1185,7 +1184,7 @@ new enum values to be broadcasted</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosCommandButton">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosCommandButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandButton" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosCommandButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandButton" title="Link to this definition"></a></dt>
 <dd><p>A pushbutton widget which executes a command by sending a specific value.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -1212,7 +1211,7 @@ new enum values to be broadcasted</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosCommandButton.variety_metadata">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosCommandButton.variety_metadata" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosCommandButton.variety_metadata" title="Link to this definition"></a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1220,7 +1219,7 @@ new enum values to be broadcasted</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosCommandEnumButton">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosCommandEnumButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandEnumButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosCommandEnumButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosCommandEnumButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton" title="Link to this definition"></a></dt>
 <dd><p>A group of buttons which represent several command options.</p>
 <p>These options can come from directly from the control layer or can be
 overridden with variety metadata.</p>
@@ -1247,7 +1246,7 @@ new enum values to be broadcasted.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosCommandEnumButton.variety_metadata">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton.variety_metadata" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosCommandEnumButton.variety_metadata" title="Link to this definition"></a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1255,7 +1254,7 @@ new enum values to be broadcasted.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosLabel">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosLabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosLabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLabel" title="Link to this definition"></a></dt>
 <dd><p>Reimplementation of PyDMLabel to set some custom defaults</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1301,7 +1300,7 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosLineEdit">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosLineEdit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosLineEdit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosLineEdit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosLineEdit" title="Link to this definition"></a></dt>
 <dd><p>Reimplementation of PyDMLineEdit to set some custom defaults</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1316,7 +1315,7 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosLineEdit.setpoint_history">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setpoint_history</span></span><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.setpoint_history" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">setpoint_history</span></span><a class="headerlink" href="#typhos.widgets.TyphosLineEdit.setpoint_history" title="Link to this definition"></a></dt>
 <dd><p>timestamp}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -1356,7 +1355,7 @@ new unit value is considered if <code class="docutils literal notranslate"><span
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosScalarRange">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosScalarRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosScalarRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosScalarRange" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosScalarRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosScalarRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosScalarRange" title="Link to this definition"></a></dt>
 <dd><p>A slider widget which displays a scalar value with an explicit range.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1377,13 +1376,13 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosScalarRange.delta_signal">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_signal</span></span><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.delta_signal" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">delta_signal</span></span><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.delta_signal" title="Link to this definition"></a></dt>
 <dd><p>Delta signal, used as the source for “delta_value”.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosScalarRange.variety_metadata">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.variety_metadata" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.widgets.TyphosScalarRange.variety_metadata" title="Link to this definition"></a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1391,7 +1390,7 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosSidebarItem">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosSidebarItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosSidebarItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosSidebarItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosSidebarItem" title="Link to this definition"></a></dt>
 <dd><p>Class to display a Device or Tool in the sidebar</p>
 <p class="rubric">Notes</p>
 <dl class="py method">
@@ -1422,7 +1421,7 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.tweakable.TyphosTweakable">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.tweakable.</span></span><span class="sig-name descname"><span class="pre">TyphosTweakable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.tweakable.</span></span><span class="sig-name descname"><span class="pre">TyphosTweakable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/tweakable.html#TyphosTweakable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.tweakable.TyphosTweakable" title="Link to this definition"></a></dt>
 <dd><p>Widget for a tweakable scalar.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1456,7 +1455,7 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.tweakable.TyphosTweakable.variety_metadata">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.variety_metadata" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.tweakable.TyphosTweakable.variety_metadata" title="Link to this definition"></a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1464,7 +1463,7 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.textedit.TyphosTextEdit">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.textedit.</span></span><span class="sig-name descname"><span class="pre">TyphosTextEdit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.textedit.</span></span><span class="sig-name descname"><span class="pre">TyphosTextEdit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variety_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ophyd_signal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/textedit.html#TyphosTextEdit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.textedit.TyphosTextEdit" title="Link to this definition"></a></dt>
 <dd><p>A writable, multiline text editor with support for PyDM Channels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1495,7 +1494,7 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="typhos.textedit.TyphosTextEdit.variety_metadata">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.variety_metadata" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">variety_metadata</span></span><a class="headerlink" href="#typhos.textedit.TyphosTextEdit.variety_metadata" title="Link to this definition"></a></dt>
 <dd><p>Additional component variety metadata.</p>
 </dd></dl>
 
@@ -1509,7 +1508,7 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.WaveformDialogButton">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">WaveformDialogButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#WaveformDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.WaveformDialogButton" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">WaveformDialogButton</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#WaveformDialogButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.WaveformDialogButton" title="Link to this definition"></a></dt>
 <dd><p>QPushButton to show a 1-d array.</p>
 <p class="rubric">Notes</p>
 <ul class="simple">
@@ -1535,7 +1534,7 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
 <h2>Designer<a class="headerlink" href="#designer" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.widgets.TyphosDesignerMixin">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosDesignerMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosDesignerMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosDesignerMixin" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.widgets.</span></span><span class="sig-name descname"><span class="pre">TyphosDesignerMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/widgets.html#TyphosDesignerMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.widgets.TyphosDesignerMixin" title="Link to this definition"></a></dt>
 <dd><p>A mixin class used to display Typhos widgets in the Qt designer.</p>
 </dd></dl>
 
@@ -1553,7 +1552,7 @@ and also trigger the change on alarm severity to ALARM_DISCONNECTED.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2026, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

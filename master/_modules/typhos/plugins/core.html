@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.plugins.core &mdash; Typhos 4.2.1.dev7+g640e1afc4 documentation</title>
+  <title>typhos.plugins.core &mdash; Typhos 4.2.2.dev31+g35db14a19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=effccb0e"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=017cbea6"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -90,6 +89,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Module Docstring</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -126,7 +126,7 @@
         <span class="c1"># .dotted_name does not include the root device&#39;s name</span>
         <span class="n">names</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">signal</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">dotted_name</span><span class="p">)),</span>
+            <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">signal</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">dotted_name</span><span class="p">)),</span>
         <span class="p">)</span>
     <span class="c1"># Warn the user if they are adding twice</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
@@ -169,6 +169,7 @@
 <span class="sd">    signal : ophyd.Signal</span>
 <span class="sd">        Stored signal object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">supported_types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -237,11 +238,10 @@
         <span class="c1"># We make the assumption that signals do not change types during a</span>
         <span class="c1"># connection</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">:</span>
-            <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;dtype&quot;</span><span class="p">]</span>
             <span class="c1"># Only way this raises a KeyError is if ophyd is confused</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="o">=</span> <span class="n">_type_map</span><span class="p">[</span><span class="n">dtype</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found signal type </span><span class="si">%r</span><span class="s2"> for </span><span class="si">%r</span><span class="s2">. Using Python type </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
-                         <span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found signal type </span><span class="si">%r</span><span class="s2"> for </span><span class="si">%r</span><span class="s2">. Using Python type </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Casting </span><span class="si">%r</span><span class="s2"> to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">enum_strs</span><span class="p">:</span>
@@ -260,9 +260,7 @@
                 <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Invalid combination: enum_strs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">enum_strs</span><span class="si">}</span><span class="s2"> with signal_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid combination: enum_strs=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">enum_strs</span><span class="si">}</span><span class="s2"> with signal_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -306,21 +304,13 @@
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">new_value_signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_type</span><span class="p">]</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to update </span><span class="si">%r</span><span class="s2"> with value </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span>
-                             <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to update </span><span class="si">%r</span><span class="s2"> with value </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SignalConnection.send_new_meta">
 <a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalConnection.send_new_meta">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">send_new_meta</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">connected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">write_access</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">severity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">precision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">enum_strs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">connected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write_access</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">severity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">enum_strs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the UI with new metadata from the Signal.</span>
@@ -383,9 +373,9 @@
             <span class="c1"># Gather metadata</span>
             <span class="n">signal_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">metadata</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to gather proper information &quot;</span>
-                             <span class="s2">&quot;from signal </span><span class="si">%r</span><span class="s2"> to initialize </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
-                             <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                <span class="s2">&quot;Failed to gather proper information from signal </span><span class="si">%r</span><span class="s2"> to initialize </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span>
+            <span class="p">)</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal_val</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">)):</span>
             <span class="c1"># Precision is commonly omitted from non-epics signals</span>
@@ -410,8 +400,7 @@
                     <span class="n">val_sig</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span><span class="p">[</span><span class="n">_typ</span><span class="p">]</span>
                     <span class="n">val_sig</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">put_value</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no value_signal for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                                 <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span></div>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has no value_signal for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SignalConnection.remove_listener">
@@ -430,8 +419,7 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">channel</span><span class="o">.</span><span class="n">value_signal</span><span class="p">[</span><span class="n">_typ</span><span class="p">]</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">put_value</span><span class="p">,</span> <span class="n">destroying</span><span class="p">)</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Unable to disconnect value_signal from </span><span class="si">%s</span><span class="s2"> &quot;</span>
-                                 <span class="s2">&quot;for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Unable to disconnect value_signal from </span><span class="si">%s</span><span class="s2"> for type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">_typ</span><span class="p">)</span>
         <span class="c1"># Disconnect any other signals</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="n">destroying</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Successfully removed </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span></div>
@@ -451,7 +439,8 @@
 <a class="viewcode-back" href="../../../plugins.html#typhos.plugins.SignalPlugin">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SignalPlugin</span><span class="p">(</span><span class="n">PyDMPlugin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin registered with PyDM to handle SignalConnection.&quot;&quot;&quot;</span>
-    <span class="n">protocol</span> <span class="o">=</span> <span class="s1">&#39;sig&#39;</span>
+
+    <span class="n">protocol</span> <span class="o">=</span> <span class="s2">&quot;sig&quot;</span>
     <span class="n">connection_class</span> <span class="o">=</span> <span class="n">SignalConnection</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
@@ -463,12 +452,11 @@
         <span class="c1"># don&#39;t add this to our list of good to go connections. The next</span>
         <span class="c1"># attempt we try again.</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to find signal for </span><span class="si">%r</span><span class="s2"> in signal registry.&quot;</span>
-                         <span class="s2">&quot;Use typhos.plugins.register_signal()&quot;</span><span class="p">,</span>
-                         <span class="n">channel</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Unable to find signal for </span><span class="si">%r</span><span class="s2"> in signal registry.Use typhos.plugins.register_signal()&quot;</span><span class="p">,</span> <span class="n">channel</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to create a connection to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
-                             <span class="n">channel</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Unable to create a connection to </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">destroying</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -490,7 +478,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2026, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.textedit &mdash; Typhos 4.2.1.dev7+g640e1afc4 documentation</title>
+  <title>typhos.textedit &mdash; Typhos 4.2.2.dev31+g35db14a19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=effccb0e"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/documentation_options.js?v=017cbea6"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -93,6 +92,7 @@
 <span class="sd">Variety support pending:</span>
 <span class="sd">- Text format</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -107,7 +107,7 @@
 <div class="viewcode-block" id="TyphosTextEdit">
 <a class="viewcode-back" href="../../widgets.html#typhos.textedit.TyphosTextEdit">[docs]</a>
 <span class="nd">@variety</span><span class="o">.</span><span class="n">uses_key_handlers</span>
-<span class="nd">@variety</span><span class="o">.</span><span class="n">use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;text-multiline&#39;</span><span class="p">)</span>
+<span class="nd">@variety</span><span class="o">.</span><span class="n">use_for_variety_write</span><span class="p">(</span><span class="s2">&quot;text-multiline&quot;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TyphosTextEdit</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">,</span> <span class="n">PyDMWritableWidget</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A writable, multiline text editor with support for PyDM Channels.</span>
@@ -121,14 +121,13 @@
 <span class="sd">        The channel to be used by the widget.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_display_text</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delimiter</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_format</span> <span class="o">=</span> <span class="s1">&#39;plain&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format</span> <span class="o">=</span> <span class="s2">&quot;plain&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_raw_value</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
@@ -144,10 +143,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">layout</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_text_edit</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QTextEdit</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_send_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Send&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Send&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_clicked</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_revert_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s1">&#39;Revert&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_revert_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Revert&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_revert_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_revert_clicked</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_button_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
@@ -180,8 +179,7 @@
             <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_edit</span><span class="o">.</span><span class="n">toPlainText</span><span class="p">()</span>
 
         <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delimiter</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span><span class="p">)),</span>
-                        <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_wire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;numpy array/string/bytes -&gt; string.&quot;&quot;&quot;</span>
@@ -203,8 +201,10 @@
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
                 <span class="s2">&quot;send_value error </span><span class="si">%r</span><span class="s2"> with type </span><span class="si">%r</span><span class="s2"> and format </span><span class="si">%r</span><span class="s2"> (widget </span><span class="si">%r</span><span class="s2">).&quot;</span><span class="p">,</span>
-                <span class="n">send_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channeltype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_format_type</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span>
+                <span class="n">send_value</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channeltype</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_display_format_type</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objectName</span><span class="p">(),</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_text_edit</span><span class="o">.</span><span class="n">document</span><span class="p">()</span><span class="o">.</span><span class="n">setModified</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
@@ -240,20 +240,20 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">value_changed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_value</span><span class="p">)</span>
 
-    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s1">&#39;delimiter&#39;</span><span class="p">)</span>
+    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s2">&quot;delimiter&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_variety_key_handler_delimiter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_delimiter</span> <span class="o">=</span> <span class="n">delimiter</span>
 
-    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s1">&#39;encoding&#39;</span><span class="p">)</span>
+    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s2">&quot;encoding&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_variety_key_handler_encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoding</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_encoding</span> <span class="o">=</span> <span class="n">encoding</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reinterpret_text</span><span class="p">()</span>
 
-    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">)</span>
+    <span class="nd">@variety</span><span class="o">.</span><span class="n">key_handler</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_variety_key_handler_format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">format_</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_format</span> <span class="o">=</span> <span class="n">format_</span>
-        <span class="k">if</span> <span class="n">format_</span> <span class="o">!=</span> <span class="s1">&#39;plain&#39;</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Non-plain formats not yet implemented.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">format_</span> <span class="o">!=</span> <span class="s2">&quot;plain&quot;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Non-plain formats not yet implemented.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reinterpret_text</span><span class="p">()</span></div>
 
 </pre></div>
@@ -265,7 +265,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2026, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

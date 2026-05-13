@@ -6,16 +6,16 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Typhos Data Plugins for PyDM &mdash; Typhos 4.2.1.dev7+g640e1afc4 documentation</title>
+  <title>Typhos Data Plugins for PyDM &mdash; Typhos 4.2.2.dev31+g35db14a19 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=effccb0e"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/documentation_options.js?v=017cbea6"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -52,7 +52,6 @@
 <li class="toctree-l1"><a class="reference internal" href="python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul class="current">
@@ -136,7 +135,7 @@ full dotted path starting from the parent’s name.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.plugins.SignalConnection">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></span><span class="sig-name descname"><span class="pre">SignalConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.SignalConnection" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></span><span class="sig-name descname"><span class="pre">SignalConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.SignalConnection" title="Link to this definition"></a></dt>
 <dd><p>Connection to monitor an Ophyd Signal.</p>
 <p>This is meant as a generalized connection to any type of Ophyd Signal. It
 handles reporting updates to listeners as well as pushing new values that
@@ -241,7 +240,7 @@ want the UI to assume that anything is in an alarm state.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.plugins.SignalPlugin">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></span><span class="sig-name descname"><span class="pre">SignalPlugin</span></span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.SignalPlugin" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></span><span class="sig-name descname"><span class="pre">SignalPlugin</span></span><a class="reference internal" href="_modules/typhos/plugins/core.html#SignalPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.SignalPlugin" title="Link to this definition"></a></dt>
 <dd><p>Plugin registered with PyDM to handle SignalConnection.</p>
 </dd></dl>
 
@@ -260,7 +259,7 @@ such that <code class="xref py py-meth docutils literal notranslate"><span class
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.plugins.HappiConnection">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></span><span class="sig-name descname"><span class="pre">HappiConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/happi.html#HappiConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.HappiConnection" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></span><span class="sig-name descname"><span class="pre">HappiConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/typhos/plugins/happi.html#HappiConnection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.HappiConnection" title="Link to this definition"></a></dt>
 <dd><p>A PyDMConnection to the Happi Database.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="typhos.plugins.HappiConnection.add_listener">
@@ -278,7 +277,7 @@ such that <code class="xref py py-meth docutils literal notranslate"><span class
 
 <dl class="py class">
 <dt class="sig sig-object py" id="typhos.plugins.HappiPlugin">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></span><span class="sig-name descname"><span class="pre">HappiPlugin</span></span><a class="reference internal" href="_modules/typhos/plugins/happi.html#HappiPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.HappiPlugin" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">typhos.plugins.</span></span><span class="sig-name descname"><span class="pre">HappiPlugin</span></span><a class="reference internal" href="_modules/typhos/plugins/happi.html#HappiPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#typhos.plugins.HappiPlugin" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -295,7 +294,7 @@ such that <code class="xref py py-meth docutils literal notranslate"><span class
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2026, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

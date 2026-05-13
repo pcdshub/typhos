@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.cache &mdash; Typhos 4.2.1.dev7+g640e1afc4 documentation</title>
+  <title>typhos.cache &mdash; Typhos 4.2.2.dev31+g35db14a19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=effccb0e"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/documentation_options.js?v=017cbea6"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -172,8 +171,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">ObjectConnectionMonitorThread</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">connection_update</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_connection_update</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">connection_update</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_update</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">connect_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
@@ -191,10 +189,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span>
-                         <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span>
-                         <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Unable to connect to </span><span class="si">%r</span><span class="s2"> during widget creation&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_worker_describe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -212,7 +208,7 @@
             <span class="k">if</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Worker describe failed: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Worker describe failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -233,9 +229,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_process</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="n">func</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_worker_describe</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
-        <span class="n">QtCore</span><span class="o">.</span><span class="n">QThreadPool</span><span class="o">.</span><span class="n">globalInstance</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">(</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">ThreadPoolWorker</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QThreadPool</span><span class="o">.</span><span class="n">globalInstance</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">ThreadPoolWorker</span><span class="p">(</span><span class="n">func</span><span class="p">))</span>
 
 <div class="viewcode-block" id="_GlobalDescribeCache.get">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDescribeCache.get">[docs]</a>
@@ -295,8 +289,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">describe_cache</span> <span class="o">=</span> <span class="n">get_global_describe_cache</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">describe_cache</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_description</span><span class="p">,</span>
-                                                    <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">describe_cache</span><span class="o">.</span><span class="n">new_description</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_description</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">QueuedConnection</span><span class="p">)</span>
 
 <div class="viewcode-block" id="_GlobalWidgetTypeCache.clear">
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalWidgetTypeCache.clear">[docs]</a>
@@ -314,7 +307,7 @@
             <span class="k">return</span>
 
         <span class="n">item</span> <span class="o">=</span> <span class="n">SignalWidgetInfo</span><span class="o">.</span><span class="n">from_signal</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">desc</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Determined widgets for </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Determined widgets for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">widgets_determined</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
@@ -350,9 +343,7 @@
 
 
 <span class="c1"># The default stale cached_path threshold time, in seconds:</span>
-<span class="n">TYPHOS_DISPLAY_PATH_CACHE_TIME</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;TYPHOS_DISPLAY_PATH_CACHE_TIME&#39;</span><span class="p">,</span> <span class="s1">&#39;600&#39;</span><span class="p">)</span>
-<span class="p">)</span>
+<span class="n">TYPHOS_DISPLAY_PATH_CACHE_TIME</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TYPHOS_DISPLAY_PATH_CACHE_TIME&quot;</span><span class="p">,</span> <span class="s2">&quot;600&quot;</span><span class="p">))</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_CachedPath</span><span class="p">:</span>
@@ -377,8 +368,7 @@
 <span class="sd">        happens on the next glob, and not on a timer-basis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-                 <span class="n">stale_threshold</span><span class="o">=</span><span class="n">TYPHOS_DISPLAY_PATH_CACHE_TIME</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stale_threshold</span><span class="o">=</span><span class="n">TYPHOS_DISPLAY_PATH_CACHE_TIME</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_time</span> <span class="o">=</span> <span class="kc">None</span>
@@ -422,7 +412,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_since_last_update</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">stale_threshold</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span> <span class="ow">in</span> <span class="n">pattern</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s1">&#39;*?[&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span> <span class="ow">in</span> <span class="n">pattern</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s2">&quot;*?[&quot;</span><span class="p">):</span>
             <span class="c1"># Convert from glob syntax -&gt; regular expression</span>
             <span class="c1"># And compile it for repeated usage.</span>
             <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">fnmatch</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
@@ -455,7 +445,7 @@
 <a class="viewcode-back" href="../../utils.html#typhos.cache._GlobalDisplayPathCache.update">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Force a reload of all paths in the cache.&quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Clearing global path cache.&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Clearing global path cache.&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
             <span class="n">path</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span></div>
 
@@ -471,10 +461,9 @@
 <span class="sd">        path : pathlib.Path or str</span>
 <span class="sd">            The path to add.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Path added to _GlobalDisplayPathCache: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Path added to _GlobalDisplayPathCache: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">_CachedPath</span><span class="p">(</span>
-            <span class="n">path</span><span class="p">,</span> <span class="n">stale_threshold</span><span class="o">=</span><span class="n">TYPHOS_DISPLAY_PATH_CACHE_TIME</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">_CachedPath</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">stale_threshold</span><span class="o">=</span><span class="n">TYPHOS_DISPLAY_PATH_CACHE_TIME</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 </div>
@@ -488,7 +477,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2026, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

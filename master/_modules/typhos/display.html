@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.display &mdash; Typhos 4.2.1.dev7+g640e1afc4 documentation</title>
+  <title>typhos.display &mdash; Typhos 4.2.2.dev31+g35db14a19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=effccb0e"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/documentation_options.js?v=017cbea6"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -88,6 +87,7 @@
              
   <h1>Source code for typhos.display</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Contains the main display widget used for representing an entire device.&quot;&quot;&quot;</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
@@ -110,9 +110,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q_ENUMS</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Slot</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache</span><span class="p">,</span> <span class="n">utils</span><span class="p">,</span> <span class="n">web</span><span class="p">,</span> <span class="n">widgets</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">panel</span> <span class="k">as</span> <span class="n">typhos_panel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">web</span><span class="p">,</span> <span class="n">widgets</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.jira</span><span class="w"> </span><span class="kn">import</span> <span class="n">TyphosJiraIssueWidget</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.notes</span><span class="w"> </span><span class="kn">import</span> <span class="n">TyphosNotesEdit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.plugins.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_signal</span>
@@ -153,23 +152,17 @@
 <span class="n">ScrollOptions</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">view</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">view</span> <span class="ow">in</span> <span class="n">ScrollOptions</span><span class="p">]</span>
 
 
-<span class="n">DEFAULT_TEMPLATES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">name</span><span class="p">:</span> <span class="p">[(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">.ui&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span>
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">names</span>
-<span class="p">}</span>
+<span class="n">DEFAULT_TEMPLATES</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">[(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s2">&quot;core&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.ui&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">names</span><span class="p">}</span>
 
-<span class="n">DETAILED_TREE_TEMPLATE</span> <span class="o">=</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;core&#39;</span> <span class="o">/</span> <span class="s1">&#39;detailed_tree.ui&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-<span class="n">DEFAULT_TEMPLATES</span><span class="p">[</span><span class="s1">&#39;detailed_screen&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DETAILED_TREE_TEMPLATE</span><span class="p">)</span>
+<span class="n">DETAILED_TREE_TEMPLATE</span> <span class="o">=</span> <span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s2">&quot;core&quot;</span> <span class="o">/</span> <span class="s2">&quot;detailed_tree.ui&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">DEFAULT_TEMPLATES</span><span class="p">[</span><span class="s2">&quot;detailed_screen&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DETAILED_TREE_TEMPLATE</span><span class="p">)</span>
 
-<span class="n">DEFAULT_TEMPLATES_FLATTEN</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">DEFAULT_TEMPLATES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+<span class="n">DEFAULT_TEMPLATES_FLATTEN</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">DEFAULT_TEMPLATES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="normalize_display_type">
 <a class="viewcode-back" href="../../display.html#typhos.normalize_display_type">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">normalize_display_type</span><span class="p">(</span>
-    <span class="n">display_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DisplayTypes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DisplayTypes</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_display_type</span><span class="p">(</span><span class="n">display_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DisplayTypes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DisplayTypes</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Normalize a given display type.</span>
 
@@ -192,17 +185,13 @@
         <span class="k">return</span> <span class="n">DisplayTypes</span><span class="p">(</span><span class="n">display_type</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">DisplayTypes</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Unrecognized display type: </span><span class="si">{</span><span class="n">display_type</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">DisplayTypes</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized display type: </span><span class="si">{</span><span class="n">display_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span></div>
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">normalize_scroll_option</span><span class="p">(</span>
-    <span class="n">scroll_option</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ScrollOptions</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScrollOptions</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalize_scroll_option</span><span class="p">(</span><span class="n">scroll_option</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ScrollOptions</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ScrollOptions</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Normalize a given scroll option.</span>
 
@@ -225,11 +214,9 @@
         <span class="k">return</span> <span class="n">ScrollOptions</span><span class="p">(</span><span class="n">scroll_option</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ScrollOptions</span><span class="p">[</span><span class="n">scroll_option</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Unrecognized scroll option: </span><span class="si">{</span><span class="n">scroll_option</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">ScrollOptions</span><span class="p">[</span><span class="n">scroll_option</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized scroll option: </span><span class="si">{</span><span class="n">scroll_option</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
 
 <div class="viewcode-block" id="TyphosToolButton">
@@ -252,7 +239,7 @@
 <span class="sd">        The default icon from fontawesome to use.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">DEFAULT_ICON</span> <span class="o">=</span> <span class="s1">&#39;circle&#39;</span>
+    <span class="n">DEFAULT_ICON</span> <span class="o">=</span> <span class="s2">&quot;circle&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">icon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
@@ -321,7 +308,7 @@
 <span class="sd">    This uses the common &quot;vertical ellipse&quot; icon by default.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">DEFAULT_ICON</span> <span class="o">=</span> <span class="s1">&#39;ellipsis-v&#39;</span>
+    <span class="n">DEFAULT_ICON</span> <span class="o">=</span> <span class="s2">&quot;ellipsis-v&quot;</span>
 
     <span class="n">_kind_to_property</span> <span class="o">=</span> <span class="n">typhos_panel</span><span class="o">.</span><span class="n">TyphosSignalPanel</span><span class="o">.</span><span class="n">_kind_to_property</span>
 
@@ -358,11 +345,12 @@
 <span class="sd">            True - create &quot;Show only Kind&quot; actions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind_to_property</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
             <span class="k">def</span><span class="w"> </span><span class="nf">selected</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="n">prop</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">only</span><span class="p">:</span>
                     <span class="c1"># Show *only* the specific kind for all panels</span>
-                    <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">current_prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind_to_property</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="n">visible</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_prop</span> <span class="o">==</span> <span class="n">prop</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">current_prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind_to_property</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">visible</span> <span class="o">=</span> <span class="n">current_prop</span> <span class="o">==</span> <span class="n">prop</span>
                         <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">panels</span><span class="p">:</span>
                             <span class="nb">setattr</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="n">current_prop</span><span class="p">,</span> <span class="n">visible</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -371,12 +359,11 @@
                         <span class="nb">setattr</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">hide_empty</span><span class="p">()</span>
 
-            <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Show only &amp;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">only</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;Show &amp;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Show only &amp;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">only</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Show &amp;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">action</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">only</span><span class="p">:</span>
                 <span class="n">action</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">action</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
-                                      <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">panels</span><span class="p">))</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">panel</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span> <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">panels</span><span class="p">))</span>
             <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span></div>
 
 
@@ -394,6 +381,7 @@
 <span class="sd">        base_menu : QMenu</span>
 <span class="sd">            The menu to add actions to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">def</span><span class="w"> </span><span class="nf">text_filter_updated</span><span class="p">():</span>
             <span class="n">text</span> <span class="o">=</span> <span class="n">line_edit</span><span class="o">.</span><span class="n">text</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">panels</span><span class="p">:</span>
@@ -402,17 +390,16 @@
 
         <span class="n">line_edit</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">()</span>
 
-        <span class="n">filters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">panel</span><span class="o">.</span><span class="n">nameFilter</span> <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">panels</span>
-                        <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">nameFilter</span><span class="p">})</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">panel</span><span class="o">.</span><span class="n">nameFilter</span> <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">panels</span> <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">nameFilter</span><span class="p">})</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filters</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">line_edit</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">filters</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">line_edit</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s1">&#39;/ &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters</span><span class="p">))</span>
+            <span class="n">line_edit</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="s2">&quot;/ &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters</span><span class="p">))</span>
 
         <span class="n">line_edit</span><span class="o">.</span><span class="n">editingFinished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">text_filter_updated</span><span class="p">)</span>
-        <span class="n">line_edit</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;menu_action&#39;</span><span class="p">)</span>
+        <span class="n">line_edit</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;menu_action&quot;</span><span class="p">)</span>
 
-        <span class="n">action</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;Filter by name:&#39;</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Filter by name:&quot;</span><span class="p">)</span>
         <span class="n">action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">action</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidgetAction</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -452,6 +439,7 @@
 <span class="sd">        base_menu : QMenu</span>
 <span class="sd">            The menu to add actions to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">def</span><span class="w"> </span><span class="nf">handle_menu</span><span class="p">(</span><span class="n">checked</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device_display</span><span class="o">.</span><span class="n">hideEmpty</span> <span class="o">=</span> <span class="n">checked</span>
 
@@ -465,7 +453,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">hide_empty</span><span class="p">(</span><span class="n">search</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">action</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;Hide Empty Panels&#39;</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Hide Empty Panels&quot;</span><span class="p">)</span>
         <span class="n">action</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">action</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device_display</span><span class="o">.</span><span class="n">hideEmpty</span><span class="p">)</span>
         <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">handle_menu</span><span class="p">)</span></div>
@@ -501,7 +489,7 @@
 
         <span class="n">panels</span> <span class="o">=</span> <span class="n">display</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">typhos_panel</span><span class="o">.</span><span class="n">TyphosSignalPanel</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">panels</span><span class="p">:</span>
-            <span class="n">base_menu</span><span class="o">.</span><span class="n">addSection</span><span class="p">(</span><span class="s1">&#39;Filters&#39;</span><span class="p">)</span>
+            <span class="n">base_menu</span><span class="o">.</span><span class="n">addSection</span><span class="p">(</span><span class="s2">&quot;Filters&quot;</span><span class="p">)</span>
             <span class="n">filter_menu</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;Kind filter&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_kind_filter_menu</span><span class="p">(</span><span class="n">panels</span><span class="p">,</span> <span class="n">filter_menu</span><span class="p">,</span> <span class="n">only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">filter_menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
@@ -510,8 +498,8 @@
             <span class="n">base_menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_hide_empty_menu</span><span class="p">(</span><span class="n">panels</span><span class="p">,</span> <span class="n">base_menu</span><span class="p">)</span>
 
-        <span class="n">base_menu</span><span class="o">.</span><span class="n">addSection</span><span class="p">(</span><span class="s1">&#39;Tools&#39;</span><span class="p">)</span>
-        <span class="n">action</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s1">&#39;&amp;Copy screenshot to clipboard&#39;</span><span class="p">)</span>
+        <span class="n">base_menu</span><span class="o">.</span><span class="n">addSection</span><span class="p">(</span><span class="s2">&quot;Tools&quot;</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">base_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;&amp;Copy screenshot to clipboard&quot;</span><span class="p">)</span>
         <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">display</span><span class="o">.</span><span class="n">copy_to_clipboard</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">base_menu</span></div>
@@ -527,10 +515,7 @@
     <span class="n">templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]]</span>
     <span class="n">template_selected</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span>
 
-    <span class="n">icons</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;embedded_screen&#39;</span><span class="p">:</span> <span class="s1">&#39;compress&#39;</span><span class="p">,</span>
-             <span class="s1">&#39;detailed_screen&#39;</span><span class="p">:</span> <span class="s1">&#39;braille&#39;</span><span class="p">,</span>
-             <span class="s1">&#39;engineering_screen&#39;</span><span class="p">:</span> <span class="s1">&#39;cogs&#39;</span>
-             <span class="p">}</span>
+    <span class="n">icons</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;embedded_screen&quot;</span><span class="p">:</span> <span class="s2">&quot;compress&quot;</span><span class="p">,</span> <span class="s2">&quot;detailed_screen&quot;</span><span class="p">:</span> <span class="s2">&quot;braille&quot;</span><span class="p">,</span> <span class="s2">&quot;engineering_screen&quot;</span><span class="p">:</span> <span class="s2">&quot;cogs&quot;</span><span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">display_type</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">icon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">icons</span><span class="p">[</span><span class="n">display_type</span><span class="p">],</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
@@ -539,7 +524,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clicked callback - set the template.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;set_device_display not called on </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;set_device_display not called on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># Show all our options in the context menu:</span>
@@ -560,10 +545,11 @@
             <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">:</span>
+
             <span class="k">def</span><span class="w"> </span><span class="nf">selected</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">template</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">template_selected</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
 
-            <span class="n">action</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">template</span><span class="p">)[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">):])</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">template</span><span class="p">)[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="p">:])</span>
             <span class="n">action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">menu</span></div>
@@ -608,7 +594,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">new_jira_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Open a new Jira issue reporting widget.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_display</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;set_device_display not called on </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;set_device_display not called on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="n">devices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_display</span><span class="o">.</span><span class="n">devices</span>
         <span class="n">device</span> <span class="o">=</span> <span class="n">devices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">devices</span> <span class="k">else</span> <span class="kc">None</span>
@@ -632,7 +618,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">config_button</span> <span class="o">=</span> <span class="n">TyphosDisplayConfigButton</span><span class="p">()</span>
         <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_button</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config_button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Display settings...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s2">&quot;Display settings...&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_template_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Template selected hook.&quot;&quot;&quot;</span>
@@ -640,8 +626,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_display</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">device_display</span><span class="o">.</span><span class="n">force_template</span> <span class="o">=</span> <span class="n">template</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_templates_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_templates_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 <div class="viewcode-block" id="TyphosDisplaySwitcher.set_device_display">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosDisplaySwitcher.set_device_display">[docs]</a>
@@ -726,6 +711,7 @@
 <span class="sd">        A Qt signal indicating a request to toggle the related help display</span>
 <span class="sd">        frame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">pop_out</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
     <span class="n">open_in_browser</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
     <span class="n">open_python_docs</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
@@ -778,6 +764,7 @@
 <span class="sd">    tooltip_updated : QtCore.Signal</span>
 <span class="sd">        A signal indicating the help tooltip has changed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">tooltip_updated</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -814,9 +801,7 @@
 <span class="sd">        autoraise : bool, optional</span>
 <span class="sd">            If possible, autoraise raises the window (the default) or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">help_url</span><span class="o">.</span><span class="n">toString</span><span class="p">(),</span> <span class="n">new</span><span class="o">=</span><span class="n">new</span><span class="p">,</span> <span class="n">autoraise</span><span class="o">=</span><span class="n">autoraise</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help_url</span><span class="o">.</span><span class="n">toString</span><span class="p">(),</span> <span class="n">new</span><span class="o">=</span><span class="n">new</span><span class="p">,</span> <span class="n">autoraise</span><span class="o">=</span><span class="n">autoraise</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">open_python_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Open the Python docstring information in a new window.&quot;&quot;&quot;</span>
@@ -851,22 +836,11 @@
         <span class="n">tooltip</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># BUG: I&#39;m seeing two devices in `self.devices` for</span>
         <span class="c1"># $ typhos --fake-device &#39;ophyd.EpicsMotor[{&quot;prefix&quot;:&quot;b&quot;}]&#39;</span>
-        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">),</span>
-            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">dev</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
-        <span class="p">):</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">dev</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">dev</span><span class="p">)):</span>
             <span class="n">heading</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">device</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="n">tooltip</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
-                <span class="n">heading</span><span class="p">,</span>
-                <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">heading</span><span class="p">),</span>
-                <span class="s2">&quot;&quot;</span>
-            <span class="p">])</span>
+            <span class="n">tooltip</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">heading</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">heading</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">])</span>
 
-            <span class="n">tooltip</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="ow">or</span>
-                <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">device</span><span class="p">))</span> <span class="ow">or</span>
-                <span class="s2">&quot;No docstring&quot;</span>
-            <span class="p">)</span>
+            <span class="n">tooltip</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="ow">or</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">device</span><span class="p">))</span> <span class="ow">or</span> <span class="s2">&quot;No docstring&quot;</span><span class="p">)</span>
             <span class="n">tooltip</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tooltip</span><span class="p">)</span>
@@ -889,8 +863,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">device_url</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">HELP_URL</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to format confluence URL for device </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                             <span class="n">device</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to format confluence URL for device </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QUrl</span><span class="p">(</span><span class="s2">&quot;about:blank&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QUrl</span><span class="p">(</span><span class="n">device_url</span><span class="p">)</span>
@@ -898,10 +871,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">show_help</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Show the help information in a QWebEngineView.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">web</span><span class="o">.</span><span class="n">TyphosWebEngineView</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Failed to import QWebEngineView; &quot;</span>
-                <span class="s2">&quot;help view is unavailable.&quot;</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to import QWebEngineView; help view is unavailable.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">help_web_view</span><span class="p">:</span>
@@ -979,8 +949,7 @@
 <span class="sd">        The parent widget.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;$</span><span class="si">{name}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">show_switcher</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">show_underline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{name}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">show_switcher</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_underline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_show_underline</span> <span class="o">=</span> <span class="n">show_underline</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_show_switcher</span> <span class="o">=</span> <span class="n">show_switcher</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
@@ -1004,27 +973,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="n">TyphosHelpFrame</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">HELP_WEB_ENABLED</span><span class="p">:</span>
             <span class="c1"># Toggle the help web view if we have documentation to show</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">toggle_help</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">toggle_help</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">toggle_help</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toggle_help</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Otherwise, open the python docs as a fallback</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">toggle_help</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_python_docs</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">toggle_help</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_python_docs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">pop_out</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_out_help</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_in_browser</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_in_browser</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_python_docs</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_python_docs</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">report_jira_issue</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">new_jira_widget</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">tooltip_updated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">setToolTip</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_in_browser</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_in_browser</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">open_python_docs</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">open_python_docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">report_jira_issue</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">new_jira_widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="o">.</span><span class="n">tooltip_updated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switcher</span><span class="o">.</span><span class="n">help_toggle_button</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">grid_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
@@ -1108,42 +1065,32 @@
 
 
     <span class="c1"># Make designable properties from the title label available here as well</span>
-    <span class="n">label_alignment</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s1">&#39;alignment&#39;</span><span class="p">)</span>
-    <span class="n">label_font</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s1">&#39;font&#39;</span><span class="p">)</span>
-    <span class="n">label_indent</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s1">&#39;indent&#39;</span><span class="p">)</span>
-    <span class="n">label_margin</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s1">&#39;margin&#39;</span><span class="p">)</span>
-    <span class="n">label_openExternalLinks</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span>
-                                               <span class="s1">&#39;openExternalLinks&#39;</span><span class="p">)</span>
-    <span class="n">label_pixmap</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s1">&#39;pixmap&#39;</span><span class="p">)</span>
-    <span class="n">label_text</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
-    <span class="n">label_textFormat</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span>
-                                        <span class="s1">&#39;textFormat&#39;</span><span class="p">)</span>
-    <span class="n">label_textInteractionFlags</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span>
-                                                  <span class="s1">&#39;textInteractionFlags&#39;</span><span class="p">)</span>
-    <span class="n">label_wordWrap</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s1">&#39;wordWrap&#39;</span><span class="p">)</span>
+    <span class="n">label_alignment</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;alignment&quot;</span><span class="p">)</span>
+    <span class="n">label_font</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;font&quot;</span><span class="p">)</span>
+    <span class="n">label_indent</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;indent&quot;</span><span class="p">)</span>
+    <span class="n">label_margin</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;margin&quot;</span><span class="p">)</span>
+    <span class="n">label_openExternalLinks</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;openExternalLinks&quot;</span><span class="p">)</span>
+    <span class="n">label_pixmap</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;pixmap&quot;</span><span class="p">)</span>
+    <span class="n">label_text</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
+    <span class="n">label_textFormat</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;textFormat&quot;</span><span class="p">)</span>
+    <span class="n">label_textInteractionFlags</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;textInteractionFlags&quot;</span><span class="p">)</span>
+    <span class="n">label_wordWrap</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">,</span> <span class="s2">&quot;wordWrap&quot;</span><span class="p">)</span>
 
     <span class="c1"># Make designable properties from the grid_layout</span>
-    <span class="n">layout_margin</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;grid_layout&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">,</span>
-                                     <span class="s1">&#39;margin&#39;</span><span class="p">)</span>
-    <span class="n">layout_spacing</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;grid_layout&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">,</span>
-                                      <span class="s1">&#39;spacing&#39;</span><span class="p">)</span>
+    <span class="n">layout_margin</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;grid_layout&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">,</span> <span class="s2">&quot;margin&quot;</span><span class="p">)</span>
+    <span class="n">layout_spacing</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;grid_layout&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">,</span> <span class="s2">&quot;spacing&quot;</span><span class="p">)</span>
 
     <span class="c1"># Make designable properties from the underline</span>
-    <span class="n">underline_palette</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;underline&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">,</span>
-                                         <span class="s1">&#39;palette&#39;</span><span class="p">)</span>
-    <span class="n">underline_styleSheet</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;underline&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">,</span>
-                                            <span class="s1">&#39;styleSheet&#39;</span><span class="p">)</span>
-    <span class="n">underline_lineWidth</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;underline&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">,</span>
-                                           <span class="s1">&#39;lineWidth&#39;</span><span class="p">)</span>
-    <span class="n">underline_midLineWidth</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s1">&#39;underline&#39;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">,</span>
-                                              <span class="s1">&#39;midLineWidth&#39;</span><span class="p">)</span></div>
+    <span class="n">underline_palette</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;underline&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">,</span> <span class="s2">&quot;palette&quot;</span><span class="p">)</span>
+    <span class="n">underline_styleSheet</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;underline&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">,</span> <span class="s2">&quot;styleSheet&quot;</span><span class="p">)</span>
+    <span class="n">underline_lineWidth</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;underline&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">,</span> <span class="s2">&quot;lineWidth&quot;</span><span class="p">)</span>
+    <span class="n">underline_midLineWidth</span> <span class="o">=</span> <span class="n">forward_property</span><span class="p">(</span><span class="s2">&quot;underline&quot;</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="p">,</span> <span class="s2">&quot;midLineWidth&quot;</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="TyphosDeviceDisplay">
 <a class="viewcode-back" href="../../display.html#typhos.TyphosDeviceDisplay">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">TyphosDeviceDisplay</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">widgets</span><span class="o">.</span><span class="n">TyphosDesignerMixin</span><span class="p">,</span>
-                          <span class="n">_DisplayTypes</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TyphosDeviceDisplay</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">,</span> <span class="n">widgets</span><span class="o">.</span><span class="n">TyphosDesignerMixin</span><span class="p">,</span> <span class="n">_DisplayTypes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Main display for a single ophyd Device.</span>
 
@@ -1199,12 +1146,12 @@
         <span class="n">embedded_templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">detailed_templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">engineering_templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">display_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DisplayTypes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;embedded_screen&#39;</span><span class="p">,</span>
+        <span class="n">display_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DisplayTypes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;embedded_screen&quot;</span><span class="p">,</span>
         <span class="n">scroll_option</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ScrollOptions</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">ScrollOptions</span><span class="o">.</span><span class="n">auto</span><span class="p">,</span>
         <span class="n">nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_forced_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forced_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_macros</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_display_widget</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_option</span> <span class="o">=</span> <span class="n">scroll_option</span>
@@ -1222,17 +1169,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_display_type</span> <span class="o">=</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">embedded_screen</span>
 
         <span class="n">instance_templates</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;embedded_screen&#39;</span><span class="p">:</span> <span class="n">embedded_templates</span> <span class="ow">or</span> <span class="p">[],</span>
-            <span class="s1">&#39;detailed_screen&#39;</span><span class="p">:</span> <span class="n">detailed_templates</span> <span class="ow">or</span> <span class="p">[],</span>
-            <span class="s1">&#39;engineering_screen&#39;</span><span class="p">:</span> <span class="n">engineering_templates</span> <span class="ow">or</span> <span class="p">[],</span>
+            <span class="s2">&quot;embedded_screen&quot;</span><span class="p">:</span> <span class="n">embedded_templates</span> <span class="ow">or</span> <span class="p">[],</span>
+            <span class="s2">&quot;detailed_screen&quot;</span><span class="p">:</span> <span class="n">detailed_templates</span> <span class="ow">or</span> <span class="p">[],</span>
+            <span class="s2">&quot;engineering_screen&quot;</span><span class="p">:</span> <span class="n">engineering_templates</span> <span class="ow">or</span> <span class="p">[],</span>
         <span class="p">}</span>
         <span class="k">for</span> <span class="n">view</span><span class="p">,</span> <span class="n">path_list</span> <span class="ow">in</span> <span class="n">instance_templates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path_list</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">view</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QScrollArea</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignTop</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;scroll_area&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;scroll_area&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setFrameShape</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFrame</span><span class="o">.</span><span class="n">StyledPanel</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setVerticalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAsNeeded</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scroll_area</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
@@ -1312,9 +1258,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get matching templates for the given class.&quot;&quot;&quot;</span>
         <span class="n">class_name_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">filename</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">display_type</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">class_name_prefix</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">display_type</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">class_name_prefix</span><span class="p">)</span>
         <span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_template_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_menu</span><span class="p">:</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMenu</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1357,14 +1301,12 @@
                     <span class="k">continue</span>
 
                 <span class="k">def</span><span class="w"> </span><span class="nf">by_match_order</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">matching</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">matching</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>  <span class="c1"># noqa: B023</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">added_header</span><span class="p">:</span>
                     <span class="n">add_header</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">template_type</span><span class="o">.</span><span class="n">friendly_name</span><span class="si">}</span><span class="s2"> screens&quot;</span><span class="p">,</span>
-                        <span class="n">icon</span><span class="o">=</span><span class="n">TyphosToolButton</span><span class="o">.</span><span class="n">get_icon</span><span class="p">(</span>
-                            <span class="n">TyphosDisplaySwitcherButton</span><span class="o">.</span><span class="n">icons</span><span class="p">[</span><span class="n">template_type</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-                        <span class="p">),</span>
+                        <span class="n">icon</span><span class="o">=</span><span class="n">TyphosToolButton</span><span class="o">.</span><span class="n">get_icon</span><span class="p">(</span><span class="n">TyphosDisplaySwitcherButton</span><span class="o">.</span><span class="n">icons</span><span class="p">[</span><span class="n">template_type</span><span class="o">.</span><span class="n">name</span><span class="p">]),</span>
                     <span class="p">)</span>
                     <span class="n">added_header</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -1376,13 +1318,11 @@
         <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">DEFAULT_TEMPLATES_FLATTEN</span><span class="p">:</span>
             <span class="n">add_template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
 
-        <span class="n">prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonprefix</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">action</span><span class="o">.</span><span class="n">text</span><span class="p">()</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonprefix</span><span class="p">([</span><span class="n">action</span><span class="o">.</span><span class="n">text</span><span class="p">()</span> <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">])</span>
         <span class="c1"># Arbitrary threshold: saving on a few characters is not worth it</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">9</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
-                <span class="n">action</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">text</span><span class="p">()[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">):])</span>
+                <span class="n">action</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">text</span><span class="p">()[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="p">:])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_refresh_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Force an update of the display cache and look for new ui files.&quot;&quot;&quot;</span>
@@ -1447,19 +1387,19 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the full class with module name of loaded device.&quot;&quot;&quot;</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="vm">__class__</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">device</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">device</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
     <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">designable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">device_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the name of the loaded device.&quot;&quot;&quot;</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
-        <span class="k">return</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">device</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">device</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the device associated with this Device Display.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">device</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span>
+            <span class="p">(</span><span class="n">device</span><span class="p">,)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">devices</span>
             <span class="k">return</span> <span class="n">device</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="o">...</span>
@@ -1484,8 +1424,7 @@
         <span class="k">if</span> <span class="n">templates</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">templates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No templates available for display type: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                       <span class="bp">self</span><span class="o">.</span><span class="n">_display_type</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No templates available for display type: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_type</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_remove_display</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1514,9 +1453,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">search_for_templates</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_display</span><span class="p">()</span>
-
-        <span class="n">template</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_forced_template</span> <span class="ow">or</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">get_best_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_display_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">macros</span><span class="p">))</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forced_template</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_best_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_display_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">macros</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">template</span><span class="p">:</span>
             <span class="n">widget</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
@@ -1534,10 +1471,7 @@
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">widget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
-                            <span class="s2">&quot;Failed to fall back to previous template: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span>
-                        <span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to fall back to previous template: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_template</span><span class="p">)</span>
                         <span class="n">template</span> <span class="o">=</span> <span class="kc">None</span>
                         <span class="n">widget</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1549,9 +1483,9 @@
 
         <span class="k">if</span> <span class="n">widget</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">widget</span><span class="o">.</span><span class="n">objectName</span><span class="p">():</span>
-                <span class="n">widget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">widget</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span><span class="si">}</span><span class="s1">_display_widget&#39;</span><span class="p">)</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">widget</span><span class="o">.</span><span class="n">objectName</span><span class="p">()</span><span class="si">}</span><span class="s2">_display_widget&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">widget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s1">&#39;display_widget&#39;</span><span class="p">)</span>
+                <span class="n">widget</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s2">&quot;display_widget&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">widget</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">widget</span><span class="o">.</span><span class="n">minimumSize</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># If the widget has no layout, use a fixed size for it.</span>
@@ -1610,21 +1544,18 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Invalid path specified in macro: </span><span class="si">%s</span><span class="s1">=</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
-                                 <span class="n">display_type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">ex</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Invalid path specified in macro: </span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">display_type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">ex</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">ret</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">find_file_in_paths</span><span class="p">(</span>
-                        <span class="n">value</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">))</span>
+                    <span class="n">ret</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">find_file_in_paths</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="n">paths</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load template from file and return the widget.&quot;&quot;&quot;</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="n">loader</span> <span class="o">=</span> <span class="p">(</span><span class="n">pydm</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">load_py_file</span> <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.py&#39;</span>
-                  <span class="k">else</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_ui_file</span><span class="p">)</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">pydm</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">load_py_file</span> <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.py&quot;</span> <span class="k">else</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_ui_file</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Load template using </span><span class="si">%s</span><span class="s1">: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">loader</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Load template using </span><span class="si">%s</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">loader</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">loader</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">macros</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_macros</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
@@ -1643,10 +1574,10 @@
         <span class="n">bases</span> <span class="o">=</span> <span class="n">display</span><span class="o">.</span><span class="n">findChildren</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">widget</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">bases</span> <span class="o">+</span> <span class="n">designer</span> <span class="o">+</span> <span class="p">[</span><span class="n">display</span><span class="p">]):</span>
-            <span class="k">if</span> <span class="n">device</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s1">&#39;add_device&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">device</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s2">&quot;add_device&quot;</span><span class="p">):</span>
                 <span class="n">widget</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s1">&#39;set_device_display&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">widget</span><span class="p">,</span> <span class="s2">&quot;set_device_display&quot;</span><span class="p">):</span>
                 <span class="n">widget</span><span class="o">.</span><span class="n">set_device_display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@Property</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
@@ -1663,16 +1594,16 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_macros_from_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;md&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s2">&quot;md&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">device</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">post</span><span class="p">())</span>
 
-        <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">if</span> <span class="s1">&#39;prefix&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s1">&#39;prefix&#39;</span><span class="p">):</span>
-            <span class="n">result</span><span class="p">[</span><span class="s1">&#39;prefix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">prefix</span>
+        <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="s2">&quot;prefix&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="s2">&quot;prefix&quot;</span><span class="p">):</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">prefix</span>
 
         <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="p">(</span><span class="n">macros</span> <span class="ow">or</span> <span class="p">{}))</span>
         <span class="k">return</span> <span class="n">result</span>
@@ -1726,20 +1657,20 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Search the filesystem for device-specific templates.&quot;&quot;&quot;</span>
         <span class="n">device</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">device</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Cannot search for templates without device&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Cannot search for templates without device&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_searched</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="vm">__class__</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Searching for templates for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Searching for templates for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="n">macro_templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_templates_from_macros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_macros</span><span class="p">)</span>
 
         <span class="n">paths</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get_global_display_path_cache</span><span class="p">()</span><span class="o">.</span><span class="n">paths</span>
         <span class="k">for</span> <span class="n">display_type</span> <span class="ow">in</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
             <span class="n">view</span> <span class="o">=</span> <span class="n">display_type</span>
-            <span class="k">if</span> <span class="n">view</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_screen&#39;</span><span class="p">):</span>
-                <span class="n">view</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_screen&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">view</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_screen&quot;</span><span class="p">):</span>
+                <span class="n">view</span> <span class="o">=</span> <span class="n">view</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_screen&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="n">template_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span>
             <span class="n">template_list</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -1747,28 +1678,21 @@
             <span class="c1"># 1. Highest priority: macros</span>
             <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">macro_templates</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span> <span class="ow">or</span> <span class="p">[]):</span>
                 <span class="n">template_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Adding macro template </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1"> (total=</span><span class="si">%d</span><span class="s1">)&#39;</span><span class="p">,</span>
-                             <span class="n">display_type</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_list</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding macro template </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> (total=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">display_type</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_list</span><span class="p">))</span>
 
             <span class="c1"># 2. Templates based on class hierarchy names</span>
             <span class="n">filenames</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_templates_for_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_list</span><span class="p">:</span>
                     <span class="n">template_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Found new template </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1"> (total=</span><span class="si">%d</span><span class="s1">)&#39;</span><span class="p">,</span>
-                                 <span class="n">display_type</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_list</span><span class="p">))</span>
-
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found new template </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> (total=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">display_type</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_list</span><span class="p">))</span>
             <span class="c1"># 3. Ensure that the detailed tree template makes its way in for</span>
-            <span class="c1">#    all top-level screens, if no class-specific screen exists</span>
-            <span class="k">if</span> <span class="n">DETAILED_TREE_TEMPLATE</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_list</span><span class="p">:</span>
+            <span class="c1">#    embedded and detailed screens, if no class-specific screen exists</span>
+            <span class="k">if</span> <span class="n">display_type</span> <span class="o">!=</span> <span class="n">DisplayTypes</span><span class="o">.</span><span class="n">engineering_screen</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="n">DETAILED_TREE_TEMPLATE</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_list</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nested</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">suggest_composite_screen</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
                     <span class="n">template_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DETAILED_TREE_TEMPLATE</span><span class="p">)</span>
-
             <span class="c1"># 4. Default templates</span>
-            <span class="n">template_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">templ</span> <span class="k">for</span> <span class="n">templ</span> <span class="ow">in</span> <span class="n">DEFAULT_TEMPLATES</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span>
-                 <span class="k">if</span> <span class="n">templ</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_list</span><span class="p">]</span>
-            <span class="p">)</span>
+            <span class="n">template_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">templ</span> <span class="k">for</span> <span class="n">templ</span> <span class="ow">in</span> <span class="n">DEFAULT_TEMPLATES</span><span class="p">[</span><span class="n">display_type</span><span class="p">]</span> <span class="k">if</span> <span class="n">templ</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_list</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">templates_loaded</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">))</span></div>
 
@@ -1853,8 +1777,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">pcdsutils</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_instance_by_name</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to generate TyphosDeviceDisplay from &#39;</span>
-                             <span class="s1">&#39;class </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">klass</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to generate TyphosDeviceDisplay from class </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">klass</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_device</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span></div>
@@ -1870,9 +1793,7 @@
         <span class="n">paths</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get_global_display_path_cache</span><span class="p">()</span><span class="o">.</span><span class="n">paths</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">template</span>
-            <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_templates_for_class</span><span class="p">(</span>
-                <span class="n">device_cls</span><span class="p">,</span> <span class="s2">&quot;detailed&quot;</span><span class="p">,</span> <span class="n">paths</span>
-            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_templates_for_class</span><span class="p">(</span><span class="n">device_cls</span><span class="p">,</span> <span class="s2">&quot;detailed&quot;</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_standard_template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
         <span class="p">]</span>
 
@@ -1905,15 +1826,15 @@
     <span class="nd">@Slot</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_tx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive information from happi channel.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">],</span> <span class="n">macros</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;md&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_device</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">],</span> <span class="n">macros</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a custom representation for TyphosDeviceDisplay.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="si">}</span><span class="s1"> &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;device=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_class</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">!r}</span><span class="s1">] &#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;nested=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_nested</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="sa">f</span><span class="s1">&#39;&gt;&#39;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;device=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_class</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device_name</span><span class="si">!r}</span><span class="s2">] &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;nested=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_nested</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&gt;&quot;</span>
         <span class="p">)</span></div>
 
 
@@ -1980,6 +1901,7 @@
 <span class="sd">        This is useful since we don&#39;t want to hide the top-most</span>
 <span class="sd">        widget otherwise users can&#39;t change the visibility back on.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">TyphosDeviceDisplay</span><span class="p">)</span> <span class="ow">and</span> <span class="n">recursive</span><span class="p">:</span>
             <span class="n">hide_empty</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
@@ -2029,7 +1951,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2026, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

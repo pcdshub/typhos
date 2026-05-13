@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>typhos.tweakable &mdash; Typhos 4.2.1.dev7+g640e1afc4 documentation</title>
+  <title>typhos.tweakable &mdash; Typhos 4.2.2.dev31+g35db14a19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=effccb0e"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/documentation_options.js?v=017cbea6"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/docs-versions-menu.js?v=3d6a1aea"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -49,7 +49,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../python_methods.html">Including Python Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../templates.html">Custom Templates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release_notes.html">Release History</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../upcoming_changes.html">Upcoming Changes</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
 <ul>
@@ -93,6 +92,7 @@
 <span class="sd">Variety support pending:</span>
 <span class="sd">- everything</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">qtpy</span>
@@ -106,7 +106,7 @@
 <div class="viewcode-block" id="TyphosTweakable">
 <a class="viewcode-back" href="../../widgets.html#typhos.tweakable.TyphosTweakable">[docs]</a>
 <span class="nd">@variety</span><span class="o">.</span><span class="n">uses_key_handlers</span>
-<span class="nd">@variety</span><span class="o">.</span><span class="n">use_for_variety_write</span><span class="p">(</span><span class="s1">&#39;scalar-tweakable&#39;</span><span class="p">)</span>
+<span class="nd">@variety</span><span class="o">.</span><span class="n">use_for_variety_write</span><span class="p">(</span><span class="s2">&quot;scalar-tweakable&quot;</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TyphosTweakable</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">TyphosBase</span><span class="p">):</span>
     <span class="c1">#  TODO rearrange package: widgets.TyphosDesignerMixin):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -124,12 +124,11 @@
 <span class="sd">    -----</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">ui_template</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s1">&#39;widgets&#39;</span> <span class="o">/</span> <span class="s1">&#39;tweakable.ui&#39;</span>
-    <span class="n">_readback_attr</span> <span class="o">=</span> <span class="s1">&#39;readback&#39;</span>
-    <span class="n">_setpoint_attr</span> <span class="o">=</span> <span class="s1">&#39;setpoint&#39;</span>
+    <span class="n">ui_template</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">ui_dir</span> <span class="o">/</span> <span class="s2">&quot;widgets&quot;</span> <span class="o">/</span> <span class="s2">&quot;tweakable.ui&quot;</span>
+    <span class="n">_readback_attr</span> <span class="o">=</span> <span class="s2">&quot;readback&quot;</span>
+    <span class="n">_setpoint_attr</span> <span class="o">=</span> <span class="s2">&quot;setpoint&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variety_metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ophyd_signal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_ophyd_signal</span> <span class="o">=</span> <span class="n">ophyd_signal</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
@@ -158,7 +157,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">setpoint</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readback</span><span class="o">.</span><span class="n">text</span><span class="p">())</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Tweak failed&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Tweak failed&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">setpoint</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">setpoint</span><span class="p">))</span>
@@ -173,7 +172,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tweak</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tweak_value</span><span class="o">.</span><span class="n">text</span><span class="p">()))</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Tweak failed&#39;</span><span class="p">)</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Tweak failed&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TyphosTweakable.negative_tweak">
@@ -184,7 +183,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tweak</span><span class="p">(</span><span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tweak_value</span><span class="o">.</span><span class="n">text</span><span class="p">()))</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Tweak failed&#39;</span><span class="p">)</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Tweak failed&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -196,7 +195,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, SLAC National Accelerator Laboratory.</p>
+    <p>&#169; Copyright 2026, SLAC National Accelerator Laboratory.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
