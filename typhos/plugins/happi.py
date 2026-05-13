@@ -26,6 +26,7 @@ def register_client(client):
 
 class HappiConnection(PyDMConnection):
     """A PyDMConnection to the Happi Database."""
+
     tx = QtCore.Signal(dict)
 
     def __init__(self, channel, address, protocol=None, parent=None):
@@ -38,8 +39,8 @@ class HappiConnection(PyDMConnection):
         # Connect our channel to the signal
         self.tx.connect(channel.tx_slot, QtCore.Qt.QueuedConnection)
         logger.debug("Loading %r from happi Client", channel)
-        if '.' in self.address:
-            device, child = self.address.split('.', 1)
+        if "." in self.address:
+            device, child = self.address.split(".", 1)
         else:
             device, child = self.address, None
         # Load the device from the Client
@@ -48,12 +49,11 @@ class HappiConnection(PyDMConnection):
         md = md.post()
         # If we have a child grab it
         if child:
-            logger.debug("Retrieving child %r from %r",
-                         child, obj.name)
+            logger.debug("Retrieving child %r from %r", child, obj.name)
             obj = getattr(obj, child)
-            md = {'name': obj.name}
+            md = {"name": obj.name}
         # Send the device and metdata to all of our subscribers
-        self.tx.emit({'obj': obj, 'md': md})
+        self.tx.emit({"obj": obj, "md": md})
 
     def remove_listener(self, channel, destroying=False, **kwargs):
         """Remove a channel from the database connection."""
@@ -63,7 +63,7 @@ class HappiConnection(PyDMConnection):
 
 
 class HappiPlugin(PyDMPlugin):
-    protocol = 'happi'
+    protocol = "happi"
     connection_class = HappiConnection
 
     def add_connection(self, channel):
@@ -74,10 +74,8 @@ class HappiPlugin(PyDMPlugin):
         try:
             super().add_connection(channel)
         except SearchError:
-            logger.error("Unable to find device for %r in happi database.",
-                         channel)
+            logger.error("Unable to find device for %r in happi database.", channel)
         except AttributeError as exc:
-            logger.exception("Invalid attribute %r for address %r",
-                             exc, channel.address)
+            logger.exception("Invalid attribute %r for address %r", exc, channel.address)
         except Exception:
             logger.exception("Unable to load %r from happi", channel.address)

@@ -1,6 +1,7 @@
 """
 Helpful functions that don't belong in a more specific submodule.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -22,11 +23,11 @@ if typing.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-_optional_err = ('Optional dependency caproto missing from python '
-                 'environment. Cannot test server.')
+_optional_err = "Optional dependency caproto missing from python environment. Cannot test server."
 
 try:
     from caproto.tests.conftest import run_example_ioc
+
     has_caproto = True
 except ImportError:
     has_caproto = False
@@ -60,7 +61,7 @@ def caproto_context(
 
 def random_prefix():
     """Returns a random prefix to avoid test cross-talk."""
-    return str(uuid.uuid4())[:8] + ':'
+    return str(uuid.uuid4())[:8] + ":"
 
 
 def is_native(obj, module):
@@ -99,8 +100,7 @@ def get_native_methods(cls, module, *, native_methods=None, seen=None):
         if not is_native(obj, module):
             continue
         elif isclass(obj):
-            get_native_methods(obj, module, native_methods=native_methods,
-                               seen=seen)
+            get_native_methods(obj, module, native_methods=native_methods, seen=seen)
         elif isfunction(obj):
             native_methods.add(obj)
         elif ismethod(obj):
@@ -128,8 +128,8 @@ def get_submodule_names(module_name):
         return submodule_names
 
     for info, submodule_name, is_pkg in pkgutil.walk_packages(module_path):
-        if submodule_name != '__main__' and info.path in module_path:
-            full_submodule_name = module_name + '.' + submodule_name
+        if submodule_name != "__main__" and info.path in module_path:
+            full_submodule_name = module_name + "." + submodule_name
             submodule_names.append(full_submodule_name)
             if is_pkg:
                 subsubmodule_names = get_submodule_names(full_submodule_name)

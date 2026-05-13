@@ -72,8 +72,7 @@ class _GlobalDescribeCache(QtCore.QObject):
         self.cache = {}
 
         self.connect_thread = utils.ObjectConnectionMonitorThread(parent=self)
-        self.connect_thread.connection_update.connect(
-            self._connection_update, QtCore.Qt.QueuedConnection)
+        self.connect_thread.connection_update.connect(self._connection_update, QtCore.Qt.QueuedConnection)
 
         self.connect_thread.start()
 
@@ -88,10 +87,8 @@ class _GlobalDescribeCache(QtCore.QObject):
         try:
             return obj.describe()[obj.name]
         except Exception:
-            logger.error("Unable to connect to %r during widget creation",
-                         obj.name)
-            logger.debug("Unable to connect to %r during widget creation",
-                         obj.name, exc_info=True)
+            logger.error("Unable to connect to %r during widget creation", obj.name)
+            logger.debug("Unable to connect to %r during widget creation", obj.name, exc_info=True)
         return {}
 
     def _worker_describe(self, obj):
@@ -109,7 +106,7 @@ class _GlobalDescribeCache(QtCore.QObject):
             if obj in self._in_process:
                 self.new_description.emit(obj, desc)
         except Exception as ex:
-            logger.exception('Worker describe failed: %s', ex)
+            logger.exception("Worker describe failed: %s", ex)
         finally:
             try:
                 self._in_process.remove(obj)
@@ -130,9 +127,7 @@ class _GlobalDescribeCache(QtCore.QObject):
 
         self._in_process.add(obj)
         func = functools.partial(self._worker_describe, obj)
-        QtCore.QThreadPool.globalInstance().start(
-            utils.ThreadPoolWorker(func)
-        )
+        QtCore.QThreadPool.globalInstance().start(utils.ThreadPoolWorker(func))
 
     def get(self, obj):
         """
@@ -186,8 +181,7 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
         super().__init__()
         self.cache = {}
         self.describe_cache = get_global_describe_cache()
-        self.describe_cache.new_description.connect(self._new_description,
-                                                    QtCore.Qt.QueuedConnection)
+        self.describe_cache.new_description.connect(self._new_description, QtCore.Qt.QueuedConnection)
 
     def clear(self):
         """Clear the cache."""
@@ -202,7 +196,7 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
             return
 
         item = SignalWidgetInfo.from_signal(obj, desc)
-        logger.debug('Determined widgets for %s: %s', obj.name, item)
+        logger.debug("Determined widgets for %s: %s", obj.name, item)
         self.cache[obj] = item
         self.widgets_determined.emit(obj, item)
 
@@ -234,9 +228,7 @@ class _GlobalWidgetTypeCache(QtCore.QObject):
 
 
 # The default stale cached_path threshold time, in seconds:
-TYPHOS_DISPLAY_PATH_CACHE_TIME = int(
-    os.environ.get('TYPHOS_DISPLAY_PATH_CACHE_TIME', '600')
-)
+TYPHOS_DISPLAY_PATH_CACHE_TIME = int(os.environ.get("TYPHOS_DISPLAY_PATH_CACHE_TIME", "600"))
 
 
 class _CachedPath:
@@ -261,8 +253,7 @@ class _CachedPath:
         happens on the next glob, and not on a timer-basis.
     """
 
-    def __init__(self, path, *,
-                 stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME):
+    def __init__(self, path, *, stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME):
         self.path = pathlib.Path(path)
         self.cache = None
         self._update_time = None
@@ -306,7 +297,7 @@ class _CachedPath:
         elif self.time_since_last_update > self.stale_threshold:
             self.update()
 
-        if any(c in pattern for c in '*?['):
+        if any(c in pattern for c in "*?["):
             # Convert from glob syntax -> regular expression
             # And compile it for repeated usage.
             regex = re.compile(fnmatch.translate(pattern))
@@ -335,7 +326,7 @@ class _GlobalDisplayPathCache:
 
     def update(self):
         """Force a reload of all paths in the cache."""
-        logger.debug('Clearing global path cache.')
+        logger.debug("Clearing global path cache.")
         for path in self.paths:
             path.cache = None
 
@@ -348,9 +339,8 @@ class _GlobalDisplayPathCache:
         path : pathlib.Path or str
             The path to add.
         """
-        logger.debug('Path added to _GlobalDisplayPathCache: %s', path)
+        logger.debug("Path added to _GlobalDisplayPathCache: %s", path)
         path = pathlib.Path(path).expanduser().resolve()
-        path = _CachedPath(
-            path, stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME)
+        path = _CachedPath(path, stale_threshold=TYPHOS_DISPLAY_PATH_CACHE_TIME)
         if path not in self.paths:
             self.paths.append(path)

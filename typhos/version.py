@@ -22,6 +22,7 @@ class VersionProxy(UserString):
     4. A fallback in case none of the above match - resulting in a version of
         0.0.unknown
     """
+
     def __init__(self):
         self._version = None
 
@@ -32,6 +33,7 @@ class VersionProxy(UserString):
             try:
                 # Git checkout
                 from setuptools_scm import get_version
+
                 return get_version(root="..", relative_to=__file__)
             except (ImportError, LookupError):
                 ...
@@ -40,6 +42,7 @@ class VersionProxy(UserString):
         # done a build at least once.
         try:
             from ._version import version  # noqa: F401
+
             return version
         except ImportError:
             ...
@@ -51,7 +54,7 @@ class VersionProxy(UserString):
         # This is accessed by UserString to allow us to lazily fill in the
         # information
         if self._version is None:
-            self._version = self._get_version() or '0.0.unknown'
+            self._version = self._get_version() or "0.0.unknown"
 
         return self._version
 

@@ -47,7 +47,7 @@ def get_data_from_yaml(device_name: str, path: Path) -> Optional[Dict[str, str]]
         with open(path) as f:
             device_notes = yaml.full_load(f)
     except Exception as ex:
-        logger.warning(f'failed to load device notes: {ex}')
+        logger.warning(f"failed to load device notes: {ex}")
         return
 
     return device_notes.get(device_name, None)
@@ -73,7 +73,7 @@ def get_notes_data(device_name: str) -> Tuple[NotesSource, Dict[str, str]]:
         The source of the device notes, and
         a dictionary containing the device note information
     """
-    data = {'note': '', 'timestamp': ''}
+    data = {"note": "", "timestamp": ""}
     source = NotesSource.USER
 
     # try env var
@@ -85,7 +85,7 @@ def get_notes_data(device_name: str) -> Tuple[NotesSource, Dict[str, str]]:
             source = NotesSource.ENV
 
     # try user directory
-    user_data_path = platformdirs.user_data_path() / 'device_notes.yaml'
+    user_data_path = platformdirs.user_data_path() / "device_notes.yaml"
     if user_data_path.exists():
         note_data = get_data_from_yaml(device_name, user_data_path)
         if note_data:
@@ -103,30 +103,26 @@ def get_notes_data(device_name: str) -> Tuple[NotesSource, Dict[str, str]]:
 
 def insert_into_yaml(path: Path, device_name: str, data: dict[str, str]) -> None:
     try:
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             device_notes = yaml.full_load(f)
     except FileNotFoundError:
-        logger.info(f'No existing device notes found at {path}. '
-                    'Creating new notes file.')
+        logger.info(f"No existing device notes found at {path}. Creating new notes file.")
         device_notes = {}
     except Exception as ex:
-        logger.warning(f'Unable to open existing device notes, aborting: {ex}')
+        logger.warning(f"Unable to open existing device notes, aborting: {ex}")
         return
 
     device_notes[device_name] = data
 
     directory = os.path.dirname(path)
     temp_path = Path(directory) / (
-        f".{getpass.getuser()}"
-        f"_{int(time.time())}"
-        f"_{str(uuid.uuid4())[:8]}"
-        f"_{os.path.basename(path)}"
+        f".{getpass.getuser()}_{int(time.time())}_{str(uuid.uuid4())[:8]}_{os.path.basename(path)}"
     )
     try:
-        with open(temp_path, 'w') as f:
+        with open(temp_path, "w") as f:
             yaml.dump(device_notes, f)
     except Exception as ex:
-        logger.warning(f'unable to write device info: {ex}')
+        logger.warning(f"unable to write device info: {ex}")
         return
 
     if os.path.exists(path):
@@ -134,11 +130,7 @@ def insert_into_yaml(path: Path, device_name: str, data: dict[str, str]) -> None
     shutil.move(temp_path, path)
 
 
-def write_notes_data(
-    source: NotesSource,
-    device_name: str,
-    data: dict[str, str]
-) -> None:
+def write_notes_data(source: NotesSource, device_name: str, data: dict[str, str]) -> None:
     """
     Write the notes ``data`` to the specified ``source`` under the key ``device_name``
 
@@ -152,14 +144,12 @@ def write_notes_data(
         The notes data.  Expected to contain the 'note' and 'timestamp' keys
     """
     if source == NotesSource.USER:
-        user_data_path = platformdirs.user_data_path() / 'device_notes.yaml'
+        user_data_path = platformdirs.user_data_path() / "device_notes.yaml"
         insert_into_yaml(user_data_path, device_name, data)
     elif source == NotesSource.ENV:
         notes_var = os.environ.get(NOTES_VAR)
         if not notes_var:
-            raise RuntimeError(
-                f"Unable to save notes as env var {NOTES_VAR!r} was not set"
-            )
+            raise RuntimeError(f"Unable to save notes as env var {NOTES_VAR!r} was not set")
 
         insert_into_yaml(Path(notes_var), device_name, data)
 
@@ -180,7 +170,7 @@ class TyphosNotesEdit(
     def __init__(self, *args, refresh_time: float = 5.0, **kwargs):
         super().__init__(*args, **kwargs)
         self.editingFinished.connect(self.save_note)
-        self.setPlaceholderText('no notes...')
+        self.setPlaceholderText("no notes...")
         self.edit_filter = utils.FrameOnEditFilter(parent=self)
         self.setFrame(False)
         self.installEventFilter(self.edit_filter)
@@ -189,19 +179,15 @@ class TyphosNotesEdit(
         # to be initialized later
         self.device_name: Optional[str] = None
         self.notes_source: Optional[NotesSource] = None
-        self.data = {'note': '', 'timestamp': ''}
+        self.data = {"note": "", "timestamp": ""}
         self.setPlaceholderText("Enter notes here")
-        self.setSizePolicy(
-            QtWidgets.QSizePolicy.MinimumExpanding,
-            QtWidgets.QSizePolicy.Preferred
-        )
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
 
     def update_tooltip(self) -> None:
-        if self.data['note'] and self.notes_source is not None:
-            self.setToolTip(f"({self.data['timestamp']}, {self.notes_source.name}):\n"
-                            f"{self.data['note']}")
+        if self.data["note"] and self.notes_source is not None:
+            self.setToolTip(f"({self.data['timestamp']}, {self.notes_source.name}):\n{self.data['note']}")
         else:
-            self.setToolTip('click to edit note')
+            self.setToolTip("click to edit note")
 
     def add_device(self, device: ophyd.Device) -> None:
         super().add_device(device)
@@ -247,7 +233,7 @@ class TyphosNotesEdit(
         self._last_updated = time.time()
         self.notes_source, self.data = get_notes_data(self.device_name)
 
-        self.setText(self.data.get('note', ''))
+        self.setText(self.data.get("note", ""))
         self.update_tooltip()
 
     def save_note(self) -> None:
@@ -258,16 +244,15 @@ class TyphosNotesEdit(
 
         note_text = self.text()
         curr_time = datetime.now().ctime()
-        self.data['note'] = note_text
-        self.data['timestamp'] = curr_time
+        self.data["note"] = note_text
+        self.data["timestamp"] = curr_time
         self.update_tooltip()
         write_notes_data(self.notes_source, self.device_name, self.data)
 
     def event(self, event: QtCore.QEvent) -> bool:
-        """ Overload event method to update data on tooltip-request """
+        """Overload event method to update data on tooltip-request"""
         # Catch relevant events to update status tooltip
-        if event.type() in (QtCore.QEvent.ToolTip, QtCore.QEvent.Paint,
-                            QtCore.QEvent.FocusAboutToChange):
+        if event.type() in (QtCore.QEvent.ToolTip, QtCore.QEvent.Paint, QtCore.QEvent.FocusAboutToChange):
             self.setup_data()
 
         return super().event(event)

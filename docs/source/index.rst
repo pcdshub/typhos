@@ -44,7 +44,6 @@ Related Projects
     python_methods.rst
     templates.rst
     release_notes.rst
-    upcoming_changes.rst
 
 .. toctree::
     :maxdepth: 3

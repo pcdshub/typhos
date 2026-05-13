@@ -8,6 +8,7 @@ On Python 3.10+ these tests can cause segmentation faults if we manually
 Any test that uses a positioner widget needs to have this mark.
 This is not yet fully understood.
 """
+
 from unittest.mock import Mock
 
 import pytest
@@ -31,8 +32,7 @@ class SimMotor(SynAxis):
     high_limit_switch = Cpt(SignalRO, value=0)
     low_limit = Cpt(Signal, value=-10)
     high_limit = Cpt(Signal, value=10)
-    motor_is_moving = Cpt(RichSignal, value=0,
-                          metadata={'enum_strs': ('not moving', 'moving')})
+    motor_is_moving = Cpt(RichSignal, value=0, metadata={"enum_strs": ("not moving", "moving")})
     stop = Mock()
     clear_error = Mock()
 
@@ -47,14 +47,14 @@ class SimMotor(SynAxis):
 
     def check_value(self, pos: float):
         if not self.low_limit.get() <= pos <= self.high_limit.get():
-            raise LimitError('Sim limits error')
+            raise LimitError("Sim limits error")
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def motor_widget(qtbot):
-    motor = SimMotor(name='test')
+    motor = SimMotor(name="test")
     widget = TyphosPositionerWidget()
-    widget.readback_attribute = 'readback'
+    widget.readback_attribute = "readback"
     widget.add_device(motor)
     qtbot.addWidget(widget)
     yield motor, widget
@@ -66,8 +66,7 @@ def motor_widget(qtbot):
 def test_positioner_widget_no_limits(qtbot, motor):
     setwidget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(setwidget)
-    for widget in ('low_limit', 'low_limit_switch',
-                   'high_limit', 'high_limit_switch'):
+    for widget in ("low_limit", "low_limit_switch", "high_limit", "high_limit_switch"):
         assert getattr(setwidget.ui, widget).isHidden()
 
 
@@ -76,8 +75,8 @@ def test_positioner_widget_fixed_limits(qtbot, motor):
     motor.limits = (-10, 10)
     widget = TyphosPositionerWidget.from_device(motor)
     qtbot.addWidget(widget)
-    assert widget.ui.low_limit.text() == '-10'
-    assert widget.ui.high_limit.text() == '10'
+    assert widget.ui.low_limit.text() == "-10"
+    assert widget.ui.high_limit.text() == "10"
 
 
 @show_widget
@@ -90,7 +89,7 @@ def test_positioner_widget_with_signal_limits(motor_widget):
     assert motor.low_limit_switch.name in low_limit_chan
     high_limit_chan = widget.ui.high_limit_switch.channel
     assert motor.high_limit_switch.name in high_limit_chan
-    motor.delay = 3.  # Just for visual testing purposes
+    motor.delay = 3.0  # Just for visual testing purposes
     return widget
 
 
@@ -115,14 +114,14 @@ class NoMoveSoftPos(SoftPositioner, Device):
     This must be a device for inclusion in the widget,
     as typhos calls "walk_signals".
     """
-    def _setup_move(self, *args, **kwargs):
-        ...
+
+    def _setup_move(self, *args, **kwargs): ...
 
 
 @pytest.mark.no_gc
 def test_positioner_widget_stop_no_error(motor_widget):
     _, widget = motor_widget
-    motor = NoMoveSoftPos(name='motor')
+    motor = NoMoveSoftPos(name="motor")
     widget.add_device(motor)
     # Calling stop on the motor directly is an error status
     status = motor.move(1, wait=False)
@@ -141,7 +140,7 @@ def test_positioner_widget_stop_no_error(motor_widget):
 def test_positioner_widget_set(motor_widget):
     motor, widget = motor_widget
     # Check motion
-    widget.ui.set_value.setText('4')
+    widget.ui.set_value.setText("4")
     widget.ui.set()
     assert motor.position == 4
 
@@ -149,18 +148,18 @@ def test_positioner_widget_set(motor_widget):
 @pytest.mark.no_gc
 def test_positioner_widget_positive_tweak(motor_widget):
     motor, widget = motor_widget
-    widget.ui.tweak_value.setText('1')
+    widget.ui.tweak_value.setText("1")
     widget.positive_tweak()
-    assert widget.ui.set_value.text() == '1.0'
+    assert widget.ui.set_value.text() == "1.0"
     assert motor.position == 1
 
 
 @pytest.mark.no_gc
 def test_positioner_widget_negative_tweak(motor_widget):
     motor, widget = motor_widget
-    widget.ui.tweak_value.setText('1')
+    widget.ui.tweak_value.setText("1")
     widget.negative_tweak()
-    assert widget.ui.set_value.text() == '-1.0'
+    assert widget.ui.set_value.text() == "-1.0"
     assert motor.position == -1
 
 
@@ -168,8 +167,8 @@ def test_positioner_widget_negative_tweak(motor_widget):
 def test_positioner_widget_moving_property(motor_widget, qtbot):
     motor, widget = motor_widget
     assert not widget.moving
-    motor.delay = 1.
-    widget.ui.set_value.setText('7')
+    motor.delay = 1.0
+    widget.ui.set_value.setText("7")
     widget.set()
     qtbot.waitUntil(lambda: widget.moving, timeout=500)
     qtbot.waitUntil(lambda: not widget.moving, timeout=1000)
@@ -222,8 +221,8 @@ def test_positioner_widget_alarm_text_changes(motor_widget, qtbot):
         ):
             motor.motor_is_moving.update_metadata(
                 {
-                    'severity': level,
-                    'connected': connected,
+                    "severity": level,
+                    "connected": connected,
                 }
             )
 
@@ -267,11 +266,11 @@ def test_positioner_widget_move_error(motor_widget, qtbot):
     with pytest.raises(LimitError):
         motor.check_value(bad_position)
 
-    assert widget.ui.status_label.text() == ''
+    assert widget.ui.status_label.text() == ""
     widget._set(bad_position)
 
     def has_limit_error():
-        assert 'LimitError' in widget.ui.status_label.text()
+        assert "LimitError" in widget.ui.status_label.text()
 
     qtbot.waitUntil(has_limit_error, timeout=1000)
 
@@ -280,7 +279,7 @@ def test_positioner_widget_move_error(motor_widget, qtbot):
 def test_positioner_widget_long_status_text(motor_widget):
     _, widget = motor_widget
 
-    assert widget.ui.status_label.text() == ''
+    assert widget.ui.status_label.text() == ""
 
     widget._set_status_text("Oh no! " * 1000, max_length=50)
 
@@ -289,7 +288,7 @@ def test_positioner_widget_long_status_text(motor_widget):
     assert len(text) < 60
 
     widget._set_status_text("")
-    assert widget.ui.status_label.text() == ''
+    assert widget.ui.status_label.text() == ""
 
     widget._set_status_text(
         TyphosStatusMessage(

@@ -7,8 +7,7 @@ import time
 import traceback
 
 from ophyd.status import Status
-from ophyd.utils import (StatusTimeoutError, UnknownStatusFailure,
-                         WaitTimeoutError)
+from ophyd.utils import StatusTimeoutError, UnknownStatusFailure, WaitTimeoutError
 from qtpy.QtCore import QObject, QThread, Signal
 
 logger = logging.getLogger(__name__)
@@ -76,6 +75,7 @@ class TyphosStatusThread(QThread):
        thread.start()
 
     """
+
     status_started = Signal()
     status_timeout = Signal()
     status_finished = Signal(TyphosStatusResult)
@@ -87,7 +87,7 @@ class TyphosStatusThread(QThread):
         status: Status,
         error_context: str = "Status",
         timeout_calc: str = "",
-        start_delay: float = 0.,
+        start_delay: float = 0.0,
         timeout: float = 10.0,
         parent: QObject | None = None,
     ):

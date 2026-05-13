@@ -38,38 +38,34 @@ MODULE_PATH = pathlib.Path(__file__).parent
 
 
 def pytest_addoption(parser):
-    parser.addoption("--dark", action="store_true", default=False,
-                     help="Use the dark stylesheet to display widgets")
-    parser.addoption("--show-ui", action="store_true", default=False,
-                     help="Show the widgets produced by each test")
+    parser.addoption("--dark", action="store_true", default=False, help="Use the dark stylesheet to display widgets")
+    parser.addoption("--show-ui", action="store_true", default=False, help="Show the widgets produced by each test")
 
 
 # Create a fixture to configure whether widgets are shown or not
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _show_widgets(pytestconfig):
     global show_widgets
-    show_widgets = pytestconfig.getoption('--show-ui')
+    show_widgets = pytestconfig.getoption("--show-ui")
     if show_widgets:
         logger.info("Running tests while showing created widgets ...")
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def qapp(pytestconfig):
     global application
     application = QtWidgets.QApplication.instance()
     if application is None:
         application = PyDMApplication(use_main_window=False)
-    typhos.use_stylesheet(pytestconfig.getoption('--dark'))
+    typhos.use_stylesheet(pytestconfig.getoption("--dark"))
     return application
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 def noapp(monkeypatch):
-    monkeypatch.setattr(QtWidgets.QApplication, 'exec_', lambda x: 1)
-    monkeypatch.setattr(QtWidgets.QApplication, 'exit', lambda x: 1)
-    monkeypatch.setattr(
-        pydm.exception, 'raise_to_operator', lambda *_, **__: None
-    )
+    monkeypatch.setattr(QtWidgets.QApplication, "exec_", lambda x: 1)
+    monkeypatch.setattr(QtWidgets.QApplication, "exit", lambda x: 1)
+    monkeypatch.setattr(pydm.exception, "raise_to_operator", lambda *_, **__: None)
 
 
 def get_top_level_widgets() -> List[weakref.ReferenceType[QtWidgets.QWidget]]:
@@ -96,8 +92,7 @@ def _dump_widgets(widgets: List[weakref.ReferenceType[QtWidgets.QWidget]]) -> No
             continue
 
         logger.debug(
-            f"Widget remains live: {widget} {widget.windowTitle()} "
-            f"parent={widget.parent()} name={widget.objectName()}"
+            f"Widget remains live: {widget} {widget.windowTitle()} parent={widget.parent()} name={widget.objectName()}"
         )
 
 
@@ -140,8 +135,8 @@ def pytest_runtest_call(item: pytest.Item):
         time.sleep(0.1)
 
     widgets_to_check = list(
-        weakref.ref(w) for w in
-        set(_dereference_list(ending_widgets))
+        weakref.ref(w)
+        for w in set(_dereference_list(ending_widgets))
         - set(_dereference_list(starting_widgets))
         - set(_dereference_list(qtbot_widgets))
     )
@@ -186,15 +181,10 @@ def pytest_runtest_call(item: pytest.Item):
                     # Everything's destructible! Yeah!
                     ref_desc.append(f"(exception) {ex}")
             desc = f"{classname} {desc} {title} referrers={num_referrers}: "
-            cleanup_descriptions.append(
-                "\n".join((desc, "\n    -> ".join([""] + ref_desc)))
-            )
+            cleanup_descriptions.append("\n".join((desc, "\n    -> ".join([""] + ref_desc))))
         referrers.clear()
 
-    cleanup_text = (
-        f"Not all widgets were cleaned up during {item.name}:\n"
-        + "\n".join(sorted(cleanup_descriptions))
-    )
+    cleanup_text = f"Not all widgets were cleaned up during {item.name}:\n" + "\n".join(sorted(cleanup_descriptions))
     failure_text = f"{item.nodeid}: {cleanup_text}"
 
     if final_widgets:
@@ -218,16 +208,18 @@ def pytest_runtest_call(item: pytest.Item):
                 ...
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def test_images():
-    return (os.path.join(os.path.dirname(__file__), 'utils/lenna.png'),
-            os.path.join(os.path.dirname(__file__), 'utils/python.png'))
+    return (
+        os.path.join(os.path.dirname(__file__), "utils/lenna.png"),
+        os.path.join(os.path.dirname(__file__), "utils/python.png"),
+    )
 
 
 def save_image(widget, name, delay=0.5):
-    '''
+    """
     Save `widget` to typhos/tests/artifacts/{name}.png after `delay` seconds.
-    '''
+    """
     widget.show()
 
     app = QtWidgets.QApplication.instance()
@@ -237,8 +229,7 @@ def save_image(widget, name, delay=0.5):
         app.processEvents()
         time.sleep(0.1)
 
-    image = QtGui.QImage(widget.width(), widget.height(),
-                         QtGui.QImage.Format_ARGB32_Premultiplied)
+    image = QtGui.QImage(widget.width(), widget.height(), QtGui.QImage.Format_ARGB32_Premultiplied)
 
     image.fill(qtpy.QtCore.Qt.transparent)
     pixmap = QtGui.QPixmap(image)
@@ -247,18 +238,19 @@ def save_image(widget, name, delay=0.5):
     widget.render(image)
     painter.end()
 
-    artifacts_path = MODULE_PATH / 'artifacts'
+    artifacts_path = MODULE_PATH / "artifacts"
     artifacts_path.mkdir(exist_ok=True)
 
-    path = str(artifacts_path / f'{name}.png')
+    path = str(artifacts_path / f"{name}.png")
     image.save(path)
-    logger.debug('saved image to %s', path)
+    logger.debug("saved image to %s", path)
 
 
 def show_widget(func):
     """
     Show a widget returned from arbitrary `func`
     """
+
     @wraps(func)
     def func_wrapper(*args, **kwargs):
         # Run function grab widget
@@ -274,10 +266,11 @@ def show_widget(func):
             pydm.utilities.close_widget_connections(widget)
         except Exception:
             logger.debug("Failed to close widget connections for %s", widget)
+
     return func_wrapper
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def motor():
     # Register all signals
     for sig in ophyd.sim.motor.component_names:
@@ -286,13 +279,12 @@ def motor():
 
 
 class RichSignal(Signal):
-
     def __init__(self, *args, metadata=None, **kwargs):
         if metadata is None:
             metadata = {
-                'enum_strs': ('a', 'b', 'c'),
-                'precision': 2,
-                'units': 'urad',
+                "enum_strs": ("a", "b", "c"),
+                "precision": 2,
+                "units": "urad",
             }
         super().__init__(*args, metadata=metadata, **kwargs)
 
@@ -323,9 +315,9 @@ class DeadSignal(Signal):
 
 
 class ConfiguredSynAxis(SynAxis):
-    velocity = Cpt(Signal, value=100, kind='normal')
-    acceleration = Cpt(Signal, value=10, kind='normal')
-    resolution = Cpt(Signal, value=5, kind='normal')
+    velocity = Cpt(Signal, value=100, kind="normal")
+    acceleration = Cpt(Signal, value=10, kind="normal")
+    resolution = Cpt(Signal, value=5, kind="normal")
 
 
 class RandomSignal(SynPeriodicSignal):
@@ -334,38 +326,36 @@ class RandomSignal(SynPeriodicSignal):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(func=lambda: np.random.uniform(0, 100),
-                         period=10, period_jitter=4, **kwargs)
+        super().__init__(func=lambda: np.random.uniform(0, 100), period=10, period_jitter=4, **kwargs)
         self.start_simulation()
 
 
 class MockDevice(Device):
     # Device signals
-    readback = Cpt(RandomSignal, kind='normal')
-    noise = Cpt(RandomSignal, kind='normal')
-    transmorgifier = Cpt(SignalRO, value=4, kind='normal')
-    setpoint = Cpt(Signal, value=0, kind='normal')
+    readback = Cpt(RandomSignal, kind="normal")
+    noise = Cpt(RandomSignal, kind="normal")
+    transmorgifier = Cpt(SignalRO, value=4, kind="normal")
+    setpoint = Cpt(Signal, value=0, kind="normal")
 
-    velocity = Cpt(Signal, value=1, kind='config')
-    flux = Cpt(RandomSignal, kind='config')
-    modified_flux = Cpt(RandomSignal, kind='config')
-    capacitance = Cpt(RandomSignal, kind='config')
-    acceleration = Cpt(Signal, value=3, kind='config')
-    limit = Cpt(Signal, value=4, kind='config')
-    inductance = Cpt(RandomSignal, kind='normal')
+    velocity = Cpt(Signal, value=1, kind="config")
+    flux = Cpt(RandomSignal, kind="config")
+    modified_flux = Cpt(RandomSignal, kind="config")
+    capacitance = Cpt(RandomSignal, kind="config")
+    acceleration = Cpt(Signal, value=3, kind="config")
+    limit = Cpt(Signal, value=4, kind="config")
+    inductance = Cpt(RandomSignal, kind="normal")
 
-    transformed_inductance = Cpt(SignalRO, value=3, kind='omitted')
-    core_temperature = Cpt(RandomSignal, kind='omitted')
-    resolution = Cpt(Signal, value=5, kind='omitted')
-    duplicator = Cpt(Signal, value=6, kind='omitted')
+    transformed_inductance = Cpt(SignalRO, value=3, kind="omitted")
+    core_temperature = Cpt(RandomSignal, kind="omitted")
+    resolution = Cpt(Signal, value=5, kind="omitted")
+    duplicator = Cpt(Signal, value=6, kind="omitted")
 
     # Component Motors
-    x = FC(ConfiguredSynAxis, name='X Axis')
-    y = FC(ConfiguredSynAxis, name='Y Axis')
-    z = FC(ConfiguredSynAxis, name='Z Axis')
+    x = FC(ConfiguredSynAxis, name="X Axis")
+    y = FC(ConfiguredSynAxis, name="Y Axis")
+    z = FC(ConfiguredSynAxis, name="Z Axis")
 
-    def insert(self, width: float = 2.0, height: float = 2.0,
-               fast_mode: bool = False):
+    def insert(self, width: float = 2.0, height: float = 2.0, fast_mode: bool = False):
         """Fake insert function to display"""
         pass
 
@@ -375,12 +365,12 @@ class MockDevice(Device):
 
     @property
     def hints(self):
-        return {'fields': [self.name+'_readback']}
+        return {"fields": [self.name + "_readback"]}
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def device():
-    dev = MockDevice('Tst:This', name='simulated_device')
+    dev = MockDevice("Tst:This", name="simulated_device")
     yield dev
     clear_handlers(dev)
 
@@ -396,22 +386,21 @@ def clear_handlers(device):
             _logger.handlers.remove(handler)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def client():
-    client = Client(path=os.path.join(os.path.dirname(__file__),
-                                      'happi.json'))
+    client = Client(path=os.path.join(os.path.dirname(__file__), "happi.json"))
     register_client(client)
     return client
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def happi_cfg():
-    path = str(MODULE_PATH / 'happi.cfg')
-    os.environ['HAPPI_CFG'] = path
+    path = str(MODULE_PATH / "happi.cfg")
+    os.environ["HAPPI_CFG"] = path
     return path
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 def reset_signal_plugin():
     """
     Completely restart the sig:// plugin.
@@ -425,18 +414,18 @@ def reset_signal_plugin():
     manipulated or tested.
     """
     signal_registry.clear()
-    plugin = plugin_for_address('sig://test')
+    plugin = plugin_for_address("sig://test")
     for channel in list(plugin.channels):
         channel.disconnect(destroying=True)
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 def show_test_name(request):
-    logger.debug(f'Running test named {request.node.name}')
+    logger.debug(f"Running test named {request.node.name}")
 
 
 # Remove this later please
 pydm_version_xfail = pytest.mark.xfail(
-    condition=pydm.__version__ == '1.17.0',
-    reason='PyDM bug in v1.17.0',
+    condition=pydm.__version__ == "1.17.0",
+    reason="PyDM bug in v1.17.0",
 )

@@ -10,13 +10,13 @@ def main():
     """
     get_qapp()
     devices = [
-        ExamplePositioner(name='example_motor'),
-        ExampleComboPositioner(name='example_combo'),
+        ExamplePositioner(name="example_motor"),
+        ExampleComboPositioner(name="example_combo"),
     ]
     suite = TyphosSuite.from_devices(devices)
     use_stylesheet()
     launch_suite(suite)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

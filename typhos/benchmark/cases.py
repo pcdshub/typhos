@@ -4,6 +4,7 @@ A collection of benchmarks to run for typhos.
 These are included as standalone functions to make it easy to pass them into
 arbitrary profiling modules.
 """
+
 from __future__ import annotations
 
 import typing
@@ -25,18 +26,14 @@ if typing.TYPE_CHECKING:
 
 
 # Define matrix of testing parameters
-Shape = namedtuple('Shape', ['num_signals', 'subdevice_layers',
-                             'subdevice_spread'])
+Shape = namedtuple("Shape", ["num_signals", "subdevice_layers", "subdevice_spread"])
 # total_signals == num_signals * (subdevice_spread ** subdevice_layers)
-SHAPES = dict(flat=Shape(100, 1, 1),
-              deep=Shape(100, 25, 1),
-              wide=Shape(1, 1, 100),
-              cube=Shape(4, 2, 5))
+SHAPES = dict(flat=Shape(100, 1, 1), deep=Shape(100, 25, 1), wide=Shape(1, 1, 100), cube=Shape(4, 2, 5))
 
-Test = namedtuple('Test', ['signal_class', 'include_prefix', 'start_ioc'])
-TESTS = dict(soft=Test(Signal, False, False),
-             connect=Test(EpicsSignal, True, True),
-             noconnect=Test(EpicsSignal, True, False))
+Test = namedtuple("Test", ["signal_class", "include_prefix", "start_ioc"])
+TESTS = dict(
+    soft=Test(Signal, False, False), connect=Test(EpicsSignal, True, True), noconnect=Test(EpicsSignal, True, False)
+)
 
 
 def profiler_benchmark(
@@ -54,8 +51,7 @@ def profiler_benchmark(
     """
     prefix = random_prefix()
     with benchmark_context(start_ioc, cls, prefix, full_test_name, request=request):
-        return launch_from_devices([cls(prefix, name='test')],
-                                   auto_exit=auto_exit)
+        return launch_from_devices([cls(prefix, name="test")], auto_exit=auto_exit)
 
 
 def unittest_benchmark(
@@ -73,7 +69,7 @@ def unittest_benchmark(
     """
     prefix = random_prefix()
     context = benchmark_context(start_ioc, cls, prefix, full_test_name, request=request)
-    suite = TyphosSuite.from_device(cls(prefix, name='test'))
+    suite = TyphosSuite.from_device(cls(prefix, name="test"))
     return suite, context
 
 
@@ -99,14 +95,16 @@ def make_tests():
     unit_tests = {}
     for shape_name, shape in SHAPES.items():
         for test_name, test in TESTS.items():
-            full_test_name = shape_name + '_' + test_name
+            full_test_name = shape_name + "_" + test_name
             cls_name = full_test_name
-            cls = make_cls(name=cls_name,
-                           signal_class=test.signal_class,
-                           include_prefix=test.include_prefix,
-                           num_signals=shape.num_signals,
-                           subdevice_layers=shape.subdevice_layers,
-                           subdevice_spread=shape.subdevice_spread)
+            cls = make_cls(
+                name=cls_name,
+                signal_class=test.signal_class,
+                include_prefix=test.include_prefix,
+                num_signals=shape.num_signals,
+                subdevice_layers=shape.subdevice_layers,
+                subdevice_spread=shape.subdevice_spread,
+            )
             classes[cls_name] = cls
 
             profiler_test = partial(profiler_benchmark, cls, test.start_ioc, full_test_name)
@@ -140,7 +138,7 @@ def interactive_benchmark(benchmark):
 def get_profiler_test(benchmark):
     try:
         return profiler_tests[benchmark]
-    except KeyError:
-        raise RuntimeError(f'{benchmark} is not a valid benchmark. '
-                           'The full list of valid benchmarks is '
-                           f'{list(profiler_tests.keys())}')
+    except KeyError as exc:
+        raise RuntimeError(
+            f"{benchmark} is not a valid benchmark. The full list of valid benchmarks is {list(profiler_tests.keys())}"
+        ) from exc

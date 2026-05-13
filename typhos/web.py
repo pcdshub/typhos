@@ -11,10 +11,8 @@ logger = logging.getLogger(__name__)
 # Skip if this fails, will not impact use of qt designer.
 try:
     # qtpy has some holes in its web engine support. Fall back to Qt5:
-    from PyQt5.QtWebEngineCore import (QWebEngineHttpRequest,
-                                       QWebEngineUrlRequestInterceptor)
-    from PyQt5.QtWebEngineWidgets import (QWebEnginePage, QWebEngineProfile,
-                                          QWebEngineView)
+    from PyQt5.QtWebEngineCore import QWebEngineHttpRequest, QWebEngineUrlRequestInterceptor
+    from PyQt5.QtWebEngineWidgets import QWebEnginePage, QWebEngineProfile, QWebEngineView
 except ImportError as ex:
     QWebEngineHttpRequest = None
     QWebEnginePage = None
@@ -26,6 +24,7 @@ except ImportError as ex:
     TyphosWebRequestInterceptor = None
     logger.warning("Unable to import %s; typhos web views disabled.", ex)
 else:
+
     class TyphosWebRequestInterceptor(QWebEngineUrlRequestInterceptor):
         def interceptRequest(self, request_info):
             """
@@ -35,10 +34,7 @@ else:
             # request is QWebEngineUrlRequestInfo
             url = request_info.requestUrl().toString()
             add_headers = should_add_headers(url)
-            logger.debug(
-                "Help navigating to %s (add headers=%s)",
-                url, add_headers
-            )
+            logger.debug("Help navigating to %s (add headers=%s)", url, add_headers)
             if add_headers:
                 for header, value in utils.HELP_HEADERS.items():
                     request_info.setHttpHeader(
@@ -47,9 +43,7 @@ else:
                     )
 
     class TyphosWebEnginePage(QWebEnginePage):
-        def javaScriptConsoleMessage(
-            self, level, message, line_number, source_id
-        ):
+        def javaScriptConsoleMessage(self, level, message, line_number, source_id):
             """
             This hook redirects javascript console messages to Python logging.
 
@@ -57,10 +51,7 @@ else:
             error, so with this hook we can at least optionally filter
             javascript log messages.
             """
-            logger.debug(
-                "[WebEngine] level=%s %s:%s %s",
-                level, source_id, line_number, message
-            )
+            logger.debug("[WebEngine] level=%s %s:%s %s", level, source_id, line_number, message)
 
     class TyphosWebEngineView(QWebEngineView):
         def __init__(self, parent=None):
@@ -94,7 +85,4 @@ def should_add_headers(url):
     """
     target_netloc = urllib.parse.urlparse(url).netloc
     configured_netloc = urllib.parse.urlparse(utils.HELP_URL).netloc
-    return (
-        target_netloc == configured_netloc or
-        target_netloc in utils.HELP_HEADERS_HOSTS
-    )
+    return target_netloc == configured_netloc or target_netloc in utils.HELP_HEADERS_HOSTS

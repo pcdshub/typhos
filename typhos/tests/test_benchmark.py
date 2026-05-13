@@ -18,15 +18,11 @@ from .conftest import save_image
 def get_top_level_suites() -> list[TyphosSuite]:
     app = QtWidgets.QApplication.instance()
     assert app is not None
-    return list(
-        widget
-        for widget in app.topLevelWidgets()
-        if isinstance(widget, TyphosSuite)
-    )
+    return list(widget for widget in app.topLevelWidgets() if isinstance(widget, TyphosSuite))
 
 
 # Name the test cases using the keys, run using the values
-@pytest.mark.parametrize('unit_test_name', unit_tests.keys())
+@pytest.mark.parametrize("unit_test_name", unit_tests.keys())
 @pytest.mark.skipif(
     sys.version_info >= (3, 11),
     reason="Benchmarks not fully working on Python 3.11",
@@ -41,7 +37,7 @@ def test_benchmark(unit_test_name, qapp, qtbot, benchmark, monkeypatch, request)
     assert len(get_top_level_suites()) == 0
     PV.count = property(lambda self: 1)
     suite = benchmark(inner_benchmark, unit_test_name, qtbot, request)
-    save_image(suite, 'test_benchmark_' + unit_test_name)
+    save_image(suite, "test_benchmark_" + unit_test_name)
 
 
 def inner_benchmark(unit_test_name, qtbot, request):
@@ -60,7 +56,7 @@ def test_profiler(capsys):
         pytest.xfail(
             reason="Known issue: profiler doesn't quite work properly on Python 3.12",
         )
-    with profiler_context(['typhos.benchmark.utils']):
+    with profiler_context(["typhos.benchmark.utils"]):
         utils.get_native_functions(utils)
     output = capsys.readouterr()
-    assert 'get_native_functions' in output.out
+    assert "get_native_functions" in output.out

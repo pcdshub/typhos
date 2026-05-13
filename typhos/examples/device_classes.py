@@ -6,6 +6,7 @@ in a module, not in the __main__ script entry point.
 
 That's why this module exists.
 """
+
 import random
 import threading
 import time
@@ -18,6 +19,7 @@ class PositionerBase:
     """
     Trick Typhos into giving us the positioner template.
     """
+
     pass
 
 
@@ -27,8 +29,8 @@ class ExamplePositioner(Device, PositionerBase):
 
     This behaves more or less like you'd expect a real motor to behave.
     """
-    user_readback = Cpt(Signal, value=0.0, kind='hinted',
-                        metadata={'precision': 3})
+
+    user_readback = Cpt(Signal, value=0.0, kind="hinted", metadata={"precision": 3})
     user_setpoint = Cpt(Signal, value=0.0)
     low_limit_switch = Cpt(Signal, value=False)
     high_limit_switch = Cpt(Signal, value=False)
@@ -37,8 +39,8 @@ class ExamplePositioner(Device, PositionerBase):
     velocity = Cpt(Signal, value=1.0)
     acceleration = Cpt(Signal, value=1.0)
     motor_is_moving = Cpt(Signal, value=False)
-    error_message = Cpt(Signal, value='')
-    cause_error = Cpt(Signal, value='')
+    error_message = Cpt(Signal, value="")
+    cause_error = Cpt(Signal, value="")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -73,7 +75,7 @@ class ExamplePositioner(Device, PositionerBase):
         velo = self.velocity.get() * (1 + noise)
         step = velo * time_step
         if abs(dist) < step:
-            self.user_readback.put(self.user_setpoint.get() + noise/10)
+            self.user_readback.put(self.user_setpoint.get() + noise / 10)
             self._status.set_finished()
         elif dist > 0:
             self.user_readback.put(self.user_readback.get() + step)
@@ -86,9 +88,7 @@ class ExamplePositioner(Device, PositionerBase):
             if success:
                 self._status.set_finished()
             else:
-                self._status.set_exception(
-                    RuntimeError('Move Interrupted')
-                )
+                self._status.set_exception(RuntimeError("Move Interrupted"))
 
     @user_readback.sub_value
     def _update_position(self, value, **kwargs):
@@ -105,7 +105,7 @@ class ExamplePositioner(Device, PositionerBase):
             self.stop(success=True)
 
     def clear_error(self):
-        self.error_message.put('')
+        self.error_message.put("")
 
     @cause_error.sub_value
     def _cause_error(self, value, **kwargs):
@@ -120,8 +120,9 @@ class ExampleComboPositioner(Device, PositionerBase):
     instead of floating point positions, and this facilitates that
     behavior.
     """
-    user_readback = Cpt(Signal, value='OUT', kind='hinted')
-    user_setpoint = Cpt(Signal, value='Unknown')
+
+    user_readback = Cpt(Signal, value="OUT", kind="hinted")
+    user_setpoint = Cpt(Signal, value="Unknown")
     motor_is_moving = Cpt(Signal, value=False)
     stop = None
 
@@ -129,7 +130,7 @@ class ExampleComboPositioner(Device, PositionerBase):
         super().__init__(*args, **kwargs)
         self._status = None
         self._status_ready_event = threading.Event()
-        enums = ('Unknown', 'OUT', 'TARGET1', 'TARGET2')
+        enums = ("Unknown", "OUT", "TARGET1", "TARGET2")
         self.user_readback.enum_strs = enums
         self.user_setpoint.enum_strs = enums
 
@@ -143,17 +144,15 @@ class ExampleComboPositioner(Device, PositionerBase):
     def _start_motion_thread(self, value, **kwargs):
         self._status = StatusBase()
         self._status_ready_event.set()
-        if value == 'Unknown':
-            self._status.set_exception(
-                RuntimeError('Unknown not a valid target state')
-            )
+        if value == "Unknown":
+            self._status.set_exception(RuntimeError("Unknown not a valid target state"))
         else:
             td = threading.Thread(target=self._motion_thread)
             td.start()
 
     def _motion_thread(self):
         self.motor_is_moving.put(True)
-        self.user_readback.put('Unknown')
+        self.user_readback.put("Unknown")
         time.sleep(3)
         self.user_readback.put(self.user_setpoint.get())
         self.motor_is_moving.put(False)

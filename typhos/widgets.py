@@ -19,8 +19,7 @@ from pydm.widgets.display_format import DisplayFormat
 from pyqtgraph.parametertree import ParameterItem
 from qtpy import QtGui, QtWidgets
 from qtpy.QtCore import Property, QObject, QSize, Qt, Signal, Slot
-from qtpy.QtWidgets import (QAction, QDialog, QDockWidget, QPushButton,
-                            QToolBar, QVBoxLayout, QWidget)
+from qtpy.QtWidgets import QAction, QDialog, QDockWidget, QPushButton, QToolBar, QVBoxLayout, QWidget
 
 from . import dynamic_font, plugins, utils, variety
 from .textedit import TyphosTextEdit  # noqa: F401
@@ -29,14 +28,10 @@ from .variety import use_for_variety_read, use_for_variety_write
 
 logger = logging.getLogger(__name__)
 
-EXPONENTIAL_UNITS = ['mtorr', 'torr', 'kpa', 'pa']
+EXPONENTIAL_UNITS = ["mtorr", "torr", "kpa", "pa"]
 
 
-class SignalWidgetInfo(
-        collections.namedtuple(
-            'SignalWidgetInfo',
-            'read_cls read_kwargs write_cls write_kwargs'
-        )):
+class SignalWidgetInfo(collections.namedtuple("SignalWidgetInfo", "read_cls read_kwargs write_cls write_kwargs")):
     """
     Provides information on how to create signal widgets: class and kwargs.
 
@@ -71,11 +66,9 @@ class SignalWidgetInfo(
         if desc is None:
             desc = obj.describe()
 
-        read_cls, read_kwargs = widget_type_from_description(
-            obj, desc, read_only=True)
+        read_cls, read_kwargs = widget_type_from_description(obj, desc, read_only=True)
 
-        is_read_only = utils.is_signal_ro(obj) or (
-            read_cls is not None and issubclass(read_cls, SignalDialogButton))
+        is_read_only = utils.is_signal_ro(obj) or (read_cls is not None and issubclass(read_cls, SignalDialogButton))
 
         if is_read_only:
             write_cls = None
@@ -111,6 +104,7 @@ class TogglePanel(QWidget):
     contents : QWidget
         Widget whose visibility is controlled via the QPushButton
     """
+
     def __init__(self, title, parent=None):
         super().__init__(parent=parent)
         # Create Widget Infrastructure
@@ -150,21 +144,19 @@ class TogglePanel(QWidget):
                 self.contents.hide()
 
 
-@use_for_variety_write('enum')
-@use_for_variety_write('text-enum')
+@use_for_variety_write("enum")
+@use_for_variety_write("text-enum")
 class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
     """
     Notes
     -----
     """
-    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
-                 **kwargs):
+
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.ophyd_signal = ophyd_signal
         self._ophyd_enum_strings = None
-        self._md_sub = ophyd_signal.subscribe(
-            self._metadata_update, event_type="meta"
-        )
+        self._md_sub = ophyd_signal.subscribe(self._metadata_update, event_type="meta")
 
     def __dtor__(self):
         """PyQt5 destructor hook."""
@@ -179,9 +171,7 @@ class TyphosComboBox(pydm.widgets.PyDMEnumComboBox):
 
     def enum_strings_changed(self, new_enum_strings):
         current_idx = self.currentIndex()
-        super().enum_strings_changed(
-            tuple(self._ophyd_enum_strings or new_enum_strings)
-        )
+        super().enum_strings_changed(tuple(self._ophyd_enum_strings or new_enum_strings))
         self.value_changed(current_idx)
 
     def wheelEvent(self, event: QtGui.QWheelEvent):
@@ -192,12 +182,13 @@ class NoScrollComboBox(QtWidgets.QComboBox):
     """
     A combobox disconnected from direct EPICS/ophyd with scrolling ignored.
     """
+
     def wheelEvent(self, event: QtGui.QWheelEvent):
         event.ignore()
 
 
-@use_for_variety_write('scalar')
-@use_for_variety_write('text')
+@use_for_variety_write("scalar")
+@use_for_variety_write("text")
 class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     """
     Reimplementation of PyDMLineEdit to set some custom defaults
@@ -205,11 +196,11 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     Notes
     -----
     """
+
     def __init__(self, *args, display_format=None, **kwargs):
         self._channel = None
         self._setpoint_history_count = 5
-        self._setpoint_history = collections.deque(
-            [], self._setpoint_history_count)
+        self._setpoint_history = collections.deque([], self._setpoint_history_count)
 
         super().__init__(*args, **kwargs)
         self.showUnits = True
@@ -217,7 +208,11 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
             self.displayFormat = display_format
 
     def __dtor__(self):
-        menu = self.unitMenu
+        try:
+            menu = self.unitMenu
+        except AttributeError:
+            # It never got made for whatever reason, can leave
+            return
         if menu is not None:
             menu.deleteLater()
         self.unitMenu = None
@@ -239,17 +234,14 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
     @setpointHistoryCount.setter
     def setpointHistoryCount(self, value):
         self._setpoint_history_count = max((0, int(value)))
-        self._setpoint_history = collections.deque(
-            self._setpoint_history, self._setpoint_history_count)
+        self._setpoint_history = collections.deque(self._setpoint_history, self._setpoint_history_count)
 
     def _remove_history_item_by_value(self, remove_value):
         """
         Remove an item from the history buffer by value
         """
-        new_history = [(value, ts) for value, ts in self._setpoint_history
-                       if value != remove_value]
-        self._setpoint_history = collections.deque(
-            new_history, self._setpoint_history_count)
+        new_history = [(value, ts) for value, ts in self._setpoint_history if value != remove_value]
+        self._setpoint_history = collections.deque(new_history, self._setpoint_history_count)
 
     def _add_history_item(self, value, *, timestamp=None):
         """
@@ -259,9 +251,7 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
             # Push this value to the end of the list as most-recently used
             self._remove_history_item_by_value(value)
 
-        self._setpoint_history.append(
-            (value, timestamp or datetime.datetime.now())
-        )
+        self._setpoint_history.append((value, timestamp or datetime.datetime.now()))
 
     def send_value(self):
         """
@@ -280,17 +270,15 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
         font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.FixedFont)
         history_menu.setFont(font)
 
-        max_len = max(len(value)
-                      for value, timestamp in self._setpoint_history)
+        max_len = max(len(value) for value, timestamp in self._setpoint_history)
 
         # Pad values such that timestamp lines up:
         # (Value)     @ (Timestamp)
-        action_format = '{value:<%d} @ {timestamp}' % (max_len + 1)
+        action_format = "{value:<%d} @ {timestamp}" % (max_len + 1)
 
         for value, timestamp in reversed(self._setpoint_history):
-            timestamp = timestamp.strftime('%m/%d %H:%M')
-            action = history_menu.addAction(
-                action_format.format(value=value, timestamp=timestamp))
+            timestamp = timestamp.strftime("%m/%d %H:%M")
+            action = history_menu.addAction(action_format.format(value=value, timestamp=timestamp))
 
             def history_selected(*, value=value):
                 self.setText(str(value))
@@ -324,22 +312,22 @@ class TyphosLineEdit(pydm.widgets.PyDMLineEdit):
             return
 
         super().unit_changed(new_unit)
-        default = (self.displayFormat == DisplayFormat.Default)
+        default = self.displayFormat == DisplayFormat.Default
         if new_unit.lower() in EXPONENTIAL_UNITS and default:
             self.displayFormat = DisplayFormat.Exponential
 
 
-@use_for_variety_read('array-nd')
-@use_for_variety_read('command-enum')
-@use_for_variety_read('command-setpoint-tracks-readback')
-@use_for_variety_read('enum')
-@use_for_variety_read('scalar')
-@use_for_variety_read('scalar-range')
-@use_for_variety_read('scalar-tweakable')
-@use_for_variety_read('text')
-@use_for_variety_read('text-enum')
-@use_for_variety_read('text-multiline')
-@use_for_variety_write('array-nd')
+@use_for_variety_read("array-nd")
+@use_for_variety_read("command-enum")
+@use_for_variety_read("command-setpoint-tracks-readback")
+@use_for_variety_read("enum")
+@use_for_variety_read("scalar")
+@use_for_variety_read("scalar-range")
+@use_for_variety_read("scalar-tweakable")
+@use_for_variety_read("text")
+@use_for_variety_read("text-enum")
+@use_for_variety_read("text-multiline")
+@use_for_variety_write("array-nd")
 class TyphosLabel(pydm.widgets.PyDMLabel):
     """
     Reimplementation of PyDMLabel to set some custom defaults
@@ -347,22 +335,18 @@ class TyphosLabel(pydm.widgets.PyDMLabel):
     Notes
     -----
     """
-    def __init__(
-        self, *args, display_format=None, ophyd_signal=None, **kwargs
-    ):
+
+    def __init__(self, *args, display_format=None, ophyd_signal=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAlignment(Qt.AlignCenter)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Preferred,
-                           QtWidgets.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         self.showUnits = True
         if display_format is not None:
             self.displayFormat = display_format
 
         self.ophyd_signal = ophyd_signal
         self._ophyd_enum_strings = None
-        self._md_sub = ophyd_signal.subscribe(
-            self._metadata_update, event_type="meta"
-        )
+        self._md_sub = ophyd_signal.subscribe(self._metadata_update, event_type="meta")
 
     def __dtor__(self):
         """PyQt5 destructor hook."""
@@ -376,9 +360,7 @@ class TyphosLabel(pydm.widgets.PyDMLabel):
             self.enum_strings_changed(enum_strs)
 
     def enum_strings_changed(self, new_enum_strings):
-        super().enum_strings_changed(
-            tuple(self._ophyd_enum_strings or new_enum_strings)
-        )
+        super().enum_strings_changed(tuple(self._ophyd_enum_strings or new_enum_strings))
 
     def unit_changed(self, new_unit):
         """
@@ -395,7 +377,7 @@ class TyphosLabel(pydm.widgets.PyDMLabel):
             return
 
         super().unit_changed(new_unit)
-        default = (self.displayFormat == DisplayFormat.Default)
+        default = self.displayFormat == DisplayFormat.Default
         if new_unit.lower() in EXPONENTIAL_UNITS and default:
             self.displayFormat = DisplayFormat.Exponential
 
@@ -419,6 +401,7 @@ class TyphosSidebarItem(ParameterItem):
     Notes
     -----
     """
+
     def __init__(self, param, depth):
         super().__init__(param, depth)
         # Configure a QToolbar
@@ -426,16 +409,13 @@ class TyphosSidebarItem(ParameterItem):
         self.toolbar.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.toolbar.setIconSize(QSize(15, 15))
         # Setup the action to open the widget
-        self.open_action = QAction(
-            qta.icon('fa5s.square', color='green'), 'Open', self.toolbar)
+        self.open_action = QAction(qta.icon("fa5s.square", color="green"), "Open", self.toolbar)
         self.open_action.triggered.connect(self.open_requested)
         # Setup the action to embed the widget
-        self.embed_action = QAction(
-            qta.icon('fa5s.th-large', color='yellow'), 'Embed', self.toolbar)
+        self.embed_action = QAction(qta.icon("fa5s.th-large", color="yellow"), "Embed", self.toolbar)
         self.embed_action.triggered.connect(self.embed_requested)
         # Setup the action to hide the widget
-        self.hide_action = QAction(
-            qta.icon('fa5s.times-circle', color='red'), 'Close', self.toolbar)
+        self.hide_action = QAction(qta.icon("fa5s.times-circle", color="red"), "Close", self.toolbar)
         self.hide_action.triggered.connect(self.hide_requested)
         self.hide_action.setEnabled(False)
         # Add actions to toolbars
@@ -480,6 +460,7 @@ class TyphosSidebarItem(ParameterItem):
 
 class SubDisplay(QDockWidget):
     """QDockWidget modified to emit a signal when closed"""
+
     closing = Signal()
 
     def closeEvent(self, evt):
@@ -508,12 +489,11 @@ class HappiChannel(pydm.widgets.channel.PyDMChannel, QObject):
     def tx_slot(self, value):
         """Transmission Slot"""
         # Do not fire twice for the same device
-        if not self._last_md or self._last_md != value['md']:
-            self._last_md = value['md']
+        if not self._last_md or self._last_md != value["md"]:
+            self._last_md = value["md"]
             self._tx_slot(value)
         else:
-            logger.debug("HappiChannel %r received same device. "
-                         "Ignoring for now ...", self)
+            logger.debug("HappiChannel %r received same device. Ignoring for now ...", self)
 
 
 class TyphosDesignerMixin(pydm.widgets.base.PyDMWidget):
@@ -547,25 +527,25 @@ class TyphosDesignerMixin(pydm.widgets.base.PyDMWidget):
             if self._channels:
                 self._channels.clear()
                 for channel in self._channels:
-                    if hasattr(channel, 'disconnect'):
+                    if hasattr(channel, "disconnect"):
                         channel.disconnect()
             # Load new channel
             self._channel = str(value)
-            channel = HappiChannel(address=self._channel,
-                                   tx_slot=self._tx)
+            channel = HappiChannel(address=self._channel, tx_slot=self._tx)
             self._channels = [channel]
             # Connect the channel to the HappiPlugin
-            if hasattr(channel, 'connect'):
+            if hasattr(channel, "connect"):
                 channel.connect()
 
     @Slot(object)
     def _tx(self, value):
         """Receive information from happi channel"""
-        self.add_device(value['obj'])
+        self.add_device(value["obj"])
 
 
 class SignalDialogButton(QPushButton):
     """QPushButton to launch a QDialog with a PyDMWidget"""
+
     text = NotImplemented
     icon = NotImplemented
     parent_widget_class = QtWidgets.QWidget
@@ -589,8 +569,7 @@ class SignalDialogButton(QPushButton):
         if not self.dialog:
             logger.debug("Creating QDialog for %r", self.channel)
             # Set up the QDialog
-            parent = utils.find_parent_with_class(
-                self, self.parent_widget_class)
+            parent = utils.find_parent_with_class(self, self.parent_widget_class)
             self.dialog = QDialog(parent)
             self.dialog.setWindowTitle(self.channel)
             self.dialog.setLayout(QVBoxLayout())
@@ -608,7 +587,7 @@ class SignalDialogButton(QPushButton):
         return self.dialog
 
 
-@use_for_variety_read('array-image')
+@use_for_variety_read("array-image")
 class ImageDialogButton(SignalDialogButton):
     """
     QPushButton to show a 2-d array.
@@ -616,18 +595,18 @@ class ImageDialogButton(SignalDialogButton):
     Notes
     -----
     """
+
     text = "Show Image"
     icon = "fa5s.camera"
     parent_widget_class = QtWidgets.QMainWindow
 
     def widget(self):
         """Create PyDMImageView"""
-        return pydm.widgets.PyDMImageView(
-            parent=self, image_channel=self.channel)
+        return pydm.widgets.PyDMImageView(parent=self, image_channel=self.channel)
 
 
-@use_for_variety_read('array-timeseries')
-@use_for_variety_read('array-histogram')  # TODO: histogram settings?
+@use_for_variety_read("array-timeseries")
+@use_for_variety_read("array-histogram")  # TODO: histogram settings?
 class WaveformDialogButton(SignalDialogButton):
     """
     QPushButton to show a 1-d array.
@@ -635,20 +614,20 @@ class WaveformDialogButton(SignalDialogButton):
     Notes
     -----
     """
-    text = 'Show Waveform'
+
+    text = "Show Waveform"
     icon = "fa5s.chart-line"
     parent_widget_class = QtWidgets.QMainWindow
 
     def widget(self):
         """Create PyDMWaveformPlot"""
-        return pydm.widgets.PyDMWaveformPlot(
-            init_y_channels=[self.channel], parent=self)
+        return pydm.widgets.PyDMWaveformPlot(init_y_channels=[self.channel], parent=self)
 
 
 # @variety.uses_key_handlers
-@use_for_variety_write('command')
-@use_for_variety_write('command-proc')
-@use_for_variety_write('command-setpoint-tracks-readback')  # TODO
+@use_for_variety_write("command")
+@use_for_variety_write("command-proc")
+@use_for_variety_write("command-setpoint-tracks-readback")  # TODO
 class TyphosCommandButton(pydm.widgets.PyDMPushButton):
     """
     A pushbutton widget which executes a command by sending a specific value.
@@ -661,10 +640,9 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
     -----
     """
 
-    default_label = 'Command'
+    default_label = "Command"
 
-    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
-                 **kwargs):
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.ophyd_signal = ophyd_signal
         self.variety_metadata = variety_metadata
@@ -673,11 +651,9 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
     variety_metadata = variety.create_variety_property()
 
     def enum_strings_changed(self, new_enum_strings):
-        return super().enum_strings_changed(
-            self._forced_enum_strings or new_enum_strings)
+        return super().enum_strings_changed(self._forced_enum_strings or new_enum_strings)
 
-    def _update_variety_metadata(self, *, value, enum_strings=None,
-                                 enum_dict=None, tags=None, **kwargs):
+    def _update_variety_metadata(self, *, value, enum_strings=None, enum_dict=None, tags=None, **kwargs):
         self.pressValue = value
         enum_strings = variety.get_enum_strings(enum_strings, enum_dict)
         if enum_strings is not None:
@@ -686,11 +662,11 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
 
         tags = set(tags or {})
 
-        if 'protected' in tags:
+        if "protected" in tags:
             self.passwordProtected = True
-            self.password = 'typhos'  # ... yeah (TODO)
+            self.password = "typhos"  # ... yeah (TODO)
 
-        if 'confirm' in tags:
+        if "confirm" in tags:
             self.showConfirmDialog = True
 
         variety._warn_unhandled_kwargs(self, kwargs)
@@ -700,7 +676,7 @@ class TyphosCommandButton(pydm.widgets.PyDMPushButton):
 
 
 @variety.uses_key_handlers
-@use_for_variety_write('command-enum')
+@use_for_variety_write("command-enum")
 class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
     """
     A group of buttons which represent several command options.
@@ -716,8 +692,7 @@ class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
     -----
     """
 
-    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
-                 **kwargs):
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.ophyd_signal = ophyd_signal
         self.variety_metadata = variety_metadata
@@ -726,11 +701,9 @@ class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
     variety_metadata = variety.create_variety_property()
 
     def enum_strings_changed(self, new_enum_strings):
-        return super().enum_strings_changed(
-            self._forced_enum_strings or new_enum_strings)
+        return super().enum_strings_changed(self._forced_enum_strings or new_enum_strings)
 
-    def _update_variety_metadata(self, *, value, enum_strings=None,
-                                 enum_dict=None, tags=None, **kwargs):
+    def _update_variety_metadata(self, *, value, enum_strings=None, enum_dict=None, tags=None, **kwargs):
         enum_strings = variety.get_enum_strings(enum_strings, enum_dict)
         if enum_strings is not None:
             self._forced_enum_strings = tuple(enum_strings)
@@ -739,7 +712,7 @@ class TyphosCommandEnumButton(pydm.widgets.enum_button.PyDMEnumButton):
         variety._warn_unhandled_kwargs(self, kwargs)
 
 
-@use_for_variety_read('bitmask')
+@use_for_variety_read("bitmask")
 @variety.uses_key_handlers
 class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
     """
@@ -749,31 +722,28 @@ class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
     -----
     """
 
-    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
-                 **kwargs):
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.ophyd_signal = ophyd_signal
         self.variety_metadata = variety_metadata
 
     variety_metadata = variety.create_variety_property()
 
-    def _update_variety_metadata(self, *, bits, orientation, first_bit, style,
-                                 meaning=None, tags=None, **kwargs):
+    def _update_variety_metadata(self, *, bits, orientation, first_bit, style, meaning=None, tags=None, **kwargs):
         self.numBits = bits
         self.orientation = {
-            'horizontal': Qt.Horizontal,
-            'vertical': Qt.Vertical,
+            "horizontal": Qt.Horizontal,
+            "vertical": Qt.Vertical,
         }[orientation]
-        self.bigEndian = (first_bit == 'most-significant')
+        self.bigEndian = first_bit == "most-significant"
         # TODO: labels do not display properly
         # if meaning:
         #     self.labels = meaning[:bits]
         #     self.showLabels = True
         variety._warn_unhandled_kwargs(self, kwargs)
 
-    @variety.key_handler('style')
-    def _variety_key_handler_style(self, *, shape, on_color, off_color,
-                                   **kwargs):
+    @variety.key_handler("style")
+    def _variety_key_handler_style(self, *, shape, on_color, off_color, **kwargs):
         """Variety hook for the sub-dictionary "style"."""
         on_color = QtGui.QColor(on_color)
         if on_color is not None:
@@ -783,13 +753,13 @@ class TyphosByteIndicator(pydm.widgets.PyDMByteIndicator):
         if off_color is not None:
             self.offColor = off_color
 
-        self.circles = (shape == 'circle')
+        self.circles = shape == "circle"
 
         variety._warn_unhandled_kwargs(self, kwargs)
 
 
-@use_for_variety_read('command')
-@use_for_variety_read('command-proc')
+@use_for_variety_read("command")
+@use_for_variety_read("command-proc")
 class TyphosCommandIndicator(pydm.widgets.PyDMByteIndicator):
     """Displays command status as a read-only bit indicator."""
 
@@ -803,6 +773,7 @@ class TyphosCommandIndicator(pydm.widgets.PyDMByteIndicator):
 
 class ClickableBitIndicator(pydm.widgets.byte.PyDMBitIndicator):
     """A bit indicator that emits `clicked` when clicked."""
+
     clicked = Signal()
 
     def mousePressEvent(self, event: QtGui.QMouseEvent):
@@ -811,9 +782,8 @@ class ClickableBitIndicator(pydm.widgets.byte.PyDMBitIndicator):
             self.clicked.emit()
 
 
-@use_for_variety_write('bitmask')
-class TyphosByteSetpoint(TyphosByteIndicator,
-                         pydm.widgets.base.PyDMWritableWidget):
+@use_for_variety_write("bitmask")
+class TyphosByteSetpoint(TyphosByteIndicator, pydm.widgets.base.PyDMWritableWidget):
     """
     Displays an integer value as individual, toggleable bit indicators.
 
@@ -821,11 +791,9 @@ class TyphosByteSetpoint(TyphosByteIndicator,
     -----
     """
 
-    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
-                 **kwargs):
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None, **kwargs):
         # NOTE: need to have these in the signature explicitly
-        super().__init__(*args, variety_metadata=variety_metadata,
-                         ophyd_signal=ophyd_signal, **kwargs)
+        super().__init__(*args, variety_metadata=variety_metadata, ophyd_signal=ophyd_signal, **kwargs)
 
         self._requests_pending = {}
 
@@ -876,24 +844,21 @@ class TyphosByteSetpoint(TyphosByteIndicator,
         for indicator in self._indicators:
             indicator.deleteLater()
 
-        self._indicators = [
-            ClickableBitIndicator(parent=self, circle=self.circles)
-            for bit in range(self._num_bits)
-        ]
+        self._indicators = [ClickableBitIndicator(parent=self, circle=self.circles) for bit in range(self._num_bits)]
 
         for bit, indicator in enumerate(self._indicators):
+
             def indicator_clicked(*, bit=bit):
                 self._bit_clicked(bit)
 
             indicator.clicked.connect(indicator_clicked)
 
-        new_labels = [f"Bit {bit}"
-                      for bit in range(len(self.labels), self._num_bits)]
+        new_labels = [f"Bit {bit}" for bit in range(len(self.labels), self._num_bits)]
         self.labels = self.labels + new_labels
 
 
 @variety.uses_key_handlers
-@use_for_variety_write('scalar-range')
+@use_for_variety_write("scalar-range")
 class TyphosScalarRange(pydm.widgets.PyDMSlider):
     """
     A slider widget which displays a scalar value with an explicit range.
@@ -902,8 +867,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
     -----
     """
 
-    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
-                 **kwargs):
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.ophyd_signal = ophyd_signal
         self._delta_value = None
@@ -922,10 +886,10 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
                 self._delta_signal_sub = None
             self.delta_signal = None
 
-    @variety.key_handler('range')
+    @variety.key_handler("range")
     def _variety_key_handler_range(self, value, source, **kwargs):
         """Variety hook for the sub-dictionary "range"."""
-        if source == 'value':
+        if source == "value":
             if value is not None:
                 low, high = value
                 self.userMinimum = low
@@ -933,27 +897,26 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
                 self.userDefinedLimits = True
         # elif source == 'use_limits':
         else:
-            variety._warn_unhandled(self, 'range.source', source)
+            variety._warn_unhandled(self, "range.source", source)
 
         variety._warn_unhandled_kwargs(self, kwargs)
 
-    @variety.key_handler('delta')
-    def _variety_key_handler_delta(self, source, value=None, signal=None,
-                                   **kwargs):
+    @variety.key_handler("delta")
+    def _variety_key_handler_delta(self, source, value=None, signal=None, **kwargs):
         """Variety hook for the sub-dictionary "delta"."""
-        if source == 'value':
+        if source == "value":
             if value is not None:
                 self.delta_value = value
-        elif source == 'signal':
+        elif source == "signal":
             if signal is not None:
                 self.delta_signal = variety.get_referenced_signal(self, signal)
         else:
-            variety._warn_unhandled(self, 'delta.source', source)
+            variety._warn_unhandled(self, "delta.source", source)
 
         # range_ = kwargs.pop('range')  # unhandled
         variety._warn_unhandled_kwargs(self, kwargs)
 
-    @variety.key_handler('display_format')
+    @variety.key_handler("display_format")
     def _variety_key_handler_display_format(self, value):
         """Variety hook for the sub-dictionary "delta"."""
         self.displayFormat = variety.get_display_format(value)
@@ -1002,9 +965,9 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
             try:
                 self.num_steps = (self.maximum - self.minimum) / value
             except Exception:
-                logger.exception('Failed to set number of steps with '
-                                 'min=%s, max=%s, delta=%s', self.minimum,
-                                 self.maximum, value)
+                logger.exception(
+                    "Failed to set number of steps with min=%s, max=%s, delta=%s", self.minimum, self.maximum, value
+                )
             finally:
                 self._mute_internal_slider_changes = False
 
@@ -1016,7 +979,7 @@ class TyphosScalarRange(pydm.widgets.PyDMSlider):
 
 
 @variety.uses_key_handlers
-@use_for_variety_write('array-tabular')
+@use_for_variety_write("array-tabular")
 class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
     """
     A table widget which reshapes and displays a given waveform value.
@@ -1025,8 +988,7 @@ class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
     -----
     """
 
-    def __init__(self, *args, variety_metadata=None, ophyd_signal=None,
-                 **kwargs):
+    def __init__(self, *args, variety_metadata=None, ophyd_signal=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.ophyd_signal = ophyd_signal
         self.variety_metadata = variety_metadata
@@ -1037,7 +999,7 @@ class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
         try:
             len(value)
         except TypeError:
-            logger.debug('Non-waveform value? %r', value)
+            logger.debug("Non-waveform value? %r", value)
             return
 
         # shape = self.variety_metadata.get('shape')
@@ -1066,8 +1028,8 @@ class TyphosArrayTable(pydm.widgets.PyDMWaveformTable):
             rows = max(np.product(shape[1:]), 1)
             self.setRowCount(rows)
             self.setColumnCount(columns)
-            self.rowHeaderLabels = [f'{idx}' for idx in range(rows)]
-            self.columnHeaderLabels = [f'{idx}' for idx in range(columns)]
+            self.rowHeaderLabels = [f"{idx}" for idx in range(rows)]
+            self.columnHeaderLabels = [f"{idx}" for idx in range(columns)]
 
             if rows <= 5 and columns <= 5:
                 full_size = self._calculate_size()
@@ -1095,7 +1057,7 @@ def _get_scalar_widget_class(desc, variety_md, read_only):
     if read_only:
         return TyphosLabel
 
-    if 'enum_strs' in desc:
+    if "enum_strs" in desc:
         # Create a QCombobox if the widget has enum_strs
         return TyphosComboBox
 
@@ -1124,10 +1086,7 @@ def _get_ndimensional_widget_class(dimensions, desc, variety_md, read_only):
     if dimensions == 0:
         return _get_scalar_widget_class(desc, variety_md, read_only)
 
-    return {
-        1: WaveformDialogButton,
-        2: ImageDialogButton
-    }.get(dimensions, TyphosLabel)
+    return {1: WaveformDialogButton, 2: ImageDialogButton}.get(dimensions, TyphosLabel)
 
 
 DIRECT_CONTROL_LAYERS = {"pyepics", "caproto"}
@@ -1157,51 +1116,48 @@ def widget_type_from_description(signal, desc, read_only=False):
     """
     use_pv_directly = (
         # We can use PyDM's data source directly with EpicsSignalBase:
-        isinstance(signal, EpicsSignalBase) and
+        isinstance(signal, EpicsSignalBase)
+        and
         # So long as its underlying control layer is a supported ophyd-provided
         # one, at least.
         getattr(signal.cl, "name", "") in DIRECT_CONTROL_LAYERS
     )
     if use_pv_directly:
         # Still re-route EpicsSignal through the ca:// plugin
-        pv = (signal._read_pv
-              if read_only else signal._write_pv)
+        pv = signal._read_pv if read_only else signal._write_pv
         init_channel = utils.channel_name(pv.pvname)
     else:
         # Register signal with plugin
         plugins.register_signal(signal)
-        init_channel = utils.channel_name(signal.name, protocol='sig')
+        init_channel = utils.channel_name(signal.name, protocol="sig")
 
     variety_metadata = utils.get_variety_metadata(signal)
     kwargs = {
-        'init_channel': init_channel,
+        "init_channel": init_channel,
     }
 
     if variety_metadata:
-        widget_cls = variety._get_widget_class_from_variety(
-            desc, variety_metadata, read_only)
+        widget_cls = variety._get_widget_class_from_variety(desc, variety_metadata, read_only)
     else:
         try:
-            dimensions = len(desc.get('shape', []))
+            dimensions = len(desc.get("shape", []))
         except TypeError:
             dimensions = 0
 
-        widget_cls = _get_ndimensional_widget_class(
-            dimensions, desc, variety_metadata, read_only)
+        widget_cls = _get_ndimensional_widget_class(dimensions, desc, variety_metadata, read_only)
 
     if widget_cls is None:
         return None, None
 
-    if desc.get('dtype') == 'string' and widget_cls in (TyphosLabel,
-                                                        TyphosLineEdit):
-        kwargs['display_format'] = DisplayFormat.String
+    if desc.get("dtype") == "string" and widget_cls in (TyphosLabel, TyphosLineEdit):
+        kwargs["display_format"] = DisplayFormat.String
 
     class_signature = inspect.signature(widget_cls)
-    if 'variety_metadata' in class_signature.parameters:
-        kwargs['variety_metadata'] = variety_metadata
+    if "variety_metadata" in class_signature.parameters:
+        kwargs["variety_metadata"] = variety_metadata
 
-    if 'ophyd_signal' in class_signature.parameters:
-        kwargs['ophyd_signal'] = signal
+    if "ophyd_signal" in class_signature.parameters:
+        kwargs["ophyd_signal"] = signal
 
     return widget_cls, kwargs
 
@@ -1228,8 +1184,7 @@ def determine_widget_type(signal, read_only=False):
     try:
         desc = signal.describe()[signal.name]
     except Exception:
-        logger.error("Unable to connect to %r during widget creation",
-                     signal.name)
+        logger.error("Unable to connect to %r during widget creation", signal.name)
         desc = {}
 
     return widget_type_from_description(signal, desc, read_only=read_only)
@@ -1264,7 +1219,7 @@ def create_signal_widget(signal, read_only=False, tooltip=None):
     logger.debug("Creating %s for %s", widget_cls, signal.name)
 
     widget = widget_cls(**kwargs)
-    widget.setObjectName(f'{signal.name}_{widget_cls.__name__}')
+    widget.setObjectName(f"{signal.name}_{widget_cls.__name__}")
     if tooltip is not None:
         widget.setToolTip(tooltip)
 

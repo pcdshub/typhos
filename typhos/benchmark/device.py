@@ -9,14 +9,15 @@ Note that this currently only supports devices with uniform signals.
 In the future it can be expanded to have Kind information, different
 data types to test different widget types, etc.
 """
+
 from ophyd.device import Component as Cpt
 from ophyd.device import create_device_from_components as create_device
 from ophyd.signal import Signal
 
 
-def make_test_device_class(name='TestClass', signal_class=Signal,
-                           include_prefix=False, num_signals=10,
-                           subdevice_layers=0, subdevice_spread=0):
+def make_test_device_class(
+    name="TestClass", signal_class=Signal, include_prefix=False, num_signals=10, subdevice_layers=0, subdevice_spread=0
+):
     """
     Creates a test :class:`ophyd.Device` subclass.
 
@@ -60,20 +61,20 @@ def make_test_device_class(name='TestClass', signal_class=Signal,
     signals = {}
     for nsig in range(num_signals):
         if include_prefix:
-            sig_cpt = Cpt(signal_class, f'SIGPV{nsig}')
+            sig_cpt = Cpt(signal_class, f"SIGPV{nsig}")
         else:
             sig_cpt = Cpt(signal_class)
-        signals[f'signum{nsig}'] = sig_cpt
+        signals[f"signum{nsig}"] = sig_cpt
 
-    SignalHolder = create_device('SignalHolder', **signals)
+    SignalHolder = create_device("SignalHolder", **signals)
 
     if all((subdevice_layers > 0, subdevice_spread > 0)):
         PrevClass = SignalHolder
         while subdevice_layers > 0:
             subdevices = {}
             for ndev in range(subdevice_spread):
-                subdevices[f'devnum{ndev}'] = Cpt(PrevClass, f'PREFIX{ndev}:')
-            ThisClass = create_device(f'Layer{subdevice_layers}', **subdevices)
+                subdevices[f"devnum{ndev}"] = Cpt(PrevClass, f"PREFIX{ndev}:")
+            ThisClass = create_device(f"Layer{subdevice_layers}", **subdevices)
             PrevClass = ThisClass
             subdevice_layers -= 1
     else:

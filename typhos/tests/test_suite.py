@@ -15,7 +15,7 @@ from ..utils import save_suite
 from .conftest import MockDevice, show_widget
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def suite(
     device: MockDevice,
     qtbot: pytestqt.qtbot.QtBot,
@@ -28,7 +28,7 @@ def suite(
 @show_widget
 def test_suite_with_child_devices(suite: TyphosSuite, device: MockDevice):
     assert device in suite.devices
-    device_group = suite.top_level_groups['Devices']
+    device_group = suite.top_level_groups["Devices"]
     assert len(device_group.childs) == 1
     child_displays = device_group.childs[0].childs
     assert len(child_displays) == len(device._sub_devices)
@@ -41,7 +41,7 @@ def test_suite_without_children(
 ):
     childless = TyphosSuite.from_device(device, children=False)
     qtbot.addWidget(childless)
-    device_group = childless.top_level_groups['Devices']
+    device_group = childless.top_level_groups["Devices"]
     childless_displays = device_group.childs[0].childs
     assert len(childless_displays) == 0
 
@@ -73,17 +73,15 @@ def test_suite_get_subdisplay_by_name(suite: TyphosSuite, device: MockDevice):
 
 def test_suite_show_display_by_device(suite: TyphosSuite, device: MockDevice):
     suite.show_subdisplay(device.x)
-    dock = suite._content_frame.layout().itemAt(
-        suite.layout().count() - 1).widget()
+    dock = suite._content_frame.layout().itemAt(suite.layout().count() - 1).widget()
     assert isinstance(dock, QtWidgets.QDockWidget)
     assert device.x in dock.widget().devices
 
 
 def test_suite_show_display_by_parameter(suite):
-    device_param = suite.top_level_groups['Devices'].childs[0]
+    device_param = suite.top_level_groups["Devices"].childs[0]
     suite.show_subdisplay(device_param)
-    dock = suite._content_frame.layout().itemAt(
-        suite.layout().count() - 1).widget()
+    dock = suite._content_frame.layout().itemAt(suite.layout().count() - 1).widget()
     assert isinstance(dock, QtWidgets.QDockWidget)
     assert device_param.device in dock.widget().devices
     assert dock.receivers(dock.closing) == 1
@@ -105,7 +103,7 @@ def test_suite_hide_subdisplay_by_parameter(
     suite: TyphosSuite,
     qtbot: pytestqt.qtbot.QtBot,
 ):
-    device_param = suite.top_level_groups['Devices'].childs[0]
+    device_param = suite.top_level_groups["Devices"].childs[0]
     qtbot.add_widget(suite.show_subdisplay(device_param))
     display = suite.get_subdisplay(device_param.device)
     suite.show_subdisplay(device_param)
@@ -134,7 +132,7 @@ def test_device_parameter_tree(
     qtbot: pytestqt.qtbot.QtBot,
 ):
     tree = ParameterTree(showHeader=False)
-    devices = ptypes.GroupParameter(name='Devices')
+    devices = ptypes.GroupParameter(name="Devices")
     tree.addParameters(devices)
     qtbot.addWidget(tree)
     # Device with no subdevices
@@ -197,10 +195,8 @@ def test_suite_save_device_screenshots(suite: TyphosSuite, device: MockDevice):
 
 
 def test_suite_save(suite: TyphosSuite, monkeypatch: pytest.MonkeyPatch):
-    tfile = Path(tempfile.gettempdir()) / 'test.py'
-    monkeypatch.setattr(QtWidgets.QFileDialog,
-                        'getSaveFileName',
-                        lambda *_: (str(tfile), str(tfile)))
+    tfile = Path(tempfile.gettempdir()) / "test.py"
+    monkeypatch.setattr(QtWidgets.QFileDialog, "getSaveFileName", lambda *_: (str(tfile), str(tfile)))
     suite.save()
     assert tfile.exists()
     devices = [device.name for device in suite.devices]
@@ -210,9 +206,7 @@ def test_suite_save(suite: TyphosSuite, monkeypatch: pytest.MonkeyPatch):
 
 
 def test_suite_save_cancel_smoke(suite: TyphosSuite, monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setattr(QtWidgets.QFileDialog,
-                        'getSaveFileName',
-                        lambda *_: None)
+    monkeypatch.setattr(QtWidgets.QFileDialog, "getSaveFileName", lambda *_: None)
     suite.save()
 
 

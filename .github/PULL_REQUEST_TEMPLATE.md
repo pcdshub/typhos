@@ -26,5 +26,3 @@
 - [ ] Code has been checked for threading issues (no blocking tasks in GUI thread)
 - [ ] Test suite passes locally
 - [ ] Test suite passes on GitHub Actions
-- [ ] Ran ``docs/pre-release-notes.sh`` and created a pre-release documentation page
-- [ ] Pre-release docs include context, functional descriptions, and contributors as appropriate

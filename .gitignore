@@ -116,3 +116,6 @@ ENV/
 *.swp
 *~
 .vscode
+
+# Versioning
+_version.py

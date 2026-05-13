@@ -14,8 +14,6 @@ build:
   noarch: python
   script: {{ PYTHON }} -m pip install . -vv
 
-
-
 requirements:
   build:
   - python >=3.9
@@ -34,15 +32,12 @@ requirements:
   - pydm >=1.19.1
   - pyqt =5
   - pyqtgraph
-  - pyyaml
   - qdarkstyle
   - qtawesome
   - qtpy
   - timechart >=1.2.4
   run_constrained:
   - happi >=1.14.0
-
-
 
 test:
   commands:
@@ -54,18 +49,12 @@ test:
   - caproto
   - doctr
   - doctr-versions-menu
-  - flake8
-  - ipython>=7.16
-  - jinja2<3.1
   - line_profiler
   - pcdsdevices>=8.4.0
   - pytest
   - pytest-benchmark
   - pytest-qt
   - pytest-timeout
-  - simplejson
-
-
 
 about:
   dev_url: https://github.com/pcdshub/typhos

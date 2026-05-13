@@ -38,7 +38,7 @@ def ensure_cache_clear(qtbot, signal, cache):
     cache.clear()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def describe_cache(qtbot):
     cache = typhos.cache.get_global_describe_cache()
 
@@ -47,7 +47,7 @@ def describe_cache(qtbot):
     ensure_cache_clear(qtbot, cache.new_description, cache)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def type_cache(qtbot, describe_cache):
     cache = typhos.cache.get_global_widget_type_cache()
 
@@ -56,9 +56,9 @@ def type_cache(qtbot, describe_cache):
     ensure_cache_clear(qtbot, cache.widgets_determined, cache)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def sig():
-    name = f'test{random.randint(0, 10000)}'
+    name = f"test{random.randint(0, 10000)}"
     sig = ophyd.Signal(name=name)
     yield sig
     sig.destroy()

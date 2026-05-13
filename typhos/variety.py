@@ -16,8 +16,7 @@ def _warn_unhandled(instance, metadata_key, value):
         return
 
     logger.debug(
-        '%s: Not yet implemented variety handling: key=%s value=%s',
-        instance.__class__.__name__, metadata_key, value
+        "%s: Not yet implemented variety handling: key=%s value=%s", instance.__class__.__name__, metadata_key, value
     )
 
 
@@ -38,7 +37,7 @@ def key_handler(key):
 
     def wrapper(method):
         assert callable(method)
-        if not hasattr(method, '_variety_handler'):
+        if not hasattr(method, "_variety_handler"):
             method._variety_handler_keys = set()
         method._variety_handler_keys.add(key)
         return method
@@ -48,8 +47,8 @@ def key_handler(key):
 
 def _get_variety_handlers(members):
     handlers = {}
-    for attr, method in members:
-        for key in getattr(method, '_variety_handler_keys', []):
+    for _attr, method in members:
+        for key in getattr(method, "_variety_handler_keys", []):
             if key not in handlers:
                 handlers[key] = [method]
             handlers[key].append(method)
@@ -89,46 +88,46 @@ def use_for_variety(variety, *, read=True, write=True):
     """
 
     known_varieties = {
-        'array-histogram',
-        'array-image',
-        'array-nd',
-        'array-tabular',
-        'array-timeseries',
-        'bitmask',
-        'command',
-        'command-enum',
-        'command-proc',
-        'command-setpoint-tracks-readback',
-        'enum',
-        'scalar',
-        'scalar-range',
-        'scalar-tweakable',
-        'text',
-        'text-enum',
-        'text-multiline',
+        "array-histogram",
+        "array-image",
+        "array-nd",
+        "array-tabular",
+        "array-timeseries",
+        "bitmask",
+        "command",
+        "command-enum",
+        "command-proc",
+        "command-setpoint-tracks-readback",
+        "enum",
+        "scalar",
+        "scalar-range",
+        "scalar-tweakable",
+        "text",
+        "text-enum",
+        "text-multiline",
     }
 
     if variety not in known_varieties:
         # NOTE: not kept in sync with pcdsdevices; so this wrapper may need
         # updating.
-        raise ValueError(f'Not a known variety: {variety}')
+        raise ValueError(f"Not a known variety: {variety}")
 
     def wrapper(cls):
         if variety not in _variety_to_widget_class:
             _variety_to_widget_class[variety] = {}
 
         if read:
-            _variety_to_widget_class[variety]['read'] = cls
+            _variety_to_widget_class[variety]["read"] = cls
             if cls.__doc__ is not None:
-                cls.__doc__ += f'\n    * Used for variety {variety} (readback)'
+                cls.__doc__ += f"\n    * Used for variety {variety} (readback)"
 
         if write:
-            _variety_to_widget_class[variety]['write'] = cls
+            _variety_to_widget_class[variety]["write"] = cls
             if cls.__doc__ is not None:
-                cls.__doc__ += f'\n    * Used for variety {variety} (setpoint)'
+                cls.__doc__ += f"\n    * Used for variety {variety} (setpoint)"
 
         if not read and not write:
-            raise ValueError('`write` or `read` must be set.')
+            raise ValueError("`write` or `read` must be set.")
 
         return cls
 
@@ -146,18 +145,16 @@ def use_for_variety_write(variety):
 
 
 def _get_widget_class_from_variety(desc, variety_md, read_only):
-    variety = variety_md['variety']  # a required key
-    read_key = 'read' if read_only else 'write'
+    variety = variety_md["variety"]  # a required key
+    read_key = "read" if read_only else "write"
     try:
         widget_cls = _variety_to_widget_class[variety].get(read_key)
     except KeyError:
-        logger.error('Unsupported variety: %s (%s / %s)',
-                     variety_md['variety'], desc, variety_md)
+        logger.error("Unsupported variety: %s (%s / %s)", variety_md["variety"], desc, variety_md)
     else:
         if widget_cls is None:
             # TODO: remove
-            logger.error('TODO no widget?: %s (%s / %s)',
-                         variety_md['variety'], desc, variety_md)
+            logger.error("TODO no widget?: %s (%s / %s)", variety_md["variety"], desc, variety_md)
         return widget_cls
 
 
@@ -173,17 +170,17 @@ def get_referenced_signal(widget, name_or_component):
     name_or_component : str or ophyd.Component
         The signal name or ophyd Component.
     """
-    ophyd_signal = getattr(widget, 'ophyd_signal', None)
+    ophyd_signal = getattr(widget, "ophyd_signal", None)
     if ophyd_signal is None:
-        logger.error('Incorrectly configured widget (ophyd_signal unset?)')
+        logger.error("Incorrectly configured widget (ophyd_signal unset?)")
         return
 
     device = ophyd_signal.parent
     if device is None:
-        logger.debug('Cannot be used on isolated (non-Device) signal')
+        logger.debug("Cannot be used on isolated (non-Device) signal")
         return
 
-    if hasattr(name_or_component, 'attr'):
+    if hasattr(name_or_component, "attr"):
         name_or_component = name_or_component.attr
 
     return getattr(device, name_or_component)
@@ -208,14 +205,15 @@ def create_variety_property():
 
         # Catch-all handler for variety metadata.
         try:
-            if hasattr(self, '_update_variety_metadata'):
+            if hasattr(self, "_update_variety_metadata"):
                 self._update_variety_metadata(**self._variety_metadata)
         except Exception:
-            logger.exception('Failed to set variety metadata for class %s: %s',
-                             type(self).__name__, self._variety_metadata)
+            logger.exception(
+                "Failed to set variety metadata for class %s: %s", type(self).__name__, self._variety_metadata
+            )
 
         # Optionally, there may be 'handlers' for individual top-level keys.
-        handlers = getattr(self, '_variety_handlers', {})
+        handlers = getattr(self, "_variety_handlers", {})
         for key, handler_list in handlers.items():
             for unbound in handler_list:
                 handler = getattr(self, unbound.__name__)
@@ -231,20 +229,21 @@ def create_variety_property():
                         handler(info)
                 except Exception:
                     logger.exception(
-                        'Failed to set variety metadata for class %s.%s %r: '
-                        '%s', type(self).__name__, handler.__name__, key, info
+                        "Failed to set variety metadata for class %s.%s %r: %s",
+                        type(self).__name__,
+                        handler.__name__,
+                        key,
+                        info,
                     )
 
-    return property(fget, fset,
-                    doc='Additional component variety metadata.')
+    return property(fget, fset, doc="Additional component variety metadata.")
 
 
 def get_enum_strings(enum_strings, enum_dict):
     """Get enum strings from either `enum_strings` or `enum_dict`."""
     if enum_dict:
         max_value = max(enum_dict)
-        return [enum_dict.get(idx, '')
-                for idx in range(max_value + 1)]
+        return [enum_dict.get(idx, "") for idx in range(max_value + 1)]
 
     return enum_strings
 
@@ -252,5 +251,4 @@ def get_enum_strings(enum_strings, enum_dict):
 def get_display_format(value):
     """Get the display format enum value from the variety metadata value."""
     if value is not None:
-        return getattr(DisplayFormat, value.capitalize(),
-                       DisplayFormat.Default)
+        return getattr(DisplayFormat, value.capitalize(), DisplayFormat.Default)
